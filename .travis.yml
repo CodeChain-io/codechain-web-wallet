@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - "10"
+  - "8"
+before_install:
+  - yarn install
+script:
+  - CI=true yarn run test
+cache: yarn
