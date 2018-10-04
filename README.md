@@ -1,3 +1,9 @@
+# CodeChain Wallet [![Build Status](https://travis-ci.org/CodeChain-io/codechain-wallet.svg?branch=master)](https://travis-ci.org/CodeChain-io/codechain-wallet)
+
+CodeChain wallet is a simple, easy to use, an open-source tool for managing assets on the CodeChain system. 
+
+## Project framework
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
