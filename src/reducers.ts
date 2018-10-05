@@ -15,6 +15,11 @@ export const appReducer = (state = initialState, action: Action) => {
                 ...state,
                 isAuthenticated: true
             };
+        case "Logout":
+            return {
+                ...state,
+                isAuthenticated: false
+            };
     }
     return state;
 };
