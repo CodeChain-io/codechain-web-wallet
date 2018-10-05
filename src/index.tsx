@@ -5,9 +5,9 @@ import { Provider } from "react-redux";
 import { createStore } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension/logOnlyInProduction";
 import App from "./components/App/App";
-import "./index.css";
 import { appReducer } from "./reducers";
 import registerServiceWorker from "./registerServiceWorker";
+import "./styles/index.css";
 
 const store = createStore(appReducer, devToolsEnhancer({}));
 ReactDOM.render(

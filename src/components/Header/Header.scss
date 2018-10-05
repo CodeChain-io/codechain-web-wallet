@@ -1,3 +1,4 @@
+@import "styles/mixin.scss";
 .Header {
   .navbar-brand {
     padding: 0;
@@ -9,6 +10,7 @@
     }
     .logo-text {
       vertical-align: middle;
+      @include heading-font();
     }
   }
 }
