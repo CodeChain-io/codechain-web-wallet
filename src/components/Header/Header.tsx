@@ -32,11 +32,12 @@ class Header extends React.Component<IProps, any> {
             <div className="Header">
                 <Navbar color="dark" dark={true} expand="md">
                     <Container>
-                        <NavbarBrand href="/">
+                        <NavbarBrand href="#">
                             <div className="flex align-items-center">
                                 <img src={Logo} className="logo" />
                                 <span className="logo-text">
-                                    CodeChain Wallet
+                                    <span className="codechain">CodeChain</span>{" "}
+                                    Wallet
                                 </span>
                             </div>
                         </NavbarBrand>

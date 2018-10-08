@@ -2,7 +2,6 @@
 .Header {
   .navbar-brand {
     padding: 0;
-
     .logo {
       width: 40px;
       height: 40px;
@@ -11,6 +10,11 @@
     .logo-text {
       vertical-align: middle;
       @include heading-font();
+      @include respond-below(xs) {
+        .codechain {
+          display: none;
+        }
+      }
     }
   }
 }
