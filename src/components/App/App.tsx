@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as ReactModal from "react-modal";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
@@ -8,6 +9,9 @@ import WalletList from "../WalletList/WalletList";
 import "./App.css";
 
 class App extends React.Component {
+    public componentDidMount() {
+        ReactModal.setAppElement("#app");
+    }
     public render() {
         return (
             <Router>

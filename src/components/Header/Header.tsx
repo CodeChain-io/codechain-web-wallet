@@ -14,16 +14,16 @@ import { IRootState } from "../../reducers";
 import "./Header.css";
 import * as Logo from "./img/logo.png";
 
-interface IStateProps {
+interface StateProps {
     isAuthenticated: boolean;
 }
-interface IDispatchProps {
+interface DispatchProps {
     logout: () => void;
 }
 
-type IProps = IDispatchProps & IStateProps;
-class Header extends React.Component<IProps, any> {
-    public constructor(props: IProps) {
+type Props = DispatchProps & StateProps;
+class Header extends React.Component<Props, any> {
+    public constructor(props: Props) {
         super(props);
     }
     public render() {

@@ -1,0 +1,19 @@
+@import "styles/variables.scss";
+.Login {
+  position: relative;
+  height: calc(100vh - #{$header-height});
+
+  .login-container {
+    position: absolute;
+    width: 300px;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+
+    .btn {
+      width: 100%;
+    }
+  }
+}
