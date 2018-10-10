@@ -1,11 +1,11 @@
 import * as React from "react";
 import * as ReactModal from "react-modal";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import AddressList from "../AddressList/AddressList";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
-import WalletList from "../WalletList/WalletList";
 import "./App.css";
 
 class App extends React.Component {
@@ -28,7 +28,7 @@ class App extends React.Component {
                             <PrivateRoute
                                 exact={true}
                                 path="/"
-                                component={WalletList}
+                                component={AddressList}
                             />
                             <Route component={NotFound} />
                         </Switch>
