@@ -9,13 +9,18 @@ import WalletList from "../WalletList/WalletList";
 import "./App.css";
 
 class App extends React.Component {
+    private appRef: React.RefObject<any>;
+    public constructor(props: any) {
+        super(props);
+        this.appRef = React.createRef();
+    }
     public componentDidMount() {
-        ReactModal.setAppElement("#app");
+        ReactModal.setAppElement(this.appRef.current);
     }
     public render() {
         return (
             <Router>
-                <div id="app" className="app">
+                <div id="app" className="app" ref={this.appRef}>
                     <Header />
                     <div className="content-container">
                         <Switch>
