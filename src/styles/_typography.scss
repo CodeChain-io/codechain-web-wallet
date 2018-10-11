@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Cabin:400,700|Montserrat:400,700,900");
+@import "styles/variables.scss";
 
 body {
   font-family: "Cabin", sans-serif;
@@ -12,4 +13,13 @@ h5,
 h6 {
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
+}
+
+a {
+  color: $dark-text;
+
+  &:hover {
+    color: $dark-text;
+    text-decoration: none;
+  }
 }

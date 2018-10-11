@@ -1,20 +1,43 @@
 import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { WalletAddress } from "src/model/address";
+import { changeQuarkToCCC } from "src/utils/unit";
 import "./AddressItem.css";
 
-export default class AddressItem extends React.Component<any, any> {
-    public render() {
-        return (
-            <div className="Address-item mb-3">
-                <div>
-                    <h6 className="mb-0">First Address</h6>
-                </div>
-                <div>
-                    <span className="address-type">Platform Address</span>
-                </div>
-                <div className="address-description">
-                    <span>10000.00000001 CCC</span>
-                </div>
-            </div>
-        );
-    }
+interface OwnProps {
+    address: WalletAddress;
 }
+
+type Props = RouteComponentProps & OwnProps;
+
+const AddressItem = (props: Props) => {
+    const { address } = props;
+    const handleClick = () => {
+        if (address.type === "Platform") {
+            props.history.push(`/${address.address}/account`);
+        } else {
+            props.history.push(`/${address.address}/assets`);
+        }
+    };
+    return (
+        <div className="Address-item mb-3" onClick={handleClick}>
+            <div>
+                <h6 className="mb-0">{address.name}</h6>
+            </div>
+            <div>
+                <span className="address-type">{address.type}</span>
+            </div>
+            <div className="address-description">
+                <span>
+                    {address.type === "Asset"
+                        ? `${address.totalAmount.toString(10)} Asset types`
+                        : `${changeQuarkToCCC(address.totalAmount).toString(
+                              10
+                          )} CCC`}
+                </span>
+            </div>
+        </div>
+    );
+};
+
+export default withRouter(AddressItem);

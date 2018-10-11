@@ -1,5 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { IndexLinkContainer } from "react-router-bootstrap";
 import {
     Container,
     Nav,
@@ -32,15 +33,19 @@ class Header extends React.Component<Props, any> {
             <div className="Header">
                 <Navbar color="dark" dark={true} expand="md">
                     <Container>
-                        <NavbarBrand href="#">
-                            <div className="flex align-items-center">
-                                <img src={Logo} className="logo" />
-                                <span className="logo-text">
-                                    <span className="codechain">CodeChain</span>{" "}
-                                    Wallet
-                                </span>
-                            </div>
-                        </NavbarBrand>
+                        <IndexLinkContainer to="/">
+                            <NavbarBrand>
+                                <div className="flex align-items-center">
+                                    <img src={Logo} className="logo" />
+                                    <span className="logo-text">
+                                        <span className="codechain">
+                                            CodeChain
+                                        </span>{" "}
+                                        Wallet
+                                    </span>
+                                </div>
+                            </NavbarBrand>
+                        </IndexLinkContainer>
                         <Nav navbar={true} className="ml-auto">
                             {isAuthenticated && (
                                 <NavItem className="ml-auto">
