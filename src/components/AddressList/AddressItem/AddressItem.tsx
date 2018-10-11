@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { WalletAddress } from "src/model/address";
-import { changeQuarkToCCC } from "src/utils/unit";
+import { WalletAddress } from "../../../model/address";
+import { changeQuarkToCCC } from "../../../utils/unit";
 import "./AddressItem.css";
 
 interface OwnProps {

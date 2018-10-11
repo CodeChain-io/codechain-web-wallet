@@ -2,7 +2,7 @@ import { BigNumber } from "bignumber.js";
 import * as _ from "lodash";
 import * as React from "react";
 import { Col, Container, Row } from "reactstrap";
-import { WalletAddress } from "src/model/address";
+import { WalletAddress } from "../../model/address";
 import AddressItem from "./AddressItem/AddressItem";
 import "./AddressList.css";
 
