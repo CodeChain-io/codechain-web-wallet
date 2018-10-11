@@ -2,6 +2,12 @@
 
 CodeChain wallet is a simple, easy to use, an open-source tool for managing assets on the CodeChain system.
 
+## Before start
+
+### Dependency
+
+- Get [CodeChain-indexer](https://github.com/CodeChain-io/codechain-indexer) Ready for indexing block data and running the API server
+
 ## Available Scripts
 
 In the project directory, you can run:
