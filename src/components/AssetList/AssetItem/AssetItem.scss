@@ -1,0 +1,14 @@
+.Asset-item {
+  border-bottom: 1px solid black;
+  width: 100%;
+
+  .image-container {
+    .asset-image {
+      width: 65px;
+      height: 65px;
+    }
+  }
+  .name-container {
+    flex: 1;
+  }
+}

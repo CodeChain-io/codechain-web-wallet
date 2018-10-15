@@ -1625,6 +1625,14 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
+codechain-indexer-types@^0.1.0-alpha.0:
+  version "0.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/codechain-indexer-types/-/codechain-indexer-types-0.1.0-alpha.0.tgz#26b4fb35d7b5a751dfee121369c0221587d1397b"
+  dependencies:
+    buffer "^5.2.1"
+    codechain-sdk "^0.4.0-rc3"
+    lodash "^4.17.10"
+
 codechain-keystore@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/codechain-keystore/-/codechain-keystore-0.4.0.tgz#a8a35b1555b07c49d6456e7e2430c721e13d3a0f"
@@ -3528,6 +3536,10 @@ icss-utils@^2.1.0:
   dependencies:
     postcss "^6.0.1"
 
+identicon.js@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/identicon.js/-/identicon.js-2.3.3.tgz#c505b8d60ecc6ea13bbd991a33964c44c1ad60a1"
+
 ieee754@^1.1.4:
   version "1.1.12"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
@@ -4350,6 +4362,10 @@ jest@20.0.4:
 js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.4.9"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.4.9.tgz#748911fb04f48a60c4771b375cac45a80df11c03"
+
+js-sha256@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/js-sha256/-/js-sha256-0.9.0.tgz#0b89ac166583e91ef9123644bd3c5334ce9d0966"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
