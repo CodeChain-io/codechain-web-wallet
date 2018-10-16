@@ -1,9 +1,9 @@
+import * as _ from "lodash";
 import * as React from "react";
 import * as Modal from "react-modal";
-import CreateAddressForm from "./CreateAddressForm/CreateAddressForm";
+import CreateAddressContainer from "./CreateAddressContainer/CreateAddressContainer";
 import "./CreateAddressModal.css";
 import CreateWalletForm from "./CreateWalletForm/CreateWalletForm";
-import DownloadWalletForm from "./DownloadWalletForm/DownloadWalletForm";
 
 const customStyles = {
     content: {
@@ -21,8 +21,7 @@ const customStyles = {
 
 enum InputForm {
     CreateWallet,
-    CreateAddress,
-    DownloadWallet
+    CreateAddress
 }
 
 interface Props {
@@ -31,6 +30,7 @@ interface Props {
 }
 
 interface State {
+    walletName: string;
     currentInputForm: InputForm;
 }
 
@@ -38,13 +38,14 @@ export default class CreateAddressModal extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            currentInputForm: InputForm.CreateWallet
+            currentInputForm: InputForm.CreateWallet,
+            walletName: ""
         };
     }
 
     public render() {
         const { isOpen, onClose } = this.props;
-        const { currentInputForm } = this.state;
+        const { currentInputForm, walletName } = this.state;
         return (
             <div>
                 <Modal
@@ -63,14 +64,10 @@ export default class CreateAddressModal extends React.Component<Props, State> {
                             />
                         )}
                         {currentInputForm === InputForm.CreateAddress && (
-                            <CreateAddressForm
+                            <CreateAddressContainer
                                 onCancel={this.handleCancelButton}
-                                onSubmit={this.handleSumitButtonOnCreateAddress}
-                            />
-                        )}
-                        {currentInputForm === InputForm.DownloadWallet && (
-                            <DownloadWalletForm
-                                onConfirm={this.handleCancelButton}
+                                onSubmit={this.handleCancelButton}
+                                walletName={walletName}
                             />
                         )}
                     </div>
@@ -83,16 +80,15 @@ export default class CreateAddressModal extends React.Component<Props, State> {
         this.setState({ currentInputForm: InputForm.CreateWallet });
     };
 
-    private handleCancelButton = () => {
+    private handleCancelButton = async () => {
         this.clearForm();
         this.props.onClose();
     };
 
-    private handleSubmitButtonOnCreatwWallet = () => {
-        this.setState({ currentInputForm: InputForm.CreateAddress });
-    };
-
-    private handleSumitButtonOnCreateAddress = () => {
-        this.setState({ currentInputForm: InputForm.DownloadWallet });
+    private handleSubmitButtonOnCreatwWallet = (walletName: string) => {
+        this.setState({
+            currentInputForm: InputForm.CreateAddress,
+            walletName
+        });
     };
 }

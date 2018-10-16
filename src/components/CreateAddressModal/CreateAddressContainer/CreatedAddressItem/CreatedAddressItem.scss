@@ -1,0 +1,11 @@
+.Created-address-item {
+  position: relative;
+  border: 1px solid black;
+  padding: 9px;
+  .remove-btn {
+    position: absolute;
+    right: 9px;
+    top: 9px;
+    cursor: pointer;
+  }
+}

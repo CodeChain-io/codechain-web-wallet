@@ -1,7 +1,7 @@
 import axios from "axios";
 import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
 import { H256 } from "codechain-sdk/lib/core/classes";
-import { AddressUTXO } from "src/model/asset";
+import { AddressUTXO } from "../model/asset";
 
 // FIXME: Change the default host
 const apiHost = process.env.APIHost || "https://husky.codechain.io/explorer";

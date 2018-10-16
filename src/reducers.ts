@@ -5,7 +5,7 @@ export interface IRootState {
 }
 
 const initialState: IRootState = {
-    isAuthenticated: true
+    isAuthenticated: false
 };
 
 export const appReducer = (state = initialState, action: Action) => {

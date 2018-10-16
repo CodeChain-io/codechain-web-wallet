@@ -16,6 +16,33 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@fortawesome/fontawesome-common-types@^0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.6.tgz#3f26b9d1bf2d057dfe0f448fe4a2c372508e97f0"
+
+"@fortawesome/fontawesome-svg-core@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-svg-core/-/fontawesome-svg-core-1.2.6.tgz#6314da68ff1018633a861ae9fe59e006c4f759a9"
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.6"
+
+"@fortawesome/free-solid-svg-icons@^5.4.1":
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-5.4.1.tgz#9aa1a07176a16886aa176fc0c9d809ab1697fd47"
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.6"
+
+"@fortawesome/react-fontawesome@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@fortawesome/react-fontawesome/-/react-fontawesome-0.1.3.tgz#266b4047892c3d10498af1075d89252f74015b11"
+  dependencies:
+    humps "^2.0.1"
+    prop-types "^15.5.10"
+
+"@types/file-saver@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@types/file-saver/-/file-saver-1.3.1.tgz#55d76b3c78b5fcc8a7588ead428dce0822464120"
+
 "@types/history@*":
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.0.tgz#2fac51050c68f7d6f96c5aafc631132522f4aa3f"
@@ -1643,6 +1670,17 @@ codechain-keystore@^0.4.0:
     lowdb "^1.0.0"
     uuid "^3.3.2"
 
+codechain-keystore@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/codechain-keystore/-/codechain-keystore-0.5.1.tgz#3f21c895c9dba1337bb99657487916a5add8fa18"
+  dependencies:
+    codechain-primitives "^0.3.0"
+    config "^2.0.1"
+    lodash "^4.17.10"
+    lowdb "^1.0.0"
+    lowdb-session-storage-adapter "^1.0.0"
+    uuid "^3.3.2"
+
 codechain-primitives@^0.3.0:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/codechain-primitives/-/codechain-primitives-0.3.2.tgz#e247b7675cac05faa5cf64314d041dc30e2823e4"
@@ -2870,6 +2908,10 @@ file-loader@1.1.5:
     loader-utils "^1.0.2"
     schema-utils "^0.3.0"
 
+file-saver@^2.0.0-rc.3:
+  version "2.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/file-saver/-/file-saver-2.0.0-rc.3.tgz#4b77bbbafce2b75e25c6b4d1024e4c670bcb3b54"
+
 filename-regex@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"
@@ -3515,6 +3557,10 @@ http-signature@~1.2.0:
 https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
+
+humps@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/humps/-/humps-2.0.1.tgz#dd02ea6081bd0568dc5d073184463957ba9ef9aa"
 
 iconv-lite@0.4.19:
   version "0.4.19"
@@ -4757,6 +4803,12 @@ loud-rejection@^1.0.0:
   dependencies:
     currently-unhandled "^0.4.1"
     signal-exit "^3.0.0"
+
+lowdb-session-storage-adapter@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lowdb-session-storage-adapter/-/lowdb-session-storage-adapter-1.0.0.tgz#6f5e563adbf482ac39c6937f55db6757eb01c0f3"
+  dependencies:
+    lowdb "^1.0.0"
 
 lowdb@^1.0.0:
   version "1.0.0"

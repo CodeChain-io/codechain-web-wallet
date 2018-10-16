@@ -1,2 +1,5 @@
 .Create-wallet-form {
+  input:invalid:focus {
+    border: 1px dashed red;
+  }
 }

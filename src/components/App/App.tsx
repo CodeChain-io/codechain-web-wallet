@@ -1,3 +1,9 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faFileDownload,
+    faPlus,
+    faTrashAlt
+} from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
 import * as ReactModal from "react-modal";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -9,6 +15,8 @@ import Login from "../Login/Login";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import "./App.css";
+
+library.add(faPlus, faTrashAlt, faFileDownload);
 
 class App extends React.Component {
     private appRef: React.RefObject<any>;
