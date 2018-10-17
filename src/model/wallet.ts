@@ -1,9 +1,14 @@
 import { CCKey } from "codechain-keystore";
 import * as FileSaver from "file-saver";
 
+let dbType = "volatile";
+if (process.env.CI) {
+    dbType = "in-memory";
+}
+
 let ccKey: CCKey;
 export async function createWallet() {
-    ccKey = await CCKey.create({ dbType: "volatile" });
+    ccKey = await CCKey.create({ dbType });
 }
 
 export async function clearWallet() {
@@ -52,5 +57,5 @@ export async function loadWallet() {
 }
 
 export async function isWalletExisted() {
-    return CCKey.exist({ dbType: "volatile" });
+    return CCKey.exist({ dbType });
 }
