@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as _ from "lodash";
 import * as React from "react";
+import { AddressType } from "../../../model/address";
 import { createKey, saveWallet, setWalletName } from "../../../model/wallet";
 import "./CreateAddressContainer.css";
 import CreateAddressForm from "./CreateAddressForm/CreateAddressForm";
@@ -16,8 +17,9 @@ interface State {
     isCreating: boolean;
     addressList: {
         name: string;
-        type: "Platform" | "Asset";
+        type: AddressType;
         password: string;
+        networkId: string;
     }[];
     isWalletCreated: boolean;
 }
@@ -133,14 +135,16 @@ export default class CreateAddressContainer extends React.Component<
     };
 
     private handleSubmitCreating = (
-        type: "Platform" | "Asset",
+        type: AddressType,
         name: string,
-        password: string
+        password: string,
+        networkId: string
     ) => {
         const newAddress = {
             type,
             name,
-            password
+            password,
+            networkId
         };
         this.setState({
             isCreating: false,
@@ -156,11 +160,16 @@ export default class CreateAddressContainer extends React.Component<
     private handleSubmit = async () => {
         const { walletName } = this.props;
         const { addressList } = this.state;
-
+        console.log(addressList);
         await setWalletName(walletName);
         await Promise.all(
             _.map(addressList, async address => {
-                return createKey(address.type, address.name, address.password);
+                return createKey(
+                    address.type,
+                    address.name,
+                    address.password,
+                    address.networkId
+                );
             })
         );
         this.setState({ isWalletCreated: true });

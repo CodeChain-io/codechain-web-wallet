@@ -1,8 +1,11 @@
-import { BigNumber } from "bignumber.js";
-
 export interface WalletAddress {
     name: string;
-    totalAmount: BigNumber;
-    type: "Platform" | "Asset";
+    type: AddressType;
     address: string;
+    networkId: string;
+}
+
+export enum AddressType {
+    Platform,
+    Asset
 }

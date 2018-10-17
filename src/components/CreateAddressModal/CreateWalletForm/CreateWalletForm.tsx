@@ -27,6 +27,7 @@ export default class CreateWalletForm extends React.Component<Props, State> {
                 <div className="form-group">
                     <Label for="wallet-name-input">Wallet name</Label>
                     <input
+                        autoComplete="off"
                         type="text"
                         className={`form-control`}
                         id="wallet-name-input"

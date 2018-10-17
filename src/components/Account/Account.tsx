@@ -1,6 +1,5 @@
 import * as React from "react";
 import { match } from "react-router";
-import { createWallet, saveWallet } from "../../model/wallet";
 
 interface Props {
     match: match<{ address: string }>;
@@ -28,14 +27,6 @@ export default class Account extends React.Component<any, any> {
                 params: { address }
             }
         } = this.props;
-        return (
-            <div>
-                Account {address} <button onClick={this.save}>save</button>
-            </div>
-        );
+        return <div>Account {address}</div>;
     }
-    private save = async () => {
-        await createWallet();
-        await saveWallet("codechain-key");
-    };
 }
