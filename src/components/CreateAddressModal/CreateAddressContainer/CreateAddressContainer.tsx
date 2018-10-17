@@ -1,12 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as _ from "lodash";
 import * as React from "react";
-import {
-    createKey,
-    createWallet,
-    saveWallet,
-    setWalletName
-} from "../../../model/wallet";
+import { createKey, saveWallet, setWalletName } from "../../../model/wallet";
 import "./CreateAddressContainer.css";
 import CreateAddressForm from "./CreateAddressForm/CreateAddressForm";
 import CreatedAddressItem from "./CreatedAddressItem/CreatedAddressItem";
@@ -162,7 +157,6 @@ export default class CreateAddressContainer extends React.Component<
         const { walletName } = this.props;
         const { addressList } = this.state;
 
-        await createWallet();
         await setWalletName(walletName);
         await Promise.all(
             _.map(addressList, async address => {

@@ -18,18 +18,18 @@ export async function clearWallet() {
 export async function saveWallet(name: string) {
     const text = await ccKey.save();
     const blob = new Blob([text], { type: "application/json;charset=utf-8" });
-    FileSaver.saveAs(blob, name);
+    FileSaver.saveAs(blob, `${name}.wallet`);
 }
 
 export async function setWalletName(name: string) {
     const meta = await ccKey.getMeta();
     let newMeta;
-    if (meta) {
-        newMeta = Object.assign(meta, { name });
-    } else {
+    try {
+        const parsedMeta = JSON.parse(meta);
+        newMeta = Object.assign(parsedMeta, { name });
+    } catch (e) {
         newMeta = { name };
     }
-    console.log(JSON.stringify(newMeta));
     await ccKey.setMeta(JSON.stringify(newMeta));
 }
 
@@ -51,9 +51,8 @@ export async function createKey(
     }
 }
 
-export async function loadWallet() {
-    // show selector
-    // load
+export async function loadWallet(walletText: string) {
+    await ccKey.load(walletText);
 }
 
 export async function isWalletExisted() {

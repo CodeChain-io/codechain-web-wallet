@@ -25,7 +25,7 @@ enum InputForm {
 }
 
 interface Props {
-    onClose: () => void;
+    onClose: (redirect: boolean) => void;
     isOpen: boolean;
 }
 
@@ -50,7 +50,7 @@ export default class CreateAddressModal extends React.Component<Props, State> {
             <div>
                 <Modal
                     isOpen={isOpen}
-                    onRequestClose={onClose}
+                    onRequestClose={_.partial(onClose, false)}
                     style={customStyles}
                     shouldCloseOnEsc={false}
                     shouldCloseOnOverlayClick={false}
@@ -60,13 +60,15 @@ export default class CreateAddressModal extends React.Component<Props, State> {
                         {currentInputForm === InputForm.CreateWallet && (
                             <CreateWalletForm
                                 onCancel={this.handleCancelButton}
-                                onSubmit={this.handleSubmitButtonOnCreatwWallet}
+                                onSubmit={this.handleSubmitButtonOnCreateWallet}
                             />
                         )}
                         {currentInputForm === InputForm.CreateAddress && (
                             <CreateAddressContainer
                                 onCancel={this.handleCancelButton}
-                                onSubmit={this.handleCancelButton}
+                                onSubmit={
+                                    this.handleSubmitButtonOnCreateAddress
+                                }
                                 walletName={walletName}
                             />
                         )}
@@ -82,13 +84,17 @@ export default class CreateAddressModal extends React.Component<Props, State> {
 
     private handleCancelButton = async () => {
         this.clearForm();
-        this.props.onClose();
+        this.props.onClose(false);
     };
 
-    private handleSubmitButtonOnCreatwWallet = (walletName: string) => {
+    private handleSubmitButtonOnCreateWallet = (walletName: string) => {
         this.setState({
             currentInputForm: InputForm.CreateAddress,
             walletName
         });
+    };
+
+    private handleSubmitButtonOnCreateAddress = () => {
+        this.props.onClose(true);
     };
 }

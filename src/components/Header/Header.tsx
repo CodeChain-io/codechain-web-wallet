@@ -11,6 +11,7 @@ import {
 } from "reactstrap";
 import { Dispatch } from "redux";
 import { Actions } from "../../actions";
+import { clearWallet } from "../../model/wallet";
 import { IRootState } from "../../reducers";
 import "./Header.css";
 import * as Logo from "./img/logo.png";
@@ -63,7 +64,8 @@ class Header extends React.Component<Props, any> {
             </div>
         );
     }
-    private handleLogout = () => {
+    private handleLogout = async () => {
+        await clearWallet();
         this.props.logout();
     };
 }

@@ -4,6 +4,7 @@ import { Redirect } from "react-router-dom";
 import { Container } from "reactstrap";
 import { Dispatch } from "redux";
 import { Actions } from "../../actions";
+import { loadWallet } from "../../model/wallet";
 import CreateAddressModal from "../CreateAddressModal/CreateAddressModal";
 import "./Login.css";
 
@@ -24,12 +25,15 @@ interface State {
 
 type Props = DispatchProps & OwnProps;
 class Login extends React.Component<Props, State> {
+    private fileSelector: React.RefObject<HTMLInputElement>;
+    private fileReader: FileReader;
     public constructor(props: Props) {
         super(props);
         this.state = {
             redirectToReferrer: false,
             isCreateAddressModalOpen: false
         };
+        this.fileSelector = React.createRef<HTMLInputElement>();
     }
     public render() {
         const { from } = this.props.location.state || {
@@ -54,6 +58,12 @@ class Login extends React.Component<Props, State> {
                         >
                             SELECT WALLET FILE
                         </button>
+                        <input
+                            type="file"
+                            className="file-selector"
+                            ref={this.fileSelector}
+                            onChange={this.handleFileSelect}
+                        />
                     </div>
                     <div>
                         <button
@@ -69,14 +79,34 @@ class Login extends React.Component<Props, State> {
         );
     }
     private onClickLogin = () => {
-        this.props.login();
-        this.setState({ redirectToReferrer: true });
+        this.fileSelector.current!.click();
+    };
+    private handleFileReader = async () => {
+        const content = this.fileReader.result as string;
+        try {
+            await loadWallet(content);
+            this.props.login();
+            this.setState({ redirectToReferrer: true });
+        } catch (e) {
+            alert("Invalid file");
+        }
+    };
+    private handleFileSelect = (event: any) => {
+        if (event.target.files === 0) {
+            return;
+        }
+        this.fileReader = new FileReader();
+        this.fileReader.onloadend = this.handleFileReader;
+        this.fileReader.readAsText(event.target.files[0]);
     };
     private onClickCreateWallet = () => {
         this.setState({ isCreateAddressModalOpen: true });
     };
-    private handleOnCloseCreateAddressModal = () => {
-        this.setState({ isCreateAddressModalOpen: false });
+    private handleOnCloseCreateAddressModal = (redirect: boolean) => {
+        this.setState({
+            isCreateAddressModalOpen: false,
+            redirectToReferrer: redirect
+        });
     };
 }
 const mapDispatchToProps = (dispatch: Dispatch) => ({

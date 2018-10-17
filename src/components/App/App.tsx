@@ -7,6 +7,7 @@ import {
 import * as React from "react";
 import * as ReactModal from "react-modal";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { createWallet } from "../../model/wallet";
 import Account from "../Account/Account";
 import AddressList from "../AddressList/AddressList";
 import AssetList from "../AssetList/AssetList";
@@ -25,6 +26,7 @@ class App extends React.Component {
         this.appRef = React.createRef();
     }
     public componentDidMount() {
+        this.initWallet();
         ReactModal.setAppElement(this.appRef.current);
     }
     public render() {
@@ -55,6 +57,10 @@ class App extends React.Component {
             </Router>
         );
     }
+
+    private initWallet = async () => {
+        await createWallet();
+    };
 }
 
 export default App;
