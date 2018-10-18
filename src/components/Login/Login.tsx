@@ -13,12 +13,6 @@ interface DispatchProps {
     login: () => void;
 }
 
-interface OwnProps {
-    location: {
-        state: any;
-    };
-}
-
 interface State {
     redirectToReferrer: boolean;
     pageState: PageState;
@@ -31,7 +25,7 @@ enum PageState {
     CreateAddress
 }
 
-type Props = DispatchProps & OwnProps;
+type Props = DispatchProps;
 class Login extends React.Component<Props, State> {
     private fileSelector: React.RefObject<HTMLInputElement>;
     private fileReader: FileReader;
@@ -45,12 +39,9 @@ class Login extends React.Component<Props, State> {
         this.fileSelector = React.createRef<HTMLInputElement>();
     }
     public render() {
-        const { from } = this.props.location.state || {
-            from: { pathname: "/" }
-        };
         const { redirectToReferrer, pageState, walletName } = this.state;
         if (redirectToReferrer) {
-            return <Redirect to={from} />;
+            return <Redirect to="/" />;
         }
         return (
             <Container className="Login">

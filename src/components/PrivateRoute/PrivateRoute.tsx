@@ -46,8 +46,7 @@ class PrivateRoute extends React.Component<any, State> {
                     ) : checkedSessionStorage ? (
                         <Redirect
                             to={{
-                                pathname: "/login",
-                                state: { from: props.location }
+                                pathname: "/login"
                             }}
                         />
                     ) : (
