@@ -1,6 +1,6 @@
 import { WalletAddress } from "./model/address";
 
-export type Action = Login & Logout & UpdateWalletAddresses;
+export type Action = Login & Logout & UpdateWalletAddresses & UpdateWalletName;
 
 export interface Login {
     type: "Login";
@@ -16,6 +16,10 @@ export interface UpdateWalletAddresses {
         platformAddresses: WalletAddress[];
         assetAddresses: WalletAddress[];
     };
+}
+export interface UpdateWalletName {
+    type: "UpdateWalletName";
+    data: string;
 }
 
 const login = (): Login => ({
@@ -37,8 +41,14 @@ const updateWalletAddresses = (
     }
 });
 
+const updateWalletName = (walletName: string): UpdateWalletName => ({
+    type: "UpdateWalletName",
+    data: walletName
+});
+
 export const Actions = {
     login,
     logout,
-    updateWalletAddresses
+    updateWalletAddresses,
+    updateWalletName
 };

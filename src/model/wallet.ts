@@ -113,3 +113,14 @@ export async function getAssetAddresses(): Promise<WalletAddress[]> {
         })
     );
 }
+
+export async function getWalletName(): Promise<string> {
+    const ccKey = await getCCKey();
+    const meta = await ccKey.getMeta();
+    try {
+        const parsedMeta = JSON.parse(meta);
+        return parsedMeta.name;
+    } catch (e) {
+        return "Unknown";
+    }
+}

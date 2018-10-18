@@ -9,3 +9,8 @@ export enum AddressType {
     Platform,
     Asset
 }
+
+export interface PlatformAccount {
+    balance: string;
+    nonce: string;
+}

@@ -47,7 +47,9 @@ export default class AssetList extends React.Component<Props, State> {
         if (!addressUTXOList) {
             return (
                 <div>
-                    <Container>Loading...</Container>
+                    <Container>
+                        <div className="mt-5">Loading...</div>
+                    </Container>
                 </div>
             );
         }

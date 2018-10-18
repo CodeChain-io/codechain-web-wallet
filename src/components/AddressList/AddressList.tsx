@@ -5,7 +5,11 @@ import { Col, Container, Row } from "reactstrap";
 import { Dispatch } from "redux";
 import { Actions } from "../../actions";
 import { WalletAddress } from "../../model/address";
-import { getAssetAddresses, getPlatformAddresses } from "../../model/wallet";
+import {
+    getAssetAddresses,
+    getPlatformAddresses,
+    getWalletName
+} from "../../model/wallet";
 import { IRootState } from "../../reducers";
 import AddressItem from "./AddressItem/AddressItem";
 import "./AddressList.css";
@@ -13,6 +17,7 @@ import "./AddressList.css";
 interface StateProps {
     platformAddresses: WalletAddress[];
     assetAddresses: WalletAddress[];
+    walletName: string | undefined;
 }
 
 interface DispatchProps {
@@ -20,6 +25,7 @@ interface DispatchProps {
         platformAddresses: WalletAddress[],
         assetAddresses: WalletAddress[]
     ) => void;
+    updateWalletName: (walletName: string) => void;
 }
 type Props = StateProps & DispatchProps;
 
@@ -27,15 +33,21 @@ class AddressList extends React.Component<Props, any> {
     public async componentDidMount() {
         const platformAddresses = await getPlatformAddresses();
         const assetAddresses = await getAssetAddresses();
+        const walletName = await getWalletName();
         this.props.updateWalletAddresses(platformAddresses, assetAddresses);
+        this.props.updateWalletName(walletName);
     }
     public render() {
-        const { platformAddresses, assetAddresses } = this.props;
+        const { platformAddresses, assetAddresses, walletName } = this.props;
         return (
             <div className="Address-list">
                 <Container>
+                    <div className="mt-5">
+                        <h4>{walletName}</h4>
+                    </div>
+                    <hr />
                     <div className="mt-3">
-                        <h4>Platform Addresses</h4>
+                        <h5>Platform Addresses</h5>
                         <Row>
                             {_.map(
                                 platformAddresses,
@@ -55,8 +67,9 @@ class AddressList extends React.Component<Props, any> {
                             </Col>
                         </Row>
                     </div>
+                    <hr />
                     <div className="mt-3">
-                        <h4>Asset Addresses</h4>
+                        <h5>Asset Addresses</h5>
                         <Row>
                             {_.map(
                                 assetAddresses,
@@ -83,7 +96,8 @@ class AddressList extends React.Component<Props, any> {
 }
 const mapStateToProps = (state: IRootState) => ({
     platformAddresses: state.platformAddresses,
-    assetAddresses: state.assetAddresses
+    assetAddresses: state.assetAddresses,
+    walletName: state.walletName
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     updateWalletAddresses: (
@@ -93,6 +107,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         dispatch(
             Actions.updateWalletAddresses(walletAddresses, assetAddresses)
         );
+    },
+    updateWalletName: (walletName: string) => {
+        dispatch(Actions.updateWalletName(walletName));
     }
 });
 export default connect(
