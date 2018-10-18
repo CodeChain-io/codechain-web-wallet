@@ -56,22 +56,26 @@ export default class AssetList extends React.Component<Props, State> {
         return (
             <div>
                 <Container>
-                    <Row className="mt-5">
-                        {addressUTXOList.length > 0 ? (
-                            _.map(addressUTXOList, addressUTXO => (
-                                <Col
-                                    xl={3}
-                                    lg={4}
-                                    sm={6}
-                                    key={addressUTXO.assetType}
-                                >
-                                    <AssetItem addressUTXO={addressUTXO} />
-                                </Col>
-                            ))
-                        ) : (
-                            <div>Empty</div>
-                        )}
-                    </Row>
+                    <div className="mt-5">
+                        <h4>My assets</h4>
+                        <hr />
+                        <Row>
+                            {addressUTXOList.length > 0 ? (
+                                _.map(addressUTXOList, addressUTXO => (
+                                    <Col
+                                        xl={3}
+                                        lg={4}
+                                        sm={6}
+                                        key={addressUTXO.assetType}
+                                    >
+                                        <AssetItem addressUTXO={addressUTXO} />
+                                    </Col>
+                                ))
+                            ) : (
+                                <div>Empty</div>
+                            )}
+                        </Row>
+                    </div>
                 </Container>
             </div>
         );

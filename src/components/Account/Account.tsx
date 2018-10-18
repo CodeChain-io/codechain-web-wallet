@@ -54,7 +54,8 @@ export default class Account extends React.Component<Props, State> {
             <div>
                 <Container>
                     <div className="mt-5">
-                        <h4>Balance</h4>
+                        <h4>My balance</h4>
+                        <hr />
                         <span className="mr-1">
                             {changeQuarkToCCC(account.balance)}
                         </span>
