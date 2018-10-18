@@ -5,19 +5,23 @@
 
   .login-container {
     position: absolute;
-    width: 300px;
+    width: 400px;
     top: 50%;
     left: 50%;
     right: auto;
     bottom: auto;
     transform: translate(-50%, -50%);
+    border: 1px solid black;
+    padding: 18px;
 
-    .btn {
-      width: 100%;
-    }
+    .button-container {
+      .btn {
+        width: 100%;
+      }
 
-    .file-selector {
-      display: none;
+      .file-selector {
+        display: none;
+      }
     }
   }
 }

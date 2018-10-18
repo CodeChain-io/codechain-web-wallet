@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Form, Label } from "reactstrap";
-import { AddressType } from "../../../../model/address";
+import { AddressType } from "../../../model/address";
 import "./CreateAddressForm.css";
 
 interface Props {

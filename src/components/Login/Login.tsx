@@ -5,7 +5,8 @@ import { Container } from "reactstrap";
 import { Dispatch } from "redux";
 import { Actions } from "../../actions";
 import { loadWallet } from "../../model/wallet";
-import CreateAddressModal from "../CreateAddressModal/CreateAddressModal";
+import CreateAddressContainer from "../CreateAddressContainer/CreateAddressContainer";
+import CreateWalletForm from "../CreateWalletForm/CreateWalletForm";
 import "./Login.css";
 
 interface DispatchProps {
@@ -20,7 +21,14 @@ interface OwnProps {
 
 interface State {
     redirectToReferrer: boolean;
-    isCreateAddressModalOpen: boolean;
+    pageState: PageState;
+    walletName?: string;
+}
+
+enum PageState {
+    Login,
+    CreateWallet,
+    CreateAddress
 }
 
 type Props = DispatchProps & OwnProps;
@@ -31,7 +39,8 @@ class Login extends React.Component<Props, State> {
         super(props);
         this.state = {
             redirectToReferrer: false,
-            isCreateAddressModalOpen: false
+            pageState: PageState.Login,
+            walletName: undefined
         };
         this.fileSelector = React.createRef<HTMLInputElement>();
     }
@@ -39,41 +48,58 @@ class Login extends React.Component<Props, State> {
         const { from } = this.props.location.state || {
             from: { pathname: "/" }
         };
-        const { redirectToReferrer, isCreateAddressModalOpen } = this.state;
+        const { redirectToReferrer, pageState, walletName } = this.state;
         if (redirectToReferrer) {
             return <Redirect to={from} />;
         }
         return (
             <Container className="Login">
-                <CreateAddressModal
-                    onClose={this.handleOnCloseCreateAddressModal}
-                    isOpen={isCreateAddressModalOpen}
-                />
                 <div className="login-container">
-                    <div>
-                        <button
-                            type="button"
-                            className="btn btn-primary mb-3"
-                            onClick={this.onClickLogin}
-                        >
-                            SELECT WALLET FILE
-                        </button>
-                        <input
-                            type="file"
-                            className="file-selector"
-                            ref={this.fileSelector}
-                            onChange={this.handleFileSelect}
-                        />
-                    </div>
-                    <div>
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={this.onClickCreateWallet}
-                        >
-                            CREATE NEW WALLET
-                        </button>
-                    </div>
+                    {pageState === PageState.Login && (
+                        <div className="button-container">
+                            <div>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary mb-3"
+                                    onClick={this.onClickLogin}
+                                >
+                                    SELECT WALLET FILE
+                                </button>
+                                <input
+                                    type="file"
+                                    className="file-selector"
+                                    ref={this.fileSelector}
+                                    onChange={this.handleFileSelect}
+                                />
+                            </div>
+                            <div>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={this.onClickCreateWallet}
+                                >
+                                    CREATE NEW WALLET
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    {pageState === PageState.CreateWallet && (
+                        <div>
+                            <CreateWalletForm
+                                onSubmit={this.handleSubmitOnCreateWallet}
+                                onCancel={this.handleCancelOnCreateWallet}
+                            />
+                        </div>
+                    )}
+                    {pageState === PageState.CreateAddress && (
+                        <div>
+                            <CreateAddressContainer
+                                onCancel={this.handleCancelOnCreateAddress}
+                                onSubmit={this.handleSubmitOnCreateAddress}
+                                walletName={walletName!}
+                            />
+                        </div>
+                    )}
                 </div>
             </Container>
         );
@@ -100,12 +126,30 @@ class Login extends React.Component<Props, State> {
         this.fileReader.readAsText(event.target.files[0]);
     };
     private onClickCreateWallet = () => {
-        this.setState({ isCreateAddressModalOpen: true });
-    };
-    private handleOnCloseCreateAddressModal = (redirect: boolean) => {
         this.setState({
-            isCreateAddressModalOpen: false,
-            redirectToReferrer: redirect
+            pageState: PageState.CreateWallet
+        });
+    };
+    private handleCancelOnCreateWallet = () => {
+        this.setState({
+            pageState: PageState.Login,
+            walletName: undefined
+        });
+    };
+    private handleSubmitOnCreateWallet = (walletName: string) => {
+        this.setState({
+            pageState: PageState.CreateAddress,
+            walletName
+        });
+    };
+    private handleSubmitOnCreateAddress = () => {
+        this.props.login();
+        this.setState({ redirectToReferrer: true });
+    };
+    private handleCancelOnCreateAddress = () => {
+        this.setState({
+            pageState: PageState.Login,
+            walletName: undefined
         });
     };
 }

@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
-import { AddressType } from "../../../../model/address";
-import { getNetworkNameById } from "../../../../utils/network";
+import { AddressType } from "../../../model/address";
+import { getNetworkNameById } from "../../../utils/network";
 import "./CreatedAddressItem.css";
 
 interface Props {

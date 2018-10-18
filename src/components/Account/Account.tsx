@@ -1,5 +1,6 @@
 import * as React from "react";
 import { match } from "react-router";
+import { Container } from "reactstrap";
 
 interface Props {
     match: match<{ address: string }>;
@@ -22,11 +23,12 @@ export default class Account extends React.Component<any, any> {
         }
     }
     public render() {
-        const {
-            match: {
-                params: { address }
-            }
-        } = this.props;
-        return <div>Account {address}</div>;
+        return (
+            <div>
+                <Container>
+                    <div className="mt-5">CCC</div>
+                </Container>
+            </div>
+        );
     }
 }

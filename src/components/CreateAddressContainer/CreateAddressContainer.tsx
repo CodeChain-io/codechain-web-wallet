@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as _ from "lodash";
 import * as React from "react";
-import { AddressType } from "../../../model/address";
-import { createKey, saveWallet, setWalletName } from "../../../model/wallet";
+import { AddressType } from "../../model/address";
+import { createKey, saveWallet, setWalletName } from "../../model/wallet";
 import "./CreateAddressContainer.css";
 import CreateAddressForm from "./CreateAddressForm/CreateAddressForm";
 import CreatedAddressItem from "./CreatedAddressItem/CreatedAddressItem";

@@ -43,11 +43,6 @@ export default class AssetList extends React.Component<Props, State> {
     }
 
     public render() {
-        const {
-            match: {
-                params: { address }
-            }
-        } = this.props;
         const { addressUTXOList } = this.state;
         if (!addressUTXOList) {
             return (
@@ -59,18 +54,21 @@ export default class AssetList extends React.Component<Props, State> {
         return (
             <div>
                 <Container>
-                    <h4>{address}</h4>
-                    <Row>
-                        {_.map(addressUTXOList, addressUTXO => (
-                            <Col
-                                xl={3}
-                                lg={4}
-                                sm={6}
-                                key={addressUTXO.assetType}
-                            >
-                                <AssetItem addressUTXO={addressUTXO} />
-                            </Col>
-                        ))}
+                    <Row className="mt-5">
+                        {addressUTXOList.length > 0 ? (
+                            _.map(addressUTXOList, addressUTXO => (
+                                <Col
+                                    xl={3}
+                                    lg={4}
+                                    sm={6}
+                                    key={addressUTXO.assetType}
+                                >
+                                    <AssetItem addressUTXO={addressUTXO} />
+                                </Col>
+                            ))
+                        ) : (
+                            <div>Empty</div>
+                        )}
                     </Row>
                 </Container>
             </div>
