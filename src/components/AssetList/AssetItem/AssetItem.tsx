@@ -2,65 +2,100 @@ import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
 import { Type } from "codechain-indexer-types/lib/utils";
 import { H256 } from "codechain-sdk/lib/core/classes";
 import * as React from "react";
+import { connect } from "react-redux";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { Dispatch } from "redux";
+import { Actions } from "../../../actions";
 import { AddressUTXO } from "../../../model/asset";
 import { getAssetByAssetType } from "../../../networks/Api";
+import { IRootState } from "../../../reducers";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
+import { getNetworkIdByAddress } from "../../../utils/network";
 import "./AssetItem.css";
 
-interface Props {
+interface OwnProps {
     addressUTXO: AddressUTXO;
+    networkId: string;
+    address: string;
 }
 
-interface State {
+interface StateProps {
     assetScheme?: AssetSchemeDoc;
 }
 
-class AssetItem extends React.Component<Props, State> {
+interface DispatchProps {
+    cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => void;
+}
+
+type Props = RouteComponentProps & OwnProps & DispatchProps & StateProps;
+
+class AssetItem extends React.Component<Props, any> {
     public constructor(props: Props) {
         super(props);
-        this.state = {
-            assetScheme: undefined
-        };
     }
     public async componentDidMount() {
-        const { addressUTXO } = this.props;
-        try {
-            const assetScheme = await getAssetByAssetType(
-                new H256(addressUTXO.assetType)
-            );
-            this.setState({ assetScheme });
-        } catch (e) {
-            console.log(e);
+        const {
+            addressUTXO,
+            networkId,
+            cacheAssetScheme,
+            assetScheme
+        } = this.props;
+        if (!assetScheme) {
+            try {
+                const responseAssetScheme = await getAssetByAssetType(
+                    addressUTXO.assetType,
+                    networkId
+                );
+                cacheAssetScheme(addressUTXO.assetType, responseAssetScheme);
+            } catch (e) {
+                console.log(e);
+            }
         }
     }
     public render() {
-        const { addressUTXO } = this.props;
-        const { assetScheme } = this.state;
+        const { addressUTXO, assetScheme, address } = this.props;
         if (!assetScheme) {
             return <div>Loading...</div>;
         }
         const metadata = Type.getMetadata(assetScheme.metadata);
         return (
-            <div className="Asset-item d-flex">
-                <div className="image-container pt-1 pb-1">
+            <div onClick={this.handleClick} className="Asset-item d-flex mb-3">
+                <div className="image-container">
                     <ImageLoader
-                        data={addressUTXO.assetType}
+                        data={addressUTXO.assetType.value}
                         size={65}
                         isAssetImage={true}
+                        networkId={getNetworkIdByAddress(address)}
                     />
                 </div>
                 <div className="name-container d-flex align-items-center">
-                    <div className="pl-2 pr-2">
+                    <div className="pl-3">
                         <h6 className="mb-0">{metadata.name}</h6>
-                        <p className="mb-0">{addressUTXO.totalAssetQuantity}</p>
+                        <p className="mb-0">
+                            x {addressUTXO.totalAssetQuantity}
+                        </p>
                     </div>
-                </div>
-                <div className="btn-container d-flex align-items-center">
-                    Send
                 </div>
             </div>
         );
     }
-}
 
-export default AssetItem;
+    private handleClick = () => {
+        const { addressUTXO, address } = this.props;
+        this.props.history.push(`/${address}/${addressUTXO.assetType.value}`);
+    };
+}
+const mapStateToProps = (state: IRootState, ownProps: OwnProps) => ({
+    assetScheme: state.assetScheme[ownProps.addressUTXO.assetType.value]
+});
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => {
+        dispatch(Actions.cacheAssetScheme(assetType, assetScheme));
+    }
+});
+export default withRouter(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )(AssetItem)
+);

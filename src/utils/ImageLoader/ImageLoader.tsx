@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getApiHost } from "../../networks/Api";
 const Identicon = require("identicon.js");
 const sha256 = require("js-sha256");
 
@@ -7,6 +8,7 @@ interface Props {
     className?: string;
     size: number;
     isAssetImage: boolean;
+    networkId?: string;
 }
 interface State {
     requestUrl?: string;
@@ -14,12 +16,12 @@ interface State {
 
 export class ImageLoader extends React.Component<Props, State> {
     // FIXME: Change the default host
-    private host = process.env.APIHost || "https://husky.codechain.io/explorer";
     constructor(prop: Props) {
         super(prop);
         let requestUrl;
         if (prop.isAssetImage) {
-            requestUrl = `${this.host}/api/asset/image/${prop.data}`;
+            const host = getApiHost(prop.networkId || "tc");
+            requestUrl = `${host}/api/asset/image/${prop.data}`;
         } else {
             requestUrl = this.getDefaultImage();
         }

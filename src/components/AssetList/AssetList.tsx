@@ -4,6 +4,7 @@ import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
 import { AddressUTXO } from "../../model/asset";
 import { getUTXOList } from "../../networks/Api";
+import { getNetworkIdByAddress } from "../../utils/network";
 import AssetItem from "./AssetItem/AssetItem";
 
 interface Props {
@@ -43,6 +44,11 @@ export default class AssetList extends React.Component<Props, State> {
     }
 
     public render() {
+        const {
+            match: {
+                params: { address }
+            }
+        } = this.props;
         const { addressUTXOList } = this.state;
         if (!addressUTXOList) {
             return (
@@ -66,9 +72,15 @@ export default class AssetList extends React.Component<Props, State> {
                                         xl={3}
                                         lg={4}
                                         sm={6}
-                                        key={addressUTXO.assetType}
+                                        key={addressUTXO.assetType.value}
                                     >
-                                        <AssetItem addressUTXO={addressUTXO} />
+                                        <AssetItem
+                                            addressUTXO={addressUTXO}
+                                            networkId={getNetworkIdByAddress(
+                                                address
+                                            )}
+                                            address={address}
+                                        />
                                     </Col>
                                 ))
                             ) : (
@@ -88,7 +100,10 @@ export default class AssetList extends React.Component<Props, State> {
             }
         } = this.props;
         try {
-            const UTXO = await getUTXOList(address);
+            const UTXO = await getUTXOList(
+                address,
+                getNetworkIdByAddress(address)
+            );
             this.setState({ addressUTXOList: UTXO });
         } catch (e) {
             console.log(e);

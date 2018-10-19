@@ -9,11 +9,13 @@ import * as ReactModal from "react-modal";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Account from "../Account/Account";
 import AddressList from "../AddressList/AddressList";
+import AssetDetail from "../AssetDetail/AssetDetail";
 import AssetList from "../AssetList/AssetList";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import SendAsset from "../SendAsset/SendAsset";
 import "./App.css";
 
 library.add(faPlus, faTrashAlt, faFileDownload);
@@ -47,6 +49,15 @@ class App extends React.Component {
                             <PrivateRoute
                                 path="/:address/account"
                                 component={Account}
+                            />
+                            <PrivateRoute
+                                exact={true}
+                                path="/:address/:assetType"
+                                component={AssetDetail}
+                            />
+                            <PrivateRoute
+                                path="/:address/:assetType/send"
+                                component={SendAsset}
                             />
                             <Route component={NotFound} />
                         </Switch>

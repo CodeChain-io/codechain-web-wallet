@@ -3,6 +3,7 @@ import { match } from "react-router";
 import { Container } from "reactstrap";
 import { PlatformAccount } from "../../model/address";
 import { getPlatformAccount } from "../../networks/Api";
+import { getNetworkIdByAddress } from "../../utils/network";
 import { changeQuarkToCCC } from "../../utils/unit";
 
 interface Props {
@@ -73,7 +74,10 @@ export default class Account extends React.Component<Props, State> {
             }
         } = this.props;
         try {
-            const account = await getPlatformAccount(address);
+            const account = await getPlatformAccount(
+                address,
+                getNetworkIdByAddress(address)
+            );
             console.log(account);
             this.setState({ account });
         } catch (e) {

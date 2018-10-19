@@ -1,5 +1,7 @@
+import { H256 } from "codechain-sdk/lib/core/classes";
+
 export interface AddressUTXO {
-    assetType: string;
+    assetType: H256;
     totalAssetQuantity: number;
     utxoQuantity: number;
 }

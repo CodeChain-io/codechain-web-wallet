@@ -1,6 +1,12 @@
+import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
+import { H256 } from "codechain-sdk/lib/core/classes";
 import { WalletAddress } from "./model/address";
 
-export type Action = Login & Logout & UpdateWalletAddresses & UpdateWalletName;
+export type Action = Login &
+    Logout &
+    UpdateWalletAddresses &
+    UpdateWalletName &
+    CacheAssetScheme;
 
 export interface Login {
     type: "Login";
@@ -17,9 +23,18 @@ export interface UpdateWalletAddresses {
         assetAddresses: WalletAddress[];
     };
 }
+
 export interface UpdateWalletName {
     type: "UpdateWalletName";
     data: string;
+}
+
+export interface CacheAssetScheme {
+    type: "CacheAssetScheme";
+    data: {
+        assetType: string;
+        assetScheme: AssetSchemeDoc;
+    };
 }
 
 const login = (): Login => ({
@@ -46,9 +61,21 @@ const updateWalletName = (walletName: string): UpdateWalletName => ({
     data: walletName
 });
 
+const cacheAssetScheme = (
+    assetType: H256,
+    assetScheme: AssetSchemeDoc
+): CacheAssetScheme => ({
+    type: "CacheAssetScheme",
+    data: {
+        assetType: assetType.value,
+        assetScheme
+    }
+});
+
 export const Actions = {
     login,
     logout,
     updateWalletAddresses,
-    updateWalletName
+    updateWalletName,
+    cacheAssetScheme
 };

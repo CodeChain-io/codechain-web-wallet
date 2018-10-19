@@ -11,3 +11,7 @@ export function getNetworkNameById(networkId: string) {
     }
     throw new Error("Unknown networkId");
 }
+
+export function getNetworkIdByAddress(address: string) {
+    return address.slice(0, 2);
+}

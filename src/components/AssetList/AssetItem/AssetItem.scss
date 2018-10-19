@@ -1,6 +1,8 @@
 .Asset-item {
-  border-bottom: 1px solid black;
+  border: 1px solid black;
   width: 100%;
+  padding: 8px;
+  cursor: pointer;
 
   .image-container {
     .asset-image {
