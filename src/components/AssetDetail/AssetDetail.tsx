@@ -59,7 +59,13 @@ class AssetDetail extends React.Component<Props, any> {
             }
         } = this.props;
         if (!assetScheme) {
-            return <div>Loading...</div>;
+            return (
+                <div>
+                    <Container>
+                        <div className="mt-5">Loading...</div>
+                    </Container>
+                </div>
+            );
         }
 
         const metadata = Type.getMetadata(assetScheme.metadata);

@@ -2,8 +2,8 @@ import * as _ from "lodash";
 import * as React from "react";
 import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
-import { AddressUTXO } from "../../model/asset";
-import { getUTXOList } from "../../networks/Api";
+import { AggsUTXO } from "../../model/asset";
+import { getAggsUTXOList } from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
 import AssetItem from "./AssetItem/AssetItem";
 
@@ -12,7 +12,7 @@ interface Props {
 }
 
 interface State {
-    addressUTXOList?: AddressUTXO[];
+    addressUTXOList?: AggsUTXO[];
 }
 
 export default class AssetList extends React.Component<Props, State> {
@@ -100,7 +100,7 @@ export default class AssetList extends React.Component<Props, State> {
             }
         } = this.props;
         try {
-            const UTXO = await getUTXOList(
+            const UTXO = await getAggsUTXOList(
                 address,
                 getNetworkIdByAddress(address)
             );

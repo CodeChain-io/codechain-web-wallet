@@ -3,7 +3,7 @@ import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
 import { H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-import { AddressUTXO } from "../model/asset";
+import { AggsUTXO } from "../model/asset";
 
 const server = {
     host: {
@@ -26,10 +26,10 @@ export function getApiHost(networkId: string) {
     return server.host[networkId];
 }
 
-export async function getUTXOList(
+export async function getAggsUTXOList(
     address: string,
     networkId: string
-): Promise<AddressUTXO[]> {
+): Promise<AggsUTXO[]> {
     const apiHost = getApiHost(networkId);
     const response = await getRequest<
         {
@@ -37,7 +37,7 @@ export async function getUTXOList(
             totalAssetQuantity: number;
             utxoQuantity: number;
         }[]
-    >(`${apiHost}/api/utxo/${address}`);
+    >(`${apiHost}/api/aggs-utxo/${address}`);
     return _.map(response, r => ({
         assetType: new H256(r.assetType),
         totalAssetQuantity: r.totalAssetQuantity,
@@ -56,5 +56,16 @@ export async function getPlatformAccount(address: string, networkId: string) {
     const apiHost = getApiHost(networkId);
     return await getRequest<PlatformAccount>(
         `${apiHost}/api/addr-platform-account/${address}`
+    );
+}
+
+export async function getAggsUTXOByAssetType(
+    address: string,
+    assetType: H256,
+    networkId: string
+) {
+    const apiHost = getApiHost(networkId);
+    return await getRequest<AggsUTXO | undefined>(
+        `${apiHost}/api/aggs-utxo/${address}/${assetType.value}`
     );
 }

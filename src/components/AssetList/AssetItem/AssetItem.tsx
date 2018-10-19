@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Dispatch } from "redux";
 import { Actions } from "../../../actions";
-import { AddressUTXO } from "../../../model/asset";
+import { AggsUTXO } from "../../../model/asset";
 import { getAssetByAssetType } from "../../../networks/Api";
 import { IRootState } from "../../../reducers";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
@@ -14,7 +14,7 @@ import { getNetworkIdByAddress } from "../../../utils/network";
 import "./AssetItem.css";
 
 interface OwnProps {
-    addressUTXO: AddressUTXO;
+    addressUTXO: AggsUTXO;
     networkId: string;
     address: string;
 }
