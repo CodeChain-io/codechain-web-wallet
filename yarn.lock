@@ -1697,9 +1697,9 @@ codechain-keystore@^0.4.0:
     lowdb "^1.0.0"
     uuid "^3.3.2"
 
-codechain-keystore@^0.5.3:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/codechain-keystore/-/codechain-keystore-0.5.3.tgz#d9c9d2d51144b82a2416e13483358277228d13d9"
+codechain-keystore@^0.5.4:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/codechain-keystore/-/codechain-keystore-0.5.4.tgz#46bf95509d19ed19242d30067b80d3085547160f"
   dependencies:
     bitcore-lib "^0.15.0"
     codechain-primitives "^0.3.0"
@@ -1723,7 +1723,7 @@ codechain-primitives@^0.3.0:
     ripemd160 "^2.0.2"
     rlp "^2.1.0"
 
-codechain-primitives@^0.3.1:
+codechain-primitives@^0.3.1, codechain-primitives@^0.3.3:
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/codechain-primitives/-/codechain-primitives-0.3.4.tgz#9ba6dfa53bcf6a083430eadaaba5e2130daea66e"
   dependencies:
@@ -1745,6 +1745,19 @@ codechain-sdk@^0.4.0-rc3:
     buffer "5.1.0"
     codechain-keystore "^0.4.0"
     codechain-primitives "^0.3.1"
+    jayson "^2.0.6"
+    lodash "^4.17.10"
+    node-fetch "^2.1.2"
+    request-promise "^4.2.2"
+    rlp "^2.0.0"
+
+codechain-sdk@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/codechain-sdk/-/codechain-sdk-0.5.0.tgz#32aeba4e39be55d764b5f3bdd8e54b511bc0353e"
+  dependencies:
+    buffer "5.1.0"
+    codechain-keystore "^0.5.4"
+    codechain-primitives "^0.3.3"
     jayson "^2.0.6"
     lodash "^4.17.10"
     node-fetch "^2.1.2"

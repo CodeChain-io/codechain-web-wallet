@@ -13,7 +13,7 @@ if (process.env.CI) {
 }
 
 let globalCCKey: CCKey;
-async function getCCKey() {
+export async function getCCKey() {
     if (!globalCCKey) {
         globalCCKey = await CCKey.create({ dbType });
     }

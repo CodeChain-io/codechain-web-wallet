@@ -1,21 +1,32 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
 import { Type } from "codechain-indexer-types/lib/utils";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import { SDK } from "codechain-sdk";
+import {
+    Asset,
+    AssetTransferAddress,
+    AssetTransferOutput,
+    H256
+} from "codechain-sdk/lib/core/classes";
+import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
+import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { match } from "react-router";
-import { Container, Label } from "reactstrap";
+import { Container } from "reactstrap";
 import { Dispatch } from "redux";
 import { Actions } from "../../actions";
-import { AggsUTXO } from "../../model/asset";
+import { AggsUTXO, UTXO } from "../../model/asset";
+import { getCCKey } from "../../model/wallet";
 import {
     getAggsUTXOByAssetType,
-    getAssetByAssetType
+    getAssetByAssetType,
+    getUTXOListByAssetType,
+    sendTxToGateway
 } from "../../networks/Api";
 import { IRootState } from "../../reducers";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import { getNetworkIdByAddress } from "../../utils/network";
+import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
 
 interface OwnProps {
@@ -32,7 +43,8 @@ interface DispatchProps {
 
 interface State {
     aggsUTXO?: AggsUTXO;
-    hasAggsUTXORequested: boolean;
+    UTXOList?: UTXO[];
+    hasUTXOListRequested: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -42,7 +54,8 @@ class SendAsset extends React.Component<Props, State> {
         super(props);
         this.state = {
             aggsUTXO: undefined,
-            hasAggsUTXORequested: false
+            UTXOList: undefined,
+            hasUTXOListRequested: false
         };
     }
 
@@ -58,33 +71,17 @@ class SendAsset extends React.Component<Props, State> {
             }
         } = props;
         if (nextAssetType !== assetType) {
-            this.setState({ hasAggsUTXORequested: false, aggsUTXO: undefined });
-            this.getAggsUTXO();
+            this.setState({
+                UTXOList: [],
+                aggsUTXO: undefined,
+                hasUTXOListRequested: false
+            });
+            this.init();
         }
     }
 
     public async componentDidMount() {
-        const {
-            match: {
-                params: { address, assetType }
-            },
-            assetScheme,
-            cacheAssetScheme
-        } = this.props;
-        if (!assetScheme) {
-            const networkId = getNetworkIdByAddress(address);
-            try {
-                const responseAssetScheme = await getAssetByAssetType(
-                    new H256(assetType),
-                    networkId
-                );
-                cacheAssetScheme(new H256(assetType), responseAssetScheme);
-            } catch (e) {
-                console.log(e);
-            }
-        }
-
-        this.getAggsUTXO();
+        this.init();
     }
 
     public render() {
@@ -94,21 +91,12 @@ class SendAsset extends React.Component<Props, State> {
                 params: { assetType, address }
             }
         } = this.props;
-        const { aggsUTXO, hasAggsUTXORequested } = this.state;
-        if (!assetScheme || !hasAggsUTXORequested) {
+        const { aggsUTXO, hasUTXOListRequested } = this.state;
+        if (!assetScheme || !hasUTXOListRequested || !aggsUTXO) {
             return (
                 <div>
                     <Container>
                         <div className="mt-5">Loading...</div>
-                    </Container>
-                </div>
-            );
-        }
-        if (!aggsUTXO) {
-            return (
-                <div>
-                    <Container>
-                        <div className="mt-5">ERROR! Invalid assetType</div>
                     </Container>
                 </div>
             );
@@ -138,40 +126,152 @@ class SendAsset extends React.Component<Props, State> {
                         </div>
                     </div>
                     <hr />
-                    <div className="receiver-container">
-                        <form>
-                            <div className="form-group">
-                                <Label for="asset-address">Address</Label>
-                                <input
-                                    type="email"
-                                    className="form-control"
-                                    id="asset-address"
-                                    placeholder="Enter Address"
-                                />
-                                <Label for="quantities">Quantities</Label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    id="quantities"
-                                    placeholder="Enter quantities"
-                                />
-                            </div>
-                        </form>
-                    </div>
-                    <div className="mt-3">
-                        <div className="add-btn d-flex align-items-center justify-content-center">
-                            <FontAwesomeIcon icon="plus" />
-                        </div>
-                    </div>
-                    <div className="mt-3">
-                        <button type="button" className="btn btn-primary">
-                            Send
-                        </button>
-                    </div>
+                    <ReceiverContainer
+                        onSubmit={this.handleSubmit}
+                        totalQuantities={aggsUTXO.totalAssetQuantity}
+                    />
                 </Container>
             </div>
         );
     }
+
+    private init = () => {
+        this.getAssetScheme();
+        this.getAggsUTXO();
+        this.getUTXOList();
+    };
+
+    private handleSubmit = async (
+        receivers: { receiver: string; quantities: number }[],
+        passphrase: string
+    ) => {
+        const { UTXOList } = this.state;
+        const {
+            match: {
+                params: { assetType, address }
+            }
+        } = this.props;
+        const sumOfSendingAsset = _.sumBy(
+            receivers,
+            receiver => receiver.quantities
+        );
+
+        const inputUTXO = [];
+        let currentSum = 0;
+        // FIXME: Current UTXO List are containing only recent 25 temporary.
+        // Use the custom pagination options to get all of the utxo.
+        for (const utxo of UTXOList!) {
+            inputUTXO.push(utxo);
+            currentSum += utxo.asset.amount;
+            if (currentSum > sumOfSendingAsset) {
+                break;
+            }
+        }
+
+        const networkId = getNetworkIdByAddress(address);
+        const sdk = new SDK({
+            server: "http://52.79.108.1:8080",
+            networkId
+        });
+        const ccKey = await getCCKey();
+        const keyStore = new LocalKeyStore(ccKey);
+
+        const inputAssets = _.map(inputUTXO, utxo => {
+            return Asset.fromJSON({
+                asset_type: utxo.asset.assetType,
+                lock_script_hash: utxo.asset.lockScriptHash,
+                parameters: utxo.asset.parameters,
+                amount: utxo.asset.amount,
+                transactionHash: utxo.asset.transactionHash,
+                transactionOutputIndex: utxo.asset.transactionOutputIndex
+            }).createTransferInput();
+        });
+        const outputData = _.map(receivers, receiver => {
+            return {
+                recipient: receiver.receiver,
+                amount: receiver.quantities,
+                assetType
+            };
+        });
+        outputData.push({
+            recipient: address,
+            amount: currentSum - sumOfSendingAsset,
+            assetType
+        });
+        const outputs = _.map(
+            outputData,
+            o =>
+                new AssetTransferOutput({
+                    recipient: AssetTransferAddress.fromString(o.recipient),
+                    amount: o.amount,
+                    assetType: new H256(o.assetType)
+                })
+        );
+        const transferTx = sdk.core.createAssetTransferTransaction({
+            inputs: inputAssets,
+            outputs
+        });
+        try {
+            await Promise.all(
+                _.map(inputAssets, (_A, index) => {
+                    return sdk.key.signTransactionInput(transferTx, index, {
+                        keyStore,
+                        passphrase
+                    });
+                })
+            );
+            await sendTxToGateway(transferTx, networkId);
+            alert("success!");
+        } catch (e) {
+            if (e.message === "DecryptionFailed") {
+                alert("Invalid password");
+            }
+            console.log(e);
+        }
+    };
+
+    private getAssetScheme = async () => {
+        const {
+            match: {
+                params: { address, assetType }
+            },
+            assetScheme,
+            cacheAssetScheme
+        } = this.props;
+        if (!assetScheme) {
+            const networkId = getNetworkIdByAddress(address);
+            try {
+                const responseAssetScheme = await getAssetByAssetType(
+                    new H256(assetType),
+                    networkId
+                );
+                cacheAssetScheme(new H256(assetType), responseAssetScheme);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    };
+
+    private getUTXOList = async () => {
+        const {
+            match: {
+                params: { address, assetType }
+            }
+        } = this.props;
+        try {
+            const UTXOListResponse = await getUTXOListByAssetType(
+                address,
+                new H256(assetType),
+                getNetworkIdByAddress(address)
+            );
+            this.setState({
+                UTXOList: UTXOListResponse,
+                hasUTXOListRequested: true
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     private getAggsUTXO = async () => {
         const {
@@ -180,12 +280,12 @@ class SendAsset extends React.Component<Props, State> {
             }
         } = this.props;
         try {
-            const UTXO = await getAggsUTXOByAssetType(
+            const aggsUTXO = await getAggsUTXOByAssetType(
                 address,
                 new H256(assetType),
                 getNetworkIdByAddress(address)
             );
-            this.setState({ aggsUTXO: UTXO, hasAggsUTXORequested: true });
+            this.setState({ aggsUTXO });
         } catch (e) {
             console.log(e);
         }

@@ -160,7 +160,6 @@ export default class CreateAddressContainer extends React.Component<
     private handleSubmit = async () => {
         const { walletName } = this.props;
         const { addressList } = this.state;
-        console.log(addressList);
         await setWalletName(walletName);
         await Promise.all(
             _.map(addressList, async address => {

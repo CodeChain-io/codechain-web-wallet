@@ -1,9 +1,9 @@
 import axios from "axios";
 import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-import { AggsUTXO } from "../model/asset";
+import { AggsUTXO, UTXO } from "../model/asset";
 
 const server = {
     host: {
@@ -11,6 +11,12 @@ const server = {
         tc: "https://husky.codechain.io/explorer",
         sc: "https://saluki.codechain.io/explorer",
         wc: "https://corgi.codechain.io/explorer"
+    },
+    gateway: {
+        cc: "https://husky.codechain.io/gateway",
+        tc: "https://husky.codechain.io/gateway",
+        sc: "https://saluki.codechain.io/gateway",
+        wc: "https://corgi.codechain.io/gateway"
     }
 };
 
@@ -22,8 +28,21 @@ async function getRequest<T>(url: string) {
     throw new Error(response.statusText);
 }
 
+async function postRequest<T>(url: string, body: any) {
+    const response = await axios.post<T>(url, body);
+    if (response.status >= 200 && response.status < 300) {
+        return response.data;
+    }
+    throw new Error(response.statusText);
+}
+
 export function getApiHost(networkId: string) {
     return server.host[networkId];
+}
+
+export function getGatewayHost(networkId: string) {
+    // return server.gateway[networkId];
+    return "http://localhost:9000";
 }
 
 export async function getAggsUTXOList(
@@ -31,6 +50,8 @@ export async function getAggsUTXOList(
     networkId: string
 ): Promise<AggsUTXO[]> {
     const apiHost = getApiHost(networkId);
+
+    // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
     const response = await getRequest<
         {
             assetType: string;
@@ -68,4 +89,28 @@ export async function getAggsUTXOByAssetType(
     return await getRequest<AggsUTXO | undefined>(
         `${apiHost}/api/aggs-utxo/${address}/${assetType.value}`
     );
+}
+
+export async function getUTXOListByAssetType(
+    address: string,
+    assetType: H256,
+    networkId: string
+) {
+    const apiHost = getApiHost(networkId);
+
+    // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
+    return await getRequest<UTXO[]>(
+        `${apiHost}/api/utxo/${address}/${assetType.value}`
+    );
+}
+
+export async function sendTxToGateway(
+    tx: AssetTransferTransaction,
+    networkId: string
+) {
+    const gatewayHost = getGatewayHost(networkId);
+
+    return await postRequest<void>(`${gatewayHost}/send_asset`, {
+        tx
+    });
 }

@@ -78,7 +78,6 @@ export default class Account extends React.Component<Props, State> {
                 address,
                 getNetworkIdByAddress(address)
             );
-            console.log(account);
             this.setState({ account });
         } catch (e) {
             console.log(e);
