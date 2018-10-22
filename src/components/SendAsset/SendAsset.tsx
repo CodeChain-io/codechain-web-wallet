@@ -5,7 +5,7 @@ import { H256 } from "codechain-sdk/lib/core/classes";
 import * as React from "react";
 import { connect } from "react-redux";
 import { match } from "react-router";
-import { Container } from "reactstrap";
+import { Container, Label } from "reactstrap";
 import { Dispatch } from "redux";
 import { Actions } from "../../actions";
 import { AggsUTXO } from "../../model/asset";
@@ -138,10 +138,35 @@ class SendAsset extends React.Component<Props, State> {
                         </div>
                     </div>
                     <hr />
-                    <div>
+                    <div className="receiver-container">
+                        <form>
+                            <div className="form-group">
+                                <Label for="asset-address">Address</Label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    id="asset-address"
+                                    placeholder="Enter Address"
+                                />
+                                <Label for="quantities">Quantities</Label>
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    id="quantities"
+                                    placeholder="Enter quantities"
+                                />
+                            </div>
+                        </form>
+                    </div>
+                    <div className="mt-3">
                         <div className="add-btn d-flex align-items-center justify-content-center">
                             <FontAwesomeIcon icon="plus" />
                         </div>
+                    </div>
+                    <div className="mt-3">
+                        <button type="button" className="btn btn-primary">
+                            Send
+                        </button>
                     </div>
                 </Container>
             </div>
