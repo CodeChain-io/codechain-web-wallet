@@ -43,6 +43,7 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                                 value={addressInput}
                                 onChange={this.handleChangeAddressInput}
                                 required={true}
+                                autoComplete="off"
                             />
                         </div>
                         <div className="form-group">

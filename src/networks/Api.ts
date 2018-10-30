@@ -1,5 +1,9 @@
 import axios from "axios";
-import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
+import {
+    AssetSchemeDoc,
+    PendingParcelDoc,
+    PendingTransactionDoc
+} from "codechain-indexer-types/lib/types";
 import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
@@ -47,6 +51,7 @@ export function getGatewayHost(networkId: string) {
 
 export async function getAggsUTXOList(
     address: string,
+    isConfirmed: boolean,
     networkId: string
 ): Promise<AggsUTXO[]> {
     const apiHost = getApiHost(networkId);
@@ -58,7 +63,11 @@ export async function getAggsUTXOList(
             totalAssetQuantity: number;
             utxoQuantity: number;
         }[]
-    >(`${apiHost}/api/aggs-utxo/${address}`);
+    >(
+        `${apiHost}/api/aggs-utxo/${address}?isConfirmed=${
+            isConfirmed ? "true" : "false"
+        }`
+    );
     return _.map(response, r => ({
         assetType: new H256(r.assetType),
         totalAssetQuantity: r.totalAssetQuantity,
@@ -66,6 +75,7 @@ export async function getAggsUTXOList(
     }));
 }
 
+// FIXME: Search pending parcels if this api returns null.
 export async function getAssetByAssetType(assetType: H256, networkId: string) {
     const apiHost = getApiHost(networkId);
     return getRequest<AssetSchemeDoc>(
@@ -83,24 +93,30 @@ export async function getPlatformAccount(address: string, networkId: string) {
 export async function getAggsUTXOByAssetType(
     address: string,
     assetType: H256,
+    isConfirmed: boolean,
     networkId: string
 ) {
     const apiHost = getApiHost(networkId);
     return await getRequest<AggsUTXO | undefined>(
-        `${apiHost}/api/aggs-utxo/${address}/${assetType.value}`
+        `${apiHost}/api/aggs-utxo/${address}/${assetType.value}?isConfirmed=${
+            isConfirmed ? "true" : "false"
+        }`
     );
 }
 
 export async function getUTXOListByAssetType(
     address: string,
     assetType: H256,
+    isConfirmed: boolean,
     networkId: string
 ) {
     const apiHost = getApiHost(networkId);
 
     // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
     return await getRequest<UTXO[]>(
-        `${apiHost}/api/utxo/${address}/${assetType.value}`
+        `${apiHost}/api/utxo/${address}/${assetType.value}?isConfirmed=${
+            isConfirmed ? "true" : "false"
+        }`
     );
 }
 
@@ -113,4 +129,24 @@ export async function sendTxToGateway(
     return await postRequest<void>(`${gatewayHost}/send_asset`, {
         tx
     });
+}
+
+export async function getPendingPaymentParcels(
+    address: string,
+    networkId: string
+) {
+    const apiHost = getApiHost(networkId);
+    return await getRequest<PendingParcelDoc[]>(
+        `${apiHost}/api/parcels/pending/${address}`
+    );
+}
+
+export async function getPendingTransactions(
+    address: string,
+    networkId: string
+) {
+    const apiHost = getApiHost(networkId);
+    return await getRequest<PendingTransactionDoc[]>(
+        `${apiHost}/api/txs/pending/${address}`
+    );
 }

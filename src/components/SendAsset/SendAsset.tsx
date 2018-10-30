@@ -262,6 +262,7 @@ class SendAsset extends React.Component<Props, State> {
             const UTXOListResponse = await getUTXOListByAssetType(
                 address,
                 new H256(assetType),
+                true,
                 getNetworkIdByAddress(address)
             );
             this.setState({
@@ -283,6 +284,7 @@ class SendAsset extends React.Component<Props, State> {
             const aggsUTXO = await getAggsUTXOByAssetType(
                 address,
                 new H256(assetType),
+                true,
                 getNetworkIdByAddress(address)
             );
             this.setState({ aggsUTXO });
