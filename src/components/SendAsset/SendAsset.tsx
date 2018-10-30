@@ -1,4 +1,8 @@
-import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
+import {
+    AggsUTXO,
+    AssetSchemeDoc,
+    UTXO
+} from "codechain-indexer-types/lib/types";
 import { Type } from "codechain-indexer-types/lib/utils";
 import { SDK } from "codechain-sdk";
 import {
@@ -15,7 +19,6 @@ import { match } from "react-router";
 import { Container } from "reactstrap";
 import { Dispatch } from "redux";
 import { Actions } from "../../actions";
-import { AggsUTXO, UTXO } from "../../model/asset";
 import { getCCKey } from "../../model/wallet";
 import {
     getAggsUTXOByAssetType,

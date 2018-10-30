@@ -1679,9 +1679,9 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-codechain-indexer-types@^0.1.0-alpha.0:
-  version "0.1.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/codechain-indexer-types/-/codechain-indexer-types-0.1.0-alpha.0.tgz#26b4fb35d7b5a751dfee121369c0221587d1397b"
+codechain-indexer-types@^0.1.0-alpha.2:
+  version "0.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/codechain-indexer-types/-/codechain-indexer-types-0.1.0-alpha.2.tgz#ffdeab8765b96400f035e1e9eba46f95afd42958"
   dependencies:
     buffer "^5.2.1"
     codechain-sdk "^0.4.0-rc3"
@@ -1751,9 +1751,9 @@ codechain-sdk@^0.4.0-rc3:
     request-promise "^4.2.2"
     rlp "^2.0.0"
 
-codechain-sdk@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/codechain-sdk/-/codechain-sdk-0.5.0.tgz#32aeba4e39be55d764b5f3bdd8e54b511bc0353e"
+codechain-sdk@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/codechain-sdk/-/codechain-sdk-0.5.1.tgz#10551f0e0a8976eae2949b7a8c5eba1e83135430"
   dependencies:
     buffer "5.1.0"
     codechain-keystore "^0.5.4"

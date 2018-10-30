@@ -1,13 +1,14 @@
 import axios from "axios";
 import {
+    AggsUTXO,
     AssetSchemeDoc,
     PendingParcelDoc,
-    PendingTransactionDoc
+    PendingTransactionDoc,
+    UTXO
 } from "codechain-indexer-types/lib/types";
 import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-import { AggsUTXO, UTXO } from "../model/asset";
 
 const server = {
     host: {
@@ -57,22 +58,12 @@ export async function getAggsUTXOList(
     const apiHost = getApiHost(networkId);
 
     // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
-    const response = await getRequest<
-        {
-            assetType: string;
-            totalAssetQuantity: number;
-            utxoQuantity: number;
-        }[]
-    >(
+    const response = await getRequest<AggsUTXO[]>(
         `${apiHost}/api/aggs-utxo/${address}?isConfirmed=${
             isConfirmed ? "true" : "false"
         }`
     );
-    return _.map(response, r => ({
-        assetType: new H256(r.assetType),
-        totalAssetQuantity: r.totalAssetQuantity,
-        utxoQuantity: r.utxoQuantity
-    }));
+    return response;
 }
 
 // FIXME: Search pending parcels if this api returns null.

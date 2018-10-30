@@ -1,9 +1,11 @@
-import { PendingTransactionDoc } from "codechain-indexer-types/lib/types";
+import {
+    AggsUTXO,
+    PendingTransactionDoc
+} from "codechain-indexer-types/lib/types";
 import * as _ from "lodash";
 import * as React from "react";
 import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
-import { AggsUTXO } from "../../model/asset";
 import { getAggsUTXOList, getPendingTransactions } from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
 import AssetItem from "./AssetItem/AssetItem";
@@ -93,7 +95,7 @@ export default class AssetList extends React.Component<Props, State> {
                                         xl={3}
                                         lg={4}
                                         sm={6}
-                                        key={addressUTXO.assetType.value}
+                                        key={addressUTXO.assetType}
                                     >
                                         <AssetItem
                                             addressUTXO={addressUTXO}
@@ -119,7 +121,7 @@ export default class AssetList extends React.Component<Props, State> {
                                             xl={3}
                                             lg={4}
                                             sm={6}
-                                            key={addressUTXO.assetType.value}
+                                            key={addressUTXO.assetType}
                                         >
                                             <AssetItem
                                                 addressUTXO={addressUTXO}
