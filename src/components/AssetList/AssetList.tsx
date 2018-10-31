@@ -16,7 +16,6 @@ interface Props {
 
 interface State {
     addressConfirmedUTXOList?: AggsUTXO[] | null;
-    addressUnconfirmedUTXOList?: AggsUTXO[] | null;
     pendingTxList?: PendingTransactionDoc[] | null;
 }
 
@@ -25,7 +24,6 @@ export default class AssetList extends React.Component<Props, State> {
         super(props);
         this.state = {
             addressConfirmedUTXOList: undefined,
-            addressUnconfirmedUTXOList: undefined,
             pendingTxList: undefined
         };
     }
@@ -43,18 +41,15 @@ export default class AssetList extends React.Component<Props, State> {
         if (nextAddress !== address) {
             this.setState({
                 addressConfirmedUTXOList: undefined,
-                addressUnconfirmedUTXOList: undefined,
                 pendingTxList: undefined
             });
             this.getConfirmedAssetList();
-            this.getUnconfirmedAssetList();
             this.getPendingTxList();
         }
     }
 
     public componentDidMount() {
         this.getConfirmedAssetList();
-        this.getUnconfirmedAssetList();
         this.getPendingTxList();
     }
 
@@ -64,16 +59,8 @@ export default class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        const {
-            addressConfirmedUTXOList,
-            pendingTxList,
-            addressUnconfirmedUTXOList
-        } = this.state;
-        if (
-            !addressConfirmedUTXOList ||
-            !pendingTxList ||
-            !addressUnconfirmedUTXOList
-        ) {
+        const { addressConfirmedUTXOList, pendingTxList } = this.state;
+        if (!addressConfirmedUTXOList || !pendingTxList) {
             return (
                 <div>
                     <Container>
@@ -110,33 +97,6 @@ export default class AssetList extends React.Component<Props, State> {
                                 <Col>Empty</Col>
                             )}
                         </Row>
-                        <h4 className="mt-5">Confirming Assets</h4>
-                        <hr />
-                        <Row>
-                            {addressUnconfirmedUTXOList.length > 0 ? (
-                                _.map(
-                                    addressUnconfirmedUTXOList,
-                                    addressUTXO => (
-                                        <Col
-                                            xl={3}
-                                            lg={4}
-                                            sm={6}
-                                            key={addressUTXO.assetType}
-                                        >
-                                            <AssetItem
-                                                addressUTXO={addressUTXO}
-                                                networkId={getNetworkIdByAddress(
-                                                    address
-                                                )}
-                                                address={address}
-                                            />
-                                        </Col>
-                                    )
-                                )
-                            ) : (
-                                <Col>Empty</Col>
-                            )}
-                        </Row>
                         <h4 className="mt-5">Pending data</h4>
                         <hr />
                         <div>{JSON.stringify(pendingTxList)}</div>
@@ -159,24 +119,6 @@ export default class AssetList extends React.Component<Props, State> {
                 getNetworkIdByAddress(address)
             );
             this.setState({ addressConfirmedUTXOList: UTXO });
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    private getUnconfirmedAssetList = async () => {
-        const {
-            match: {
-                params: { address }
-            }
-        } = this.props;
-        try {
-            const UTXO = await getAggsUTXOList(
-                address,
-                false,
-                getNetworkIdByAddress(address)
-            );
-            this.setState({ addressUnconfirmedUTXOList: UTXO });
         } catch (e) {
             console.log(e);
         }

@@ -52,18 +52,18 @@ export function getGatewayHost(networkId: string) {
 
 export async function getAggsUTXOList(
     address: string,
-    isConfirmed: boolean,
+    onlyConfirmed: boolean,
     networkId: string
 ): Promise<AggsUTXO[]> {
     const apiHost = getApiHost(networkId);
 
+    let query = `${apiHost}/api/aggs-utxo/${address}`;
+    if (onlyConfirmed) {
+        query += `?onlyConfirmed=true&confirmThreshold=5`;
+    }
+
     // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
-    const response = await getRequest<AggsUTXO[]>(
-        `${apiHost}/api/aggs-utxo/${address}?isConfirmed=${
-            isConfirmed ? "true" : "false"
-        }`
-    );
-    return response;
+    return await getRequest<AggsUTXO[]>(query);
 }
 
 // FIXME: Search pending parcels if this api returns null.
@@ -84,31 +84,33 @@ export async function getPlatformAccount(address: string, networkId: string) {
 export async function getAggsUTXOByAssetType(
     address: string,
     assetType: H256,
-    isConfirmed: boolean,
+    onlyConfirmed: boolean,
     networkId: string
 ) {
     const apiHost = getApiHost(networkId);
-    return await getRequest<AggsUTXO | undefined>(
-        `${apiHost}/api/aggs-utxo/${address}/${assetType.value}?isConfirmed=${
-            isConfirmed ? "true" : "false"
-        }`
-    );
+    let query = `${apiHost}/api/aggs-utxo/${address}/${assetType.value}`;
+    if (onlyConfirmed) {
+        query += `?onlyConfirmed=true&confirmThreshold=5`;
+    }
+
+    return await getRequest<AggsUTXO | undefined>(query);
 }
 
 export async function getUTXOListByAssetType(
     address: string,
     assetType: H256,
-    isConfirmed: boolean,
+    onlyConfirmed: boolean,
     networkId: string
 ) {
     const apiHost = getApiHost(networkId);
 
+    let query = `${apiHost}/api/utxo/${address}/${assetType.value}`;
+    if (onlyConfirmed) {
+        query += `?onlyConfirmed=true&confirmThreshold=5`;
+    }
+
     // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
-    return await getRequest<UTXO[]>(
-        `${apiHost}/api/utxo/${address}/${assetType.value}?isConfirmed=${
-            isConfirmed ? "true" : "false"
-        }`
-    );
+    return await getRequest<UTXO[]>(query);
 }
 
 export async function sendTxToGateway(
