@@ -4,6 +4,7 @@ import {
     AssetSchemeDoc,
     PendingParcelDoc,
     PendingTransactionDoc,
+    TransactionDoc,
     UTXO
 } from "codechain-indexer-types/lib/types";
 import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
@@ -52,18 +53,10 @@ export function getGatewayHost(networkId: string) {
 
 export async function getAggsUTXOList(
     address: string,
-    onlyConfirmed: boolean,
     networkId: string
 ): Promise<AggsUTXO[]> {
     const apiHost = getApiHost(networkId);
-
-    let query = `${apiHost}/api/aggs-utxo/${address}`;
-    if (onlyConfirmed) {
-        query += `?onlyConfirmed=true&confirmThreshold=5`;
-    }
-
-    // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
-    return await getRequest<AggsUTXO[]>(query);
+    return await getRequest<AggsUTXO[]>(`${apiHost}/api/aggs-utxo/${address}`);
 }
 
 // FIXME: Search pending parcels if this api returns null.
@@ -84,33 +77,23 @@ export async function getPlatformAccount(address: string, networkId: string) {
 export async function getAggsUTXOByAssetType(
     address: string,
     assetType: H256,
-    onlyConfirmed: boolean,
     networkId: string
 ) {
     const apiHost = getApiHost(networkId);
-    let query = `${apiHost}/api/aggs-utxo/${address}/${assetType.value}`;
-    if (onlyConfirmed) {
-        query += `?onlyConfirmed=true&confirmThreshold=5`;
-    }
-
-    return await getRequest<AggsUTXO | undefined>(query);
+    return await getRequest<AggsUTXO | undefined>(
+        `${apiHost}/api/aggs-utxo/${address}/${assetType.value}`
+    );
 }
 
 export async function getUTXOListByAssetType(
     address: string,
     assetType: H256,
-    onlyConfirmed: boolean,
     networkId: string
 ) {
     const apiHost = getApiHost(networkId);
-
-    let query = `${apiHost}/api/utxo/${address}/${assetType.value}`;
-    if (onlyConfirmed) {
-        query += `?onlyConfirmed=true&confirmThreshold=5`;
-    }
-
-    // FIXME: Current api will return maximum 25 entities, Use the customized pagination options.
-    return await getRequest<UTXO[]>(query);
+    return await getRequest<UTXO[]>(
+        `${apiHost}/api/utxo/${assetType.value}/owner/${address}`
+    );
 }
 
 export async function sendTxToGateway(
@@ -140,6 +123,26 @@ export async function getPendingTransactions(
 ) {
     const apiHost = getApiHost(networkId);
     return await getRequest<PendingTransactionDoc[]>(
-        `${apiHost}/api/txs/pending/${address}`
+        `${apiHost}/api/addr-asset-txs/pending/${address}`
     );
+}
+
+export async function getTxsByAddress(
+    address: string,
+    onlyUnconfirmed: boolean,
+    page: number,
+    itemsPerPage: number,
+    networkId: string
+) {
+    const apiHost = getApiHost(networkId);
+    let query = `${apiHost}/api/addr-asset-txs/${address}?page=${page}&itemsPerPage=${itemsPerPage}`;
+    if (onlyUnconfirmed) {
+        query += `&onlyUnconfirmed=true&confirmThreshold=5`;
+    }
+    return await getRequest<TransactionDoc[]>(query);
+}
+
+export async function getBestBlockNumber(networkId: string) {
+    const apiHost = getApiHost(networkId);
+    return await getRequest<number>(`${apiHost}/api/blockNumber`);
 }

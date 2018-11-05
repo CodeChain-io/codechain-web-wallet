@@ -30,25 +30,7 @@ type Props = OwnProps & StateProps & DispatchProps;
 
 class AssetDetail extends React.Component<Props, any> {
     public async componentDidMount() {
-        const {
-            match: {
-                params: { address, assetType }
-            },
-            assetScheme,
-            cacheAssetScheme
-        } = this.props;
-        if (!assetScheme) {
-            const networkId = getNetworkIdByAddress(address);
-            try {
-                const responseAssetScheme = await getAssetByAssetType(
-                    new H256(assetType),
-                    networkId
-                );
-                cacheAssetScheme(new H256(assetType), responseAssetScheme);
-            } catch (e) {
-                console.log(e);
-            }
-        }
+        this.init();
     }
 
     public render() {
@@ -118,6 +100,32 @@ class AssetDetail extends React.Component<Props, any> {
             </div>
         );
     }
+
+    private init = () => {
+        this.getAssetScheme();
+    };
+
+    private getAssetScheme = async () => {
+        const {
+            match: {
+                params: { address, assetType }
+            },
+            assetScheme,
+            cacheAssetScheme
+        } = this.props;
+        if (!assetScheme) {
+            const networkId = getNetworkIdByAddress(address);
+            try {
+                const responseAssetScheme = await getAssetByAssetType(
+                    new H256(assetType),
+                    networkId
+                );
+                cacheAssetScheme(new H256(assetType), responseAssetScheme);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    };
 }
 
 const mapStateToProps = (state: IRootState, ownProps: OwnProps) => {

@@ -1,13 +1,21 @@
 import {
     AggsUTXO,
-    PendingTransactionDoc
+    PendingTransactionDoc,
+    TransactionDoc
 } from "codechain-indexer-types/lib/types";
+import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import * as _ from "lodash";
 import * as React from "react";
 import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
-import { getAggsUTXOList, getPendingTransactions } from "../../networks/Api";
+import {
+    getAggsUTXOList,
+    getPendingTransactions,
+    getTxsByAddress
+} from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
+import { TxUtil } from "../../utils/transaction";
+import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 
 interface Props {
@@ -15,15 +23,16 @@ interface Props {
 }
 
 interface State {
-    addressConfirmedUTXOList?: AggsUTXO[] | null;
+    addressUTXOList?: AggsUTXO[] | null;
     pendingTxList?: PendingTransactionDoc[] | null;
+    unconfirmedTxList?: TransactionDoc[] | null;
 }
 
 export default class AssetList extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            addressConfirmedUTXOList: undefined,
+            addressUTXOList: undefined,
             pendingTxList: undefined
         };
     }
@@ -40,17 +49,16 @@ export default class AssetList extends React.Component<Props, State> {
         } = props;
         if (nextAddress !== address) {
             this.setState({
-                addressConfirmedUTXOList: undefined,
-                pendingTxList: undefined
+                addressUTXOList: undefined,
+                pendingTxList: undefined,
+                unconfirmedTxList: undefined
             });
-            this.getConfirmedAssetList();
-            this.getPendingTxList();
+            this.init();
         }
     }
 
     public componentDidMount() {
-        this.getConfirmedAssetList();
-        this.getPendingTxList();
+        this.init();
     }
 
     public render() {
@@ -59,8 +67,12 @@ export default class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        const { addressConfirmedUTXOList, pendingTxList } = this.state;
-        if (!addressConfirmedUTXOList || !pendingTxList) {
+        const {
+            addressUTXOList,
+            pendingTxList,
+            unconfirmedTxList
+        } = this.state;
+        if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
             return (
                 <div>
                     <Container>
@@ -69,6 +81,7 @@ export default class AssetList extends React.Component<Props, State> {
                 </div>
             );
         }
+        const availableAssets = this.getAvailableAssets();
         return (
             <div>
                 <Container>
@@ -76,16 +89,20 @@ export default class AssetList extends React.Component<Props, State> {
                         <h4>My assets</h4>
                         <hr />
                         <Row>
-                            {addressConfirmedUTXOList.length > 0 ? (
-                                _.map(addressConfirmedUTXOList, addressUTXO => (
+                            {availableAssets.length > 0 ? (
+                                _.map(availableAssets, availableAsset => (
                                     <Col
                                         xl={3}
                                         lg={4}
                                         sm={6}
-                                        key={addressUTXO.assetType}
+                                        key={availableAsset.assetType}
                                     >
                                         <AssetItem
-                                            addressUTXO={addressUTXO}
+                                            assetType={availableAsset.assetType}
+                                            quantities={
+                                                availableAsset.quantities
+                                            }
+                                            metadata={availableAsset.metadata}
                                             networkId={getNetworkIdByAddress(
                                                 address
                                             )}
@@ -97,16 +114,108 @@ export default class AssetList extends React.Component<Props, State> {
                                 <Col>Empty</Col>
                             )}
                         </Row>
-                        <h4 className="mt-5">Pending data</h4>
-                        <hr />
-                        <div>{JSON.stringify(pendingTxList)}</div>
+                        <h4 className="mt-5">History</h4>
+                        <TxHistory address={address} />
                     </div>
                 </Container>
             </div>
         );
     }
 
-    private getConfirmedAssetList = async () => {
+    private getAvailableAssets = () => {
+        const {
+            match: {
+                params: { address }
+            }
+        } = this.props;
+        const {
+            addressUTXOList,
+            pendingTxList,
+            unconfirmedTxList
+        } = this.state;
+
+        if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
+            return [];
+        }
+
+        const aggregatedUnconfirmedAsset = _.flatMap(
+            unconfirmedTxList,
+            unconfirmedTx => {
+                return TxUtil.getAssetHistoryFromTransaction(
+                    address,
+                    unconfirmedTx
+                );
+            }
+        );
+
+        const txHashList = _.map(unconfirmedTxList, tx => tx.data.hash);
+        const validPendingTxList = _.filter(
+            pendingTxList,
+            pendingTx =>
+                !_.includes(txHashList, pendingTx.transaction.data.hash)
+        );
+        const aggregatedPendingAsset = _.flatMap(
+            validPendingTxList,
+            pendingTx => {
+                return TxUtil.getAssetHistoryFromTransaction(
+                    address,
+                    pendingTx.transaction
+                );
+            }
+        );
+
+        const availableAssets: {
+            [assetType: string]: {
+                assetType: string;
+                quantities: number;
+                metadata: MetadataFormat;
+            };
+        } = {};
+        _.each(addressUTXOList, addressConfirmedUTXO => {
+            availableAssets[addressConfirmedUTXO.assetType] = {
+                assetType: addressConfirmedUTXO.assetType,
+                quantities: addressConfirmedUTXO.totalAssetQuantity,
+                metadata: Type.getMetadata(
+                    addressConfirmedUTXO.assetScheme.metadata
+                )
+            };
+        });
+        _.each(aggregatedUnconfirmedAsset, asset => {
+            const quantities =
+                asset.outputQuantities -
+                (asset.inputQuantities + asset.burnQuantities);
+
+            if (quantities > 0) {
+                availableAssets[asset.assetType] = {
+                    ...availableAssets[asset.assetType],
+                    quantities:
+                        availableAssets[asset.assetType].quantities - quantities
+                };
+            }
+        });
+        _.each(aggregatedPendingAsset, asset => {
+            const quantities =
+                asset.outputQuantities -
+                (asset.inputQuantities + asset.burnQuantities);
+
+            if (quantities < 0) {
+                availableAssets[asset.assetType] = {
+                    ...availableAssets[asset.assetType],
+                    quantities:
+                        availableAssets[asset.assetType].quantities + quantities
+                };
+            }
+        });
+        return _.values(availableAssets);
+    };
+
+    private init = async () => {
+        this.getAssetList();
+        this.getUnconfirmedTxList();
+        this.getPendingTxList();
+    };
+
+    private getAssetList = async () => {
         const {
             match: {
                 params: { address }
@@ -115,10 +224,9 @@ export default class AssetList extends React.Component<Props, State> {
         try {
             const UTXO = await getAggsUTXOList(
                 address,
-                true,
                 getNetworkIdByAddress(address)
             );
-            this.setState({ addressConfirmedUTXOList: UTXO });
+            this.setState({ addressUTXOList: UTXO });
         } catch (e) {
             console.log(e);
         }
@@ -136,6 +244,26 @@ export default class AssetList extends React.Component<Props, State> {
                 getNetworkIdByAddress(address)
             );
             this.setState({ pendingTxList });
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    private getUnconfirmedTxList = async () => {
+        const {
+            match: {
+                params: { address }
+            }
+        } = this.props;
+        try {
+            const unconfirmedTxList = await getTxsByAddress(
+                address,
+                true,
+                1,
+                10000,
+                getNetworkIdByAddress(address)
+            );
+            this.setState({ unconfirmedTxList });
         } catch (e) {
             console.log(e);
         }
