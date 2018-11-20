@@ -8,16 +8,24 @@ export type Action = Login &
     UpdateWalletName &
     CacheAssetScheme;
 
+export enum ActionType {
+    Login,
+    Logout,
+    UpdateWalletAddresses,
+    UpdateWalletName,
+    CacheAssetScheme
+}
+
 export interface Login {
-    type: "Login";
+    type: ActionType.Login;
 }
 
 export interface Logout {
-    type: "Logout";
+    type: ActionType.Logout;
 }
 
 export interface UpdateWalletAddresses {
-    type: "UpdateWalletAddresses";
+    type: ActionType.UpdateWalletAddresses;
     data: {
         platformAddresses: WalletAddress[];
         assetAddresses: WalletAddress[];
@@ -25,12 +33,12 @@ export interface UpdateWalletAddresses {
 }
 
 export interface UpdateWalletName {
-    type: "UpdateWalletName";
+    type: ActionType.UpdateWalletName;
     data: string;
 }
 
 export interface CacheAssetScheme {
-    type: "CacheAssetScheme";
+    type: ActionType.CacheAssetScheme;
     data: {
         assetType: string;
         assetScheme: AssetSchemeDoc;
@@ -38,18 +46,18 @@ export interface CacheAssetScheme {
 }
 
 const login = (): Login => ({
-    type: "Login"
+    type: ActionType.Login
 });
 
 const logout = (): Logout => ({
-    type: "Logout"
+    type: ActionType.Logout
 });
 
 const updateWalletAddresses = (
     platformAddresses: WalletAddress[],
     assetAddresses: WalletAddress[]
 ): UpdateWalletAddresses => ({
-    type: "UpdateWalletAddresses",
+    type: ActionType.UpdateWalletAddresses,
     data: {
         platformAddresses,
         assetAddresses
@@ -57,7 +65,7 @@ const updateWalletAddresses = (
 });
 
 const updateWalletName = (walletName: string): UpdateWalletName => ({
-    type: "UpdateWalletName",
+    type: ActionType.UpdateWalletName,
     data: walletName
 });
 
@@ -65,7 +73,7 @@ const cacheAssetScheme = (
     assetType: H256,
     assetScheme: AssetSchemeDoc
 ): CacheAssetScheme => ({
-    type: "CacheAssetScheme",
+    type: ActionType.CacheAssetScheme,
     data: {
         assetType: assetType.value,
         assetScheme

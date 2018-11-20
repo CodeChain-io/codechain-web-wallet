@@ -1,5 +1,5 @@
 import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
-import { Action } from "./actions";
+import { Action, ActionType } from "./actions";
 import { WalletAddress } from "./model/address";
 
 export interface IRootState {
@@ -20,28 +20,28 @@ const initialState: IRootState = {
 
 export const appReducer = (state = initialState, action: Action) => {
     switch (action.type) {
-        case "Login":
+        case ActionType.Login:
             return {
                 ...state,
                 isAuthenticated: true
             };
-        case "Logout":
+        case ActionType.Logout:
             return {
                 ...state,
                 isAuthenticated: false
             };
-        case "UpdateWalletAddresses":
+        case ActionType.UpdateWalletAddresses:
             return {
                 ...state,
                 platformAddresses: action.data.platformAddresses,
                 assetAddresses: action.data.assetAddresses
             };
-        case "UpdateWalletName":
+        case ActionType.UpdateWalletName:
             return {
                 ...state,
                 walletName: action.data
             };
-        case "CacheAssetScheme":
+        case ActionType.CacheAssetScheme:
             const assetType = action.data.assetType;
             const assetScheme = {
                 ...state.assetScheme,
