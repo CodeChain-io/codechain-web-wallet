@@ -1,20 +1,17 @@
 @import "styles/mixin.scss";
+@import "styles/variables.scss";
+
 .Header {
-  .navbar-brand {
-    padding: 0;
-    .logo {
-      width: 40px;
-      height: 40px;
-      margin-right: 8px;
-    }
-    .logo-text {
-      vertical-align: middle;
-      @include heading-font();
-      @include respond-below(xs) {
-        .codechain {
-          display: none;
-        }
-      }
-    }
+  height: $header-height;
+  border-bottom: 1px solid $grey3;
+  .logo {
+    width: auto;
+    height: 50px;
+  }
+  .menu-btn {
+    color: $grey2;
+    padding-left: 23px;
+    padding-right: 5px;
+    cursor: pointer;
   }
 }

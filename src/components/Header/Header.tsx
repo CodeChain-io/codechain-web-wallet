@@ -1,26 +1,18 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import { connect } from "react-redux";
-import { IndexLinkContainer } from "react-router-bootstrap";
-import {
-    Container,
-    Nav,
-    Navbar,
-    NavbarBrand,
-    NavItem,
-    NavLink
-} from "reactstrap";
+import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
-import { clearWallet } from "../../model/wallet";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/global/actions";
 import "./Header.css";
-import * as Logo from "./img/logo.png";
+import * as Logo from "./img/codechain-logo.png";
 
 interface StateProps {
     isAuthenticated: boolean;
 }
 interface DispatchProps {
-    logout: () => void;
+    toggleMenu: () => void;
 }
 
 type Props = DispatchProps & StateProps;
@@ -29,52 +21,30 @@ class Header extends React.Component<Props, any> {
         super(props);
     }
     public render() {
-        const { isAuthenticated } = this.props;
         return (
             <div className="Header">
-                <Navbar color="dark" dark={true} expand="md">
-                    <Container>
-                        <IndexLinkContainer to="/">
-                            <NavbarBrand>
-                                <div className="flex align-items-center">
-                                    <img src={Logo} className="logo" />
-                                    <span className="logo-text">
-                                        <span className="codechain">
-                                            CodeChain
-                                        </span>{" "}
-                                        Wallet
-                                    </span>
-                                </div>
-                            </NavbarBrand>
-                        </IndexLinkContainer>
-                        <Nav navbar={true} className="ml-auto">
-                            {isAuthenticated && (
-                                <NavItem className="ml-auto">
-                                    <NavLink
-                                        href="#"
-                                        onClick={this.handleLogout}
-                                    >
-                                        Logout
-                                    </NavLink>
-                                </NavItem>
-                            )}
-                        </Nav>
-                    </Container>
-                </Navbar>
+                <div className="d-flex align-items-center h-100">
+                    <div className="menu-btn" onClick={this.handleToggleMenu}>
+                        <FontAwesomeIcon icon="bars" />
+                    </div>
+                    <Link to="/">
+                        <img src={Logo} className="logo" />
+                    </Link>
+                </div>
             </div>
         );
     }
-    private handleLogout = async () => {
-        await clearWallet();
-        this.props.logout();
+
+    private handleToggleMenu = async () => {
+        this.props.toggleMenu();
     };
 }
 const mapStateToProps = (state: ReducerConfigure) => ({
     isAuthenticated: state.globalReducer.isAuthenticated
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    logout: () => {
-        dispatch(actions.logout());
+    toggleMenu: () => {
+        dispatch(actions.toggleMenu());
     }
 });
 export default connect(

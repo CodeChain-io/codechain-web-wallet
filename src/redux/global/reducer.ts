@@ -1,14 +1,13 @@
-import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
 import { Action, ActionType } from "./actions";
 
 export interface GlobalState {
     isAuthenticated: boolean;
-    assetScheme: { [assetType: string]: AssetSchemeDoc };
+    isSideMenuOpen: boolean;
 }
 
 const initialState: GlobalState = {
     isAuthenticated: false,
-    assetScheme: {}
+    isSideMenuOpen: true
 };
 
 export const globalReducer = (state = initialState, action: Action) => {
@@ -23,15 +22,10 @@ export const globalReducer = (state = initialState, action: Action) => {
                 ...state,
                 isAuthenticated: false
             };
-        case ActionType.CacheAssetScheme:
-            const assetType = action.data.assetType;
-            const assetScheme = {
-                ...state.assetScheme,
-                [assetType]: action.data.assetScheme
-            };
+        case ActionType.ToggleMenu:
             return {
                 ...state,
-                assetScheme
+                isSideMenuOpen: !state.isSideMenuOpen
             };
     }
     return state;

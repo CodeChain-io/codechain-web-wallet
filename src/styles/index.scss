@@ -1,6 +1,28 @@
 @import "styles/typography.scss";
 
+html {
+  font-size: 12px;
+}
+
 body {
   margin: 0;
   padding: 0;
+}
+
+.btn-primary {
+  background-color: white;
+  border: 1px solid $blue;
+  border-radius: 21px;
+  color: $blue;
+
+  &:hover:enabled {
+    background-color: darken($blue, 15%);
+  }
+  &:active,
+  &:focus {
+    background-color: darken($blue, 15%) !important;
+  }
+  &:disabled {
+    background-color: $blue;
+  }
 }

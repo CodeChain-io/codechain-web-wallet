@@ -1,0 +1,30 @@
+@import "styles/variables.scss";
+
+.side-menu {
+  position: relative;
+  width: $sidemenu-width;
+  height: calc(100vh - #{$header-height});
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.5);
+
+  .title-container {
+    padding: 36px;
+    padding-top: 50px;
+  }
+
+  .left-arrow {
+    position: absolute;
+    cursor: pointer;
+    padding: 18px;
+    right: 3px;
+    top: 3px;
+    color: $grey2;
+  }
+
+  .logout-btn {
+    position: absolute;
+    cursor: pointer;
+    bottom: 92px;
+    left: 36px;
+    color: $grey;
+  }
+}

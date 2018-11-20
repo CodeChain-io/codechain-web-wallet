@@ -135,7 +135,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
         }
     } = ownProps;
     return {
-        assetScheme: state.globalReducer.assetScheme[new H256(assetType).value]
+        assetScheme: state.assetReducer.assetScheme[new H256(assetType).value]
     };
 };
 const mapDispatchToProps = (dispatch: Dispatch) => ({

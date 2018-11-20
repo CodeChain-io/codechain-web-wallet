@@ -1,12 +1,9 @@
-import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
-import { H256 } from "codechain-sdk/lib/core/classes";
-
-export type Action = Login | Logout | CacheAssetScheme;
+export type Action = Login | Logout | ToggleMenu;
 
 export enum ActionType {
     Login = "login",
     Logout = "logout",
-    CacheAssetScheme = "cacheAssetScheme"
+    ToggleMenu = "toggle_menu"
 }
 
 export interface Login {
@@ -17,12 +14,8 @@ export interface Logout {
     type: ActionType.Logout;
 }
 
-export interface CacheAssetScheme {
-    type: ActionType.CacheAssetScheme;
-    data: {
-        assetType: string;
-        assetScheme: AssetSchemeDoc;
-    };
+export interface ToggleMenu {
+    type: ActionType.ToggleMenu;
 }
 
 const login = (): Login => ({
@@ -32,19 +25,13 @@ const login = (): Login => ({
 const logout = (): Logout => ({
     type: ActionType.Logout
 });
-const cacheAssetScheme = (
-    assetType: H256,
-    assetScheme: AssetSchemeDoc
-): CacheAssetScheme => ({
-    type: ActionType.CacheAssetScheme,
-    data: {
-        assetType: assetType.value,
-        assetScheme
-    }
+
+const toggleMenu = (): ToggleMenu => ({
+    type: ActionType.ToggleMenu
 });
 
 export default {
     login,
     logout,
-    cacheAssetScheme
+    toggleMenu
 };
