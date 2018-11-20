@@ -1,24 +1,17 @@
 import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
 import { Action, ActionType } from "./actions";
-import { WalletAddress } from "./model/address";
 
-export interface IRootState {
+export interface GlobalState {
     isAuthenticated: boolean;
-    platformAddresses: WalletAddress[];
-    assetAddresses: WalletAddress[];
-    walletName?: string;
     assetScheme: { [assetType: string]: AssetSchemeDoc };
 }
 
-const initialState: IRootState = {
+const initialState: GlobalState = {
     isAuthenticated: false,
-    platformAddresses: [],
-    assetAddresses: [],
-    walletName: undefined,
     assetScheme: {}
 };
 
-export const appReducer = (state = initialState, action: Action) => {
+export const globalReducer = (state = initialState, action: Action) => {
     switch (action.type) {
         case ActionType.Login:
             return {
@@ -29,17 +22,6 @@ export const appReducer = (state = initialState, action: Action) => {
             return {
                 ...state,
                 isAuthenticated: false
-            };
-        case ActionType.UpdateWalletAddresses:
-            return {
-                ...state,
-                platformAddresses: action.data.platformAddresses,
-                assetAddresses: action.data.assetAddresses
-            };
-        case ActionType.UpdateWalletName:
-            return {
-                ...state,
-                walletName: action.data
             };
         case ActionType.CacheAssetScheme:
             const assetType = action.data.assetType;

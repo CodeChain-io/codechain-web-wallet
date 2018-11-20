@@ -39,7 +39,7 @@ class App extends React.Component {
                             <Route path="/login" component={Login} />
                             <PrivateRoute
                                 exact={true}
-                                path="/"
+                                path={["/", "/index.html"]}
                                 component={AddressList}
                             />
                             <PrivateRoute

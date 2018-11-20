@@ -18,7 +18,6 @@ import { connect } from "react-redux";
 import { match } from "react-router";
 import { Container } from "reactstrap";
 import { Dispatch } from "redux";
-import { Actions } from "../../actions";
 import { getCCKey } from "../../model/wallet";
 import {
     getAggsUTXOByAssetType,
@@ -26,7 +25,8 @@ import {
     getUTXOListByAssetType,
     sendTxToGateway
 } from "../../networks/Api";
-import { IRootState } from "../../reducers";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/asset/actions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import { getNetworkIdByAddress } from "../../utils/network";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
@@ -295,19 +295,19 @@ class SendAsset extends React.Component<Props, State> {
     };
 }
 
-const mapStateToProps = (state: IRootState, ownProps: OwnProps) => {
+const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const {
         match: {
             params: { assetType }
         }
     } = ownProps;
     return {
-        assetScheme: state.assetScheme[new H256(assetType).value]
+        assetScheme: state.globalReducer.assetScheme[new H256(assetType).value]
     };
 };
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => {
-        dispatch(Actions.cacheAssetScheme(assetType, assetScheme));
+        dispatch(actions.cacheAssetScheme(assetType, assetScheme));
     }
 });
 

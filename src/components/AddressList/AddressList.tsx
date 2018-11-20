@@ -3,14 +3,14 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Col, Container, Row } from "reactstrap";
 import { Dispatch } from "redux";
-import { Actions } from "../../actions";
 import { WalletAddress } from "../../model/address";
 import {
     getAssetAddresses,
     getPlatformAddresses,
     getWalletName
 } from "../../model/wallet";
-import { IRootState } from "../../reducers";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/wallet/actions";
 import AddressItem from "./AddressItem/AddressItem";
 import "./AddressList.css";
 
@@ -94,10 +94,10 @@ class AddressList extends React.Component<Props, any> {
         );
     }
 }
-const mapStateToProps = (state: IRootState) => ({
-    platformAddresses: state.platformAddresses,
-    assetAddresses: state.assetAddresses,
-    walletName: state.walletName
+const mapStateToProps = (state: ReducerConfigure) => ({
+    platformAddresses: state.walletReducer.platformAddresses,
+    assetAddresses: state.walletReducer.assetAddresses,
+    walletName: state.walletReducer.walletName
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     updateWalletAddresses: (
@@ -105,11 +105,11 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         assetAddresses: WalletAddress[]
     ) => {
         dispatch(
-            Actions.updateWalletAddresses(walletAddresses, assetAddresses)
+            actions.updateWalletAddresses(walletAddresses, assetAddresses)
         );
     },
     updateWalletName: (walletName: string) => {
-        dispatch(Actions.updateWalletName(walletName));
+        dispatch(actions.updateWalletName(walletName));
     }
 });
 export default connect(

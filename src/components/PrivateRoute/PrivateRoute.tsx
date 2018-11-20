@@ -2,9 +2,9 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
 import { Dispatch } from "redux";
-import { Actions } from "../../actions";
 import { isWalletExisted } from "../../model/wallet";
-import { IRootState } from "../../reducers";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/global/actions";
 
 interface State {
     checkedSessionStorage: boolean;
@@ -67,13 +67,13 @@ class PrivateRoute extends React.Component<any, State> {
     };
 }
 
-const mapStateToProps = (state: IRootState) => ({
-    isAuthenticated: state.isAuthenticated
+const mapStateToProps = (state: ReducerConfigure) => ({
+    isAuthenticated: state.globalReducer.isAuthenticated
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     login: () => {
-        dispatch(Actions.login());
+        dispatch(actions.login());
     }
 });
 

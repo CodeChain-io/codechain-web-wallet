@@ -7,9 +7,9 @@ import { match } from "react-router";
 import { Link } from "react-router-dom";
 import { Container, Table } from "reactstrap";
 import { Dispatch } from "redux";
-import { Actions } from "../../actions";
 import { getAssetByAssetType } from "../../networks/Api";
-import { IRootState } from "../../reducers";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/asset/actions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import { getNetworkIdByAddress } from "../../utils/network";
 import "./AssetDetail.css";
@@ -128,19 +128,19 @@ class AssetDetail extends React.Component<Props, any> {
     };
 }
 
-const mapStateToProps = (state: IRootState, ownProps: OwnProps) => {
+const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const {
         match: {
             params: { assetType }
         }
     } = ownProps;
     return {
-        assetScheme: state.assetScheme[new H256(assetType).value]
+        assetScheme: state.globalReducer.assetScheme[new H256(assetType).value]
     };
 };
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => {
-        dispatch(Actions.cacheAssetScheme(assetType, assetScheme));
+        dispatch(actions.cacheAssetScheme(assetType, assetScheme));
     }
 });
 export default connect(

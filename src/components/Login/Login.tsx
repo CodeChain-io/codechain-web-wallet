@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { Container } from "reactstrap";
 import { Dispatch } from "redux";
-import { Actions } from "../../actions";
 import { loadWallet } from "../../model/wallet";
+import actions from "../../redux/global/actions";
 import CreateAddressContainer from "../CreateAddressContainer/CreateAddressContainer";
 import CreateWalletForm from "../CreateWalletForm/CreateWalletForm";
 import "./Login.css";
@@ -105,6 +105,7 @@ class Login extends React.Component<Props, State> {
             this.props.login();
             this.setState({ redirectToReferrer: true });
         } catch (e) {
+            console.log(e);
             alert("Invalid file");
         }
     };
@@ -146,7 +147,7 @@ class Login extends React.Component<Props, State> {
 }
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     login: () => {
-        dispatch(Actions.login());
+        dispatch(actions.login());
     }
 });
 export default connect(

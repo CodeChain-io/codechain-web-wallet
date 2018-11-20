@@ -10,9 +10,9 @@ import {
     NavLink
 } from "reactstrap";
 import { Dispatch } from "redux";
-import { Actions } from "../../actions";
 import { clearWallet } from "../../model/wallet";
-import { IRootState } from "../../reducers";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/global/actions";
 import "./Header.css";
 import * as Logo from "./img/logo.png";
 
@@ -69,12 +69,12 @@ class Header extends React.Component<Props, any> {
         this.props.logout();
     };
 }
-const mapStateToProps = (state: IRootState) => ({
-    isAuthenticated: state.isAuthenticated
+const mapStateToProps = (state: ReducerConfigure) => ({
+    isAuthenticated: state.globalReducer.isAuthenticated
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: () => {
-        dispatch(Actions.logout());
+        dispatch(actions.logout());
     }
 });
 export default connect(

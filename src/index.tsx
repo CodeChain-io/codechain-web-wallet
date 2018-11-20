@@ -5,11 +5,11 @@ import { Provider } from "react-redux";
 import { createStore } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension/logOnlyInProduction";
 import App from "./components/App/App";
-import { appReducer } from "./reducers";
+import rootReducer from "./redux";
 import registerServiceWorker from "./registerServiceWorker";
 import "./styles/index.css";
 
-const store = createStore(appReducer, devToolsEnhancer({}));
+const store = createStore(rootReducer, devToolsEnhancer({}));
 ReactDOM.render(
     <Provider store={store}>
         <App />
