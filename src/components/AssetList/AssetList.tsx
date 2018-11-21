@@ -11,9 +11,9 @@ import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { getPendingTransactions, getTxsByAddress } from "../../networks/Api";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/asset/actions";
+import assetActions from "../../redux/asset/assetActions";
+import transactionActions from "../../redux/transaction/transactionActions";
 import { getNetworkIdByAddress } from "../../utils/network";
 import { TxUtil } from "../../utils/transaction";
 import TxHistory from "../TxHistory/TxHistory";
@@ -24,31 +24,22 @@ interface OwnProps {
 }
 
 interface StateProps {
-    addressUTXOList?: {
-        data?: AggsUTXO[] | null;
-        updatedAt?: number | null;
-        isFetching: boolean;
-    } | null;
-}
-
-interface DispatchProps {
-    fetchAggsUTXOListIfNeed: (address: string) => void;
-}
-
-interface State {
+    addressUTXOList?: AggsUTXO[] | null;
     pendingTxList?: PendingTransactionDoc[] | null;
     unconfirmedTxList?: TransactionDoc[] | null;
 }
 
+interface DispatchProps {
+    fetchAggsUTXOListIfNeed: (address: string) => void;
+    fetchPendingTxListIfNeed: (address: string) => void;
+    fetchUnconfirmedTxListIfNeed: (address: string) => void;
+}
+
 type Props = OwnProps & StateProps & DispatchProps;
 
-class AssetList extends React.Component<Props, State> {
+class AssetList extends React.Component<Props> {
     public constructor(props: Props) {
         super(props);
-        this.state = {
-            pendingTxList: undefined,
-            unconfirmedTxList: undefined
-        };
     }
     public componentWillReceiveProps(props: Props) {
         const {
@@ -62,10 +53,6 @@ class AssetList extends React.Component<Props, State> {
             }
         } = props;
         if (nextAddress !== address) {
-            this.setState({
-                pendingTxList: undefined,
-                unconfirmedTxList: undefined
-            });
             this.init();
         }
     }
@@ -80,8 +67,11 @@ class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        const { addressUTXOList } = this.props;
-        const { pendingTxList, unconfirmedTxList } = this.state;
+        const {
+            addressUTXOList,
+            pendingTxList,
+            unconfirmedTxList
+        } = this.props;
         if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
             return (
                 <div>
@@ -138,8 +128,11 @@ class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        const { pendingTxList, unconfirmedTxList } = this.state;
-        const { addressUTXOList } = this.props;
+        const {
+            addressUTXOList,
+            pendingTxList,
+            unconfirmedTxList
+        } = this.props;
 
         if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
             return [];
@@ -178,7 +171,7 @@ class AssetList extends React.Component<Props, State> {
                 metadata: MetadataFormat;
             };
         } = {};
-        _.each(addressUTXOList.data, addressConfirmedUTXO => {
+        _.each(addressUTXOList, addressConfirmedUTXO => {
             availableAssets[addressConfirmedUTXO.assetType] = {
                 assetType: addressConfirmedUTXO.assetType,
                 quantities: addressConfirmedUTXO.totalAssetQuantity,
@@ -222,46 +215,9 @@ class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        this.getUnconfirmedTxList();
-        this.getPendingTxList();
+        this.props.fetchUnconfirmedTxListIfNeed(address);
+        this.props.fetchPendingTxListIfNeed(address);
         this.props.fetchAggsUTXOListIfNeed(address);
-    };
-
-    private getPendingTxList = async () => {
-        const {
-            match: {
-                params: { address }
-            }
-        } = this.props;
-        try {
-            const pendingTxList = await getPendingTransactions(
-                address,
-                getNetworkIdByAddress(address)
-            );
-            this.setState({ pendingTxList });
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    private getUnconfirmedTxList = async () => {
-        const {
-            match: {
-                params: { address }
-            }
-        } = this.props;
-        try {
-            const unconfirmedTxList = await getTxsByAddress(
-                address,
-                true,
-                1,
-                10000,
-                getNetworkIdByAddress(address)
-            );
-            this.setState({ unconfirmedTxList });
-        } catch (e) {
-            console.log(e);
-        }
     };
 }
 
@@ -271,15 +227,27 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
             params: { address }
         }
     } = props;
+    const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
+    const pendingTxList = state.transactionReducer.pendingTxList[address];
+    const unconfirmedTxList =
+        state.transactionReducer.unconfirmedTxList[address];
     return {
-        addressUTXOList: state.assetReducer.aggsUTXOList[address]
+        addressUTXOList: aggsUTXOList && aggsUTXOList.data,
+        pendingTxList: pendingTxList && pendingTxList.data,
+        unconfirmedTxList: unconfirmedTxList && unconfirmedTxList.data
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     fetchAggsUTXOListIfNeed: (address: string) => {
-        dispatch(actions.fetchAggsUTXOListIfNeed(address));
+        dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
+    },
+    fetchPendingTxListIfNeed: (address: string) => {
+        dispatch(transactionActions.fetchPendingTxListIfNeed(address));
+    },
+    fetchUnconfirmedTxListIfNeed: (address: string) => {
+        dispatch(transactionActions.fetchUnconfirmedTxListIfNeed(address));
     }
 });
 export default connect(

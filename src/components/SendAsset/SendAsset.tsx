@@ -17,16 +17,12 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Container } from "reactstrap";
-import { Dispatch } from "redux";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
 import { getCCKey } from "../../model/wallet";
-import {
-    getAggsUTXOByAssetType,
-    getAssetByAssetType,
-    getUTXOListByAssetType,
-    sendTxToGateway
-} from "../../networks/Api";
+import { getUTXOListByAssetType, sendTxToGateway } from "../../networks/Api";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/asset/actions";
+import actions from "../../redux/asset/assetActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import { getNetworkIdByAddress } from "../../utils/network";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
@@ -37,16 +33,17 @@ interface OwnProps {
 }
 
 interface StateProps {
-    assetScheme?: AssetSchemeDoc;
+    assetScheme?: AssetSchemeDoc | null;
+    aggsUTXO?: AggsUTXO | null;
 }
 
 interface DispatchProps {
-    cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => void;
+    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => void;
+    fetchAggsUTXOListIfNeed: (address: string) => void;
 }
 
 interface State {
-    aggsUTXO?: AggsUTXO;
-    UTXOList?: UTXO[];
+    UTXOList?: UTXO[] | null;
     hasUTXOListRequested: boolean;
 }
 
@@ -56,7 +53,6 @@ class SendAsset extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            aggsUTXO: undefined,
             UTXOList: undefined,
             hasUTXOListRequested: false
         };
@@ -76,7 +72,6 @@ class SendAsset extends React.Component<Props, State> {
         if (nextAssetType !== assetType) {
             this.setState({
                 UTXOList: [],
-                aggsUTXO: undefined,
                 hasUTXOListRequested: false
             });
             this.init();
@@ -94,7 +89,8 @@ class SendAsset extends React.Component<Props, State> {
                 params: { assetType, address }
             }
         } = this.props;
-        const { aggsUTXO, hasUTXOListRequested } = this.state;
+        const { aggsUTXO } = this.props;
+        const { hasUTXOListRequested } = this.state;
         if (!assetScheme || !hasUTXOListRequested || !aggsUTXO) {
             return (
                 <div>
@@ -237,22 +233,12 @@ class SendAsset extends React.Component<Props, State> {
         const {
             match: {
                 params: { address, assetType }
-            },
-            assetScheme,
-            cacheAssetScheme
-        } = this.props;
-        if (!assetScheme) {
-            const networkId = getNetworkIdByAddress(address);
-            try {
-                const responseAssetScheme = await getAssetByAssetType(
-                    new H256(assetType),
-                    networkId
-                );
-                cacheAssetScheme(new H256(assetType), responseAssetScheme);
-            } catch (e) {
-                console.log(e);
             }
-        }
+        } = this.props;
+        this.props.fetchAssetSchemeIfNeed(
+            new H256(assetType),
+            getNetworkIdByAddress(address)
+        );
     };
 
     private getUTXOList = async () => {
@@ -279,35 +265,40 @@ class SendAsset extends React.Component<Props, State> {
     private getAggsUTXO = async () => {
         const {
             match: {
-                params: { address, assetType }
+                params: { address }
             }
         } = this.props;
-        try {
-            const aggsUTXO = await getAggsUTXOByAssetType(
-                address,
-                new H256(assetType),
-                getNetworkIdByAddress(address)
-            );
-            this.setState({ aggsUTXO });
-        } catch (e) {
-            console.log(e);
-        }
+        this.props.fetchAggsUTXOListIfNeed(address);
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const {
         match: {
-            params: { assetType }
+            params: { assetType, address }
         }
     } = ownProps;
+    const assetScheme =
+        state.assetReducer.assetScheme[new H256(assetType).value];
+    const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
+
     return {
-        assetScheme: state.assetReducer.assetScheme[new H256(assetType).value]
+        assetScheme: assetScheme && assetScheme.data,
+        aggsUTXO:
+            aggsUTXOList &&
+            aggsUTXOList.data &&
+            _.find(aggsUTXOList.data, a => a.assetType === assetType)
     };
 };
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => {
-        dispatch(actions.cacheAssetScheme(assetType, assetScheme));
+
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => {
+        dispatch(actions.fetchAssetSchemeIfNeed(assetType, networkId));
+    },
+    fetchAggsUTXOListIfNeed: (address: string) => {
+        dispatch(actions.fetchAggsUTXOListIfNeed(address));
     }
 });
 

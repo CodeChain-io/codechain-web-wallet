@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/global/actions";
+import actions from "../../redux/global/globalActions";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Action } from "redux";

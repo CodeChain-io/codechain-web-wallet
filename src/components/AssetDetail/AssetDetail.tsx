@@ -6,10 +6,10 @@ import { connect } from "react-redux";
 import { match } from "react-router";
 import { Link } from "react-router-dom";
 import { Container, Table } from "reactstrap";
-import { Dispatch } from "redux";
-import { getAssetByAssetType } from "../../networks/Api";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/asset/actions";
+import actions from "../../redux/asset/assetActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import { getNetworkIdByAddress } from "../../utils/network";
 import "./AssetDetail.css";
@@ -19,11 +19,11 @@ interface OwnProps {
 }
 
 interface StateProps {
-    assetScheme?: AssetSchemeDoc;
+    assetScheme?: AssetSchemeDoc | null;
 }
 
 interface DispatchProps {
-    cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => void;
+    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -102,29 +102,15 @@ class AssetDetail extends React.Component<Props, any> {
     }
 
     private init = () => {
-        this.getAssetScheme();
-    };
-
-    private getAssetScheme = async () => {
         const {
             match: {
-                params: { address, assetType }
-            },
-            assetScheme,
-            cacheAssetScheme
-        } = this.props;
-        if (!assetScheme) {
-            const networkId = getNetworkIdByAddress(address);
-            try {
-                const responseAssetScheme = await getAssetByAssetType(
-                    new H256(assetType),
-                    networkId
-                );
-                cacheAssetScheme(new H256(assetType), responseAssetScheme);
-            } catch (e) {
-                console.log(e);
+                params: { assetType, address }
             }
-        }
+        } = this.props;
+        this.props.fetchAssetSchemeIfNeed(
+            new H256(assetType),
+            getNetworkIdByAddress(address)
+        );
     };
 }
 
@@ -134,13 +120,17 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
             params: { assetType }
         }
     } = ownProps;
+    const assetScheme =
+        state.assetReducer.assetScheme[new H256(assetType).value];
     return {
-        assetScheme: state.assetReducer.assetScheme[new H256(assetType).value]
+        assetScheme: assetScheme && assetScheme.data
     };
 };
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    cacheAssetScheme: (assetType: H256, assetScheme: AssetSchemeDoc) => {
-        dispatch(actions.cacheAssetScheme(assetType, assetScheme));
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => {
+        dispatch(actions.fetchAssetSchemeIfNeed(assetType, networkId));
     }
 });
 export default connect(

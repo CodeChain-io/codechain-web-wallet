@@ -1,8 +1,13 @@
 import { AggsUTXO, AssetSchemeDoc } from "codechain-indexer-types/lib/types";
-import { Action, ActionType } from "./actions";
+import { Action, ActionType } from "./assetActions";
 
 export interface AssetState {
-    assetScheme: { [assetType: string]: AssetSchemeDoc | null };
+    assetScheme: {
+        [assetType: string]: {
+            data?: AssetSchemeDoc;
+            isFetching: boolean;
+        } | null;
+    };
     aggsUTXOList: {
         [address: string]: {
             data?: AggsUTXO[] | null;
@@ -21,9 +26,13 @@ export const assetReducer = (state = initialState, action: Action) => {
     switch (action.type) {
         case ActionType.CacheAssetScheme: {
             const assetType = action.data.assetType;
+            const currentAssetScheme = {
+                data: action.data.assetScheme,
+                isFetching: false
+            };
             const assetScheme = {
                 ...state.assetScheme,
-                [assetType]: action.data.assetScheme
+                [assetType]: currentAssetScheme
             };
             return {
                 ...state,

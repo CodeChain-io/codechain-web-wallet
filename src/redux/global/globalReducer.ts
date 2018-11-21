@@ -1,4 +1,4 @@
-import { Action, ActionType } from "./actions";
+import { Action, ActionType } from "./globalActions";
 
 export interface GlobalState {
     isAuthenticated: boolean;

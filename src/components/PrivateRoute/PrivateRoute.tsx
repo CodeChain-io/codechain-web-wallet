@@ -4,7 +4,7 @@ import { Redirect, Route } from "react-router-dom";
 import { Dispatch } from "redux";
 import { isWalletExisted } from "../../model/wallet";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/global/actions";
+import actions from "../../redux/global/globalActions";
 
 interface State {
     checkedSessionStorage: boolean;

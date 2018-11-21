@@ -10,7 +10,7 @@ import {
     getWalletName
 } from "../../model/wallet";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/wallet/actions";
+import actions from "../../redux/wallet/walletActions";
 import AddressItem from "./AddressItem/AddressItem";
 import "./AddressList.css";
 

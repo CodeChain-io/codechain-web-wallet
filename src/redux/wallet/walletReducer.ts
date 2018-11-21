@@ -1,5 +1,5 @@
 import { WalletAddress } from "../../model/address";
-import { Action, ActionType } from "./actions";
+import { Action, ActionType } from "./walletActions";
 
 export interface WalletState {
     platformAddresses: WalletAddress[];

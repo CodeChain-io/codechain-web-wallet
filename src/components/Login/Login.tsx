@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import { Container } from "reactstrap";
 import { Dispatch } from "redux";
 import { loadWallet } from "../../model/wallet";
-import actions from "../../redux/global/actions";
+import actions from "../../redux/global/globalActions";
 import CreateAddressContainer from "../CreateAddressContainer/CreateAddressContainer";
 import CreateWalletForm from "../CreateWalletForm/CreateWalletForm";
 import "./Login.css";

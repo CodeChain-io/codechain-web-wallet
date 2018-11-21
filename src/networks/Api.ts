@@ -59,7 +59,6 @@ export async function getAggsUTXOList(
     return await getRequest<AggsUTXO[]>(`${apiHost}/api/aggs-utxo/${address}`);
 }
 
-// FIXME: Search pending parcels if this api returns null.
 export async function getAssetByAssetType(assetType: H256, networkId: string) {
     const apiHost = getApiHost(networkId);
     return getRequest<AssetSchemeDoc>(
@@ -71,17 +70,6 @@ export async function getPlatformAccount(address: string, networkId: string) {
     const apiHost = getApiHost(networkId);
     return await getRequest<PlatformAccount>(
         `${apiHost}/api/addr-platform-account/${address}`
-    );
-}
-
-export async function getAggsUTXOByAssetType(
-    address: string,
-    assetType: H256,
-    networkId: string
-) {
-    const apiHost = getApiHost(networkId);
-    return await getRequest<AggsUTXO | undefined>(
-        `${apiHost}/api/aggs-utxo/${address}/${assetType.value}`
     );
 }
 

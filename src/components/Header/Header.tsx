@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/global/actions";
+import actions from "../../redux/global/globalActions";
 import "./Header.css";
 import * as Logo from "./img/codechain-logo.png";
 
