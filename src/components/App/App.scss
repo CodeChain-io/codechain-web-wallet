@@ -3,5 +3,22 @@
 .app {
   .content-container {
     flex: 1;
+    height: calc(100vh - #{$header-height});
+    overflow: scroll;
+  }
+
+  .slide-menu-effect-enter {
+    transform: translate(-101%);
+  }
+  .slide-menu-effect-enter.slide-menu-effect-enter-active {
+    transform: translate(0%);
+    transition: transform 150ms ease-in;
+  }
+  .slide-menu-effect-leave {
+    transform: translate(0%);
+  }
+  .slide-menu-effect-leave.slide-menu-effect-leave-active {
+    transform: translate(-101%);
+    transition: transform 150ms ease-in;
   }
 }

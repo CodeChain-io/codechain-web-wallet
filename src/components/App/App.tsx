@@ -9,6 +9,7 @@ import {
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
+import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import * as ReactModal from "react-modal";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -56,12 +57,13 @@ class App extends React.Component<Props, any> {
                 <div id="app" className="app" ref={this.appRef}>
                     {isAuthenticated && <Header />}
                     <div className="d-flex">
-                        {isAuthenticated &&
-                            isSideMenuOpen && (
-                                <div>
-                                    <SideMenu />
-                                </div>
-                            )}
+                        <ReactCSSTransitionGroup
+                            transitionName="slide-menu-effect"
+                            transitionEnterTimeout={150}
+                            transitionLeaveTimeout={150}
+                        >
+                            {isAuthenticated && isSideMenuOpen && <SideMenu />}
+                        </ReactCSSTransitionGroup>
                         <div className="content-container">
                             <Switch>
                                 <Route path="/login" component={Login} />

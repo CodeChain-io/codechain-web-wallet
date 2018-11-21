@@ -1,10 +1,20 @@
 @import "styles/variables.scss";
+@import "styles/mixin.scss";
 
 .side-menu {
   position: relative;
   width: $sidemenu-width;
   height: calc(100vh - #{$header-height});
   box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.5);
+  background-color: white;
+
+  @include respond-below(sm) {
+    & {
+      width: 100%;
+      position: fixed;
+      z-index: 10;
+    }
+  }
 
   .title-container {
     padding: 36px;
@@ -15,7 +25,7 @@
     position: absolute;
     cursor: pointer;
     padding: 18px;
-    right: 3px;
+    right: 10px;
     top: 3px;
     color: $grey2;
   }

@@ -7,7 +7,7 @@ export interface GlobalState {
 
 const initialState: GlobalState = {
     isAuthenticated: false,
-    isSideMenuOpen: true
+    isSideMenuOpen: false
 };
 
 export const globalReducer = (state = initialState, action: Action) => {

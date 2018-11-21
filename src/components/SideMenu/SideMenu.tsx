@@ -1,12 +1,11 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import { connect } from "react-redux";
-import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/global/globalActions";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { WalletAddress } from "../../model/address";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/global/globalActions";
 import "./SideMenu.css";
 
 interface StateProps {
