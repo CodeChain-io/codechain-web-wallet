@@ -1,11 +1,11 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Dispatch } from "redux";
-import { clearWallet } from "../../model/wallet";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/global/actions";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
 import { WalletAddress } from "../../model/address";
 import "./SideMenu.css";
 
@@ -74,7 +74,6 @@ class SideMenu extends React.Component<Props, any> {
     }
 
     private handleLogout = async () => {
-        await clearWallet();
         this.props.logout();
     };
 
@@ -89,7 +88,9 @@ const mapStateToProps = (state: ReducerConfigure) => ({
     assetAddresses: state.walletReducer.assetAddresses,
     platformAddresses: state.walletReducer.platformAddresses
 });
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
     logout: () => {
         dispatch(actions.logout());
     },
