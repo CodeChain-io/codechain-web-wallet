@@ -6,34 +6,48 @@ import {
 import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import * as _ from "lodash";
 import * as React from "react";
+import { connect } from "react-redux";
 import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
-import {
-    getAggsUTXOList,
-    getPendingTransactions,
-    getTxsByAddress
-} from "../../networks/Api";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
+import { getPendingTransactions, getTxsByAddress } from "../../networks/Api";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/asset/actions";
 import { getNetworkIdByAddress } from "../../utils/network";
 import { TxUtil } from "../../utils/transaction";
 import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 
-interface Props {
+interface OwnProps {
     match: match<{ address: string }>;
 }
 
+interface StateProps {
+    addressUTXOList?: {
+        data?: AggsUTXO[] | null;
+        updatedAt?: number | null;
+        isFetching: boolean;
+    } | null;
+}
+
+interface DispatchProps {
+    fetchAggsUTXOListIfNeed: (address: string) => void;
+}
+
 interface State {
-    addressUTXOList?: AggsUTXO[] | null;
     pendingTxList?: PendingTransactionDoc[] | null;
     unconfirmedTxList?: TransactionDoc[] | null;
 }
 
-export default class AssetList extends React.Component<Props, State> {
+type Props = OwnProps & StateProps & DispatchProps;
+
+class AssetList extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            addressUTXOList: undefined,
-            pendingTxList: undefined
+            pendingTxList: undefined,
+            unconfirmedTxList: undefined
         };
     }
     public componentWillReceiveProps(props: Props) {
@@ -49,7 +63,6 @@ export default class AssetList extends React.Component<Props, State> {
         } = props;
         if (nextAddress !== address) {
             this.setState({
-                addressUTXOList: undefined,
                 pendingTxList: undefined,
                 unconfirmedTxList: undefined
             });
@@ -67,11 +80,8 @@ export default class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        const {
-            addressUTXOList,
-            pendingTxList,
-            unconfirmedTxList
-        } = this.state;
+        const { addressUTXOList } = this.props;
+        const { pendingTxList, unconfirmedTxList } = this.state;
         if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
             return (
                 <div>
@@ -128,11 +138,8 @@ export default class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        const {
-            addressUTXOList,
-            pendingTxList,
-            unconfirmedTxList
-        } = this.state;
+        const { pendingTxList, unconfirmedTxList } = this.state;
+        const { addressUTXOList } = this.props;
 
         if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
             return [];
@@ -171,7 +178,7 @@ export default class AssetList extends React.Component<Props, State> {
                 metadata: MetadataFormat;
             };
         } = {};
-        _.each(addressUTXOList, addressConfirmedUTXO => {
+        _.each(addressUTXOList.data, addressConfirmedUTXO => {
             availableAssets[addressConfirmedUTXO.assetType] = {
                 assetType: addressConfirmedUTXO.assetType,
                 quantities: addressConfirmedUTXO.totalAssetQuantity,
@@ -210,26 +217,14 @@ export default class AssetList extends React.Component<Props, State> {
     };
 
     private init = async () => {
-        this.getAssetList();
-        this.getUnconfirmedTxList();
-        this.getPendingTxList();
-    };
-
-    private getAssetList = async () => {
         const {
             match: {
                 params: { address }
             }
         } = this.props;
-        try {
-            const UTXO = await getAggsUTXOList(
-                address,
-                getNetworkIdByAddress(address)
-            );
-            this.setState({ addressUTXOList: UTXO });
-        } catch (e) {
-            console.log(e);
-        }
+        this.getUnconfirmedTxList();
+        this.getPendingTxList();
+        this.props.fetchAggsUTXOListIfNeed(address);
     };
 
     private getPendingTxList = async () => {
@@ -269,3 +264,25 @@ export default class AssetList extends React.Component<Props, State> {
         }
     };
 }
+
+const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
+    const {
+        match: {
+            params: { address }
+        }
+    } = props;
+    return {
+        addressUTXOList: state.assetReducer.aggsUTXOList[address]
+    };
+};
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchAggsUTXOListIfNeed: (address: string) => {
+        dispatch(actions.fetchAggsUTXOListIfNeed(address));
+    }
+});
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(AssetList);
