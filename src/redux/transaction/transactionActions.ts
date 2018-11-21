@@ -6,22 +6,26 @@ import { AssetTransferTransaction } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
-import { getPendingTransactions, getTxsByAddress } from "../../networks/Api";
+import {
+    getPendingTransactions,
+    getTxsByAddress,
+    sendTxToGateway
+} from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
 
 export type Action =
     | CachePendingTxList
     | CacheUnconfirmedTxList
-    | CacheUnindexedTransferTx
     | SetFetchingPendingTxList
-    | SetFetchingUnconfirmedTxList;
+    | SetFetchingUnconfirmedTxList
+    | SetSendingTx;
 
 export enum ActionType {
     CachePendingTxList = "cachePendingTxList",
     CacheUnconfirmedTxList = "cacheUnconfirmedTxList",
-    CacheUnindexedTransferTx = "cacheUnindexedTransferTx",
     SetFetchingPendingTxList = "setFetchingPendingTxList",
-    SetFetchingUnconfirmedTxList = "setFetchingUnconfirmedTxList"
+    SetFetchingUnconfirmedTxList = "setFetchingUnconfirmedTxList",
+    SetSendingTx = "setSendingTx"
 }
 
 export interface CachePendingTxList {
@@ -40,14 +44,6 @@ export interface CacheUnconfirmedTxList {
     };
 }
 
-export interface CacheUnindexedTransferTx {
-    type: ActionType.CacheUnindexedTransferTx;
-    data: {
-        address: string;
-        transaction: AssetTransferTransaction | null;
-    };
-}
-
 export interface SetFetchingPendingTxList {
     type: ActionType.SetFetchingPendingTxList;
     data: {
@@ -59,6 +55,14 @@ export interface SetFetchingUnconfirmedTxList {
     type: ActionType.SetFetchingUnconfirmedTxList;
     data: {
         address: string;
+    };
+}
+
+export interface SetSendingTx {
+    type: ActionType.SetSendingTx;
+    data: {
+        address: string;
+        tx: AssetTransferTransaction | null;
     };
 }
 
@@ -96,7 +100,7 @@ const fetchPendingTxListIfNeed = (address: string) => {
         if (
             cachedPendingTxList &&
             cachedPendingTxList.updatedAt &&
-            +new Date() - cachedPendingTxList.updatedAt < 5
+            +new Date() - cachedPendingTxList.updatedAt < 3
         ) {
             return;
         }
@@ -106,20 +110,6 @@ const fetchPendingTxListIfNeed = (address: string) => {
                 address,
                 getNetworkIdByAddress(address)
             );
-            const unindexedTx = getState().transactionReducer.unindexedTx[
-                address
-            ];
-            if (
-                unindexedTx &&
-                _.find(
-                    pendingTxList,
-                    tx =>
-                        (tx as PendingTransactionDoc).transaction.data.hash ===
-                        unindexedTx.hash().value
-                )
-            ) {
-                dispatch(cacheUnindexedTransferTx(address, null));
-            }
             dispatch(cachePendingTxList(address, pendingTxList));
         } catch (e) {
             console.log(e);
@@ -180,19 +170,58 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
     };
 };
 
-const cacheUnindexedTransferTx = (
+const setSendingTx = (
     address: string,
-    unindexedTransferTx: AssetTransferTransaction | null
-): CacheUnindexedTransferTx => ({
-    type: ActionType.CacheUnindexedTransferTx,
+    transferTx: AssetTransferTransaction | null
+): SetSendingTx => ({
+    type: ActionType.SetSendingTx,
     data: {
         address,
-        transaction: unindexedTransferTx
+        tx: transferTx
     }
 });
+
+let checkingIndexingFunc: NodeJS.Timer;
+const sendTransaction = (
+    address: string,
+    transferTx: AssetTransferTransaction
+) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const sendingTx = getState().transactionReducer.sendingTx[address];
+        if (sendingTx) {
+            return;
+        }
+        try {
+            dispatch(setSendingTx(address, transferTx));
+            await sendTxToGateway(transferTx, getNetworkIdByAddress(address));
+            checkingIndexingFunc = setInterval(() => {
+                dispatch(fetchPendingTxListIfNeed(address));
+                const pendingTxList = getState().transactionReducer
+                    .pendingTxList[address];
+                if (
+                    pendingTxList &&
+                    pendingTxList.data &&
+                    _.find(
+                        pendingTxList.data,
+                        tx =>
+                            tx.transaction.data.hash === transferTx.hash().value
+                    )
+                ) {
+                    dispatch(setSendingTx(address, null));
+                    clearInterval(checkingIndexingFunc);
+                }
+            }, 1000);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
 
 export default {
     fetchPendingTxListIfNeed,
     fetchUnconfirmedTxListIfNeed,
-    cacheUnindexedTransferTx
+    sendTransaction
 };

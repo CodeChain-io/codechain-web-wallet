@@ -141,7 +141,7 @@ class AssetList extends React.Component<Props> {
         const aggregatedUnconfirmedAsset = _.flatMap(
             unconfirmedTxList,
             unconfirmedTx => {
-                return TxUtil.getAssetHistoryFromTransaction(
+                return TxUtil.getAssetAggregationFromTransactionDoc(
                     address,
                     unconfirmedTx
                 );
@@ -157,7 +157,7 @@ class AssetList extends React.Component<Props> {
         const aggregatedPendingAsset = _.flatMap(
             validPendingTxList,
             pendingTx => {
-                return TxUtil.getAssetHistoryFromTransaction(
+                return TxUtil.getAssetAggregationFromTransactionDoc(
                     address,
                     pendingTx.transaction
                 );

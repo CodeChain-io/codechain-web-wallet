@@ -6,7 +6,7 @@ import {
 import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import * as _ from "lodash";
 
-function getAssetHistoryFromTransaction(
+function getAssetAggregationFromTransactionDoc(
     address: string,
     transaction: TransactionDoc
 ): {
@@ -123,4 +123,4 @@ function getAssetHistoryFromTransaction(
     }
 }
 
-export const TxUtil = { getAssetHistoryFromTransaction };
+export const TxUtil = { getAssetAggregationFromTransactionDoc };

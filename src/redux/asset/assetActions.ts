@@ -123,7 +123,7 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
         if (
             cachedAggsUTXOList &&
             cachedAggsUTXOList.updatedAt &&
-            +new Date() - cachedAggsUTXOList.updatedAt < 5
+            +new Date() - cachedAggsUTXOList.updatedAt < 3
         ) {
             return;
         }

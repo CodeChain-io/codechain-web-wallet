@@ -11,7 +11,10 @@ interface Props {
 export default class TxItem extends React.Component<Props, any> {
     public render() {
         const { tx, address, bestBlockNumber } = this.props;
-        const assetHistory = TxUtil.getAssetHistoryFromTransaction(address, tx);
+        const assetHistory = TxUtil.getAssetAggregationFromTransactionDoc(
+            address,
+            tx
+        );
         const confirmNumber = bestBlockNumber - tx.data.blockNumber;
         return _.map(assetHistory, (history, index) => (
             <tr key={`${history.assetType}-${index}`}>

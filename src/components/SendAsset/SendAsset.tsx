@@ -9,6 +9,7 @@ import {
     Asset,
     AssetTransferAddress,
     AssetTransferOutput,
+    AssetTransferTransaction,
     H256
 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
@@ -20,9 +21,10 @@ import { Container } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { getCCKey } from "../../model/wallet";
-import { getUTXOListByAssetType, sendTxToGateway } from "../../networks/Api";
+import { getUTXOListByAssetType } from "../../networks/Api";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/asset/assetActions";
+import assetActions from "../../redux/asset/assetActions";
+import transactionActions from "../../redux/transaction/transactionActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import { getNetworkIdByAddress } from "../../utils/network";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
@@ -35,11 +37,16 @@ interface OwnProps {
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
     aggsUTXO?: AggsUTXO | null;
+    isSendingTx: boolean;
 }
 
 interface DispatchProps {
     fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => void;
     fetchAggsUTXOListIfNeed: (address: string) => void;
+    sendTransaction: (
+        address: string,
+        transferTx: AssetTransferTransaction
+    ) => void;
 }
 
 interface State {
@@ -89,7 +96,7 @@ class SendAsset extends React.Component<Props, State> {
                 params: { assetType, address }
             }
         } = this.props;
-        const { aggsUTXO } = this.props;
+        const { aggsUTXO, isSendingTx } = this.props;
         const { hasUTXOListRequested } = this.state;
         if (!assetScheme || !hasUTXOListRequested || !aggsUTXO) {
             return (
@@ -129,6 +136,7 @@ class SendAsset extends React.Component<Props, State> {
                         onSubmit={this.handleSubmit}
                         totalQuantities={aggsUTXO.totalAssetQuantity}
                     />
+                    {isSendingTx && <div>Sending...</div>}
                 </Container>
             </div>
         );
@@ -219,8 +227,7 @@ class SendAsset extends React.Component<Props, State> {
                     });
                 })
             );
-            await sendTxToGateway(transferTx, networkId);
-            alert("success!");
+            this.props.sendTransaction(address, transferTx);
         } catch (e) {
             if (e.message === "DecryptionFailed") {
                 alert("Invalid password");
@@ -281,13 +288,15 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const assetScheme =
         state.assetReducer.assetScheme[new H256(assetType).value];
     const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
+    const sendingTx = state.transactionReducer.sendingTx[address];
 
     return {
         assetScheme: assetScheme && assetScheme.data,
         aggsUTXO:
             aggsUTXOList &&
             aggsUTXOList.data &&
-            _.find(aggsUTXOList.data, a => a.assetType === assetType)
+            _.find(aggsUTXOList.data, a => a.assetType === assetType),
+        isSendingTx: sendingTx != null
     };
 };
 
@@ -295,10 +304,16 @@ const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => {
-        dispatch(actions.fetchAssetSchemeIfNeed(assetType, networkId));
+        dispatch(assetActions.fetchAssetSchemeIfNeed(assetType, networkId));
     },
     fetchAggsUTXOListIfNeed: (address: string) => {
-        dispatch(actions.fetchAggsUTXOListIfNeed(address));
+        dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
+    },
+    sendTransaction: (
+        address: string,
+        transferTx: AssetTransferTransaction
+    ) => {
+        dispatch(transactionActions.sendTransaction(address, transferTx));
     }
 });
 

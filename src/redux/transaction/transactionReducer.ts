@@ -20,7 +20,7 @@ export interface TransactionState {
             updatedAt?: number | null;
         } | null;
     };
-    unindexedTx: {
+    sendingTx: {
         [address: string]: AssetTransferTransaction | null;
     };
 }
@@ -28,7 +28,7 @@ export interface TransactionState {
 const initialState: TransactionState = {
     pendingTxList: {},
     unconfirmedTxList: {},
-    unindexedTx: {}
+    sendingTx: {}
 };
 
 export const transactionReducer = (state = initialState, action: Action) => {
@@ -95,15 +95,15 @@ export const transactionReducer = (state = initialState, action: Action) => {
                 unconfirmedTxList
             };
         }
-        case ActionType.CacheUnindexedTransferTx: {
+        case ActionType.SetSendingTx: {
             const address = action.data.address;
-            const unindexedTx = {
-                ...state.unconfirmedTxList,
-                [address]: action.data.transaction
+            const sendingTx = {
+                ...state.sendingTx,
+                [address]: action.data.tx
             };
             return {
                 ...state,
-                unindexedTx
+                sendingTx
             };
         }
     }
