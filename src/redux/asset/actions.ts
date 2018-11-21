@@ -72,6 +72,13 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
         if (cachedAggsUTXOList && cachedAggsUTXOList.isFetching) {
             return;
         }
+        if (
+            cachedAggsUTXOList &&
+            cachedAggsUTXOList.updatedAt &&
+            +new Date() - cachedAggsUTXOList.updatedAt < 10
+        ) {
+            return;
+        }
         try {
             const UTXO = await getAggsUTXOList(
                 address,
