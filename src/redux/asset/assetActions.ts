@@ -3,6 +3,7 @@ import {
     AssetSchemeDoc,
     UTXO
 } from "codechain-indexer-types/lib/types";
+import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import { H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { ThunkDispatch } from "redux-thunk";
@@ -13,6 +14,8 @@ import {
     getUTXOListByAssetType
 } from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
+import { TxUtil } from "../../utils/transaction";
+import transactionActions from "../transaction/transactionActions";
 
 export type Action =
     | CacheAssetScheme
@@ -20,7 +23,8 @@ export type Action =
     | SetFetchingAggsUTXOList
     | SetFetchingAssetScheme
     | CacheUTXOList
-    | SetFetchingUTXOList;
+    | SetFetchingUTXOList
+    | CacheAvailableAssets;
 
 export enum ActionType {
     CacheAssetScheme = "cacheAssetScheme",
@@ -28,7 +32,8 @@ export enum ActionType {
     SetFetchingAggsUTXOList = "setFetchingAggsUTXOList",
     SetFetchingAssetScheme = "setFetchingAssetScheme",
     SetFetchingUTXOList = "setFetchingUTXOList",
-    CacheUTXOList = "cacheUTXOList"
+    CacheUTXOList = "cacheUTXOList",
+    CacheAvailableAssets = "cacheAvailableAssets"
 }
 
 export interface CacheAssetScheme {
@@ -78,6 +83,18 @@ export interface CacheUTXOList {
     };
 }
 
+export interface CacheAvailableAssets {
+    type: ActionType.CacheAvailableAssets;
+    data: {
+        address: string;
+        availableAssets: {
+            assetType: string;
+            quantities: number;
+            metadata: MetadataFormat;
+        }[];
+    };
+}
+
 const cacheAssetScheme = (
     assetType: H256,
     assetScheme: AssetSchemeDoc
@@ -110,6 +127,21 @@ const cacheUTXOList = (
         address,
         assetType: assetType.value,
         UTXOList
+    }
+});
+
+const cacheAvailableAssets = (
+    address: string,
+    availableAssets: {
+        assetType: string;
+        quantities: number;
+        metadata: MetadataFormat;
+    }[]
+): CacheAvailableAssets => ({
+    type: ActionType.CacheAvailableAssets,
+    data: {
+        address,
+        availableAssets
     }
 });
 
@@ -176,7 +208,7 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
         if (
             cachedAggsUTXOList &&
             cachedAggsUTXOList.updatedAt &&
-            +new Date() - cachedAggsUTXOList.updatedAt < 3
+            +new Date() - cachedAggsUTXOList.updatedAt < 3000
         ) {
             return;
         }
@@ -192,6 +224,7 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
                     cacheAssetScheme(new H256(u.assetType), u.assetScheme)
                 );
             });
+            dispatch(calculateAvailableAssets(address));
         } catch (e) {
             console.log(e);
         }
@@ -215,7 +248,7 @@ const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
         if (
             cachedUTXOListByAddressAssetType &&
             cachedUTXOListByAddressAssetType.updatedAt &&
-            +new Date() - cachedUTXOListByAddressAssetType.updatedAt < 3
+            +new Date() - cachedUTXOListByAddressAssetType.updatedAt < 3000
         ) {
             return;
         }
@@ -233,9 +266,118 @@ const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
     };
 };
 
+const fetchAvailableAssets = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        dispatch(transactionActions.fetchPendingTxListIfNeed(address));
+        dispatch(transactionActions.fetchUnconfirmedTxListIfNeed(address));
+        dispatch(fetchAggsUTXOListIfNeed(address));
+    };
+};
+
+const calculateAvailableAssets = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const unconfirmedTxListObj = getState().transactionReducer
+            .unconfirmedTxList[address];
+        const addressUTXOListObj = getState().assetReducer.aggsUTXOList[
+            address
+        ];
+        const pendingTxListObj = getState().transactionReducer.pendingTxList[
+            address
+        ];
+
+        const unconfirmedTxList =
+            unconfirmedTxListObj && unconfirmedTxListObj.data;
+        const addressUTXOList = addressUTXOListObj && addressUTXOListObj.data;
+        const pendingTxList = pendingTxListObj && pendingTxListObj.data;
+
+        if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
+            return;
+        }
+
+        const aggregatedUnconfirmedAsset = _.flatMap(
+            unconfirmedTxList,
+            unconfirmedTx => {
+                return TxUtil.getAssetAggregationFromTransactionDoc(
+                    address,
+                    unconfirmedTx
+                );
+            }
+        );
+
+        const txHashList = _.map(unconfirmedTxList, tx => tx.data.hash);
+        const validPendingTxList = _.filter(
+            pendingTxList,
+            pendingTx =>
+                !_.includes(txHashList, pendingTx.transaction.data.hash)
+        );
+        const aggregatedPendingAsset = _.flatMap(
+            validPendingTxList,
+            pendingTx => {
+                return TxUtil.getAssetAggregationFromTransactionDoc(
+                    address,
+                    pendingTx.transaction
+                );
+            }
+        );
+
+        const availableAssets: {
+            [assetType: string]: {
+                assetType: string;
+                quantities: number;
+                metadata: MetadataFormat;
+            };
+        } = {};
+        _.each(addressUTXOList, addressConfirmedUTXO => {
+            availableAssets[addressConfirmedUTXO.assetType] = {
+                assetType: addressConfirmedUTXO.assetType,
+                quantities: addressConfirmedUTXO.totalAssetQuantity,
+                metadata: Type.getMetadata(
+                    addressConfirmedUTXO.assetScheme.metadata
+                )
+            };
+        });
+        _.each(aggregatedUnconfirmedAsset, asset => {
+            const quantities =
+                asset.outputQuantities -
+                (asset.inputQuantities + asset.burnQuantities);
+
+            if (quantities > 0) {
+                availableAssets[asset.assetType] = {
+                    ...availableAssets[asset.assetType],
+                    quantities:
+                        availableAssets[asset.assetType].quantities - quantities
+                };
+            }
+        });
+        _.each(aggregatedPendingAsset, asset => {
+            const quantities =
+                asset.outputQuantities -
+                (asset.inputQuantities + asset.burnQuantities);
+
+            if (quantities < 0) {
+                availableAssets[asset.assetType] = {
+                    ...availableAssets[asset.assetType],
+                    quantities:
+                        availableAssets[asset.assetType].quantities + quantities
+                };
+            }
+        });
+        const availableAssetsValue = _.values(availableAssets);
+        dispatch(cacheAvailableAssets(address, availableAssetsValue));
+    };
+};
+
 export default {
     cacheAssetScheme,
     fetchAggsUTXOListIfNeed,
     fetchAssetSchemeIfNeed,
-    fetchUTXOListIfNeed
+    fetchUTXOListIfNeed,
+    calculateAvailableAssets,
+    fetchAvailableAssets
 };

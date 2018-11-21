@@ -12,6 +12,7 @@ import {
     sendTxToGateway
 } from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
+import assetActions from "../asset/assetActions";
 
 export type Action =
     | CachePendingTxList
@@ -100,7 +101,7 @@ const fetchPendingTxListIfNeed = (address: string) => {
         if (
             cachedPendingTxList &&
             cachedPendingTxList.updatedAt &&
-            +new Date() - cachedPendingTxList.updatedAt < 3
+            +new Date() - cachedPendingTxList.updatedAt < 3000
         ) {
             return;
         }
@@ -111,6 +112,7 @@ const fetchPendingTxListIfNeed = (address: string) => {
                 getNetworkIdByAddress(address)
             );
             dispatch(cachePendingTxList(address, pendingTxList));
+            dispatch(assetActions.calculateAvailableAssets(address));
         } catch (e) {
             console.log(e);
         }
@@ -150,7 +152,7 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
         if (
             cachedUnconfirmedTxList &&
             cachedUnconfirmedTxList.updatedAt &&
-            +new Date() - cachedUnconfirmedTxList.updatedAt < 5
+            +new Date() - cachedUnconfirmedTxList.updatedAt < 3000
         ) {
             return;
         }
@@ -164,6 +166,7 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
                 getNetworkIdByAddress(address)
             );
             dispatch(cacheUnconfirmedTxList(address, unconfirmedTxList));
+            dispatch(assetActions.calculateAvailableAssets(address));
         } catch (e) {
             console.log(e);
         }

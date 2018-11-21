@@ -1,9 +1,5 @@
-import {
-    AggsUTXO,
-    AssetSchemeDoc,
-    UTXO
-} from "codechain-indexer-types/lib/types";
-import { Type } from "codechain-indexer-types/lib/utils";
+import { AssetSchemeDoc, UTXO } from "codechain-indexer-types/lib/types";
+import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import { SDK } from "codechain-sdk";
 import {
     Asset,
@@ -35,14 +31,20 @@ interface OwnProps {
 
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
-    aggsUTXO?: AggsUTXO | null;
     isSendingTx: boolean;
     UTXOList: UTXO[] | null;
+    availableAssets?:
+        | {
+              assetType: string;
+              quantities: number;
+              metadata: MetadataFormat;
+          }[]
+        | null;
 }
 
 interface DispatchProps {
     fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => void;
-    fetchAggsUTXOListIfNeed: (address: string) => void;
+    fetchAvailableAssets: (address: string) => void;
     fetchUTXOListIfNeed: (address: string, assetType: H256) => void;
     sendTransaction: (
         address: string,
@@ -84,12 +86,25 @@ class SendAsset extends React.Component<Props> {
                 params: { assetType, address }
             }
         } = this.props;
-        const { aggsUTXO, isSendingTx, UTXOList } = this.props;
-        if (!assetScheme || !UTXOList || !aggsUTXO) {
+        const { availableAssets, isSendingTx, UTXOList } = this.props;
+        if (!assetScheme || !UTXOList || !availableAssets) {
             return (
                 <div>
                     <Container>
                         <div className="mt-5">Loading...</div>
+                    </Container>
+                </div>
+            );
+        }
+        const availableAsset = _.find(
+            availableAssets,
+            a => a.assetType === assetType
+        );
+        if (!availableAsset) {
+            return (
+                <div>
+                    <Container>
+                        <div className="mt-5">Invalid assetType</div>
                     </Container>
                 </div>
             );
@@ -113,15 +128,13 @@ class SendAsset extends React.Component<Props> {
                         </div>
                         <div className="ml-2">
                             <p className="mb-0">{metadata.name || assetType}</p>
-                            <p className="mb-0">
-                                {aggsUTXO.totalAssetQuantity}
-                            </p>
+                            <p className="mb-0">{availableAsset.quantities}</p>
                         </div>
                     </div>
                     <hr />
                     <ReceiverContainer
                         onSubmit={this.handleSubmit}
-                        totalQuantities={aggsUTXO.totalAssetQuantity}
+                        totalQuantities={availableAsset.quantities}
                     />
                     {isSendingTx && <div>Sending...</div>}
                 </Container>
@@ -131,7 +144,7 @@ class SendAsset extends React.Component<Props> {
 
     private init = () => {
         this.getAssetScheme();
-        this.getAggsUTXO();
+        this.getAvailableAssets();
         this.getUTXOList();
     };
 
@@ -244,13 +257,13 @@ class SendAsset extends React.Component<Props> {
         this.props.fetchUTXOListIfNeed(address, new H256(assetType));
     };
 
-    private getAggsUTXO = async () => {
+    private getAvailableAssets = async () => {
         const {
             match: {
                 params: { address }
             }
         } = this.props;
-        this.props.fetchAggsUTXOListIfNeed(address);
+        this.props.fetchAvailableAssets(address);
     };
 }
 
@@ -262,19 +275,16 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     } = ownProps;
     const assetScheme =
         state.assetReducer.assetScheme[new H256(assetType).value];
-    const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
     const sendingTx = state.transactionReducer.sendingTx[address];
     const UTXOListByAddress = state.assetReducer.UTXOList[address];
     const UTXOListByAddressAssetType =
         UTXOListByAddress && UTXOListByAddress[assetType];
+    const availableAssets = state.assetReducer.availableAssets[address];
     return {
         assetScheme: assetScheme && assetScheme.data,
-        aggsUTXO:
-            aggsUTXOList &&
-            aggsUTXOList.data &&
-            _.find(aggsUTXOList.data, a => a.assetType === assetType),
         isSendingTx: sendingTx != null,
-        UTXOList: UTXOListByAddressAssetType && UTXOListByAddressAssetType.data
+        UTXOList: UTXOListByAddressAssetType && UTXOListByAddressAssetType.data,
+        availableAssets
     };
 };
 
@@ -284,8 +294,8 @@ const mapDispatchToProps = (
     fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => {
         dispatch(assetActions.fetchAssetSchemeIfNeed(assetType, networkId));
     },
-    fetchAggsUTXOListIfNeed: (address: string) => {
-        dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
+    fetchAvailableAssets: (address: string) => {
+        dispatch(assetActions.fetchAvailableAssets(address));
     },
     sendTransaction: (
         address: string,

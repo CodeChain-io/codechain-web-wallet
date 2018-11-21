@@ -3,6 +3,7 @@ import {
     AssetSchemeDoc,
     UTXO
 } from "codechain-indexer-types/lib/types";
+import { MetadataFormat } from "codechain-indexer-types/lib/utils";
 import { Action, ActionType } from "./assetActions";
 const merge = require("deepmerge").default;
 
@@ -29,12 +30,22 @@ export interface AssetState {
             } | null;
         } | null;
     };
+    availableAssets: {
+        [address: string]:
+            | {
+                  assetType: string;
+                  quantities: number;
+                  metadata: MetadataFormat;
+              }[]
+            | null;
+    };
 }
 
 const initialState: AssetState = {
     assetScheme: {},
     aggsUTXOList: {},
-    UTXOList: {}
+    UTXOList: {},
+    availableAssets: {}
 };
 
 export const assetReducer = (state = initialState, action: Action) => {
@@ -130,6 +141,17 @@ export const assetReducer = (state = initialState, action: Action) => {
             return {
                 ...state,
                 UTXOList: merge(state.UTXOList, newUTXOList)
+            };
+        }
+        case ActionType.CacheAvailableAssets: {
+            const address = action.data.address;
+            const availableAssets = {
+                ...state.availableAssets,
+                [address]: action.data.availableAssets
+            };
+            return {
+                ...state,
+                availableAssets
             };
         }
     }
