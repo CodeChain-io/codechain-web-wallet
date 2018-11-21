@@ -20,7 +20,8 @@ export const globalReducer = (state = initialState, action: Action) => {
         case ActionType.Logout:
             return {
                 ...state,
-                isAuthenticated: false
+                isAuthenticated: false,
+                isSideMenuOpen: false
             };
         case ActionType.ToggleMenu:
             return {
