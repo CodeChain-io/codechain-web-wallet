@@ -13,6 +13,7 @@
     "codechain-indexer-types": "^0.1.0-alpha.2",
     "codechain-keystore": "^0.5.4",
     "codechain-sdk": "^0.5.1",
+    "deepmerge": "^2.2.1",
     "file-saver": "^2.0.0-rc.3",
     "identicon.js": "^2.3.3",
     "js-sha256": "^0.9.0",

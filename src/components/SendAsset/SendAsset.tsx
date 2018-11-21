@@ -21,7 +21,6 @@ import { Container } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { getCCKey } from "../../model/wallet";
-import { getUTXOListByAssetType } from "../../networks/Api";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import transactionActions from "../../redux/transaction/transactionActions";
@@ -38,31 +37,24 @@ interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
     aggsUTXO?: AggsUTXO | null;
     isSendingTx: boolean;
+    UTXOList: UTXO[] | null;
 }
 
 interface DispatchProps {
     fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => void;
     fetchAggsUTXOListIfNeed: (address: string) => void;
+    fetchUTXOListIfNeed: (address: string, assetType: H256) => void;
     sendTransaction: (
         address: string,
         transferTx: AssetTransferTransaction
     ) => void;
 }
 
-interface State {
-    UTXOList?: UTXO[] | null;
-    hasUTXOListRequested: boolean;
-}
-
 type Props = OwnProps & StateProps & DispatchProps;
 
-class SendAsset extends React.Component<Props, State> {
+class SendAsset extends React.Component<Props> {
     public constructor(props: Props) {
         super(props);
-        this.state = {
-            UTXOList: undefined,
-            hasUTXOListRequested: false
-        };
     }
 
     public componentWillReceiveProps(props: Props) {
@@ -77,10 +69,6 @@ class SendAsset extends React.Component<Props, State> {
             }
         } = props;
         if (nextAssetType !== assetType) {
-            this.setState({
-                UTXOList: [],
-                hasUTXOListRequested: false
-            });
             this.init();
         }
     }
@@ -96,9 +84,8 @@ class SendAsset extends React.Component<Props, State> {
                 params: { assetType, address }
             }
         } = this.props;
-        const { aggsUTXO, isSendingTx } = this.props;
-        const { hasUTXOListRequested } = this.state;
-        if (!assetScheme || !hasUTXOListRequested || !aggsUTXO) {
+        const { aggsUTXO, isSendingTx, UTXOList } = this.props;
+        if (!assetScheme || !UTXOList || !aggsUTXO) {
             return (
                 <div>
                     <Container>
@@ -152,7 +139,7 @@ class SendAsset extends React.Component<Props, State> {
         receivers: { receiver: string; quantities: number }[],
         passphrase: string
     ) => {
-        const { UTXOList } = this.state;
+        const { UTXOList } = this.props;
         const {
             match: {
                 params: { assetType, address }
@@ -254,19 +241,7 @@ class SendAsset extends React.Component<Props, State> {
                 params: { address, assetType }
             }
         } = this.props;
-        try {
-            const UTXOListResponse = await getUTXOListByAssetType(
-                address,
-                new H256(assetType),
-                getNetworkIdByAddress(address)
-            );
-            this.setState({
-                UTXOList: UTXOListResponse,
-                hasUTXOListRequested: true
-            });
-        } catch (e) {
-            console.log(e);
-        }
+        this.props.fetchUTXOListIfNeed(address, new H256(assetType));
     };
 
     private getAggsUTXO = async () => {
@@ -289,14 +264,17 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
         state.assetReducer.assetScheme[new H256(assetType).value];
     const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
     const sendingTx = state.transactionReducer.sendingTx[address];
-
+    const UTXOListByAddress = state.assetReducer.UTXOList[address];
+    const UTXOListByAddressAssetType =
+        UTXOListByAddress && UTXOListByAddress[assetType];
     return {
         assetScheme: assetScheme && assetScheme.data,
         aggsUTXO:
             aggsUTXOList &&
             aggsUTXOList.data &&
             _.find(aggsUTXOList.data, a => a.assetType === assetType),
-        isSendingTx: sendingTx != null
+        isSendingTx: sendingTx != null,
+        UTXOList: UTXOListByAddressAssetType && UTXOListByAddressAssetType.data
     };
 };
 
@@ -314,6 +292,9 @@ const mapDispatchToProps = (
         transferTx: AssetTransferTransaction
     ) => {
         dispatch(transactionActions.sendTransaction(address, transferTx));
+    },
+    fetchUTXOListIfNeed: (address: string, assetType: H256) => {
+        dispatch(assetActions.fetchUTXOListIfNeed(address, assetType));
     }
 });
 

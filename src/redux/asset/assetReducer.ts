@@ -1,5 +1,10 @@
-import { AggsUTXO, AssetSchemeDoc } from "codechain-indexer-types/lib/types";
+import {
+    AggsUTXO,
+    AssetSchemeDoc,
+    UTXO
+} from "codechain-indexer-types/lib/types";
 import { Action, ActionType } from "./assetActions";
+const merge = require("deepmerge").default;
 
 export interface AssetState {
     assetScheme: {
@@ -15,11 +20,21 @@ export interface AssetState {
             isFetching: boolean;
         } | null;
     };
+    UTXOList: {
+        [address: string]: {
+            [assetType: string]: {
+                data?: UTXO[] | null;
+                updatedAt?: number | null;
+                isFetching: boolean;
+            } | null;
+        } | null;
+    };
 }
 
 const initialState: AssetState = {
     assetScheme: {},
-    aggsUTXOList: {}
+    aggsUTXOList: {},
+    UTXOList: {}
 };
 
 export const assetReducer = (state = initialState, action: Action) => {
@@ -29,6 +44,21 @@ export const assetReducer = (state = initialState, action: Action) => {
             const currentAssetScheme = {
                 data: action.data.assetScheme,
                 isFetching: false
+            };
+            const assetScheme = {
+                ...state.assetScheme,
+                [assetType]: currentAssetScheme
+            };
+            return {
+                ...state,
+                assetScheme
+            };
+        }
+        case ActionType.SetFetchingAssetScheme: {
+            const assetType = action.data.assetType;
+            const currentAssetScheme = {
+                ...state.assetScheme[assetType],
+                isFetching: true
             };
             const assetScheme = {
                 ...state.assetScheme,
@@ -68,6 +98,38 @@ export const assetReducer = (state = initialState, action: Action) => {
             return {
                 ...state,
                 aggsUTXOList
+            };
+        }
+        case ActionType.CacheUTXOList: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const newUTXOList = {
+                [address]: {
+                    [assetType]: {
+                        data: action.data.UTXOList,
+                        updatedAt: +new Date(),
+                        isFetching: false
+                    }
+                }
+            };
+            return {
+                ...state,
+                UTXOList: merge(state.UTXOList, newUTXOList)
+            };
+        }
+        case ActionType.SetFetchingUTXOList: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const newUTXOList = {
+                [address]: {
+                    [assetType]: {
+                        isFetching: true
+                    }
+                }
+            };
+            return {
+                ...state,
+                UTXOList: merge(state.UTXOList, newUTXOList)
             };
         }
     }
