@@ -9,7 +9,10 @@ body {
   padding: 0;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
   background-color: white;
   border: 1px solid $blue;
   border-radius: 21px;
@@ -17,10 +20,7 @@ body {
 
   &:hover:enabled {
     background-color: darken($blue, 15%);
-  }
-  &:active,
-  &:focus {
-    background-color: darken($blue, 15%) !important;
+    color: white;
   }
   &:disabled {
     background-color: $blue;
