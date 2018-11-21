@@ -67,7 +67,12 @@ class App extends React.Component<Props, any> {
                                 <Route path="/login" component={Login} />
                                 <PrivateRoute
                                     exact={true}
-                                    path={["/", "/index.html"]}
+                                    path="/"
+                                    component={AddressList}
+                                />
+                                <PrivateRoute
+                                    exact={true}
+                                    path="/index.html"
                                     component={AddressList}
                                 />
                                 <PrivateRoute
