@@ -1,10 +1,19 @@
 @import "styles/variables.scss";
+@import "styles/mixin.scss";
 
 .app {
   .content-container {
     flex: 1;
     height: calc(100vh - #{$header-height});
     overflow: scroll;
+    padding: 38px;
+    background: $white;
+
+    @include respond-below(sm) {
+      & {
+        padding: 10px;
+      }
+    }
   }
 
   .slide-menu-effect-enter {

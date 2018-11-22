@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css?family=Cabin:400,700|Montserrat:400,700,900");
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,700,900");
+@import url("//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css");
 @import "styles/variables.scss";
 @import "styles/mixin.scss";
 
@@ -7,7 +8,7 @@ html {
 }
 
 body {
-  font-family: "Cabin", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 @include respond-below(sm) {
@@ -16,13 +17,16 @@ body {
   }
 }
 
+.mono {
+  font-family: "Spoqa Han Sans", "Spoqa Han Sans JP", "Sans-serif";
+}
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: "Montserrat", sans-serif;
   font-weight: 700;
 }
 
@@ -33,4 +37,16 @@ a {
     color: $black;
     text-decoration: none;
   }
+}
+
+.grey {
+  color: $grey;
+}
+
+.grey2 {
+  color: $grey2;
+}
+
+.grey3 {
+  color: $grey3;
 }

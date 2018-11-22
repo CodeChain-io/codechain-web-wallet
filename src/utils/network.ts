@@ -1,13 +1,13 @@
 export function getNetworkNameById(networkId: string) {
     switch (networkId) {
         case "cc":
-            return "mainNet";
+            return "MAINNET";
         case "tc":
-            return "husky";
+            return "HUSKY";
         case "sc":
-            return "saluki";
+            return "SALUKI";
         case "wc":
-            return "corgi";
+            return "CORGI";
     }
     throw new Error("Unknown networkId");
 }

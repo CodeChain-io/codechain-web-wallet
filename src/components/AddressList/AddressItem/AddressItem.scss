@@ -1,16 +1,65 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
 .Address-item {
-  width: 100%;
-  height: 100px;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 8px;
-  cursor: pointer;
-  .address-type {
+  width: 270px;
+  display: inline-block;
+  margin-left: 30px;
+  margin-right: 30px;
+
+  @include respond-below(sm) {
+    & {
+      width: calc(100% - 60px);
+    }
   }
-  .address-description {
-    margin-top: 16px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+
+  cursor: pointer;
+  box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+
+  .item-body {
+    padding: 24px;
+    padding-top: 14px;
+    color: white;
     overflow: hidden;
+
+    .network-text-container {
+      margin-bottom: -10x;
+      .network-text {
+        opacity: 0.4;
+        font-size: 12px;
+        @include heading-font();
+      }
+    }
+
+    .address-text {
+      font-size: 10px;
+      opacity: 0.4;
+    }
+
+    .address-name {
+      font-size: 24px;
+    }
+
+    &.platform-type {
+      background-color: $platform-green;
+    }
+
+    &.asset-type {
+      background-color: $asset-blue;
+    }
+  }
+
+  .platform-account {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 17px;
+    padding-bottom: 17px;
+    background-color: white;
+    .balance {
+      font-weight: bold;
+      font-size: 24px;
+    }
   }
 }

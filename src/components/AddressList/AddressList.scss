@@ -1,3 +1,5 @@
+@import "styles/variables.scss";
+
 .Address-list {
   .add-address {
     width: 100%;
@@ -6,5 +8,21 @@
     border-radius: 5px;
     padding: 8px;
     cursor: pointer;
+  }
+  .deco {
+    width: 64px;
+    height: 4px;
+    margin-top: 29px;
+    margin-bottom: 10px;
+  }
+  .deco.platform-title-deco {
+    background-color: $platform-green;
+  }
+  .deco.asset-title-deco {
+    background-color: $asset-blue;
+  }
+  .address-item-container {
+    margin-right: -30px;
+    margin-left: -30px;
   }
 }

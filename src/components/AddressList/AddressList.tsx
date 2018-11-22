@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Col, Container, Row } from "reactstrap";
+import { Container } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { WalletAddress } from "../../model/address";
@@ -29,50 +29,42 @@ class AddressList extends React.Component<Props, any> {
         return (
             <div className="Address-list">
                 <Container>
-                    <div className="mt-5" />
-                    <hr />
-                    <div className="mt-3">
-                        <h5>Platform Addresses</h5>
-                        <Row>
+                    <div className="mt-3 mb-5">
+                        <div className="deco platform-title-deco" />
+                        <h5 className="mb-4">Platform Addresses</h5>
+                        <div className="address-item-container">
                             {_.map(
                                 platformAddresses,
                                 (
                                     dummyAddress: WalletAddress,
                                     index: number
                                 ) => (
-                                    <Col xl={3} lg={4} sm={6} key={index}>
-                                        <AddressItem address={dummyAddress} />
-                                    </Col>
+                                    <AddressItem
+                                        key={index}
+                                        address={dummyAddress}
+                                    />
                                 )
                             )}
-                            <Col xl={3} lg={4} sm={6}>
-                                <div className="add-address d-flex align-items-center justify-content-center">
-                                    + Add address
-                                </div>
-                            </Col>
-                        </Row>
+                        </div>
                     </div>
                     <hr />
                     <div className="mt-3">
-                        <h5>Asset Addresses</h5>
-                        <Row>
+                        <div className="deco asset-title-deco" />
+                        <h5 className="mb-4">Asset Addresses</h5>
+                        <div className="address-item-container">
                             {_.map(
                                 assetAddresses,
                                 (
                                     dummyAddress: WalletAddress,
                                     index: number
                                 ) => (
-                                    <Col xl={3} lg={4} sm={6} key={index}>
-                                        <AddressItem address={dummyAddress} />
-                                    </Col>
+                                    <AddressItem
+                                        key={index}
+                                        address={dummyAddress}
+                                    />
                                 )
                             )}
-                            <Col xl={3} lg={4} sm={6}>
-                                <div className="add-address d-flex align-items-center justify-content-center">
-                                    + Add address
-                                </div>
-                            </Col>
-                        </Row>
+                        </div>
                     </div>
                 </Container>
             </div>

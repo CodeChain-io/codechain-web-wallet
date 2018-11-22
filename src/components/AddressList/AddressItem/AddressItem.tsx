@@ -6,12 +6,13 @@ import "./AddressItem.css";
 
 interface OwnProps {
     address: WalletAddress;
+    className?: string | null;
 }
 
 type Props = RouteComponentProps & OwnProps;
 
 const AddressItem = (props: Props) => {
-    const { address } = props;
+    const { address, className } = props;
     const handleClick = () => {
         if (address.type === AddressType.Platform) {
             props.history.push(`/${address.address}/account`);
@@ -20,18 +21,36 @@ const AddressItem = (props: Props) => {
         }
     };
     return (
-        <div className="Address-item mb-3" onClick={handleClick}>
-            <div>
-                <h6 className="mb-0">{address.name}</h6>
-            </div>
-            <div>
-                <span className="address-type">
-                    {getNetworkNameById(address.networkId)}
+        <div className={`Address-item mb-3 ${className}`} onClick={handleClick}>
+            <div
+                className={`item-body ${
+                    address.type === AddressType.Platform
+                        ? "platform-type"
+                        : "asset-type"
+                }`}
+            >
+                <div className="d-flex network-text-container">
+                    <span className="network-text ml-auto">
+                        {getNetworkNameById(address.networkId)}
+                    </span>
+                </div>
+                <div>
+                    <p className="address-name mb-0 mono">{address.name}</p>
+                </div>
+                <span className="address-text mono">
+                    {address.address.slice(0, 15)}
+                    ...
+                    {address.address.slice(
+                        address.address.length - 15,
+                        address.address.length
+                    )}
                 </span>
             </div>
-            <div className="address-description">
-                <span>{address.address}</span>
-            </div>
+            {address.type === AddressType.Platform && (
+                <div className="platform-account">
+                    <span className="mono balance">873.4311 CCC</span>
+                </div>
+            )}
         </div>
     );
 };
