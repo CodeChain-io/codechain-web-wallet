@@ -66,7 +66,10 @@ class App extends React.Component<Props, any> {
                         >
                             {isAuthenticated && isSideMenuOpen && <SideMenu />}
                         </ReactCSSTransitionGroup>
-                        <div className="content-container">
+                        <div
+                            className={`content-container ${!isAuthenticated &&
+                                "remove-header"}`}
+                        >
                             <Switch>
                                 <Route path="/login" component={Login} />
                                 <PrivateRoute
