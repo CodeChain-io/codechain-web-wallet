@@ -5,23 +5,17 @@ export interface GlobalState {
     isSideMenuOpen: boolean;
 }
 
-const initialState: GlobalState = {
+export const globalInitState: GlobalState = {
     isAuthenticated: false,
     isSideMenuOpen: false
 };
 
-export const globalReducer = (state = initialState, action: Action) => {
+export const globalReducer = (state = globalInitState, action: Action) => {
     switch (action.type) {
         case ActionType.Login:
             return {
                 ...state,
                 isAuthenticated: true
-            };
-        case ActionType.Logout:
-            return {
-                ...state,
-                isAuthenticated: false,
-                isSideMenuOpen: false
             };
         case ActionType.ToggleMenu:
             return {

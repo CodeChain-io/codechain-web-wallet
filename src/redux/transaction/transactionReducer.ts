@@ -25,13 +25,13 @@ export interface TransactionState {
     };
 }
 
-const initialState: TransactionState = {
+export const txInitState: TransactionState = {
     pendingTxList: {},
     unconfirmedTxList: {},
     sendingTx: {}
 };
 
-export const transactionReducer = (state = initialState, action: Action) => {
+export const transactionReducer = (state = txInitState, action: Action) => {
     switch (action.type) {
         case ActionType.CachePendingTxList: {
             const address = action.data.address;

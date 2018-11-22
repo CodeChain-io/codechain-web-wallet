@@ -14,14 +14,14 @@ export interface WalletState {
     };
 }
 
-const initialState: WalletState = {
+export const walletInitState: WalletState = {
     platformAddresses: undefined,
     assetAddresses: undefined,
     walletName: undefined,
     accounts: {}
 };
 
-export const walletReducer = (state = initialState, action: Action) => {
+export const walletReducer = (state = walletInitState, action: Action) => {
     switch (action.type) {
         case ActionType.UpdateWalletAssetAddresses:
             return {

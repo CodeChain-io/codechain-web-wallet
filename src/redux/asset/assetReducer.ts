@@ -41,14 +41,14 @@ export interface AssetState {
     };
 }
 
-const initialState: AssetState = {
+export const assetInitState: AssetState = {
     assetScheme: {},
     aggsUTXOList: {},
     UTXOList: {},
     availableAssets: {}
 };
 
-export const assetReducer = (state = initialState, action: Action) => {
+export const assetReducer = (state = assetInitState, action: Action) => {
     switch (action.type) {
         case ActionType.CacheAssetScheme: {
             const assetType = action.data.assetType;

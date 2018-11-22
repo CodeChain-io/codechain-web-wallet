@@ -11,8 +11,8 @@ import "./SideMenu.css";
 interface StateProps {
     isAuthenticated: boolean;
     walletName?: string | null;
-    assetAddresses: WalletAddress[];
-    platformAddresses: WalletAddress[];
+    assetAddresses?: WalletAddress[] | null;
+    platformAddresses?: WalletAddress[] | null;
 }
 interface DispatchProps {
     logout: () => void;
@@ -41,10 +41,11 @@ class SideMenu extends React.Component<Props, any> {
                     <h3 className="mono mb-4">{walletName}</h3>
                     <hr />
                     <p className="mb-0 mono grey">
-                        {platformAddresses.length} Platform address
+                        {platformAddresses && platformAddresses.length} Platform
+                        address
                     </p>
                     <p className="mono grey">
-                        {assetAddresses.length} Asset address
+                        {assetAddresses && assetAddresses.length} Asset address
                     </p>
                     <div className="mt-5">
                         <button className="btn btn-primary w-100 text-center">

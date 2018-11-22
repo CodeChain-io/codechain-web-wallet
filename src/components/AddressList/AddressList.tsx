@@ -41,7 +41,7 @@ class AddressList extends React.Component<Props, any> {
                                 ) => (
                                     <AddressItem
                                         key={index}
-                                        address={dummyAddress}
+                                        walletAddress={dummyAddress}
                                     />
                                 )
                             )}
@@ -60,7 +60,7 @@ class AddressList extends React.Component<Props, any> {
                                 ) => (
                                     <AddressItem
                                         key={index}
-                                        address={dummyAddress}
+                                        walletAddress={dummyAddress}
                                     />
                                 )
                             )}

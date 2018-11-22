@@ -1,11 +1,21 @@
 import { combineReducers } from "redux";
-import { assetReducer, AssetState } from "./asset/assetReducer";
-import { globalReducer, GlobalState } from "./global/globalReducer";
+import { assetInitState, assetReducer, AssetState } from "./asset/assetReducer";
+import { ActionType } from "./global/globalActions";
+import {
+    globalInitState,
+    globalReducer,
+    GlobalState
+} from "./global/globalReducer";
 import {
     transactionReducer,
-    TransactionState
+    TransactionState,
+    txInitState
 } from "./transaction/transactionReducer";
-import { walletReducer, WalletState } from "./wallet/walletReducer";
+import {
+    walletInitState,
+    walletReducer,
+    WalletState
+} from "./wallet/walletReducer";
 
 export interface ReducerConfigure {
     globalReducer: GlobalState;
@@ -14,10 +24,23 @@ export interface ReducerConfigure {
     transactionReducer: TransactionState;
 }
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
     globalReducer,
     walletReducer,
     assetReducer,
     transactionReducer
 });
+
+const rootReducer = (state: any, action: any) => {
+    if (action.type === ActionType.ClearData) {
+        state = {
+            globalReducer: globalInitState,
+            walletReducer: walletInitState,
+            transactionReducer: txInitState,
+            assetReducer: assetInitState
+        };
+    }
+    return appReducer(state, action);
+};
+
 export default rootReducer;

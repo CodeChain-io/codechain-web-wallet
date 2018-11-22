@@ -2,11 +2,11 @@ import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { clearWallet } from "../../model/wallet";
 
-export type Action = Login | Logout | ToggleMenu;
+export type Action = Login | ToggleMenu | ClearData;
 
 export enum ActionType {
     Login = "login",
-    Logout = "logout",
+    ClearData = "clear_data",
     ToggleMenu = "toggle_menu"
 }
 
@@ -14,12 +14,12 @@ export interface Login {
     type: ActionType.Login;
 }
 
-export interface Logout {
-    type: ActionType.Logout;
-}
-
 export interface ToggleMenu {
     type: ActionType.ToggleMenu;
+}
+
+export interface ClearData {
+    type: ActionType.ClearData;
 }
 
 const login = (): Login => ({
@@ -32,9 +32,11 @@ const logout = () => {
         getState: () => ReducerConfigure
     ) => {
         await clearWallet();
-        dispatch({
-            type: ActionType.Logout
-        });
+        setTimeout(() => {
+            dispatch({
+                type: ActionType.ClearData
+            });
+        }, 100);
     };
 };
 

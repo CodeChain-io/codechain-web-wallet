@@ -21,7 +21,8 @@ export enum ActionType {
     UpdateWalletAssetAddresses = "updateWalletAssetAddresses",
     UpdateWalletName = "updateWalletName",
     UpdateAccount = "updateAccount",
-    SetFetchingAccount = "setFetchingAccount"
+    SetFetchingAccount = "setFetchingAccount",
+    ClearWallet = "clearWallet"
 }
 
 export interface UpdateWalletName {
