@@ -16,13 +16,13 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    fetchWalletFromStorage: () => void;
+    fetchWalletFromStorageIfNeed: () => void;
 }
 type Props = StateProps & DispatchProps;
 
 class AddressList extends React.Component<Props, any> {
     public componentDidMount() {
-        this.props.fetchWalletFromStorage();
+        this.props.fetchWalletFromStorageIfNeed();
     }
     public render() {
         const { platformAddresses, assetAddresses } = this.props;
@@ -86,8 +86,8 @@ const mapStateToProps = (state: ReducerConfigure) => ({
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchWalletFromStorage: () => {
-        dispatch(actions.fetchWalletFromStorage());
+    fetchWalletFromStorageIfNeed: () => {
+        dispatch(actions.fetchWalletFromStorageIfNeed());
     }
 });
 export default connect(

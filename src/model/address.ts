@@ -1,3 +1,5 @@
+import { U256 } from "codechain-sdk/lib/core/classes";
+
 export interface WalletAddress {
     name: string;
     type: AddressType;
@@ -11,6 +13,6 @@ export enum AddressType {
 }
 
 export interface PlatformAccount {
-    balance: string;
-    nonce: string;
+    balance: U256;
+    nonce: U256;
 }

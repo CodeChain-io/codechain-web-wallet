@@ -7,7 +7,11 @@ import {
     TransactionDoc,
     UTXO
 } from "codechain-indexer-types/lib/types";
-import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
+import {
+    AssetTransferTransaction,
+    H256,
+    U256
+} from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
 
@@ -68,9 +72,14 @@ export async function getAssetByAssetType(assetType: H256, networkId: string) {
 
 export async function getPlatformAccount(address: string, networkId: string) {
     const apiHost = getApiHost(networkId);
-    return await getRequest<PlatformAccount>(
+    const response = await getRequest<{ balance: string; nonce: string }>(
         `${apiHost}/api/addr-platform-account/${address}`
     );
+
+    return {
+        balance: new U256(response.balance),
+        nonce: new U256(response.nonce)
+    } as PlatformAccount;
 }
 
 export async function getUTXOListByAssetType(

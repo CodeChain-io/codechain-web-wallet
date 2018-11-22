@@ -1,25 +1,31 @@
 import * as React from "react";
+import { connect } from "react-redux";
 import { match } from "react-router";
 import { Container } from "reactstrap";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
 import { PlatformAccount } from "../../model/address";
-import { getPlatformAccount } from "../../networks/Api";
-import { getNetworkIdByAddress } from "../../utils/network";
-import { changeQuarkToCCC } from "../../utils/unit";
+import { ReducerConfigure } from "../../redux";
+import actions from "../../redux/wallet/walletActions";
+import { changeQuarkToCCCString } from "../../utils/unit";
 
-interface Props {
+interface OwnProps {
     match: match<{ address: string }>;
 }
 
-interface State {
-    account?: PlatformAccount;
+interface StateProps {
+    account?: PlatformAccount | null;
 }
 
-export default class Account extends React.Component<Props, State> {
+interface DispatchProps {
+    fetchAccountIfNeed: (address: string) => void;
+}
+
+type Props = OwnProps & StateProps & DispatchProps;
+
+class Account extends React.Component<Props> {
     public constructor(props: Props) {
         super(props);
-        this.state = {
-            account: undefined
-        };
     }
     public componentWillReceiveProps(props: Props) {
         const {
@@ -33,7 +39,6 @@ export default class Account extends React.Component<Props, State> {
             }
         } = props;
         if (nextAddress !== address) {
-            this.setState({ account: undefined });
             this.getAccount();
         }
     }
@@ -41,7 +46,7 @@ export default class Account extends React.Component<Props, State> {
         this.getAccount();
     }
     public render() {
-        const { account } = this.state;
+        const { account } = this.props;
         if (!account) {
             return (
                 <div>
@@ -58,7 +63,7 @@ export default class Account extends React.Component<Props, State> {
                         <h4>My balance</h4>
                         <hr />
                         <span className="mr-1">
-                            {changeQuarkToCCC(account.balance)}
+                            {changeQuarkToCCCString(account.balance)}
                         </span>
                         <span>CCC</span>
                     </div>
@@ -73,14 +78,29 @@ export default class Account extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        try {
-            const account = await getPlatformAccount(
-                address,
-                getNetworkIdByAddress(address)
-            );
-            this.setState({ account });
-        } catch (e) {
-            console.log(e);
-        }
+        this.props.fetchAccountIfNeed(address);
     };
 }
+
+const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
+    const {
+        match: {
+            params: { address }
+        }
+    } = props;
+    const account = state.walletReducer.accounts[address];
+    return {
+        account: account && account.data
+    };
+};
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchAccountIfNeed: (address: string) => {
+        dispatch(actions.fetchAccountIfNeed(address));
+    }
+});
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Account);
