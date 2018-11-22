@@ -2,13 +2,9 @@ import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Col, Container, Row } from "reactstrap";
-import { Dispatch } from "redux";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
 import { WalletAddress } from "../../model/address";
-import {
-    getAssetAddresses,
-    getPlatformAddresses,
-    getWalletName
-} from "../../model/wallet";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/wallet/walletActions";
 import AddressItem from "./AddressItem/AddressItem";
@@ -17,34 +13,23 @@ import "./AddressList.css";
 interface StateProps {
     platformAddresses: WalletAddress[];
     assetAddresses: WalletAddress[];
-    walletName: string | undefined;
 }
 
 interface DispatchProps {
-    updateWalletAddresses: (
-        platformAddresses: WalletAddress[],
-        assetAddresses: WalletAddress[]
-    ) => void;
-    updateWalletName: (walletName: string) => void;
+    fetchWalletFromStorage: () => void;
 }
 type Props = StateProps & DispatchProps;
 
 class AddressList extends React.Component<Props, any> {
-    public async componentDidMount() {
-        const platformAddresses = await getPlatformAddresses();
-        const assetAddresses = await getAssetAddresses();
-        const walletName = await getWalletName();
-        this.props.updateWalletAddresses(platformAddresses, assetAddresses);
-        this.props.updateWalletName(walletName);
+    public componentDidMount() {
+        this.props.fetchWalletFromStorage();
     }
     public render() {
-        const { platformAddresses, assetAddresses, walletName } = this.props;
+        const { platformAddresses, assetAddresses } = this.props;
         return (
             <div className="Address-list">
                 <Container>
-                    <div className="mt-5">
-                        <h4>{walletName}</h4>
-                    </div>
+                    <div className="mt-5" />
                     <hr />
                     <div className="mt-3">
                         <h5>Platform Addresses</h5>
@@ -96,20 +81,13 @@ class AddressList extends React.Component<Props, any> {
 }
 const mapStateToProps = (state: ReducerConfigure) => ({
     platformAddresses: state.walletReducer.platformAddresses,
-    assetAddresses: state.walletReducer.assetAddresses,
-    walletName: state.walletReducer.walletName
+    assetAddresses: state.walletReducer.assetAddresses
 });
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    updateWalletAddresses: (
-        walletAddresses: WalletAddress[],
-        assetAddresses: WalletAddress[]
-    ) => {
-        dispatch(
-            actions.updateWalletAddresses(walletAddresses, assetAddresses)
-        );
-    },
-    updateWalletName: (walletName: string) => {
-        dispatch(actions.updateWalletName(walletName));
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchWalletFromStorage: () => {
+        dispatch(actions.fetchWalletFromStorage());
     }
 });
 export default connect(
