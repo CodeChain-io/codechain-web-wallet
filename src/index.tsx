@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
 import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension/logOnlyInProduction";
 import thunk from "redux-thunk";

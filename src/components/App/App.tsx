@@ -13,6 +13,7 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import * as ReactModal from "react-modal";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { ReducerConfigure } from "../../redux";
 import Account from "../Account/Account";
 import AddressList from "../AddressList/AddressList";
@@ -55,6 +56,7 @@ class App extends React.Component<Props, any> {
         return (
             <Router>
                 <div id="app" className="app" ref={this.appRef}>
+                    <ToastContainer className="custom-toast" />
                     {isAuthenticated && <Header />}
                     <div className="d-flex">
                         <ReactCSSTransitionGroup

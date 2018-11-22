@@ -16,6 +16,13 @@
     }
   }
 
+  .custom-toast {
+    font-size: 16px;
+    .Toastify__toast {
+      min-height: 45px;
+    }
+  }
+
   .slide-menu-effect-enter {
     transform: translate(-101%);
   }

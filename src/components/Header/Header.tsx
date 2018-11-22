@@ -24,7 +24,10 @@ class Header extends React.Component<Props, any> {
         return (
             <div className="Header">
                 <div className="d-flex align-items-center h-100">
-                    <div className="menu-btn" onClick={this.handleToggleMenu}>
+                    <div
+                        className="menu-btn p-4 ml-3"
+                        onClick={this.handleToggleMenu}
+                    >
                         <FontAwesomeIcon icon="bars" />
                     </div>
                     <Link to="/">
