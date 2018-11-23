@@ -3,6 +3,10 @@
   font-weight: 700;
 }
 
+@mixin mono-font() {
+  font-family: "Spoqa Han Sans", "Spoqa Han Sans JP", "Sans-serif";
+}
+
 $breakpoints: (
   xs: 576px,
   sm: 768px,

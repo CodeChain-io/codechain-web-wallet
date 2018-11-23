@@ -1,4 +1,6 @@
 @import "styles/typography.scss";
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
 @import "~animate.css/animate.css";
 
 body {
@@ -14,12 +16,84 @@ body {
   border: 1px solid $wallet-blue;
   border-radius: 21px;
   color: $wallet-blue;
+  font-weight: bold;
+
+  &.square {
+    border-radius: 0;
+  }
+
+  &.selected {
+    background-color: $wallet-blue;
+    color: white;
+
+    &:hover {
+      cursor: default;
+    }
+  }
 
   &:hover:enabled {
-    background-color: darken($wallet-blue, 15%);
+    background-color: $wallet-blue;
+    border: 1px solid $wallet-blue;
     color: white;
   }
-  &:disabled {
+
+  &.reverse {
     background-color: $wallet-blue;
+    color: white;
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      background-color: darken($wallet-blue, 10%);
+      cursor: pointer;
+    }
+  }
+
+  &:disabled {
+    background-color: white;
+    color: $dark-grey;
+    border: 1px solid $dark-grey;
+  }
+}
+
+input.form-control[type="text"],
+input.form-control[type="password"] {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid $wallet-blue;
+  border-radius: 0;
+  @include mono-font();
+  font-weight: bold;
+  color: $dark-grey;
+  outline: none;
+  box-shadow: none;
+
+  &::placeholder {
+    color: $dark-grey;
+    opacity: 0.7;
+  }
+
+  &:-ms-input-placeholder {
+    color: $dark-grey;
+  }
+
+  &::-ms-input-placeholder {
+    color: $dark-grey;
+  }
+
+  &.reverse {
+    border-bottom: 1px solid $bg-white;
+    color: $bg-white;
+    &::placeholder {
+      color: $bg-white;
+      opacity: 0.7;
+    }
+
+    &:-ms-input-placeholder {
+      color: $bg-white;
+    }
+
+    &::-ms-input-placeholder {
+      color: $bg-white;
+    }
   }
 }

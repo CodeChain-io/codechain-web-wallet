@@ -31,22 +31,22 @@ h6 {
 }
 
 a {
-  color: $black;
+  color: $dark;
 
   &:hover {
-    color: $black;
+    color: $dark;
     text-decoration: none;
   }
 }
 
 .grey {
-  color: $grey;
+  color: $dark-grey;
 }
 
 .grey2 {
-  color: $grey2;
+  color: $disabled-grey;
 }
 
 .grey3 {
-  color: $grey3;
+  color: $disabledbg-grey;
 }

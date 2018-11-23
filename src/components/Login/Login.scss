@@ -76,5 +76,29 @@
         display: none;
       }
     }
+
+    .login-create-wallet-container {
+      .panel-container {
+        overflow: hidden;
+        border-radius: 5px;
+        box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+        .create-left-panel {
+          width: 325px;
+          height: 520px;
+        }
+
+        .create-right-panel {
+          width: 325px;
+          height: 520px;
+        }
+      }
+      .login-button-container {
+        margin-top: 15px;
+        button {
+          width: 160px;
+          height: 42px;
+        }
+      }
+    }
   }
 }

@@ -1,69 +1,67 @@
 import * as React from "react";
-import { Form, Label } from "reactstrap";
+import ValidationInput from "../ValidationInput/ValidationInput";
 import "./CreateWalletForm.css";
-
-interface Props {
-    onCancel: () => void;
-    onSubmit: (walletName: string) => void;
-}
 
 interface State {
     walletName: string;
+    isValidWalletName?: boolean;
+    nameError?: string | null;
 }
 
-export default class CreateWalletForm extends React.Component<Props, State> {
-    public constructor(props: Props) {
+export default class CreateWalletForm extends React.Component<any, State> {
+    public constructor(props: any) {
         super(props);
         this.state = {
-            walletName: ""
+            walletName: "",
+            isValidWalletName: undefined,
+            nameError: undefined
         };
     }
     public render() {
-        const { onCancel } = this.props;
-        const { walletName } = this.state;
+        const { walletName, nameError, isValidWalletName } = this.state;
         return (
-            <Form onSubmit={this.handleSumbit} className="Create-wallet-form">
+            <div className="Create-wallet-form">
                 <h4>Create new wallet</h4>
-                <div className="form-group">
-                    <Label for="wallet-name-input">Wallet name</Label>
-                    <input
-                        autoComplete="off"
-                        type="text"
-                        className={`form-control`}
-                        id="wallet-name-input"
-                        aria-describedby="walletNameInput"
-                        placeholder="Name"
-                        value={walletName}
-                        onChange={this.handleWalletNameChange}
-                        required={true}
-                        minLength={4}
-                    />
+                <div className="form-group wallet-name-container">
+                    <div className="wallet-name-input">
+                        <ValidationInput
+                            onChange={this.handleWalletNameChange}
+                            placeholder="Name"
+                            labelText="WALLET NAME"
+                            value={walletName}
+                            reverse={true}
+                            onBlur={this.checkWalletName}
+                            error={nameError}
+                            isValid={isValidWalletName}
+                        />
+                    </div>
                 </div>
-                <div className="d-flex button-container">
-                    <button
-                        type="button"
-                        className="btn btn-secondary ml-auto mr-3"
-                        onClick={onCancel}
-                    >
-                        Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                        Next
-                    </button>
+                <div className="wallet-address-list-container">
+                    <span className="address-list-title">ADDRESS LIST</span>
+                    <div className="add-address-paenl d-flex align-items-center justify-content-center">
+                        <span className="font-weight-bold">ADD ADDRESS</span>
+                    </div>
                 </div>
-            </Form>
+            </div>
         );
     }
-
-    private handleSumbit = async (event: any) => {
-        event.preventDefault();
-        if (!this.state.walletName) {
-            return;
-        }
-        this.props.onSubmit(this.state.walletName);
-    };
-
     private handleWalletNameChange = (event: any) => {
-        this.setState({ walletName: event.target.value });
+        this.setState({
+            walletName: event.target.value,
+            nameError: undefined,
+            isValidWalletName: undefined
+        });
+    };
+    private checkWalletName = (): boolean => {
+        const { walletName } = this.state;
+        if (walletName.trim().length === 0) {
+            this.setState({
+                nameError: "Required",
+                isValidWalletName: false
+            });
+            return false;
+        }
+        this.setState({ isValidWalletName: true });
+        return true;
     };
 }

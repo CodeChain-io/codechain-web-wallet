@@ -1,0 +1,30 @@
+@import "styles/variables.scss";
+
+.Validation-input {
+  position: relative;
+  .label-text {
+    color: $standard-grey;
+    font-weight: bold;
+
+    &.reverse {
+      color: white;
+    }
+  }
+  .error-icon {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+  }
+  .error-text {
+    position: absolute;
+    right: 0;
+    bottom: -15px;
+    font-size: 10px;
+    color: $error-red;
+  }
+  .valid-icon {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+  }
+}

@@ -5,10 +5,10 @@ import { Container } from "reactstrap";
 import { Dispatch } from "redux";
 import { loadWallet } from "../../model/wallet";
 import actions from "../../redux/global/globalActions";
-import CreateAddressContainer from "../CreateAddressContainer/CreateAddressContainer";
 import CreateWalletForm from "../CreateWalletForm/CreateWalletForm";
 import "./Login.css";
 
+import CreateAddressForm from "../CreateAddressForm/CreateAddressForm";
 import * as CreateNewWalletIconHover from "./img/icons-createnewwallet-hover.svg";
 import * as CreateNewWalletIcon from "./img/icons-createnewwallet-standard.svg";
 import * as ImportKeyIconHover from "./img/icons-importkeyfile-hover.svg";
@@ -42,7 +42,7 @@ class Login extends React.Component<Props, State> {
         super(props);
         this.state = {
             redirectToReferrer: false,
-            pageState: PageState.Login,
+            pageState: PageState.CreateWallet,
             walletName: undefined,
             isCreateBtnHover: false,
             isImportBtnHover: false
@@ -53,7 +53,6 @@ class Login extends React.Component<Props, State> {
         const {
             redirectToReferrer,
             pageState,
-            walletName,
             isImportBtnHover,
             isCreateBtnHover
         } = this.state;
@@ -63,91 +62,117 @@ class Login extends React.Component<Props, State> {
         return (
             <Container className="Login">
                 <div className="login-container">
-                    <div className="text-center">
-                        <img src={Logo} className="logo" />
-                        <h1 className="mt-4 logo-title">Wallet</h1>
-                    </div>
                     {pageState === PageState.Login && (
-                        <div className="button-container d-flex">
-                            <div
-                                className="button-item"
-                                onClick={this.onClickCreateWallet}
-                                onMouseEnter={this.handleCreateButtonHover}
-                                onMouseLeave={this.handleCreateButtonOut}
-                            >
-                                <div>
-                                    {isCreateBtnHover ? (
-                                        <img
-                                            src={CreateNewWalletIconHover}
-                                            className="icon"
-                                        />
-                                    ) : (
-                                        <img
-                                            src={CreateNewWalletIcon}
-                                            className="icon"
-                                        />
-                                    )}
-                                </div>
-                                <div className="text">
-                                    CREATE
-                                    <br />
-                                    NEW WALLET
-                                </div>
-                                <input
-                                    type="file"
-                                    className="file-selector"
-                                    ref={this.fileSelector}
-                                    onChange={this.handleFileSelect}
-                                />
+                        <div>
+                            <div className="text-center">
+                                <img src={Logo} className="logo" />
+                                <h1 className="mt-4 logo-title">Wallet</h1>
                             </div>
-                            <div
-                                className="button-item"
-                                onClick={this.onClickLogin}
-                                onMouseEnter={this.handleImportButtonHover}
-                                onMouseLeave={this.handleImportButtopOut}
-                            >
-                                <div>
-                                    {isImportBtnHover ? (
-                                        <img
-                                            src={ImportKeyIconHover}
-                                            className="icon"
-                                        />
-                                    ) : (
-                                        <img
-                                            src={ImportKeyIcon}
-                                            className="icon"
-                                        />
-                                    )}
+                            <div className="button-container d-flex">
+                                <div
+                                    className="button-item"
+                                    onClick={this.onClickCreateWallet}
+                                    onMouseEnter={this.handleCreateButtonHover}
+                                    onMouseLeave={this.handleCreateButtonOut}
+                                >
+                                    <div>
+                                        {isCreateBtnHover ? (
+                                            <img
+                                                src={CreateNewWalletIconHover}
+                                                className="icon"
+                                            />
+                                        ) : (
+                                            <img
+                                                src={CreateNewWalletIcon}
+                                                className="icon"
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="text">
+                                        CREATE
+                                        <br />
+                                        NEW WALLET
+                                    </div>
+                                    <input
+                                        type="file"
+                                        className="file-selector"
+                                        ref={this.fileSelector}
+                                        onChange={this.handleFileSelect}
+                                    />
                                 </div>
-                                <div className="text">
-                                    IMPORT
-                                    <br />
-                                    KEY FILE
+                                <div
+                                    className="button-item"
+                                    onClick={this.onClickLogin}
+                                    onMouseEnter={this.handleImportButtonHover}
+                                    onMouseLeave={this.handleImportButtopOut}
+                                >
+                                    <div>
+                                        {isImportBtnHover ? (
+                                            <img
+                                                src={ImportKeyIconHover}
+                                                className="icon"
+                                            />
+                                        ) : (
+                                            <img
+                                                src={ImportKeyIcon}
+                                                className="icon"
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="text">
+                                        IMPORT
+                                        <br />
+                                        KEY FILE
+                                    </div>
+                                    <input
+                                        type="file"
+                                        className="file-selector"
+                                        ref={this.fileSelector}
+                                        onChange={this.handleFileSelect}
+                                    />
                                 </div>
-                                <input
-                                    type="file"
-                                    className="file-selector"
-                                    ref={this.fileSelector}
-                                    onChange={this.handleFileSelect}
-                                />
                             </div>
                         </div>
                     )}
                     {pageState === PageState.CreateWallet && (
-                        <div>
-                            <CreateWalletForm
-                                onSubmit={this.handleSubmitOnCreateWallet}
-                                onCancel={this.handleCancelOnCreateWallet}
-                            />
-                        </div>
-                    )}
-                    {pageState === PageState.CreateAddress && (
-                        <div>
-                            <CreateAddressContainer
-                                onCancel={this.handleCancelOnCreateAddress}
-                                onSubmit={this.handleSubmitOnCreateAddress}
-                                walletName={walletName!}
-                            />
+                        <div className="login-create-wallet-container">
+                            <div className="d-flex panel-container">
+                                <div className="create-left-panel">
+                                    <CreateWalletForm
+                                        onSubmit={
+                                            this.handleSubmitOnCreateWallet
+                                        }
+                                        onCancel={
+                                            this.handleCancelOnCreateWallet
+                                        }
+                                    />
+                                </div>
+                                <div className="create-right-panel">
+                                    <CreateAddressForm
+                                        onCancel={
+                                            this.handleCancelOnCreateAddress
+                                        }
+                                        onSubmit={
+                                            this.handleSubmitOnCreateAddress
+                                        }
+                                    />
+                                </div>
+                            </div>
+                            <div className="d-flex justify-content-between login-button-container">
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                >
+                                    Back
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    disabled={true}
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
