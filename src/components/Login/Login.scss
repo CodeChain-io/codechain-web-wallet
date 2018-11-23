@@ -1,22 +1,75 @@
 @import "styles/variables.scss";
+@import "styles/mixin.scss";
+
 .Login {
   position: relative;
   height: calc(100vh - #{$header-height});
+  min-height: 500px;
 
   .login-container {
     position: absolute;
-    width: 400px;
     top: 50%;
     left: 50%;
     right: auto;
     bottom: auto;
     transform: translate(-50%, -50%);
-    border: 1px solid black;
-    padding: 18px;
 
+    .logo-title {
+      color: $wallet-blue;
+    }
+    .logo {
+      width: 100px;
+      height: auto;
+    }
     .button-container {
-      .btn {
-        width: 100%;
+      margin-top: 52px;
+      .button-item {
+        width: 270px;
+        border-radius: 5px;
+        box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2);
+        background-color: #ffffff;
+        border: 1px solid $wallet-blue;
+        padding-top: 59px;
+        padding-bottom: 59px;
+        text-align: center;
+        color: $wallet-blue;
+        margin-right: 10px;
+        margin-left: 10px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: $wallet-blue;
+          color: #ffffff;
+        }
+
+        .icon {
+          width: 116px;
+          height: 116px;
+        }
+
+        .text {
+          margin-top: 20px;
+          font-size: 24px;
+          @include heading-font();
+        }
+
+        @include respond-below(sm) {
+          & {
+            width: 150px;
+            padding-top: 39px;
+            padding-bottom: 39px;
+
+            .icon {
+              width: 70px;
+              height: 70px;
+            }
+
+            .text {
+              font-size: 14px;
+              line-height: 1.25;
+            }
+          }
+        }
       }
 
       .file-selector {

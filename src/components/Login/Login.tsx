@@ -9,6 +9,12 @@ import CreateAddressContainer from "../CreateAddressContainer/CreateAddressConta
 import CreateWalletForm from "../CreateWalletForm/CreateWalletForm";
 import "./Login.css";
 
+import * as CreateNewWalletIconHover from "./img/icons-createnewwallet-hover.svg";
+import * as CreateNewWalletIcon from "./img/icons-createnewwallet-standard.svg";
+import * as ImportKeyIconHover from "./img/icons-importkeyfile-hover.svg";
+import * as ImportKeyIcon from "./img/icons-importkeyfile-standard.svg";
+import * as Logo from "./img/logo-vertical.svg";
+
 interface DispatchProps {
     login: () => void;
 }
@@ -17,6 +23,9 @@ interface State {
     redirectToReferrer: boolean;
     pageState: PageState;
     walletName?: string;
+
+    isImportBtnHover: boolean;
+    isCreateBtnHover: boolean;
 }
 
 enum PageState {
@@ -34,28 +43,56 @@ class Login extends React.Component<Props, State> {
         this.state = {
             redirectToReferrer: false,
             pageState: PageState.Login,
-            walletName: undefined
+            walletName: undefined,
+            isCreateBtnHover: false,
+            isImportBtnHover: false
         };
         this.fileSelector = React.createRef<HTMLInputElement>();
     }
     public render() {
-        const { redirectToReferrer, pageState, walletName } = this.state;
+        const {
+            redirectToReferrer,
+            pageState,
+            walletName,
+            isImportBtnHover,
+            isCreateBtnHover
+        } = this.state;
         if (redirectToReferrer) {
             return <Redirect to="/" />;
         }
         return (
             <Container className="Login">
                 <div className="login-container">
+                    <div className="text-center">
+                        <img src={Logo} className="logo" />
+                        <h1 className="mt-4 logo-title">Wallet</h1>
+                    </div>
                     {pageState === PageState.Login && (
-                        <div className="button-container">
-                            <div>
-                                <button
-                                    type="button"
-                                    className="btn btn-primary mb-3"
-                                    onClick={this.onClickLogin}
-                                >
-                                    SELECT WALLET FILE
-                                </button>
+                        <div className="button-container d-flex">
+                            <div
+                                className="button-item"
+                                onClick={this.onClickCreateWallet}
+                                onMouseEnter={this.handleCreateButtonHover}
+                                onMouseLeave={this.handleCreateButtonOut}
+                            >
+                                <div>
+                                    {isCreateBtnHover ? (
+                                        <img
+                                            src={CreateNewWalletIconHover}
+                                            className="icon"
+                                        />
+                                    ) : (
+                                        <img
+                                            src={CreateNewWalletIcon}
+                                            className="icon"
+                                        />
+                                    )}
+                                </div>
+                                <div className="text">
+                                    CREATE
+                                    <br />
+                                    NEW WALLET
+                                </div>
                                 <input
                                     type="file"
                                     className="file-selector"
@@ -63,14 +100,36 @@ class Login extends React.Component<Props, State> {
                                     onChange={this.handleFileSelect}
                                 />
                             </div>
-                            <div>
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={this.onClickCreateWallet}
-                                >
-                                    CREATE NEW WALLET
-                                </button>
+                            <div
+                                className="button-item"
+                                onClick={this.onClickLogin}
+                                onMouseEnter={this.handleImportButtonHover}
+                                onMouseLeave={this.handleImportButtopOut}
+                            >
+                                <div>
+                                    {isImportBtnHover ? (
+                                        <img
+                                            src={ImportKeyIconHover}
+                                            className="icon"
+                                        />
+                                    ) : (
+                                        <img
+                                            src={ImportKeyIcon}
+                                            className="icon"
+                                        />
+                                    )}
+                                </div>
+                                <div className="text">
+                                    IMPORT
+                                    <br />
+                                    KEY FILE
+                                </div>
+                                <input
+                                    type="file"
+                                    className="file-selector"
+                                    ref={this.fileSelector}
+                                    onChange={this.handleFileSelect}
+                                />
                             </div>
                         </div>
                     )}
@@ -95,6 +154,18 @@ class Login extends React.Component<Props, State> {
             </Container>
         );
     }
+    private handleImportButtonHover = () => {
+        this.setState({ isImportBtnHover: true });
+    };
+    private handleImportButtopOut = () => {
+        this.setState({ isImportBtnHover: false });
+    };
+    private handleCreateButtonHover = () => {
+        this.setState({ isCreateBtnHover: true });
+    };
+    private handleCreateButtonOut = () => {
+        this.setState({ isCreateBtnHover: false });
+    };
     private onClickLogin = () => {
         this.fileSelector.current!.click();
     };

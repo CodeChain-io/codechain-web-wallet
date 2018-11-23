@@ -11,15 +11,15 @@ body {
 .btn-primary:visited,
 .btn-primary:focus {
   background-color: white;
-  border: 1px solid $blue;
+  border: 1px solid $wallet-blue;
   border-radius: 21px;
-  color: $blue;
+  color: $wallet-blue;
 
   &:hover:enabled {
-    background-color: darken($blue, 15%);
+    background-color: darken($wallet-blue, 15%);
     color: white;
   }
   &:disabled {
-    background-color: $blue;
+    background-color: $wallet-blue;
   }
 }
