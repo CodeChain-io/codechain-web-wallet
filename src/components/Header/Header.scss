@@ -6,12 +6,11 @@
   border-bottom: 1px solid $grey3;
   .logo {
     width: auto;
-    height: 50px;
+    height: 24px;
   }
   .menu-btn {
+    padding: 25px;
     color: $grey2;
-    padding-left: 23px;
-    padding-right: 5px;
     cursor: pointer;
   }
 }

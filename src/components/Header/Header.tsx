@@ -6,7 +6,7 @@ import { Dispatch } from "redux";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/global/globalActions";
 import "./Header.css";
-import * as Logo from "./img/codechain-logo.png";
+import * as Logo from "./img/logo.svg";
 
 interface StateProps {
     isAuthenticated: boolean;
@@ -24,10 +24,7 @@ class Header extends React.Component<Props, any> {
         return (
             <div className="Header">
                 <div className="d-flex align-items-center h-100">
-                    <div
-                        className="menu-btn p-4 ml-3"
-                        onClick={this.handleToggleMenu}
-                    >
+                    <div className="menu-btn" onClick={this.handleToggleMenu}>
                         <FontAwesomeIcon icon="bars" />
                     </div>
                     <Link to="/">
