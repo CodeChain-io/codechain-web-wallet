@@ -25,15 +25,17 @@
   }
 
   .wallet-address-list-container {
-    margin-top: 18px;
+    flex: 1;
+    overflow: scroll;
+    padding-top: 12px;
+    padding-bottom: 12px;
 
-    .add-address-paenl {
+    .add-address-button {
       height: 80px;
       width: 100%;
       border-radius: 5px;
       background-color: rgba(255, 255, 255, 0.2);
       color: rgba(255, 255, 255, 0.4);
-      margin-top: 12px;
     }
   }
 }

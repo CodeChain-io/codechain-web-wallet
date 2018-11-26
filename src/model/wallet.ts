@@ -5,6 +5,7 @@ import {
 } from "codechain-sdk/lib/core/classes";
 import * as FileSaver from "file-saver";
 import * as _ from "lodash";
+import { __await } from "tslib";
 import { AddressType, WalletAddress } from "./address";
 
 let dbType = "volatile";
@@ -43,6 +44,18 @@ export async function setWalletName(name: string) {
         newMeta = { name };
     }
     await ccKey.setMeta(JSON.stringify(newMeta));
+}
+
+export async function removePlatformAddress(address: string) {
+    const ccKey = await getCCKey();
+    const key = PlatformAddress.fromString(address).accountId.value;
+    await ccKey.platform.deleteKey({ key });
+}
+
+export async function removeAssetAddress(address: string) {
+    const ccKey = await getCCKey();
+    const key = AssetTransferAddress.fromString(address).payload.value;
+    await ccKey.asset.deleteKey({ key });
 }
 
 export async function createKey(

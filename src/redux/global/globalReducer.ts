@@ -17,6 +17,11 @@ export const globalReducer = (state = globalInitState, action: Action) => {
                 ...state,
                 isAuthenticated: true
             };
+        case ActionType.Logout:
+            return {
+                ...state,
+                isAuthenticated: false
+            };
         case ActionType.ToggleMenu:
             return {
                 ...state,

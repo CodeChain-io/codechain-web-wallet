@@ -1,11 +1,44 @@
+@import "styles/variables.scss";
+
 .Created-address-item {
   position: relative;
-  border: 1px solid black;
-  padding: 9px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  border-radius: 5px;
+  box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  &.platform {
+    background-color: $platform-green;
+  }
+  &.asset {
+    background-color: $asset-blue;
+  }
   .remove-btn {
+    opacity: 0.4;
     position: absolute;
     right: 9px;
     top: 9px;
     cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .address-type {
+    opacity: 0.4;
+    font-weight: bold;
+  }
+  .network-text {
+    opacity: 0.4;
+    font-weight: bold;
+  }
+  .address-name {
+    font-size: 18px;
+  }
+  .address-string {
+    font-size: 10px;
+    opacity: 0.6;
   }
 }

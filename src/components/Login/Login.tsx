@@ -2,12 +2,16 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { Container } from "reactstrap";
-import { Dispatch } from "redux";
+import { Action } from "redux";
 import { loadWallet } from "../../model/wallet";
 import actions from "../../redux/global/globalActions";
 import CreateWalletForm from "../CreateWalletForm/CreateWalletForm";
 import "./Login.css";
 
+import { ThunkDispatch } from "redux-thunk";
+import { AddressType, WalletAddress } from "../../model/address";
+import { ReducerConfigure } from "../../redux";
+import walletActions from "../../redux/wallet/walletActions";
 import CreateAddressForm from "../CreateAddressForm/CreateAddressForm";
 import * as CreateNewWalletIconHover from "./img/icons-createnewwallet-hover.svg";
 import * as CreateNewWalletIcon from "./img/icons-createnewwallet-standard.svg";
@@ -15,8 +19,20 @@ import * as ImportKeyIconHover from "./img/icons-importkeyfile-hover.svg";
 import * as ImportKeyIcon from "./img/icons-importkeyfile-standard.svg";
 import * as Logo from "./img/logo-vertical.svg";
 
+interface StateProps {
+    creatingAddresses?: WalletAddress[] | null;
+    walletName?: string | null;
+}
+
 interface DispatchProps {
     login: () => void;
+    createWalletAddress: (
+        addressType: AddressType,
+        name: string,
+        passphrase: string,
+        networkId: string
+    ) => void;
+    clearData: () => void;
 }
 
 interface State {
@@ -30,11 +46,10 @@ interface State {
 
 enum PageState {
     Login,
-    CreateWallet,
-    CreateAddress
+    CreateWallet
 }
 
-type Props = DispatchProps;
+type Props = DispatchProps & StateProps;
 class Login extends React.Component<Props, State> {
     private fileSelector: React.RefObject<HTMLInputElement>;
     private fileReader: FileReader;
@@ -42,12 +57,13 @@ class Login extends React.Component<Props, State> {
         super(props);
         this.state = {
             redirectToReferrer: false,
-            pageState: PageState.CreateWallet,
+            pageState: PageState.Login,
             walletName: undefined,
             isCreateBtnHover: false,
             isImportBtnHover: false
         };
         this.fileSelector = React.createRef<HTMLInputElement>();
+        this.props.clearData();
     }
     public render() {
         const {
@@ -56,6 +72,7 @@ class Login extends React.Component<Props, State> {
             isImportBtnHover,
             isCreateBtnHover
         } = this.state;
+        const { creatingAddresses, walletName } = this.props;
         if (redirectToReferrer) {
             return <Redirect to="/" />;
         }
@@ -63,7 +80,7 @@ class Login extends React.Component<Props, State> {
             <Container className="Login">
                 <div className="login-container">
                     {pageState === PageState.Login && (
-                        <div>
+                        <div className="animated fadeIn">
                             <div className="text-center">
                                 <img src={Logo} className="logo" />
                                 <h1 className="mt-4 logo-title">Wallet</h1>
@@ -135,26 +152,14 @@ class Login extends React.Component<Props, State> {
                         </div>
                     )}
                     {pageState === PageState.CreateWallet && (
-                        <div className="login-create-wallet-container">
+                        <div className="login-create-wallet-container animated fadeIn">
                             <div className="d-flex panel-container">
                                 <div className="create-left-panel">
-                                    <CreateWalletForm
-                                        onSubmit={
-                                            this.handleSubmitOnCreateWallet
-                                        }
-                                        onCancel={
-                                            this.handleCancelOnCreateWallet
-                                        }
-                                    />
+                                    <CreateWalletForm />
                                 </div>
                                 <div className="create-right-panel">
                                     <CreateAddressForm
-                                        onCancel={
-                                            this.handleCancelOnCreateAddress
-                                        }
-                                        onSubmit={
-                                            this.handleSubmitOnCreateAddress
-                                        }
+                                        onSubmit={this.handleSubmitOnAddAddress}
                                     />
                                 </div>
                             </div>
@@ -162,15 +167,24 @@ class Login extends React.Component<Props, State> {
                                 <button
                                     type="button"
                                     className="btn btn-primary"
+                                    onClick={this.handleBackButton}
                                 >
-                                    Back
+                                    BACK
                                 </button>
                                 <button
                                     type="button"
                                     className="btn btn-primary"
-                                    disabled={true}
+                                    disabled={
+                                        walletName &&
+                                        walletName.length > 0 &&
+                                        creatingAddresses &&
+                                        creatingAddresses.length > 0
+                                            ? false
+                                            : true
+                                    }
+                                    onClick={this.handleLogin}
                                 >
-                                    Next
+                                    GO TO WALLET
                                 </button>
                             </div>
                         </div>
@@ -179,6 +193,9 @@ class Login extends React.Component<Props, State> {
             </Container>
         );
     }
+    private handleBackButton = () => {
+        this.setState({ pageState: PageState.Login });
+    };
     private handleImportButtonHover = () => {
         this.setState({ isImportBtnHover: true });
     };
@@ -193,6 +210,10 @@ class Login extends React.Component<Props, State> {
     };
     private onClickLogin = () => {
         this.fileSelector.current!.click();
+    };
+    private handleLogin = () => {
+        this.props.login();
+        this.setState({ redirectToReferrer: true });
     };
     private handleFileReader = async () => {
         const content = this.fileReader.result as string;
@@ -218,35 +239,61 @@ class Login extends React.Component<Props, State> {
             pageState: PageState.CreateWallet
         });
     };
-    private handleCancelOnCreateWallet = () => {
-        this.setState({
-            pageState: PageState.Login,
-            walletName: undefined
-        });
-    };
-    private handleSubmitOnCreateWallet = (walletName: string) => {
-        this.setState({
-            pageState: PageState.CreateAddress,
-            walletName
-        });
-    };
-    private handleSubmitOnCreateAddress = () => {
-        this.props.login();
-        this.setState({ redirectToReferrer: true });
-    };
-    private handleCancelOnCreateAddress = () => {
-        this.setState({
-            pageState: PageState.Login,
-            walletName: undefined
-        });
+    private handleSubmitOnAddAddress = (
+        type: AddressType,
+        name: string,
+        passphrase: string,
+        networkId: string
+    ) => {
+        this.props.createWalletAddress(type, name, passphrase, networkId);
     };
 }
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+
+const mapStateToProps = (state: ReducerConfigure) => {
+    const creatingAddresses = state.walletReducer.creatingAddresses;
+    const walletName = state.walletReducer.walletName;
+    return {
+        creatingAddresses,
+        walletName
+    };
+};
+
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
     login: () => {
         dispatch(actions.login());
+    },
+    createWalletAddress: (
+        addressType: AddressType,
+        name: string,
+        passphrase: string,
+        networkId: string
+    ) => {
+        if (addressType === AddressType.Asset) {
+            dispatch(
+                walletActions.createWalletAssetAddress(
+                    name,
+                    passphrase,
+                    networkId
+                )
+            );
+        } else {
+            dispatch(
+                walletActions.createWalletPlatformAddress(
+                    name,
+                    passphrase,
+                    networkId
+                )
+            );
+        }
+    },
+    clearData: () => {
+        dispatch(actions.clearData());
     }
 });
+
 export default connect(
-    () => ({}),
+    mapStateToProps,
     mapDispatchToProps
 )(Login);

@@ -4,6 +4,7 @@ import { Action, ActionType } from "./walletActions";
 export interface WalletState {
     platformAddresses?: WalletAddress[] | null;
     assetAddresses?: WalletAddress[] | null;
+    creatingAddresses?: WalletAddress[] | null;
     walletName?: string | null;
     accounts: {
         [address: string]: {
@@ -18,6 +19,7 @@ export const walletInitState: WalletState = {
     platformAddresses: undefined,
     assetAddresses: undefined,
     walletName: undefined,
+    creatingAddresses: undefined,
     accounts: {}
 };
 
@@ -65,6 +67,11 @@ export const walletReducer = (state = walletInitState, action: Action) => {
                 accounts
             };
         }
+        case ActionType.UpdateCreatingAddresses:
+            return {
+                ...state,
+                creatingAddresses: action.data.addresses
+            };
     }
     return state;
 };

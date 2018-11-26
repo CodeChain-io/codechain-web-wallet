@@ -1,37 +1,54 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
-import { AddressType } from "../../../model/address";
+import { AddressType, WalletAddress } from "../../../model/address";
 import { getNetworkNameById } from "../../../utils/network";
 import "./CreatedAddressItem.css";
+import * as mainnet from "./img/mainnet.svg";
+import * as testnet from "./img/testnet.svg";
 
 interface Props {
-    address: {
-        name: string;
-        type: AddressType;
-        networkId: string;
-    };
-    canRemove: boolean;
-    onRemove: () => void;
+    data: WalletAddress;
+    onRemove: (address: string) => void;
 }
 
 export default class CreatedAddressItem extends React.Component<Props, any> {
     public render() {
-        const { address, onRemove, canRemove } = this.props;
+        const { data } = this.props;
         return (
-            <div className="Created-address-item mt-3">
-                <h6>{address.name}</h6>
-                <p className="mb-1">
-                    {address.type === AddressType.Asset
-                        ? "Asset address"
-                        : "Platform address"}
+            <div
+                className={`Created-address-item mb-3 ${
+                    data.type === AddressType.Asset ? "asset" : "platform"
+                }`}
+            >
+                <div>
+                    <span className="mr-2 address-type">
+                        {data.type === AddressType.Asset ? "ASSET" : "PLATFORM"}
+                    </span>
+                    <span className="network-text">
+                        {getNetworkNameById(data.networkId)}
+                    </span>
+                    <img
+                        className="ml-2"
+                        src={`${data.networkId === "cc" ? mainnet : testnet}`}
+                    />
+                </div>
+                <p className="address-name mb-0 mono">{data.name}</p>
+                <p className="mb-0 mono address-string">
+                    {data.address.slice(0, 12)}
+                    ...
+                    {data.address.slice(
+                        data.address.length - 12,
+                        data.address.length
+                    )}
                 </p>
-                <p className="mb-0">{getNetworkNameById(address.networkId)}</p>
-                {canRemove && (
-                    <div className="remove-btn" onClick={onRemove}>
-                        <FontAwesomeIcon icon={"trash-alt"} />
-                    </div>
-                )}
+                <div className="remove-btn" onClick={this.handleRemoveButton}>
+                    <FontAwesomeIcon icon="times" />
+                </div>
             </div>
         );
     }
+    private handleRemoveButton = () => {
+        const { onRemove, data } = this.props;
+        onRemove(data.address);
+    };
 }

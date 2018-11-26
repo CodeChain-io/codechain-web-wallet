@@ -81,10 +81,10 @@ class AddressItem extends React.Component<Props, State> {
                         </p>
                     </div>
                     <span className="address-text mono">
-                        {walletAddress.address.slice(0, 15)}
+                        {walletAddress.address.slice(0, 12)}
                         ...
                         {walletAddress.address.slice(
-                            walletAddress.address.length - 15,
+                            walletAddress.address.length - 12,
                             walletAddress.address.length
                         )}
                     </span>

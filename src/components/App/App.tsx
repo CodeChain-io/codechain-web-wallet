@@ -6,6 +6,7 @@ import {
     faFileDownload,
     faPlus,
     faPlusCircle,
+    faTimes,
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
@@ -34,7 +35,8 @@ library.add(
     faBars,
     faChevronLeft,
     faArrowAltCircleDown,
-    faPlusCircle
+    faPlusCircle,
+    faTimes
 );
 
 interface StateProps {

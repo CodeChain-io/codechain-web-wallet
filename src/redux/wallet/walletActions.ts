@@ -1,10 +1,18 @@
+import * as _ from "lodash";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
-import { PlatformAccount, WalletAddress } from "../../model/address";
 import {
+    AddressType,
+    PlatformAccount,
+    WalletAddress
+} from "../../model/address";
+import {
+    createKey,
     getAssetAddresses,
     getPlatformAddresses,
-    getWalletName
+    getWalletName,
+    removeAssetAddress,
+    removePlatformAddress
 } from "../../model/wallet";
 import { getPlatformAccount } from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
@@ -14,7 +22,8 @@ export type Action =
     | UpdateWalletAssetAddresses
     | UpdateWalletName
     | UpdateAccount
-    | SetFetchingAccount;
+    | SetFetchingAccount
+    | UpdateCreatingAddresses;
 
 export enum ActionType {
     UpdateWalletPlatformAddresses = "updateWalletPlatformAddresses",
@@ -22,7 +31,8 @@ export enum ActionType {
     UpdateWalletName = "updateWalletName",
     UpdateAccount = "updateAccount",
     SetFetchingAccount = "setFetchingAccount",
-    ClearWallet = "clearWallet"
+    ClearWallet = "clearWallet",
+    UpdateCreatingAddresses = "updateCreatingAddresses"
 }
 
 export interface UpdateWalletName {
@@ -59,6 +69,13 @@ export interface SetFetchingAccount {
     };
 }
 
+export interface UpdateCreatingAddresses {
+    type: ActionType.UpdateCreatingAddresses;
+    data: {
+        addresses: WalletAddress[];
+    };
+}
+
 const updateWalletName = (walletName: string): UpdateWalletName => ({
     type: ActionType.UpdateWalletName,
     data: walletName
@@ -82,6 +99,15 @@ const updateWalletAssetAddresses = (
     }
 });
 
+const updateCreatingAddresses = (
+    addresses: WalletAddress[]
+): UpdateCreatingAddresses => ({
+    type: ActionType.UpdateCreatingAddresses,
+    data: {
+        addresses
+    }
+});
+
 const fetchWalletFromStorageIfNeed = () => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
@@ -99,6 +125,52 @@ const fetchWalletFromStorageIfNeed = () => {
             const walletName = await getWalletName();
             dispatch(updateWalletName(walletName));
         }
+    };
+};
+
+const createWalletPlatformAddress = (
+    name: string,
+    passphrase: string,
+    networkId: string
+) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        await createKey(AddressType.Platform, name, passphrase, networkId);
+        const platformAddresses = await getPlatformAddresses();
+        dispatch(updateWalletPlatformAddresses(platformAddresses));
+
+        const createdAddresses = _.last(platformAddresses);
+        const creatingAddresses = getState().walletReducer.creatingAddresses;
+        dispatch(
+            updateCreatingAddresses(
+                _.concat(creatingAddresses || [], [createdAddresses!])
+            )
+        );
+    };
+};
+
+const createWalletAssetAddress = (
+    name: string,
+    passphrase: string,
+    networkId: string
+) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        await createKey(AddressType.Asset, name, passphrase, networkId);
+        const assetAddresses = await getAssetAddresses();
+        dispatch(updateWalletAssetAddresses(assetAddresses));
+
+        const createdAddresses = _.last(assetAddresses);
+        const creatingAddresses = getState().walletReducer.creatingAddresses;
+        dispatch(
+            updateCreatingAddresses(
+                _.concat(creatingAddresses || [], [createdAddresses!])
+            )
+        );
     };
 };
 
@@ -149,7 +221,39 @@ const fetchAccountIfNeed = (address: string) => {
     };
 };
 
+const removeWalletAddress = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const addressTypeString = address.charAt(2);
+        if (addressTypeString === "c") {
+            await removePlatformAddress(address);
+            const platformAddresses = await getPlatformAddresses();
+            dispatch(updateWalletPlatformAddresses(platformAddresses));
+        } else if (addressTypeString === "a") {
+            await removeAssetAddress(address);
+            const assetAddresses = await getAssetAddresses();
+            dispatch(updateWalletAssetAddresses(assetAddresses));
+        } else {
+            throw Error("invalid addressType");
+        }
+        const creatingAddresses = getState().walletReducer.creatingAddresses;
+        if (creatingAddresses) {
+            const filteredAddresses = _.filter(
+                creatingAddresses,
+                creatingAddress => creatingAddress.address !== address
+            );
+            dispatch(updateCreatingAddresses(filteredAddresses));
+        }
+    };
+};
+
 export default {
     fetchWalletFromStorageIfNeed,
-    fetchAccountIfNeed
+    fetchAccountIfNeed,
+    createWalletAssetAddress,
+    createWalletPlatformAddress,
+    removeWalletAddress,
+    updateWalletName
 };

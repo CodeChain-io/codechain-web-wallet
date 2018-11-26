@@ -5,7 +5,7 @@ import ValidationInput from "../ValidationInput/ValidationInput";
 import "./CreateAddressForm.css";
 
 interface Props {
-    onCancel: () => void;
+    onCancel?: () => void;
     onSubmit: (
         type: AddressType,
         addressName: string,
@@ -48,7 +48,6 @@ export default class CreateAddressForm extends React.Component<Props, State> {
         };
     }
     public render() {
-        const { onCancel } = this.props;
         const {
             name,
             password,
@@ -62,6 +61,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
             isPasswordConfirmValid,
             isPasswordValid
         } = this.state;
+        const { onCancel } = this.props;
         return (
             <div className="Create-address-form">
                 <h4 className="title">Add address</h4>
@@ -169,7 +169,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                         <ValidationInput
                             labelText="ADDRESS NAME"
                             value={name}
-                            placeholder="Name"
+                            placeholder="name"
                             onChange={this.handleNameChange}
                             error={nameError}
                             onBlur={this.checkNameField}
@@ -181,7 +181,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                             type="password"
                             labelText="PASSPHRASE"
                             value={password}
-                            placeholder="Password"
+                            placeholder="password"
                             onChange={this.handlePasswordChange}
                             error={passwordError}
                             onBlur={this.checkPasswordField}
@@ -193,7 +193,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                             type="password"
                             labelText="PASSPHRASE CONFIRM"
                             value={passwordConfirm}
-                            placeholder="Passphrase confirm"
+                            placeholder="passphrase confirm"
                             onChange={this.handlePasswordConfirmChange}
                             error={passwordConfirmError}
                             onBlur={this.checkPasswordConfirmField}
@@ -201,17 +201,21 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                         />
                     </div>
                     <div className="d-flex cancel-add-btn-container">
-                        <button
-                            type="button"
-                            className="btn btn-primary w-50 mr-1 square"
-                            onClick={onCancel}
-                        >
-                            Cancel
-                        </button>
+                        {onCancel && (
+                            <button
+                                type="button"
+                                onClick={onCancel}
+                                className={`btn btn-primary square w-50 mr-1`}
+                            >
+                                Cancel
+                            </button>
+                        )}
                         <button
                             type="button"
                             onClick={this.handleSubmit}
-                            className="btn btn-primary reverse w-50 ml-1 square"
+                            className={`btn btn-primary reverse square ${
+                                onCancel ? "w-50 ml-1" : "w-100"
+                            }`}
                         >
                             Add
                         </button>
@@ -267,6 +271,20 @@ export default class CreateAddressForm extends React.Component<Props, State> {
         if (!this.checkPasswordConfirmField()) {
             return;
         }
+
+        this.setState({
+            type: AddressType.Asset,
+            name: "",
+            password: "",
+            passwordConfirm: "",
+            networkId: "cc",
+            nameError: undefined,
+            passwordConfirmError: undefined,
+            passwordError: undefined,
+            isNameValid: undefined,
+            isPasswordValid: undefined,
+            isPasswordConfirmValid: undefined
+        });
 
         onSubmit(type, name.trim(), password, networkId);
     };

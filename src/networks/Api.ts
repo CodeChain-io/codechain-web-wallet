@@ -76,10 +76,17 @@ export async function getPlatformAccount(address: string, networkId: string) {
         `${apiHost}/api/addr-platform-account/${address}`
     );
 
-    return {
-        balance: new U256(response.balance),
-        nonce: new U256(response.nonce)
-    } as PlatformAccount;
+    if (response) {
+        return {
+            balance: new U256(response.balance),
+            nonce: new U256(response.nonce)
+        } as PlatformAccount;
+    } else {
+        return {
+            balance: new U256(0),
+            nonce: new U256(0)
+        } as PlatformAccount;
+    }
 }
 
 export async function getUTXOListByAssetType(
