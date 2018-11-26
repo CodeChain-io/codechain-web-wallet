@@ -28,7 +28,7 @@ class AddressList extends React.Component<Props, any> {
         const { platformAddresses, assetAddresses } = this.props;
         return (
             <div className="Address-list">
-                <Container>
+                <Container fluid={true}>
                     <div className="mt-3 mb-5">
                         <div className="deco platform-title-deco" />
                         <h5 className="mb-4">Platform Addresses</h5>
