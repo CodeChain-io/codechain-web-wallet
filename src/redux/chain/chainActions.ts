@@ -91,7 +91,7 @@ const fetchPendingTxListIfNeed = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const cachedPendingTxList = getState().transactionReducer.pendingTxList[
+        const cachedPendingTxList = getState().chainReducer.pendingTxList[
             address
         ];
         if (cachedPendingTxList && cachedPendingTxList.isFetching) {
@@ -144,7 +144,7 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const cachedUnconfirmedTxList = getState().transactionReducer
+        const cachedUnconfirmedTxList = getState().chainReducer
             .unconfirmedTxList[address];
         if (cachedUnconfirmedTxList && cachedUnconfirmedTxList.isFetching) {
             return;
@@ -194,7 +194,7 @@ const sendTransaction = (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const sendingTx = getState().transactionReducer.sendingTx[address];
+        const sendingTx = getState().chainReducer.sendingTx[address];
         if (sendingTx) {
             return;
         }
@@ -204,8 +204,9 @@ const sendTransaction = (
             await sendTxToGateway(transferTx, networkId);
             checkingIndexingFunc = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
-                const pendingTxList = getState().transactionReducer
-                    .pendingTxList[address];
+                const pendingTxList = getState().chainReducer.pendingTxList[
+                    address
+                ];
                 if (
                     pendingTxList &&
                     pendingTxList.data &&

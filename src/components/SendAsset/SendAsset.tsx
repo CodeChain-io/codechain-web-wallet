@@ -20,7 +20,7 @@ import { NetworkId } from "../../model/address";
 import { getCCKey } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
-import transactionActions from "../../redux/transaction/transactionActions";
+import chainActions from "../../redux/chain/chainActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
@@ -274,7 +274,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     } = ownProps;
     const assetScheme =
         state.assetReducer.assetScheme[new H256(assetType).value];
-    const sendingTx = state.transactionReducer.sendingTx[address];
+    const sendingTx = state.chainReducer.sendingTx[address];
     const UTXOListByAddress = state.assetReducer.UTXOList[address];
     const UTXOListByAddressAssetType =
         UTXOListByAddress && UTXOListByAddress[assetType];
@@ -302,7 +302,7 @@ const mapDispatchToProps = (
         address: string,
         transferTx: AssetTransferTransaction
     ) => {
-        dispatch(transactionActions.sendTransaction(address, transferTx));
+        dispatch(chainActions.sendTransaction(address, transferTx));
     },
     fetchUTXOListIfNeed: (address: string, assetType: H256) => {
         dispatch(assetActions.fetchUTXOListIfNeed(address, assetType));

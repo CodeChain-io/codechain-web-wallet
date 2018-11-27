@@ -3,9 +3,9 @@ import {
     TransactionDoc
 } from "codechain-indexer-types/lib/types";
 import { AssetTransferTransaction } from "codechain-sdk/lib/core/classes";
-import { Action, ActionType } from "./transactionActions";
+import { Action, ActionType } from "./chainActions";
 
-export interface TransactionState {
+export interface ChainState {
     pendingTxList: {
         [address: string]: {
             data?: PendingTransactionDoc[] | null;
@@ -25,13 +25,13 @@ export interface TransactionState {
     };
 }
 
-export const txInitState: TransactionState = {
+export const chainInitState: ChainState = {
     pendingTxList: {},
     unconfirmedTxList: {},
     sendingTx: {}
 };
 
-export const transactionReducer = (state = txInitState, action: Action) => {
+export const chainReducer = (state = chainInitState, action: Action) => {
     switch (action.type) {
         case ActionType.CachePendingTxList: {
             const address = action.data.address;

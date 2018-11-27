@@ -14,7 +14,7 @@ import {
     getUTXOListByAssetType
 } from "../../networks/Api";
 import { TxUtil } from "../../utils/transaction";
-import transactionActions from "../transaction/transactionActions";
+import chainActions from "../chain/chainActions";
 
 export type Action =
     | CacheAssetScheme
@@ -270,8 +270,8 @@ const fetchAvailableAssets = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        dispatch(transactionActions.fetchPendingTxListIfNeed(address));
-        dispatch(transactionActions.fetchUnconfirmedTxListIfNeed(address));
+        dispatch(chainActions.fetchPendingTxListIfNeed(address));
+        dispatch(chainActions.fetchUnconfirmedTxListIfNeed(address));
         dispatch(fetchAggsUTXOListIfNeed(address));
     };
 };
@@ -281,14 +281,13 @@ const calculateAvailableAssets = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const unconfirmedTxListObj = getState().transactionReducer
-            .unconfirmedTxList[address];
+        const unconfirmedTxListObj = getState().chainReducer.unconfirmedTxList[
+            address
+        ];
         const addressUTXOListObj = getState().assetReducer.aggsUTXOList[
             address
         ];
-        const pendingTxListObj = getState().transactionReducer.pendingTxList[
-            address
-        ];
+        const pendingTxListObj = getState().chainReducer.pendingTxList[address];
 
         const unconfirmedTxList =
             unconfirmedTxListObj && unconfirmedTxListObj.data;

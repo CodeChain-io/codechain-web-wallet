@@ -14,7 +14,7 @@ import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
-import transactionActions from "../../redux/transaction/transactionActions";
+import chainActions from "../../redux/chain/chainActions";
 import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 
@@ -154,9 +154,8 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
         }
     } = props;
     const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
-    const pendingTxList = state.transactionReducer.pendingTxList[address];
-    const unconfirmedTxList =
-        state.transactionReducer.unconfirmedTxList[address];
+    const pendingTxList = state.chainReducer.pendingTxList[address];
+    const unconfirmedTxList = state.chainReducer.unconfirmedTxList[address];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
     return {
@@ -174,10 +173,10 @@ const mapDispatchToProps = (
         dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
     },
     fetchPendingTxListIfNeed: (address: string) => {
-        dispatch(transactionActions.fetchPendingTxListIfNeed(address));
+        dispatch(chainActions.fetchPendingTxListIfNeed(address));
     },
     fetchUnconfirmedTxListIfNeed: (address: string) => {
-        dispatch(transactionActions.fetchUnconfirmedTxListIfNeed(address));
+        dispatch(chainActions.fetchUnconfirmedTxListIfNeed(address));
     },
     fetchAvailableAssets: (address: string) => {
         dispatch(assetActions.fetchAvailableAssets(address));

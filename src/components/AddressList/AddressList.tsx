@@ -28,13 +28,13 @@ class AddressList extends React.Component<Props, any> {
         const { platformAddresses, assetAddresses } = this.props;
         return (
             <div className="Address-list">
-                <Container fluid={true}>
+                <Container>
                     <div className="mt-3 mb-5">
-                        <div className="deco platform-title-deco" />
-                        <h5 className="mb-4">Platform Addresses</h5>
+                        <div className="deco asset-title-deco" />
+                        <h5 className="mb-4">Asset Addresses</h5>
                         <div className="address-item-container">
                             {_.map(
-                                platformAddresses,
+                                assetAddresses,
                                 (
                                     dummyAddress: WalletAddress,
                                     index: number
@@ -49,11 +49,11 @@ class AddressList extends React.Component<Props, any> {
                     </div>
                     <hr />
                     <div className="mt-3">
-                        <div className="deco asset-title-deco" />
-                        <h5 className="mb-4">Asset Addresses</h5>
+                        <div className="deco platform-title-deco" />
+                        <h5 className="mb-4">Platform Addresses</h5>
                         <div className="address-item-container">
                             {_.map(
-                                assetAddresses,
+                                platformAddresses,
                                 (
                                     dummyAddress: WalletAddress,
                                     index: number
