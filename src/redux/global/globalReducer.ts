@@ -10,7 +10,7 @@ export interface GlobalState {
 export const globalInitState: GlobalState = {
     isAuthenticated: false,
     isSideMenuOpen: false,
-    networkId: "cc"
+    networkId: "tc"
 };
 
 export const globalReducer = (state = globalInitState, action: Action) => {
