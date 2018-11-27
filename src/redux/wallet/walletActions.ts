@@ -15,7 +15,6 @@ import {
     removePlatformAddress
 } from "../../model/keystore";
 import { getPlatformAccount } from "../../networks/Api";
-import { getNetworkIdByAddress } from "../../utils/network";
 
 export type Action =
     | UpdateWalletPlatformAddresses
@@ -113,12 +112,13 @@ const fetchWalletFromStorageIfNeed = () => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
+        const networkId = getState().globalReducer.networkId;
         if (!getState().walletReducer.platformAddresses) {
-            const platformAddresses = await getPlatformAddresses();
+            const platformAddresses = await getPlatformAddresses(networkId);
             dispatch(updateWalletPlatformAddresses(platformAddresses));
         }
         if (!getState().walletReducer.assetAddresses) {
-            const assetAddresses = await getAssetAddresses();
+            const assetAddresses = await getAssetAddresses(networkId);
             dispatch(updateWalletAssetAddresses(assetAddresses));
         }
         if (!getState().walletReducer.walletName) {
@@ -128,17 +128,14 @@ const fetchWalletFromStorageIfNeed = () => {
     };
 };
 
-const createWalletPlatformAddress = (
-    name: string,
-    passphrase: string,
-    networkId: string
-) => {
+const createWalletPlatformAddress = (name: string, passphrase: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        await createAddress(AddressType.Platform, name, passphrase, networkId);
-        const platformAddresses = await getPlatformAddresses();
+        await createAddress(AddressType.Platform, name, passphrase);
+        const networkId = getState().globalReducer.networkId;
+        const platformAddresses = await getPlatformAddresses(networkId);
         dispatch(updateWalletPlatformAddresses(platformAddresses));
 
         const createdAddresses = _.last(platformAddresses);
@@ -151,17 +148,14 @@ const createWalletPlatformAddress = (
     };
 };
 
-const createWalletAssetAddress = (
-    name: string,
-    passphrase: string,
-    networkId: string
-) => {
+const createWalletAssetAddress = (name: string, passphrase: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        await createAddress(AddressType.Asset, name, passphrase, networkId);
-        const assetAddresses = await getAssetAddresses();
+        await createAddress(AddressType.Asset, name, passphrase);
+        const networkId = getState().globalReducer.networkId;
+        const assetAddresses = await getAssetAddresses(networkId);
         dispatch(updateWalletAssetAddresses(assetAddresses));
 
         const createdAddresses = _.last(assetAddresses);
@@ -210,9 +204,10 @@ const fetchAccountIfNeed = (address: string) => {
         }
         try {
             dispatch(setFetchingAccount(address));
+            const networkId = getState().globalReducer.networkId;
             const accountResponse = await getPlatformAccount(
                 address,
-                getNetworkIdByAddress(address)
+                networkId
             );
             dispatch(updateAccount(address, accountResponse));
         } catch (e) {
@@ -226,14 +221,15 @@ const removeWalletAddress = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
+        const networkId = getState().globalReducer.networkId;
         const addressTypeString = address.charAt(2);
         if (addressTypeString === "c") {
             await removePlatformAddress(address);
-            const platformAddresses = await getPlatformAddresses();
+            const platformAddresses = await getPlatformAddresses(networkId);
             dispatch(updateWalletPlatformAddresses(platformAddresses));
         } else if (addressTypeString === "a") {
             await removeAssetAddress(address);
-            const assetAddresses = await getAssetAddresses();
+            const assetAddresses = await getAssetAddresses(networkId);
             dispatch(updateWalletAssetAddresses(assetAddresses));
         } else {
             throw Error("invalid addressType");

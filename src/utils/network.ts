@@ -1,4 +1,6 @@
-export function getNetworkNameById(networkId: string) {
+import { NetworkId } from "codechain-sdk/lib/core/types";
+
+export function getNetworkNameById(networkId: NetworkId) {
     switch (networkId) {
         case "cc":
             return "MAINNET";
@@ -10,8 +12,4 @@ export function getNetworkNameById(networkId: string) {
             return "CORGI";
     }
     throw new Error("Unknown networkId");
-}
-
-export function getNetworkIdByAddress(address: string) {
-    return address.slice(0, 2);
 }

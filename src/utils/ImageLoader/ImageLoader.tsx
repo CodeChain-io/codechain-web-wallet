@@ -1,4 +1,5 @@
 import * as React from "react";
+import { NetworkId } from "../../model/address";
 import { getApiHost } from "../../networks/Api";
 const Identicon = require("identicon.js");
 const sha256 = require("js-sha256");
@@ -8,7 +9,7 @@ interface Props {
     className?: string;
     size: number;
     isAssetImage: boolean;
-    networkId?: string;
+    networkId?: NetworkId;
 }
 interface State {
     requestUrl?: string;

@@ -29,8 +29,7 @@ interface DispatchProps {
     createWalletAddress: (
         addressType: AddressType,
         name: string,
-        passphrase: string,
-        networkId: string
+        passphrase: string
     ) => void;
     clearData: () => void;
 }
@@ -242,10 +241,9 @@ class Login extends React.Component<Props, State> {
     private handleSubmitOnAddAddress = (
         type: AddressType,
         name: string,
-        passphrase: string,
-        networkId: string
+        passphrase: string
     ) => {
-        this.props.createWalletAddress(type, name, passphrase, networkId);
+        this.props.createWalletAddress(type, name, passphrase);
     };
 }
 
@@ -267,24 +265,13 @@ const mapDispatchToProps = (
     createWalletAddress: (
         addressType: AddressType,
         name: string,
-        passphrase: string,
-        networkId: string
+        passphrase: string
     ) => {
         if (addressType === AddressType.Asset) {
-            dispatch(
-                walletActions.createWalletAssetAddress(
-                    name,
-                    passphrase,
-                    networkId
-                )
-            );
+            dispatch(walletActions.createWalletAssetAddress(name, passphrase));
         } else {
             dispatch(
-                walletActions.createWalletPlatformAddress(
-                    name,
-                    passphrase,
-                    networkId
-                )
+                walletActions.createWalletPlatformAddress(name, passphrase)
             );
         }
     },

@@ -9,14 +9,12 @@ interface Props {
     onSubmit: (
         type: AddressType,
         addressName: string,
-        password: string,
-        networkId: string
+        password: string
     ) => void;
 }
 
 interface State {
     type: AddressType;
-    networkId: "cc" | "tc" | "sc" | "wc";
     name: string;
     password: string;
     passwordConfirm: string;
@@ -38,7 +36,6 @@ export default class CreateAddressForm extends React.Component<Props, State> {
             name: "",
             password: "",
             passwordConfirm: "",
-            networkId: "cc",
             nameError: undefined,
             passwordConfirmError: undefined,
             passwordError: undefined,
@@ -53,7 +50,6 @@ export default class CreateAddressForm extends React.Component<Props, State> {
             password,
             passwordConfirm,
             type,
-            networkId,
             nameError,
             passwordConfirmError,
             passwordError,
@@ -96,74 +92,6 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                                 </button>
                             </div>
                         </div>
-                    </div>
-                    <div className="input-container">
-                        <div>
-                            <span className="form-label">NETWORK TYPE</span>
-                        </div>
-                        <div className="d-flex mt-2">
-                            <div className="w-50 mr-1">
-                                <button
-                                    className={`btn btn-primary w-100 ${networkId ===
-                                        "cc" && "selected"}`}
-                                    onClick={_.partial(
-                                        this.handleNetworkChange,
-                                        "cc"
-                                    )}
-                                >
-                                    MAINNET
-                                </button>
-                            </div>
-                            <div className="w-50 ml-1">
-                                <button
-                                    disabled={networkId !== "cc"}
-                                    className={`btn btn-primary w-100 ${networkId !==
-                                        "cc" && "selected"}`}
-                                    onClick={_.partial(
-                                        this.handleNetworkChange,
-                                        "tc"
-                                    )}
-                                >
-                                    TESTNET
-                                </button>
-                            </div>
-                        </div>
-                        {networkId !== "cc" && (
-                            <div className="d-flex mt-1">
-                                <div className="ml-auto testnet-btn-container">
-                                    <button
-                                        className={`btn btn-primary mr-2 ${networkId ===
-                                            "tc" && "selected"}`}
-                                        onClick={_.partial(
-                                            this.handleNetworkChange,
-                                            "tc"
-                                        )}
-                                    >
-                                        Husky
-                                    </button>
-                                    <button
-                                        className={`btn btn-primary mr-2 ${networkId ===
-                                            "sc" && "selected"}`}
-                                        onClick={_.partial(
-                                            this.handleNetworkChange,
-                                            "sc"
-                                        )}
-                                    >
-                                        Saluki
-                                    </button>
-                                    <button
-                                        className={`btn btn-primary ${networkId ===
-                                            "wc" && "selected"}`}
-                                        onClick={_.partial(
-                                            this.handleNetworkChange,
-                                            "wc"
-                                        )}
-                                    >
-                                        Corgi
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </div>
                     <div className="input-container">
                         <ValidationInput
@@ -230,11 +158,6 @@ export default class CreateAddressForm extends React.Component<Props, State> {
             type: addressType
         });
     };
-    private handleNetworkChange = (networkId: "cc" | "tc" | "sc" | "wc") => {
-        this.setState({
-            networkId
-        });
-    };
     private handleNameChange = (event: any) => {
         this.setState({
             name: event.target.value,
@@ -260,7 +183,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
     };
     private handleSubmit = (event: any) => {
         const { onSubmit } = this.props;
-        const { password, name, type, networkId } = this.state;
+        const { password, name, type } = this.state;
 
         if (!this.checkNameField()) {
             return;
@@ -277,7 +200,6 @@ export default class CreateAddressForm extends React.Component<Props, State> {
             name: "",
             password: "",
             passwordConfirm: "",
-            networkId: "cc",
             nameError: undefined,
             passwordConfirmError: undefined,
             passwordError: undefined,
@@ -286,7 +208,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
             isPasswordConfirmValid: undefined
         });
 
-        onSubmit(type, name.trim(), password, networkId);
+        onSubmit(type, name.trim(), password);
     };
 
     private checkNameField = (): boolean => {

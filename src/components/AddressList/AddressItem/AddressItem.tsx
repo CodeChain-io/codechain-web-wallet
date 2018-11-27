@@ -12,27 +12,26 @@ import {
 } from "../../../model/address";
 import { ReducerConfigure } from "../../../redux";
 import walletActions from "../../../redux/wallet/walletActions";
-import { getNetworkNameById } from "../../../utils/network";
 import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./AddressItem.css";
 import * as copyBtn from "./img/icons-copy.svg";
 import * as copyBtnHover from "./img/icons-copyselect.svg";
-import * as mainnet from "./img/mainnet.svg";
-import * as testnet from "./img/testnet.svg";
 
 interface OwnProps {
     walletAddress: WalletAddress;
     className?: string | null;
-    account?: PlatformAccount | null;
 }
 interface DispatchProps {
     fetchAccountIfNeed: (address: string) => void;
+}
+interface StateProps {
+    account?: PlatformAccount | null;
 }
 interface State {
     isCopyHovering: boolean;
 }
 
-type Props = RouteComponentProps & OwnProps & DispatchProps;
+type Props = RouteComponentProps & OwnProps & DispatchProps & StateProps;
 
 class AddressItem extends React.Component<Props, State> {
     public constructor(props: Props) {
@@ -60,21 +59,6 @@ class AddressItem extends React.Component<Props, State> {
                             : "asset-type"
                     }`}
                 >
-                    <div className="d-flex network-text-container">
-                        <div className="ml-auto mb-0 d-flex align-items-center">
-                            <span className="network-text">
-                                {getNetworkNameById(walletAddress.networkId)}
-                            </span>
-                            <img
-                                className="ml-2"
-                                src={`${
-                                    walletAddress.networkId === "cc"
-                                        ? mainnet
-                                        : testnet
-                                }`}
-                            />
-                        </div>
-                    </div>
                     <div>
                         <p className="address-name mb-0 mono">
                             {walletAddress.name}

@@ -12,6 +12,7 @@ import {
     H256,
     U256
 } from "codechain-sdk/lib/core/classes";
+import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
 
@@ -46,31 +47,37 @@ async function postRequest<T>(url: string, body: any) {
     throw new Error(response.statusText);
 }
 
-export function getApiHost(networkId: string) {
+export function getApiHost(networkId: NetworkId) {
     return server.host[networkId];
 }
 
-export function getGatewayHost(networkId: string) {
+export function getGatewayHost(networkId: NetworkId) {
     // return server.gateway[networkId];
     return "http://localhost:9000";
 }
 
 export async function getAggsUTXOList(
     address: string,
-    networkId: string
+    networkId: NetworkId
 ): Promise<AggsUTXO[]> {
     const apiHost = getApiHost(networkId);
     return await getRequest<AggsUTXO[]>(`${apiHost}/api/aggs-utxo/${address}`);
 }
 
-export async function getAssetByAssetType(assetType: H256, networkId: string) {
+export async function getAssetByAssetType(
+    assetType: H256,
+    networkId: NetworkId
+) {
     const apiHost = getApiHost(networkId);
     return getRequest<AssetSchemeDoc>(
         `${apiHost}/api/asset/${assetType.value}`
     );
 }
 
-export async function getPlatformAccount(address: string, networkId: string) {
+export async function getPlatformAccount(
+    address: string,
+    networkId: NetworkId
+) {
     const apiHost = getApiHost(networkId);
     const response = await getRequest<{ balance: string; nonce: string }>(
         `${apiHost}/api/addr-platform-account/${address}`
@@ -92,7 +99,7 @@ export async function getPlatformAccount(address: string, networkId: string) {
 export async function getUTXOListByAssetType(
     address: string,
     assetType: H256,
-    networkId: string
+    networkId: NetworkId
 ) {
     const apiHost = getApiHost(networkId);
     return await getRequest<UTXO[]>(
@@ -102,7 +109,7 @@ export async function getUTXOListByAssetType(
 
 export async function sendTxToGateway(
     tx: AssetTransferTransaction,
-    networkId: string
+    networkId: NetworkId
 ) {
     const gatewayHost = getGatewayHost(networkId);
 
@@ -113,7 +120,7 @@ export async function sendTxToGateway(
 
 export async function getPendingPaymentParcels(
     address: string,
-    networkId: string
+    networkId: NetworkId
 ) {
     const apiHost = getApiHost(networkId);
     return await getRequest<PendingParcelDoc[]>(
@@ -123,7 +130,7 @@ export async function getPendingPaymentParcels(
 
 export async function getPendingTransactions(
     address: string,
-    networkId: string
+    networkId: NetworkId
 ) {
     const apiHost = getApiHost(networkId);
     return await getRequest<PendingTransactionDoc[]>(
@@ -136,7 +143,7 @@ export async function getTxsByAddress(
     onlyUnconfirmed: boolean,
     page: number,
     itemsPerPage: number,
-    networkId: string
+    networkId: NetworkId
 ) {
     const apiHost = getApiHost(networkId);
     let query = `${apiHost}/api/addr-asset-txs/${address}?page=${page}&itemsPerPage=${itemsPerPage}`;

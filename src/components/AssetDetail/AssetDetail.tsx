@@ -8,10 +8,10 @@ import { Link } from "react-router-dom";
 import { Container, Table } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
+import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/asset/assetActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
-import { getNetworkIdByAddress } from "../../utils/network";
 import "./AssetDetail.css";
 
 interface OwnProps {
@@ -20,10 +20,11 @@ interface OwnProps {
 
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
+    networkId: NetworkId;
 }
 
 interface DispatchProps {
-    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => void;
+    fetchAssetSchemeIfNeed: (assetType: H256) => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -38,7 +39,8 @@ class AssetDetail extends React.Component<Props, any> {
             assetScheme,
             match: {
                 params: { assetType, address }
-            }
+            },
+            networkId
         } = this.props;
         if (!assetScheme) {
             return (
@@ -84,9 +86,7 @@ class AssetDetail extends React.Component<Props, any> {
                                         data={assetType}
                                         isAssetImage={true}
                                         size={65}
-                                        networkId={getNetworkIdByAddress(
-                                            address
-                                        )}
+                                        networkId={networkId}
                                     />
                                 </td>
                             </tr>
@@ -104,13 +104,10 @@ class AssetDetail extends React.Component<Props, any> {
     private init = () => {
         const {
             match: {
-                params: { assetType, address }
+                params: { assetType }
             }
         } = this.props;
-        this.props.fetchAssetSchemeIfNeed(
-            new H256(assetType),
-            getNetworkIdByAddress(address)
-        );
+        this.props.fetchAssetSchemeIfNeed(new H256(assetType));
     };
 }
 
@@ -122,15 +119,17 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     } = ownProps;
     const assetScheme =
         state.assetReducer.assetScheme[new H256(assetType).value];
+    const networkId = state.globalReducer.networkId;
     return {
-        assetScheme: assetScheme && assetScheme.data
+        assetScheme: assetScheme && assetScheme.data,
+        networkId
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => {
-        dispatch(actions.fetchAssetSchemeIfNeed(assetType, networkId));
+    fetchAssetSchemeIfNeed: (assetType: H256) => {
+        dispatch(actions.fetchAssetSchemeIfNeed(assetType));
     }
 });
 export default connect(

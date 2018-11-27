@@ -11,7 +11,6 @@ import {
     getTxsByAddress,
     sendTxToGateway
 } from "../../networks/Api";
-import { getNetworkIdByAddress } from "../../utils/network";
 import assetActions from "../asset/assetActions";
 
 export type Action =
@@ -107,9 +106,10 @@ const fetchPendingTxListIfNeed = (address: string) => {
         }
         try {
             dispatch(setFetchingPendingTxList(address));
+            const networkId = getState().globalReducer.networkId;
             const pendingTxList = await getPendingTransactions(
                 address,
-                getNetworkIdByAddress(address)
+                networkId
             );
             dispatch(cachePendingTxList(address, pendingTxList));
             dispatch(assetActions.calculateAvailableAssets(address));
@@ -158,12 +158,13 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
         }
         try {
             dispatch(setFetchingUnconfirmedTxList(address));
+            const networkId = getState().globalReducer.networkId;
             const unconfirmedTxList = await getTxsByAddress(
                 address,
                 true,
                 1,
                 10000,
-                getNetworkIdByAddress(address)
+                networkId
             );
             dispatch(cacheUnconfirmedTxList(address, unconfirmedTxList));
             dispatch(assetActions.calculateAvailableAssets(address));
@@ -199,7 +200,8 @@ const sendTransaction = (
         }
         try {
             dispatch(setSendingTx(address, transferTx));
-            await sendTxToGateway(transferTx, getNetworkIdByAddress(address));
+            const networkId = getState().globalReducer.networkId;
+            await sendTxToGateway(transferTx, networkId);
             checkingIndexingFunc = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
                 const pendingTxList = getState().transactionReducer

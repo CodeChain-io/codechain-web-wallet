@@ -16,12 +16,12 @@ import { match } from "react-router";
 import { Container } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
+import { NetworkId } from "../../model/address";
 import { getCCKey } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import transactionActions from "../../redux/transaction/transactionActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
-import { getNetworkIdByAddress } from "../../utils/network";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
 
@@ -40,10 +40,11 @@ interface StateProps {
               metadata: MetadataFormat;
           }[]
         | null;
+    networkId: NetworkId;
 }
 
 interface DispatchProps {
-    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => void;
+    fetchAssetSchemeIfNeed: (assetType: H256) => void;
     fetchAvailableAssets: (address: string) => void;
     fetchUTXOListIfNeed: (address: string, assetType: H256) => void;
     sendTransaction: (
@@ -83,8 +84,9 @@ class SendAsset extends React.Component<Props> {
         const {
             assetScheme,
             match: {
-                params: { assetType, address }
-            }
+                params: { assetType }
+            },
+            networkId
         } = this.props;
         const { availableAssets, isSendingTx, UTXOList } = this.props;
         if (!assetScheme || !UTXOList || !availableAssets) {
@@ -122,7 +124,7 @@ class SendAsset extends React.Component<Props> {
                             <ImageLoader
                                 data={assetType}
                                 isAssetImage={true}
-                                networkId={getNetworkIdByAddress(address)}
+                                networkId={networkId}
                                 size={50}
                             />
                         </div>
@@ -156,7 +158,8 @@ class SendAsset extends React.Component<Props> {
         const {
             match: {
                 params: { assetType, address }
-            }
+            },
+            networkId
         } = this.props;
         const sumOfSendingAsset = _.sumBy(
             receivers,
@@ -175,7 +178,6 @@ class SendAsset extends React.Component<Props> {
             }
         }
 
-        const networkId = getNetworkIdByAddress(address);
         const sdk = new SDK({
             server: "http://52.79.108.1:8080",
             networkId
@@ -239,13 +241,10 @@ class SendAsset extends React.Component<Props> {
     private getAssetScheme = async () => {
         const {
             match: {
-                params: { address, assetType }
+                params: { assetType }
             }
         } = this.props;
-        this.props.fetchAssetSchemeIfNeed(
-            new H256(assetType),
-            getNetworkIdByAddress(address)
-        );
+        this.props.fetchAssetSchemeIfNeed(new H256(assetType));
     };
 
     private getUTXOList = async () => {
@@ -280,19 +279,21 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const UTXOListByAddressAssetType =
         UTXOListByAddress && UTXOListByAddress[assetType];
     const availableAssets = state.assetReducer.availableAssets[address];
+    const networkId = state.globalReducer.networkId;
     return {
         assetScheme: assetScheme && assetScheme.data,
         isSendingTx: sendingTx != null,
         UTXOList: UTXOListByAddressAssetType && UTXOListByAddressAssetType.data,
-        availableAssets
+        availableAssets,
+        networkId
     };
 };
 
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAssetSchemeIfNeed: (assetType: H256, networkId: string) => {
-        dispatch(assetActions.fetchAssetSchemeIfNeed(assetType, networkId));
+    fetchAssetSchemeIfNeed: (assetType: H256) => {
+        dispatch(assetActions.fetchAssetSchemeIfNeed(assetType));
     },
     fetchAvailableAssets: (address: string) => {
         dispatch(assetActions.fetchAvailableAssets(address));

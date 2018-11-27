@@ -24,15 +24,6 @@
     color: white;
     overflow: hidden;
 
-    .network-text-container {
-      margin-bottom: -10x;
-      .network-text {
-        opacity: 0.4;
-        font-size: 12px;
-        @include heading-font();
-      }
-    }
-
     .address-text {
       font-size: 10px;
       opacity: 0.4;

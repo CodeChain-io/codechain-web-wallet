@@ -6,7 +6,7 @@ import {
 import * as FileSaver from "file-saver";
 import * as _ from "lodash";
 import { __await } from "tslib";
-import { AddressType, WalletAddress } from "./address";
+import { AddressType, NetworkId, WalletAddress } from "./address";
 
 let dbType = "volatile";
 if (process.env.CI) {
@@ -61,19 +61,18 @@ export async function removeAssetAddress(address: string) {
 export async function createAddress(
     type: AddressType,
     name: string,
-    passphrase: string,
-    networkId: string
+    passphrase: string
 ) {
     const ccKey = await getCCKey();
     if (type === AddressType.Platform) {
         await ccKey.platform.createKey({
             passphrase,
-            meta: JSON.stringify({ name, networkId })
+            meta: JSON.stringify({ name })
         });
     } else {
         await ccKey.asset.createKey({
             passphrase,
-            meta: JSON.stringify({ name, networkId })
+            meta: JSON.stringify({ name })
         });
     }
 }
@@ -87,7 +86,9 @@ export async function isKeystoreExisted() {
     return CCKey.exist({ dbType });
 }
 
-export async function getPlatformAddresses(): Promise<WalletAddress[]> {
+export async function getPlatformAddresses(
+    networkId: NetworkId
+): Promise<WalletAddress[]> {
     const ccKey = await getCCKey();
     const platformKeys = await ccKey.platform.getKeys();
     return Promise.all(
@@ -95,19 +96,20 @@ export async function getPlatformAddresses(): Promise<WalletAddress[]> {
             const meta = await ccKey.platform.getMeta({ key });
             const metaObject = JSON.parse(meta);
             const address = PlatformAddress.fromAccountId(key, {
-                networkId: metaObject.networkId
+                networkId
             }).value;
             return {
                 name: metaObject.name,
                 address,
-                networkId: metaObject.networkId,
                 type: AddressType.Platform
             };
         })
     );
 }
 
-export async function getAssetAddresses(): Promise<WalletAddress[]> {
+export async function getAssetAddresses(
+    networkId: NetworkId
+): Promise<WalletAddress[]> {
     const ccKey = await getCCKey();
     const assetKeys = await ccKey.asset.getKeys();
     return Promise.all(
@@ -115,12 +117,11 @@ export async function getAssetAddresses(): Promise<WalletAddress[]> {
             const meta = await ccKey.asset.getMeta({ key });
             const metaObject = JSON.parse(meta);
             const address = AssetTransferAddress.fromTypeAndPayload(1, key, {
-                networkId: metaObject.networkId
+                networkId
             }).value;
             return {
                 name: metaObject.name,
                 address,
-                networkId: metaObject.networkId,
                 type: AddressType.Asset
             };
         })

@@ -11,10 +11,10 @@ import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
+import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import transactionActions from "../../redux/transaction/transactionActions";
-import { getNetworkIdByAddress } from "../../utils/network";
 import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 
@@ -33,6 +33,7 @@ interface StateProps {
               metadata: MetadataFormat;
           }[]
         | null;
+    networkId: NetworkId;
 }
 
 interface DispatchProps {
@@ -78,7 +79,8 @@ class AssetList extends React.Component<Props> {
             addressUTXOList,
             pendingTxList,
             unconfirmedTxList,
-            availableAssets
+            availableAssets,
+            networkId
         } = this.props;
         if (
             !addressUTXOList ||
@@ -115,9 +117,7 @@ class AssetList extends React.Component<Props> {
                                                 availableAsset.quantities
                                             }
                                             metadata={availableAsset.metadata}
-                                            networkId={getNetworkIdByAddress(
-                                                address
-                                            )}
+                                            networkId={networkId}
                                             address={address}
                                         />
                                     </Col>
@@ -158,11 +158,13 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const unconfirmedTxList =
         state.transactionReducer.unconfirmedTxList[address];
     const availableAssets = state.assetReducer.availableAssets[address];
+    const networkId = state.globalReducer.networkId;
     return {
         addressUTXOList: aggsUTXOList && aggsUTXOList.data,
         pendingTxList: pendingTxList && pendingTxList.data,
         unconfirmedTxList: unconfirmedTxList && unconfirmedTxList.data,
-        availableAssets
+        availableAssets,
+        networkId
     };
 };
 const mapDispatchToProps = (

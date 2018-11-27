@@ -1,15 +1,15 @@
 import { MetadataFormat } from "codechain-indexer-types/lib/utils";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { NetworkId } from "../../../model/address";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
-import { getNetworkIdByAddress } from "../../../utils/network";
 import "./AssetItem.css";
 
 interface OwnProps {
     assetType: string;
     quantities: number;
     metadata: MetadataFormat;
-    networkId: string;
+    networkId: NetworkId;
     address: string;
 }
 
@@ -20,7 +20,7 @@ class AssetItem extends React.Component<Props, any> {
         super(props);
     }
     public render() {
-        const { metadata, assetType, address, quantities } = this.props;
+        const { metadata, assetType, quantities, networkId } = this.props;
         return (
             <div onClick={this.handleClick} className="Asset-item d-flex mb-3">
                 <div className="image-container">
@@ -28,7 +28,7 @@ class AssetItem extends React.Component<Props, any> {
                         data={assetType}
                         size={65}
                         isAssetImage={true}
-                        networkId={getNetworkIdByAddress(address)}
+                        networkId={networkId}
                     />
                 </div>
                 <div className="name-container d-flex align-items-center">

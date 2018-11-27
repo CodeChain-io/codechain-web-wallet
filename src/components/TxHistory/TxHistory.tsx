@@ -10,7 +10,6 @@ import {
     getPendingTransactions,
     getTxsByAddress
 } from "../../networks/Api";
-import { getNetworkIdByAddress } from "../../utils/network";
 import PendingTxItem from "./PendingTxItem/PendingTxItem";
 import TxItem from "./TxItem/TxItem";
 
@@ -89,10 +88,7 @@ export default class TxHistory extends React.Component<Props, State> {
     private getPendingTxList = async () => {
         const { address } = this.props;
         try {
-            const pendingTxList = await getPendingTransactions(
-                address,
-                getNetworkIdByAddress(address)
-            );
+            const pendingTxList = await getPendingTransactions(address, "tc");
             this.setState({ pendingTxList });
         } catch (e) {
             console.log(e);
@@ -102,13 +98,7 @@ export default class TxHistory extends React.Component<Props, State> {
     private getTxList = async () => {
         const { address } = this.props;
         try {
-            const txList = await getTxsByAddress(
-                address,
-                false,
-                1,
-                10,
-                getNetworkIdByAddress(address)
-            );
+            const txList = await getTxsByAddress(address, false, 1, 10, "tc");
             this.setState({ txList });
         } catch (e) {
             console.log(e);
@@ -116,11 +106,8 @@ export default class TxHistory extends React.Component<Props, State> {
     };
 
     private getBestBlockNumber = async () => {
-        const { address } = this.props;
         try {
-            const bestBlockNumber = await getBestBlockNumber(
-                getNetworkIdByAddress(address)
-            );
+            const bestBlockNumber = await getBestBlockNumber("tc");
             this.setState({ bestBlockNumber });
         } catch (e) {
             console.log(e);

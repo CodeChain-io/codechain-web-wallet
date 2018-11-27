@@ -13,7 +13,6 @@ import {
     getAssetByAssetType,
     getUTXOListByAssetType
 } from "../../networks/Api";
-import { getNetworkIdByAddress } from "../../utils/network";
 import { TxUtil } from "../../utils/transaction";
 import transactionActions from "../transaction/transactionActions";
 
@@ -170,7 +169,7 @@ const setFetchingUTXOList = (
     }
 });
 
-const fetchAssetSchemeIfNeed = (assetType: H256, networkId: string) => {
+const fetchAssetSchemeIfNeed = (assetType: H256) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
@@ -183,6 +182,7 @@ const fetchAssetSchemeIfNeed = (assetType: H256, networkId: string) => {
         }
         try {
             dispatch(setFetchingAssetScheme(assetType));
+            const networkId = getState().globalReducer.networkId;
             const responseAssetScheme = await getAssetByAssetType(
                 assetType,
                 networkId
@@ -214,10 +214,8 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
         }
         try {
             dispatch(setFetchingAggsUTXOList(address));
-            const UTXOResponse = await getAggsUTXOList(
-                address,
-                getNetworkIdByAddress(address)
-            );
+            const networkId = getState().globalReducer.networkId;
+            const UTXOResponse = await getAggsUTXOList(address, networkId);
             dispatch(cacheAggsUTXOList(address, UTXOResponse));
             _.each(UTXOResponse, u => {
                 dispatch(
@@ -254,10 +252,11 @@ const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
         }
         try {
             dispatch(setFetchingUTXOList(address, assetType));
+            const networkId = getState().globalReducer.networkId;
             const UTXOListResponse = await getUTXOListByAssetType(
                 address,
                 assetType,
-                getNetworkIdByAddress(address)
+                networkId
             );
             dispatch(cacheUTXOList(address, assetType, UTXOListResponse));
         } catch (e) {

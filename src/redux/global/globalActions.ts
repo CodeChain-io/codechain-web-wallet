@@ -1,14 +1,16 @@
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
+import { NetworkId } from "../../model/address";
 import { clearKeystore } from "../../model/keystore";
 
-export type Action = Login | ToggleMenu | ClearData | Logout;
+export type Action = Login | ToggleMenu | ClearData | Logout | UpdateNetwork;
 
 export enum ActionType {
     Login = 1000,
     ClearData,
     ToggleMenu,
-    Logout
+    Logout,
+    UpdateNetwork
 }
 
 export interface Login {
@@ -26,6 +28,27 @@ export interface ClearData {
 export interface Logout {
     type: ActionType.Logout;
 }
+
+export interface UpdateNetwork {
+    type: ActionType.UpdateNetwork;
+    data: {
+        networkId: NetworkId;
+    };
+}
+
+const updateNetworkId = (networkId: NetworkId) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        dispatch({
+            type: ActionType.UpdateNetwork,
+            data: {
+                networkId
+            }
+        });
+    };
+};
 
 const login = (): Login => ({
     type: ActionType.Login
@@ -65,5 +88,6 @@ export default {
     login,
     logout,
     toggleMenu,
-    clearData
+    clearData,
+    updateNetworkId
 };
