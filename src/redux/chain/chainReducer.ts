@@ -20,15 +20,29 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
+    txList: {
+        [address: string]: {
+            data?: TransactionDoc[] | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
     sendingTx: {
         [address: string]: AssetTransferTransaction | null;
     };
+    bestBlockNumber?: {
+        data?: number | null;
+        isFetching: boolean;
+        updatedAt?: number | null;
+    } | null;
 }
 
 export const chainInitState: ChainState = {
     pendingTxList: {},
     unconfirmedTxList: {},
-    sendingTx: {}
+    txList: {},
+    sendingTx: {},
+    bestBlockNumber: undefined
 };
 
 export const chainReducer = (state = chainInitState, action: Action) => {
@@ -104,6 +118,56 @@ export const chainReducer = (state = chainInitState, action: Action) => {
             return {
                 ...state,
                 sendingTx
+            };
+        }
+        case ActionType.UpdateBestBlockNumber: {
+            return {
+                ...state,
+                bestBlockNumber: {
+                    data: action.data.bestBlockNumber,
+                    updatedAt: +new Date(),
+                    isFetching: false
+                }
+            };
+        }
+        case ActionType.SetFetchingBestBlockNumber: {
+            return {
+                ...state,
+                bestBlockNumber: {
+                    ...state.bestBlockNumber,
+                    isFetching: true
+                }
+            };
+        }
+        case ActionType.CacheTxList: {
+            const address = action.data.address;
+            const currentTxList = {
+                data: action.data.txList,
+                updatedAt: +new Date(),
+                isFetching: false
+            };
+            const txList = {
+                ...state.txList,
+                [address]: currentTxList
+            };
+            return {
+                ...state,
+                txList
+            };
+        }
+        case ActionType.SetFetchingTxList: {
+            const address = action.data.address;
+            const currentTxList = {
+                ...state.txList[address],
+                isFetching: true
+            };
+            const txList = {
+                ...state.txList,
+                [address]: currentTxList
+            };
+            return {
+                ...state,
+                txList
             };
         }
     }

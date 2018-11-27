@@ -7,6 +7,7 @@ import * as _ from "lodash";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
+    getBestBlockNumber,
     getPendingTransactions,
     getTxsByAddress,
     sendTxToGateway
@@ -16,16 +17,24 @@ import assetActions from "../asset/assetActions";
 export type Action =
     | CachePendingTxList
     | CacheUnconfirmedTxList
+    | CacheTxList
     | SetFetchingPendingTxList
     | SetFetchingUnconfirmedTxList
-    | SetSendingTx;
+    | SetFetchingTxList
+    | SetSendingTx
+    | UpdateBestBlockNumber
+    | SetFetchingBestBlockNumber;
 
 export enum ActionType {
     CachePendingTxList = 2000,
     CacheUnconfirmedTxList,
+    CacheTxList,
     SetFetchingPendingTxList,
     SetFetchingUnconfirmedTxList,
-    SetSendingTx
+    SetSendingTx,
+    UpdateBestBlockNumber,
+    SetFetchingBestBlockNumber,
+    SetFetchingTxList
 }
 
 export interface CachePendingTxList {
@@ -44,6 +53,14 @@ export interface CacheUnconfirmedTxList {
     };
 }
 
+export interface CacheTxList {
+    type: ActionType.CacheTxList;
+    data: {
+        address: string;
+        txList: TransactionDoc[];
+    };
+}
+
 export interface SetFetchingPendingTxList {
     type: ActionType.SetFetchingPendingTxList;
     data: {
@@ -58,12 +75,30 @@ export interface SetFetchingUnconfirmedTxList {
     };
 }
 
+export interface SetFetchingTxList {
+    type: ActionType.SetFetchingTxList;
+    data: {
+        address: string;
+    };
+}
+
 export interface SetSendingTx {
     type: ActionType.SetSendingTx;
     data: {
         address: string;
         tx: AssetTransferTransaction | null;
     };
+}
+
+export interface UpdateBestBlockNumber {
+    type: ActionType.UpdateBestBlockNumber;
+    data: {
+        bestBlockNumber: number;
+    };
+}
+
+export interface SetFetchingBestBlockNumber {
+    type: ActionType.SetFetchingBestBlockNumber;
 }
 
 const cachePendingTxList = (
@@ -174,6 +209,51 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
     };
 };
 
+const fetchTxListIfNeed = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const cachedTxList = getState().chainReducer.txList[address];
+        if (cachedTxList && cachedTxList.isFetching) {
+            return;
+        }
+        if (
+            cachedTxList &&
+            cachedTxList.updatedAt &&
+            +new Date() - cachedTxList.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch({
+                type: ActionType.SetFetchingTxList,
+                data: {
+                    address
+                }
+            });
+            const networkId = getState().globalReducer.networkId;
+            // FIXME: Add pagination
+            const txList = await getTxsByAddress(
+                address,
+                false,
+                1,
+                10,
+                networkId
+            );
+            dispatch({
+                type: ActionType.CacheTxList,
+                data: {
+                    address,
+                    txList
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
 const setSendingTx = (
     address: string,
     transferTx: AssetTransferTransaction | null
@@ -226,8 +306,40 @@ const sendTransaction = (
     };
 };
 
+const fetchBestBlockNumberIfNeed = () => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const bestBlockNumber = getState().chainReducer.bestBlockNumber;
+        if (bestBlockNumber && bestBlockNumber.isFetching) {
+            return;
+        }
+        if (
+            bestBlockNumber &&
+            bestBlockNumber.updatedAt &&
+            +new Date() - bestBlockNumber.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch({ type: ActionType.SetFetchingBestBlockNumber });
+            const networkId = getState().globalReducer.networkId;
+            const updatedBestBlockNumber = await getBestBlockNumber(networkId);
+            dispatch({
+                type: ActionType.UpdateBestBlockNumber,
+                data: { bestBlockNumber: updatedBestBlockNumber }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
 export default {
     fetchPendingTxListIfNeed,
     fetchUnconfirmedTxListIfNeed,
-    sendTransaction
+    sendTransaction,
+    fetchBestBlockNumberIfNeed,
+    fetchTxListIfNeed
 };

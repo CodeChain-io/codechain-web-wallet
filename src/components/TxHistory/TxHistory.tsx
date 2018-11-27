@@ -4,25 +4,34 @@ import {
 } from "codechain-indexer-types/lib/types";
 import * as _ from "lodash";
 import * as React from "react";
+import { connect } from "react-redux";
 import { Table } from "reactstrap";
-import {
-    getBestBlockNumber,
-    getPendingTransactions,
-    getTxsByAddress
-} from "../../networks/Api";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
+import { ReducerConfigure } from "../../redux";
+import chainActions from "../../redux/chain/chainActions";
 import PendingTxItem from "./PendingTxItem/PendingTxItem";
 import TxItem from "./TxItem/TxItem";
 
-interface Props {
+interface OwnProps {
     address: string;
 }
 
-interface State {
+interface StateProps {
     pendingTxList?: PendingTransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
     bestBlockNumber?: number | null;
 }
-export default class TxHistory extends React.Component<Props, State> {
+
+interface DispatchProps {
+    fetchPendingTxListIfNeed: (address: string) => void;
+    fetchTxListIfNeed: (address: string) => void;
+    fetchBestBlockNumberIfNeed: () => void;
+}
+
+type Props = StateProps & OwnProps & DispatchProps;
+
+class TxHistory extends React.Component<Props> {
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -33,14 +42,19 @@ export default class TxHistory extends React.Component<Props, State> {
     }
 
     public componentDidMount() {
-        this.getPendingTxList();
-        this.getTxList();
-        this.getBestBlockNumber();
+        const {
+            address,
+            fetchBestBlockNumberIfNeed,
+            fetchPendingTxListIfNeed,
+            fetchTxListIfNeed
+        } = this.props;
+        fetchBestBlockNumberIfNeed();
+        fetchPendingTxListIfNeed(address);
+        fetchTxListIfNeed(address);
     }
 
     public render() {
-        const { address } = this.props;
-        const { pendingTxList, txList, bestBlockNumber } = this.state;
+        const { pendingTxList, txList, bestBlockNumber, address } = this.props;
         if (!pendingTxList || !txList || !bestBlockNumber) {
             return <div>Loading</div>;
         }
@@ -84,33 +98,33 @@ export default class TxHistory extends React.Component<Props, State> {
             </div>
         );
     }
-
-    private getPendingTxList = async () => {
-        const { address } = this.props;
-        try {
-            const pendingTxList = await getPendingTransactions(address, "tc");
-            this.setState({ pendingTxList });
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    private getTxList = async () => {
-        const { address } = this.props;
-        try {
-            const txList = await getTxsByAddress(address, false, 1, 10, "tc");
-            this.setState({ txList });
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    private getBestBlockNumber = async () => {
-        try {
-            const bestBlockNumber = await getBestBlockNumber("tc");
-            this.setState({ bestBlockNumber });
-        } catch (e) {
-            console.log(e);
-        }
-    };
 }
+
+const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
+    const { address } = props;
+    const pendingTxList = state.chainReducer.pendingTxList[address];
+    const txList = state.chainReducer.txList[address];
+    const bestBlockNumber = state.chainReducer.bestBlockNumber;
+    return {
+        pendingTxList: pendingTxList && pendingTxList.data,
+        txList: txList && txList.data,
+        bestBlockNumber: bestBlockNumber && bestBlockNumber.data
+    };
+};
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchPendingTxListIfNeed: (address: string) => {
+        dispatch(chainActions.fetchPendingTxListIfNeed(address));
+    },
+    fetchTxListIfNeed: (address: string) => {
+        dispatch(chainActions.fetchTxListIfNeed(address));
+    },
+    fetchBestBlockNumberIfNeed: () => {
+        dispatch(chainActions.fetchBestBlockNumberIfNeed());
+    }
+});
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(TxHistory);
