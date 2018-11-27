@@ -21,12 +21,12 @@ export async function getCCKey() {
     return globalCCKey;
 }
 
-export async function clearWallet() {
+export async function clearKeystore() {
     const ccKey = await getCCKey();
     await ccKey.clear();
 }
 
-export async function saveWallet(name: string) {
+export async function exportKeystore(name: string) {
     const ccKey = await getCCKey();
     const text = await ccKey.save();
     const blob = new Blob([text], { type: "application/json;charset=utf-8" });
@@ -58,7 +58,7 @@ export async function removeAssetAddress(address: string) {
     await ccKey.asset.deleteKey({ key });
 }
 
-export async function createKey(
+export async function createAddress(
     type: AddressType,
     name: string,
     passphrase: string,
@@ -78,12 +78,12 @@ export async function createKey(
     }
 }
 
-export async function loadWallet(walletText: string) {
+export async function importKeystore(walletText: string) {
     const ccKey = await getCCKey();
     await ccKey.load(walletText);
 }
 
-export async function isWalletExisted() {
+export async function isKeystoreExisted() {
     return CCKey.exist({ dbType });
 }
 

@@ -22,11 +22,11 @@ export type Action =
     | SetSendingTx;
 
 export enum ActionType {
-    CachePendingTxList = "cachePendingTxList",
-    CacheUnconfirmedTxList = "cacheUnconfirmedTxList",
-    SetFetchingPendingTxList = "setFetchingPendingTxList",
-    SetFetchingUnconfirmedTxList = "setFetchingUnconfirmedTxList",
-    SetSendingTx = "setSendingTx"
+    CachePendingTxList = 2000,
+    CacheUnconfirmedTxList,
+    SetFetchingPendingTxList,
+    SetFetchingUnconfirmedTxList,
+    SetSendingTx
 }
 
 export interface CachePendingTxList {

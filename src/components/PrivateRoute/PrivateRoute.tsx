@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
 import { Dispatch } from "redux";
-import { isWalletExisted } from "../../model/wallet";
+import { isKeystoreExisted } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/global/globalActions";
 
@@ -58,7 +58,7 @@ class PrivateRoute extends React.Component<any, State> {
     }
 
     private checkSessionStorage = async () => {
-        const keyExisted = await isWalletExisted();
+        const keyExisted = await isKeystoreExisted();
         if (keyExisted) {
             this.props.login();
         } else {

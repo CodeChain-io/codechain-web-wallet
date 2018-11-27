@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { Container } from "reactstrap";
 import { Action } from "redux";
-import { loadWallet } from "../../model/wallet";
+import { importKeystore } from "../../model/keystore";
 import actions from "../../redux/global/globalActions";
 import CreateWalletForm from "../CreateWalletForm/CreateWalletForm";
 import "./Login.css";
@@ -218,7 +218,7 @@ class Login extends React.Component<Props, State> {
     private handleFileReader = async () => {
         const content = this.fileReader.result as string;
         try {
-            await loadWallet(content);
+            await importKeystore(content);
             this.props.login();
             this.setState({ redirectToReferrer: true });
         } catch (e) {

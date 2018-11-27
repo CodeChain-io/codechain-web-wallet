@@ -27,13 +27,13 @@ export type Action =
     | CacheAvailableAssets;
 
 export enum ActionType {
-    CacheAssetScheme = "cacheAssetScheme",
-    CacheAggsUTXOList = "cacheAggsUTXOList",
-    SetFetchingAggsUTXOList = "setFetchingAggsUTXOList",
-    SetFetchingAssetScheme = "setFetchingAssetScheme",
-    SetFetchingUTXOList = "setFetchingUTXOList",
-    CacheUTXOList = "cacheUTXOList",
-    CacheAvailableAssets = "cacheAvailableAssets"
+    CacheAssetScheme = 0,
+    CacheAggsUTXOList,
+    SetFetchingAggsUTXOList,
+    SetFetchingAssetScheme,
+    SetFetchingUTXOList,
+    CacheUTXOList,
+    CacheAvailableAssets
 }
 
 export interface CacheAssetScheme {

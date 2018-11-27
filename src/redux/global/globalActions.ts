@@ -1,14 +1,14 @@
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
-import { clearWallet } from "../../model/wallet";
+import { clearKeystore } from "../../model/keystore";
 
 export type Action = Login | ToggleMenu | ClearData | Logout;
 
 export enum ActionType {
-    Login = "login",
-    ClearData = "clear_data",
-    ToggleMenu = "toggle_menu",
-    Logout = "logout"
+    Login = 1000,
+    ClearData,
+    ToggleMenu,
+    Logout
 }
 
 export interface Login {
@@ -48,7 +48,7 @@ const clearData = () => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        await clearWallet();
+        await clearKeystore();
         setTimeout(() => {
             dispatch({
                 type: ActionType.ClearData

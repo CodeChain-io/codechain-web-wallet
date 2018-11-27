@@ -7,13 +7,13 @@ import {
     WalletAddress
 } from "../../model/address";
 import {
-    createKey,
+    createAddress,
     getAssetAddresses,
     getPlatformAddresses,
     getWalletName,
     removeAssetAddress,
     removePlatformAddress
-} from "../../model/wallet";
+} from "../../model/keystore";
 import { getPlatformAccount } from "../../networks/Api";
 import { getNetworkIdByAddress } from "../../utils/network";
 
@@ -26,13 +26,13 @@ export type Action =
     | UpdateCreatingAddresses;
 
 export enum ActionType {
-    UpdateWalletPlatformAddresses = "updateWalletPlatformAddresses",
-    UpdateWalletAssetAddresses = "updateWalletAssetAddresses",
-    UpdateWalletName = "updateWalletName",
-    UpdateAccount = "updateAccount",
-    SetFetchingAccount = "setFetchingAccount",
-    ClearWallet = "clearWallet",
-    UpdateCreatingAddresses = "updateCreatingAddresses"
+    UpdateWalletPlatformAddresses = 3000,
+    UpdateWalletAssetAddresses,
+    UpdateWalletName,
+    UpdateAccount,
+    SetFetchingAccount,
+    ClearWallet,
+    UpdateCreatingAddresses
 }
 
 export interface UpdateWalletName {
@@ -137,7 +137,7 @@ const createWalletPlatformAddress = (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        await createKey(AddressType.Platform, name, passphrase, networkId);
+        await createAddress(AddressType.Platform, name, passphrase, networkId);
         const platformAddresses = await getPlatformAddresses();
         dispatch(updateWalletPlatformAddresses(platformAddresses));
 
@@ -160,7 +160,7 @@ const createWalletAssetAddress = (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        await createKey(AddressType.Asset, name, passphrase, networkId);
+        await createAddress(AddressType.Asset, name, passphrase, networkId);
         const assetAddresses = await getAssetAddresses();
         dispatch(updateWalletAssetAddresses(assetAddresses));
 

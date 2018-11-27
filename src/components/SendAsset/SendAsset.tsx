@@ -16,7 +16,7 @@ import { match } from "react-router";
 import { Container } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { getCCKey } from "../../model/wallet";
+import { getCCKey } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import transactionActions from "../../redux/transaction/transactionActions";
