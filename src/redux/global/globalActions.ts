@@ -72,11 +72,9 @@ const clearData = () => {
         getState: () => ReducerConfigure
     ) => {
         await clearKeystore();
-        setTimeout(() => {
-            dispatch({
-                type: ActionType.ClearData
-            });
-        }, 100);
+        dispatch({
+            type: ActionType.ClearData
+        });
     };
 };
 

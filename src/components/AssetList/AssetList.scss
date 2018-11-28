@@ -1,0 +1,58 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
+.Asset-list {
+  position: relative;
+  background: linear-gradient(180deg, $asset-blue 200px, transparent 0%);
+
+  .address-container {
+    position: relative;
+    padding: 15px 0 15px 0;
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 0;
+      color: white;
+      opacity: 0.4;
+      font-size: 1.8rem;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    .qr-container {
+      width: 67px;
+      height: 67px;
+      padding: 5px;
+      background-color: white;
+    }
+    .name-address-container {
+      flex: 1;
+      color: white;
+
+      .address-text {
+        opacity: 0.6;
+      }
+      .copy-btn {
+        cursor: pointer;
+      }
+    }
+  }
+  .element-container {
+    background-color: white;
+    padding-left: 52px;
+    padding-right: 52px;
+    padding-top: 30px;
+    padding-bottom: 42px;
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    border-radius: 5px;
+
+    @include respond_below(sm) {
+      & {
+        padding-left: 30px;
+        padding-right: 30px;
+      }
+    }
+  }
+}

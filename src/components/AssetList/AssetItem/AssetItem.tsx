@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MetadataFormat } from "codechain-indexer-types/lib/utils";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
@@ -22,20 +23,29 @@ class AssetItem extends React.Component<Props, any> {
     public render() {
         const { metadata, assetType, quantities, networkId } = this.props;
         return (
-            <div onClick={this.handleClick} className="Asset-item d-flex mb-3">
-                <div className="image-container">
-                    <ImageLoader
-                        data={assetType}
-                        size={65}
-                        isAssetImage={true}
-                        networkId={networkId}
-                    />
-                </div>
-                <div className="name-container d-flex align-items-center">
-                    <div className="pl-3">
-                        <h6 className="mb-0">{metadata.name || assetType}</h6>
-                        <p className="mb-0">x {quantities}</p>
+            <div onClick={this.handleClick} className="Asset-item">
+                <div className="d-flex align-items-center">
+                    <div className="image-container">
+                        <ImageLoader
+                            data={assetType}
+                            size={65}
+                            isAssetImage={true}
+                            networkId={networkId}
+                        />
                     </div>
+                    <div className="name-container d-flex align-items-center">
+                        <h4 className="mb-0 asset-name">
+                            {metadata.name ||
+                                `...${assetType.slice(
+                                    assetType.length - 8,
+                                    assetType.length
+                                )}`}
+                        </h4>
+                    </div>
+                    <span className="mb-0 number asset-quantities">
+                        {quantities.toLocaleString()}
+                    </span>
+                    <FontAwesomeIcon className="info-icon" icon="info-circle" />
                 </div>
             </div>
         );

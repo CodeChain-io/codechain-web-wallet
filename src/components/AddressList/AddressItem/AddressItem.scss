@@ -6,10 +6,12 @@
   display: inline-block;
   margin-left: 30px;
   margin-right: 30px;
+  margin-bottom: 60px;
 
   @include respond-below(sm) {
     & {
       width: calc(100% - 60px);
+      margin-bottom: 18px;
     }
   }
 

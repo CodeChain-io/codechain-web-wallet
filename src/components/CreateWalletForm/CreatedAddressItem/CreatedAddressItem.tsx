@@ -21,7 +21,7 @@ export default class CreatedAddressItem extends React.Component<Props, any> {
                         {data.type === AddressType.Asset ? "ASSET" : "PLATFORM"}
                     </span>
                 </div>
-                <p className="address-name mb-0 mono">{data.name}</p>
+                <p className="address-name mb-0">{data.name}</p>
                 <p className="mb-0 mono address-string">
                     {data.address.slice(0, 12)}
                     ...

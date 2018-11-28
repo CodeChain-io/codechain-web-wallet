@@ -62,7 +62,6 @@ class Login extends React.Component<Props, State> {
             isImportBtnHover: false
         };
         this.fileSelector = React.createRef<HTMLInputElement>();
-        this.props.clearData();
     }
     public render() {
         const {

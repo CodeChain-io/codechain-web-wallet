@@ -49,7 +49,7 @@ class AddressItem extends React.Component<Props, State> {
         const { isCopyHovering } = this.state;
         return (
             <div
-                className={`Address-item mb-3 ${className}`}
+                className={`Address-item ${className}`}
                 onClick={this.handleClick}
             >
                 <div
@@ -60,7 +60,7 @@ class AddressItem extends React.Component<Props, State> {
                     }`}
                 >
                     <div>
-                        <p className="address-name mb-0 mono">
+                        <p className="address-name mb-0">
                             {walletAddress.name}
                         </p>
                     </div>
@@ -87,11 +87,11 @@ class AddressItem extends React.Component<Props, State> {
                 {walletAddress.type === AddressType.Platform && (
                     <div className="platform-account">
                         {account ? (
-                            <span className="mono balance">
+                            <span className="number balance">
                                 {changeQuarkToCCCString(account.balance)} CCC
                             </span>
                         ) : (
-                            <span className="mono balance">Loading...</span>
+                            <span className="number balance">Loading...</span>
                         )}
                     </div>
                 )}

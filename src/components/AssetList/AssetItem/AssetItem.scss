@@ -1,16 +1,49 @@
+@import "styles/variables.scss";
+
 .Asset-item {
-  border: 1px solid black;
   width: 100%;
-  padding: 8px;
+  padding: 11px 20px 11px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+  border: 1px solid $disabledbg-grey;
+  background-color: #ffffff;
+  display: inline-block;
   cursor: pointer;
 
   .image-container {
+    border-radius: 50%;
+    overflow: hidden;
     .asset-image {
-      width: 65px;
-      height: 65px;
+      width: 48px;
+      height: 48px;
     }
   }
   .name-container {
+    margin: 0px 12px 0px 12px;
     flex: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    .asset-name {
+      font-weight: 600;
+    }
+  }
+
+  .asset-quantities {
+    font-size: 1.4rem;
+    color: $asset-blue;
+  }
+
+  .info-icon {
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 1.4rem;
+    color: $dark-grey;
+    opacity: 0.4;
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
 }

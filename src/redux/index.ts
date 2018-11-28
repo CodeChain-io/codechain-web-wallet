@@ -1,17 +1,9 @@
 import { combineReducers } from "redux";
-import { assetInitState, assetReducer, AssetState } from "./asset/assetReducer";
-import { chainInitState, chainReducer, ChainState } from "./chain/chainReducer";
+import { assetReducer, AssetState } from "./asset/assetReducer";
+import { chainReducer, ChainState } from "./chain/chainReducer";
 import { ActionType } from "./global/globalActions";
-import {
-    globalInitState,
-    globalReducer,
-    GlobalState
-} from "./global/globalReducer";
-import {
-    walletInitState,
-    walletReducer,
-    WalletState
-} from "./wallet/walletReducer";
+import { globalReducer, GlobalState } from "./global/globalReducer";
+import { walletReducer, WalletState } from "./wallet/walletReducer";
 
 export interface ReducerConfigure {
     globalReducer: GlobalState;
@@ -29,12 +21,7 @@ const appReducer = combineReducers({
 
 const rootReducer = (state: any, action: any) => {
     if (action.type === ActionType.ClearData) {
-        state = {
-            globalReducer: globalInitState,
-            walletReducer: walletInitState,
-            transactionReducer: chainInitState,
-            assetReducer: assetInitState
-        };
+        state = undefined;
     }
     return appReducer(state, action);
 };

@@ -56,7 +56,7 @@ class TxHistory extends React.Component<Props> {
     public render() {
         const { pendingTxList, txList, bestBlockNumber, address } = this.props;
         if (!pendingTxList || !txList || !bestBlockNumber) {
-            return <div>Loading</div>;
+            return <div>Loading...</div>;
         }
         const txHashList = _.map(txList, tx => tx.data.hash);
         const validPendingTxList = _.filter(
@@ -67,14 +67,6 @@ class TxHistory extends React.Component<Props> {
         return (
             <div>
                 <Table>
-                    <thead>
-                        <tr>
-                            <th>Asset</th>
-                            <th>Hash</th>
-                            <th>Quantities</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
                     <tbody>
                         {_.map(validPendingTxList, (pendingTx, index) => (
                             <PendingTxItem

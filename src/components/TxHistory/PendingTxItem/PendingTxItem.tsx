@@ -1,5 +1,6 @@
 import { PendingTransactionDoc } from "codechain-indexer-types/lib/types";
 import * as _ from "lodash";
+import * as moment from "moment";
 import * as React from "react";
 import { TxUtil } from "../../../utils/transaction";
 
@@ -16,6 +17,7 @@ export default class PendingTxItem extends React.Component<Props, any> {
         );
         return _.map(assetHistory, history => (
             <tr>
+                <td>{moment.unix(pendingTx.timestamp).fromNow()}</td>
                 <td>{history.metadata.name || history.assetType}</td>
                 <td>{pendingTx.transaction.data.hash}</td>
                 <td>

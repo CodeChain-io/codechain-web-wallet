@@ -29,7 +29,7 @@ class AddressList extends React.Component<Props, any> {
         return (
             <div className="Address-list">
                 <Container>
-                    <div className="mt-3 mb-5">
+                    <div className="asset-address-container">
                         <div className="deco asset-title-deco" />
                         <h5 className="mb-4">Asset Addresses</h5>
                         <div className="address-item-container">
@@ -48,7 +48,7 @@ class AddressList extends React.Component<Props, any> {
                         </div>
                     </div>
                     <hr />
-                    <div className="mt-3">
+                    <div className="platform-address-container">
                         <div className="deco platform-title-deco" />
                         <h5 className="mb-4">Platform Addresses</h5>
                         <div className="address-item-container">

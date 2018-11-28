@@ -38,14 +38,19 @@ class SideMenu extends React.Component<Props, any> {
                 </div>
                 <div className="title-container">
                     <span className="grey mb-2">KEYFILE</span>
-                    <h3 className="mono mb-4">{walletName}</h3>
+                    <h3 className="mb-4">{walletName}</h3>
                     <hr />
-                    <p className="mb-0 mono grey">
-                        {platformAddresses && platformAddresses.length} Platform
-                        address
+                    <p className="mb-0 grey">
+                        <span className="number">
+                            {platformAddresses && platformAddresses.length}
+                        </span>{" "}
+                        Platform address
                     </p>
-                    <p className="mono grey">
-                        {assetAddresses && assetAddresses.length} Asset address
+                    <p className="grey">
+                        <span className="number">
+                            {assetAddresses && assetAddresses.length}
+                        </span>{" "}
+                        Asset address
                     </p>
                     <div className="mt-5">
                         <button className="btn btn-primary w-100 text-center">

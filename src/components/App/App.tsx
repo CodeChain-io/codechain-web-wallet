@@ -1,9 +1,11 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faArrowAltCircleDown,
+    faArrowLeft,
     faBars,
     faChevronLeft,
     faFileDownload,
+    faInfoCircle,
     faPlus,
     faPlusCircle,
     faTimes,
@@ -36,7 +38,9 @@ library.add(
     faChevronLeft,
     faArrowAltCircleDown,
     faPlusCircle,
-    faTimes
+    faTimes,
+    faInfoCircle,
+    faArrowLeft
 );
 
 interface StateProps {

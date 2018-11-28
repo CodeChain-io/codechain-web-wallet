@@ -5,8 +5,10 @@ import {
 } from "codechain-indexer-types/lib/types";
 import { MetadataFormat } from "codechain-indexer-types/lib/utils";
 import * as _ from "lodash";
+import * as QRCode from "qrcode.react";
 import * as React from "react";
 import { connect } from "react-redux";
+import MediaQuery from "react-responsive";
 import { match } from "react-router";
 import { Col, Container, Row } from "reactstrap";
 import { Action } from "redux";
@@ -17,6 +19,11 @@ import assetActions from "../../redux/asset/assetActions";
 import chainActions from "../../redux/chain/chainActions";
 import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
+import "./AssetList.css";
+import * as CopyBtn from "./img/copy.svg";
 
 interface OwnProps {
     match: match<{ address: string }>;
@@ -97,37 +104,72 @@ class AssetList extends React.Component<Props> {
             );
         }
         return (
-            <div>
+            <div className="Asset-list">
                 <Container>
-                    <div className="mt-5">
-                        <h4>My assets</h4>
-                        <hr />
-                        <Row>
-                            {availableAssets.length > 0 ? (
-                                _.map(availableAssets, availableAsset => (
-                                    <Col
-                                        xl={3}
-                                        lg={4}
-                                        sm={6}
-                                        key={availableAsset.assetType}
-                                    >
-                                        <AssetItem
-                                            assetType={availableAsset.assetType}
-                                            quantities={
-                                                availableAsset.quantities
-                                            }
-                                            metadata={availableAsset.metadata}
-                                            networkId={networkId}
-                                            address={address}
-                                        />
-                                    </Col>
-                                ))
-                            ) : (
-                                <Col>Empty</Col>
-                            )}
-                        </Row>
-                        <h4 className="mt-5">History</h4>
-                        <TxHistory address={address} />
+                    <div className="address-container d-flex align-items-center">
+                        <Link to="/">
+                            <FontAwesomeIcon
+                                className="back-btn"
+                                icon="arrow-left"
+                            />
+                        </Link>
+                        <div className="qr-container">
+                            <QRCode value={address} size={57} />
+                        </div>
+                        <div className="ml-3 name-address-container">
+                            <h2 className="mb-0">Address1</h2>
+                            <span className="mono address-text mr-3">
+                                <MediaQuery query="(max-width: 768px)">
+                                    {address.slice(0, 8)}
+                                    ...
+                                    {address.slice(
+                                        address.length - 8,
+                                        address.length
+                                    )}
+                                </MediaQuery>
+                                <MediaQuery query="(min-width: 769px)">
+                                    {address}
+                                </MediaQuery>
+                            </span>
+                            <img src={CopyBtn} className="copy-btn" />
+                        </div>
+                    </div>
+                    <div>
+                        <div className="element-container mb-3">
+                            <h4 className="mb-3">Asset list</h4>
+                            <Row>
+                                {availableAssets.length > 0 ? (
+                                    _.map(availableAssets, availableAsset => (
+                                        <Col
+                                            md={6}
+                                            lg={4}
+                                            className="mb-3 mb-md-4"
+                                        >
+                                            <AssetItem
+                                                key={availableAsset.assetType}
+                                                assetType={
+                                                    availableAsset.assetType
+                                                }
+                                                quantities={
+                                                    availableAsset.quantities
+                                                }
+                                                metadata={
+                                                    availableAsset.metadata
+                                                }
+                                                networkId={networkId}
+                                                address={address}
+                                            />
+                                        </Col>
+                                    ))
+                                ) : (
+                                    <Col>Empty</Col>
+                                )}
+                            </Row>
+                        </div>
+                        <div className="element-container">
+                            <h4 className="mb-3">Recent transaction</h4>
+                            <TxHistory address={address} />
+                        </div>
                     </div>
                 </Container>
             </div>

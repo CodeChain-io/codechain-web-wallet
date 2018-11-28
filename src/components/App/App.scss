@@ -6,14 +6,7 @@
     flex: 1;
     height: calc(100vh - #{$header-height});
     overflow: scroll;
-    padding: 38px;
     background: $bg-white;
-
-    @include respond-below(sm) {
-      & {
-        padding: 10px;
-      }
-    }
 
     &.remove-header {
       height: 100vh;
