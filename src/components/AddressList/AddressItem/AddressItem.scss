@@ -27,12 +27,12 @@
     overflow: hidden;
 
     .address-text {
-      font-size: 10px;
       opacity: 0.4;
     }
 
     .address-name {
       font-size: 24px;
+      font-weight: bold;
     }
 
     &.platform-type {

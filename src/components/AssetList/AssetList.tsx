@@ -21,9 +21,12 @@ import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./AssetList.css";
-import * as CopyBtn from "./img/copy.svg";
+import * as copyBtnHover from "./img/copy-hover.svg";
+import * as copyBtn from "./img/copy.svg";
 
 interface OwnProps {
     match: match<{ address: string }>;
@@ -50,11 +53,18 @@ interface DispatchProps {
     fetchAvailableAssets: (address: string) => void;
 }
 
+interface State {
+    isCopyHovering: boolean;
+}
+
 type Props = OwnProps & StateProps & DispatchProps;
 
-class AssetList extends React.Component<Props> {
+class AssetList extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
+        this.state = {
+            isCopyHovering: false
+        };
     }
     public componentWillReceiveProps(props: Props) {
         const {
@@ -89,6 +99,7 @@ class AssetList extends React.Component<Props> {
             availableAssets,
             networkId
         } = this.props;
+        const { isCopyHovering } = this.state;
         if (
             !addressUTXOList ||
             !pendingTxList ||
@@ -131,7 +142,20 @@ class AssetList extends React.Component<Props> {
                                     {address}
                                 </MediaQuery>
                             </span>
-                            <img src={CopyBtn} className="copy-btn" />
+                            <CopyToClipboard
+                                text={address}
+                                onCopy={this.handleCopyAddress}
+                            >
+                                <img
+                                    className="copy-btn"
+                                    src={
+                                        isCopyHovering ? copyBtnHover : copyBtn
+                                    }
+                                    onMouseOver={this.hoverCopyBtn}
+                                    onMouseOut={this.outCopyBtn}
+                                    onBlur={this.outCopyBtn}
+                                />
+                            </CopyToClipboard>
                         </div>
                     </div>
                     <div>
@@ -166,7 +190,7 @@ class AssetList extends React.Component<Props> {
                                 )}
                             </Row>
                         </div>
-                        <div className="element-container">
+                        <div className="element-container mb-3">
                             <h4 className="mb-3">Recent transaction</h4>
                             <TxHistory address={address} />
                         </div>
@@ -186,6 +210,19 @@ class AssetList extends React.Component<Props> {
         this.props.fetchPendingTxListIfNeed(address);
         this.props.fetchAggsUTXOListIfNeed(address);
         this.props.fetchAvailableAssets(address);
+    };
+
+    private hoverCopyBtn = () => {
+        this.setState({ isCopyHovering: true });
+    };
+    private outCopyBtn = () => {
+        this.setState({ isCopyHovering: false });
+    };
+    private handleCopyAddress = () => {
+        toast.info("Copied!", {
+            position: toast.POSITION.BOTTOM_CENTER,
+            autoClose: 3000
+        });
     };
 }
 

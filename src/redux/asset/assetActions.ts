@@ -366,7 +366,10 @@ const calculateAvailableAssets = (address: string) => {
                 };
             }
         });
-        const availableAssetsValue = _.values(availableAssets);
+        const availableAssetsValue = _.filter(
+            _.values(availableAssets),
+            asset => asset.quantities !== 0
+        );
         dispatch(cacheAvailableAssets(address, availableAssetsValue));
     };
 };

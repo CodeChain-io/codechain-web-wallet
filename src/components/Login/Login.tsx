@@ -63,6 +63,9 @@ class Login extends React.Component<Props, State> {
         };
         this.fileSelector = React.createRef<HTMLInputElement>();
     }
+    public componentDidMount() {
+        this.props.clearData();
+    }
     public render() {
         const {
             redirectToReferrer,

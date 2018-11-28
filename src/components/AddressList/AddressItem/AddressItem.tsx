@@ -14,8 +14,9 @@ import { ReducerConfigure } from "../../../redux";
 import walletActions from "../../../redux/wallet/walletActions";
 import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./AddressItem.css";
-import * as copyBtn from "./img/icons-copy.svg";
-import * as copyBtnHover from "./img/icons-copyselect.svg";
+
+import * as copyBtnHover from "./img/copy-hover.svg";
+import * as copyBtn from "./img/copy.svg";
 
 interface OwnProps {
     walletAddress: WalletAddress;
@@ -77,7 +78,7 @@ class AddressItem extends React.Component<Props, State> {
                         onCopy={this.handleCopyAddress}
                     >
                         <img
-                            className="ml-2"
+                            className="ml-3"
                             src={isCopyHovering ? copyBtnHover : copyBtn}
                             onMouseOver={this.hoverCopyBtn}
                             onMouseOut={this.outCopyBtn}

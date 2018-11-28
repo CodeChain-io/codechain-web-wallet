@@ -4,6 +4,7 @@ import {
     faArrowLeft,
     faBars,
     faChevronLeft,
+    faCircle,
     faFileDownload,
     faInfoCircle,
     faPlus,
@@ -40,7 +41,8 @@ library.add(
     faPlusCircle,
     faTimes,
     faInfoCircle,
-    faArrowLeft
+    faArrowLeft,
+    faCircle
 );
 
 interface StateProps {

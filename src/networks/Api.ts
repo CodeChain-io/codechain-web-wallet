@@ -15,21 +15,7 @@ import {
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-
-const server = {
-    host: {
-        cc: "https://husky.codechain.io/explorer",
-        tc: "https://husky.codechain.io/explorer",
-        sc: "https://saluki.codechain.io/explorer",
-        wc: "https://corgi.codechain.io/explorer"
-    },
-    gateway: {
-        cc: "https://husky.codechain.io/gateway",
-        tc: "https://husky.codechain.io/gateway",
-        sc: "https://saluki.codechain.io/gateway",
-        wc: "https://corgi.codechain.io/gateway"
-    }
-};
+import { getServerHost } from "../utils/network";
 
 async function getRequest<T>(url: string) {
     const response = await axios.get<T>(url);
@@ -47,10 +33,6 @@ async function postRequest<T>(url: string, body: any) {
     throw new Error(response.statusText);
 }
 
-export function getApiHost(networkId: NetworkId) {
-    return server.host[networkId];
-}
-
 export function getGatewayHost(networkId: NetworkId) {
     // return server.gateway[networkId];
     return "http://localhost:9000";
@@ -60,7 +42,7 @@ export async function getAggsUTXOList(
     address: string,
     networkId: NetworkId
 ): Promise<AggsUTXO[]> {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     return await getRequest<AggsUTXO[]>(`${apiHost}/api/aggs-utxo/${address}`);
 }
 
@@ -68,7 +50,7 @@ export async function getAssetByAssetType(
     assetType: H256,
     networkId: NetworkId
 ) {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     return getRequest<AssetSchemeDoc>(
         `${apiHost}/api/asset/${assetType.value}`
     );
@@ -78,7 +60,7 @@ export async function getPlatformAccount(
     address: string,
     networkId: NetworkId
 ) {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     const response = await getRequest<{ balance: string; nonce: string }>(
         `${apiHost}/api/addr-platform-account/${address}`
     );
@@ -101,7 +83,7 @@ export async function getUTXOListByAssetType(
     assetType: H256,
     networkId: NetworkId
 ) {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     return await getRequest<UTXO[]>(
         `${apiHost}/api/utxo/${assetType.value}/owner/${address}`
     );
@@ -122,7 +104,7 @@ export async function getPendingPaymentParcels(
     address: string,
     networkId: NetworkId
 ) {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     return await getRequest<PendingParcelDoc[]>(
         `${apiHost}/api/parcels/pending/${address}`
     );
@@ -132,7 +114,7 @@ export async function getPendingTransactions(
     address: string,
     networkId: NetworkId
 ) {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     return await getRequest<PendingTransactionDoc[]>(
         `${apiHost}/api/addr-asset-txs/pending/${address}`
     );
@@ -145,7 +127,7 @@ export async function getTxsByAddress(
     itemsPerPage: number,
     networkId: NetworkId
 ) {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     let query = `${apiHost}/api/addr-asset-txs/${address}?page=${page}&itemsPerPage=${itemsPerPage}`;
     if (onlyUnconfirmed) {
         query += `&onlyUnconfirmed=true&confirmThreshold=5`;
@@ -154,6 +136,6 @@ export async function getTxsByAddress(
 }
 
 export async function getBestBlockNumber(networkId: string) {
-    const apiHost = getApiHost(networkId);
+    const apiHost = getServerHost(networkId);
     return await getRequest<number>(`${apiHost}/api/blockNumber`);
 }

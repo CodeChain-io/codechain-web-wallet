@@ -31,7 +31,7 @@ function getAssetAggregationFromTransactionDoc(
         } else {
             return [];
         }
-    } else {
+    } else if (Type.isAssetTransferTransactionDoc(transaction)) {
         const transferTx = transaction as AssetTransferTransactionDoc;
         const filteredInputs = _.filter(
             transferTx.data.inputs,
@@ -121,6 +121,7 @@ function getAssetAggregationFromTransactionDoc(
         });
         return _.values(results);
     }
+    throw new Error("invalid transaction type");
 }
 
 export const TxUtil = { getAssetAggregationFromTransactionDoc };

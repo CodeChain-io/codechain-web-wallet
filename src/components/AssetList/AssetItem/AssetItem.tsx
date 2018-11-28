@@ -28,19 +28,19 @@ class AssetItem extends React.Component<Props, any> {
                     <div className="image-container">
                         <ImageLoader
                             data={assetType}
-                            size={65}
+                            size={48}
                             isAssetImage={true}
                             networkId={networkId}
                         />
                     </div>
-                    <div className="name-container d-flex align-items-center">
-                        <h4 className="mb-0 asset-name">
+                    <div className="name-container">
+                        <span className="mb-0 asset-name">
                             {metadata.name ||
                                 `...${assetType.slice(
                                     assetType.length - 8,
                                     assetType.length
                                 )}`}
-                        </h4>
+                        </span>
                     </div>
                     <span className="mb-0 number asset-quantities">
                         {quantities.toLocaleString()}

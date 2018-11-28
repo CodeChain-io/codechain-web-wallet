@@ -5,13 +5,14 @@ import {
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Table } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "../../redux";
 import chainActions from "../../redux/chain/chainActions";
-import PendingTxItem from "./PendingTxItem/PendingTxItem";
 import TxItem from "./TxItem/TxItem";
+
+import { NetworkId } from "../../model/address";
+import "./TxHistory.css";
 
 interface OwnProps {
     address: string;
@@ -21,6 +22,7 @@ interface StateProps {
     pendingTxList?: PendingTransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
     bestBlockNumber?: number | null;
+    networkId: NetworkId;
 }
 
 interface DispatchProps {
@@ -54,7 +56,13 @@ class TxHistory extends React.Component<Props> {
     }
 
     public render() {
-        const { pendingTxList, txList, bestBlockNumber, address } = this.props;
+        const {
+            pendingTxList,
+            txList,
+            bestBlockNumber,
+            address,
+            networkId
+        } = this.props;
         if (!pendingTxList || !txList || !bestBlockNumber) {
             return <div>Loading...</div>;
         }
@@ -65,28 +73,29 @@ class TxHistory extends React.Component<Props> {
                 !_.includes(txHashList, pendingTx.transaction.data.hash)
         );
         return (
-            <div>
-                <Table>
-                    <tbody>
-                        {_.map(validPendingTxList, (pendingTx, index) => (
-                            <PendingTxItem
-                                key={`${
-                                    pendingTx.transaction.data.hash
-                                }-${index}`}
-                                pendingTx={pendingTx}
-                                address={address}
-                            />
-                        ))}
-                        {_.map(txList, (tx, index) => (
-                            <TxItem
-                                key={`${tx.data.hash}-${index}`}
-                                tx={tx}
-                                address={address}
-                                bestBlockNumber={bestBlockNumber}
-                            />
-                        ))}
-                    </tbody>
-                </Table>
+            <div className="Tx-history">
+                {_.map(validPendingTxList, (pendingTx, index) => (
+                    <TxItem
+                        key={`${pendingTx.transaction.data.hash}-${index}`}
+                        tx={pendingTx.transaction}
+                        bestBlockNumber={bestBlockNumber}
+                        address={address}
+                        networkId={networkId}
+                        isPending={true}
+                        timestamp={pendingTx.timestamp}
+                    />
+                ))}
+                {_.map(txList, (tx, index) => (
+                    <TxItem
+                        key={`${tx.data.hash}-${index}`}
+                        tx={tx}
+                        address={address}
+                        bestBlockNumber={bestBlockNumber}
+                        networkId={networkId}
+                        isPending={false}
+                        timestamp={tx.data.timestamp}
+                    />
+                ))}
             </div>
         );
     }
@@ -97,10 +106,12 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const pendingTxList = state.chainReducer.pendingTxList[address];
     const txList = state.chainReducer.txList[address];
     const bestBlockNumber = state.chainReducer.bestBlockNumber;
+    const networkId = state.globalReducer.networkId;
     return {
         pendingTxList: pendingTxList && pendingTxList.data,
         txList: txList && txList.data,
-        bestBlockNumber: bestBlockNumber && bestBlockNumber.data
+        bestBlockNumber: bestBlockNumber && bestBlockNumber.data,
+        networkId
     };
 };
 const mapDispatchToProps = (
