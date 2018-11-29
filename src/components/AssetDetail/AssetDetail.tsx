@@ -1,17 +1,19 @@
 import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
-import { Type } from "codechain-indexer-types/lib/utils";
+import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import { H256 } from "codechain-sdk/lib/core/classes";
+import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { match } from "react-router";
-import { Link } from "react-router-dom";
-import { Container, Table } from "reactstrap";
+import { Col, Row } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/asset/assetActions";
+import assetActions from "../../redux/asset/assetActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
+import AddressContainer from "../AddressContainer/AddressContainer";
+import TxHistory from "../TxHistory/TxHistory";
 import "./AssetDetail.css";
 
 interface OwnProps {
@@ -21,10 +23,16 @@ interface OwnProps {
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
     networkId: NetworkId;
+    availableAsset?: {
+        assetType: string;
+        quantities: number;
+        metadata: MetadataFormat;
+    } | null;
 }
 
 interface DispatchProps {
     fetchAssetSchemeIfNeed: (assetType: H256) => void;
+    fetchAvailableAssets: (address: string) => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -40,63 +48,72 @@ class AssetDetail extends React.Component<Props, any> {
             match: {
                 params: { assetType, address }
             },
-            networkId
+            networkId,
+            availableAsset
         } = this.props;
-        if (!assetScheme) {
-            return (
-                <div>
-                    <Container>
-                        <div className="mt-5">Loading...</div>
-                    </Container>
-                </div>
-            );
+        if (!assetScheme || !availableAsset) {
+            return null;
         }
 
         const metadata = Type.getMetadata(assetScheme.metadata);
         return (
-            <div className="Asset-detail">
-                <Container>
-                    <div className="mt-5">
-                        <Link to={`/${address}/${assetType}/send`}>
-                            <button
-                                type="button"
-                                className="float-right btn btn-primary"
-                            >
-                                Send Asset
-                            </button>
-                        </Link>
-                        <h4 className="mr-auto">Asset</h4>
+            <div className="Asset-detail d-flex">
+                <div className="panel mx-auto">
+                    <AddressContainer
+                        address={address}
+                        backButtonPath={`/${address}/assets`}
+                    />
+                    <div className="detail-history-container">
+                        <h4 className="mr-auto">Asset detail</h4>
+                        <div className="d-flex mt-4 mb-4 align-itmes-center">
+                            <ImageLoader
+                                className="asset-image"
+                                data={assetType}
+                                size={65}
+                                isAssetImage={true}
+                                networkId={networkId}
+                            />
+                            <div className="ml-4 name-quantity-container">
+                                <h4 className="mb-0">
+                                    {metadata.name || "None"}
+                                </h4>
+                                <div className="mono asset-type">
+                                    0x
+                                    {new H256(assetType).value}
+                                </div>
+                                <div>
+                                    <span className="total-text mr-3">
+                                        Total
+                                    </span>
+                                    <span className="quantity-text number">
+                                        {availableAsset.quantities.toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div className="info-container">
+                            <Row>
+                                <Col md={2}>Description</Col>
+                                <Col md={10}>
+                                    {metadata.description || "None"}
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={2}>Registrar</Col>
+                                <Col md={10}>
+                                    {assetScheme.registrar || "None"}
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={2}>Total supply</Col>
+                                <Col md={10}>{assetScheme.amount}</Col>
+                            </Row>
+                        </div>
+                        <h4 className="mb-3">Transaction history</h4>
+                        <TxHistory address={address} />
                     </div>
-                    <hr />
-                    <h6>{assetType}</h6>
-                    <Table>
-                        <tbody>
-                            <tr>
-                                <th>Name</th>
-                                <td>{metadata.name || "None"}</td>
-                            </tr>
-                            <tr>
-                                <th>Description</th>
-                                <td>{metadata.description || "None"}</td>
-                            </tr>
-                            <tr>
-                                <th>Icon</th>
-                                <td>
-                                    <ImageLoader
-                                        data={assetType}
-                                        isAssetImage={true}
-                                        size={65}
-                                        networkId={networkId}
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Raw metadata</th>
-                                <td>{assetScheme.metadata}</td>
-                            </tr>
-                        </tbody>
-                    </Table>
-                </Container>
+                </div>
             </div>
         );
     }
@@ -104,32 +121,42 @@ class AssetDetail extends React.Component<Props, any> {
     private init = () => {
         const {
             match: {
-                params: { assetType }
+                params: { assetType, address }
             }
         } = this.props;
         this.props.fetchAssetSchemeIfNeed(new H256(assetType));
+        this.props.fetchAvailableAssets(address);
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const {
         match: {
-            params: { assetType }
+            params: { assetType, address }
         }
     } = ownProps;
     const assetScheme =
         state.assetReducer.assetScheme[new H256(assetType).value];
     const networkId = state.globalReducer.networkId;
+    const availableAssets = state.assetReducer.availableAssets[address];
+    const availableAsset = _.find(
+        availableAssets,
+        asset => asset.assetType === new H256(assetType).value
+    );
     return {
         assetScheme: assetScheme && assetScheme.data,
-        networkId
+        networkId,
+        availableAsset
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     fetchAssetSchemeIfNeed: (assetType: H256) => {
-        dispatch(actions.fetchAssetSchemeIfNeed(assetType));
+        dispatch(assetActions.fetchAssetSchemeIfNeed(assetType));
+    },
+    fetchAvailableAssets: (address: string) => {
+        dispatch(assetActions.fetchAvailableAssets(address));
     }
 });
 export default connect(

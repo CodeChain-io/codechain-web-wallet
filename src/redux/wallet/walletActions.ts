@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
@@ -203,6 +204,7 @@ const fetchAccountIfNeed = (address: string) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch(setFetchingAccount(address));
             const networkId = getState().globalReducer.networkId;
             const accountResponse = await getPlatformAccount(
@@ -210,6 +212,7 @@ const fetchAccountIfNeed = (address: string) => {
                 networkId
             );
             dispatch(updateAccount(address, accountResponse));
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }

@@ -4,6 +4,8 @@
 .Header {
   height: $header-height;
   border-bottom: 1px solid $disabledbg-grey;
+  position: relative;
+  z-index: 5;
   .logo {
     width: auto;
     height: 24px;
@@ -12,5 +14,12 @@
     padding: 25px;
     color: $disabled-grey;
     cursor: pointer;
+  }
+  .loading-bar {
+    background-color: #f2b04c;
+    height: 3px;
+    position: absolute;
+    bottom: -3px;
+    width: 100%;
   }
 }

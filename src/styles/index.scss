@@ -63,7 +63,7 @@ input.form-control[type="number"] {
   border: none;
   border-bottom: 1px solid $wallet-blue;
   border-radius: 0;
-  @include mono-font();
+  @include number-mono-font();
   font-weight: bold;
   color: $dark-grey;
   outline: none;

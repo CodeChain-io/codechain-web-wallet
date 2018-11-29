@@ -1,3 +1,4 @@
+import { loadingBarReducer } from "react-redux-loading-bar";
 import { combineReducers } from "redux";
 import { assetReducer, AssetState } from "./asset/assetReducer";
 import { chainReducer, ChainState } from "./chain/chainReducer";
@@ -16,7 +17,8 @@ const appReducer = combineReducers({
     globalReducer,
     walletReducer,
     assetReducer,
-    chainReducer
+    chainReducer,
+    loadingBar: loadingBarReducer
 });
 
 const rootReducer = (state: any, action: any) => {

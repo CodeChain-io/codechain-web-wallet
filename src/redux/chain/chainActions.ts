@@ -4,6 +4,7 @@ import {
 } from "codechain-indexer-types/lib/types";
 import { AssetTransferTransaction } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
+import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
@@ -140,6 +141,7 @@ const fetchPendingTxListIfNeed = (address: string) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch(setFetchingPendingTxList(address));
             const networkId = getState().globalReducer.networkId;
             const pendingTxList = await getPendingTransactions(
@@ -148,6 +150,7 @@ const fetchPendingTxListIfNeed = (address: string) => {
             );
             dispatch(cachePendingTxList(address, pendingTxList));
             dispatch(assetActions.calculateAvailableAssets(address));
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }
@@ -192,6 +195,7 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch(setFetchingUnconfirmedTxList(address));
             const networkId = getState().globalReducer.networkId;
             const unconfirmedTxList = await getTxsByAddress(
@@ -203,6 +207,7 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
             );
             dispatch(cacheUnconfirmedTxList(address, unconfirmedTxList));
             dispatch(assetActions.calculateAvailableAssets(address));
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }
@@ -323,6 +328,7 @@ const fetchBestBlockNumberIfNeed = () => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch({ type: ActionType.SetFetchingBestBlockNumber });
             const networkId = getState().globalReducer.networkId;
             const updatedBestBlockNumber = await getBestBlockNumber(networkId);
@@ -330,6 +336,7 @@ const fetchBestBlockNumberIfNeed = () => {
                 type: ActionType.UpdateBestBlockNumber,
                 data: { bestBlockNumber: updatedBestBlockNumber }
             });
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }

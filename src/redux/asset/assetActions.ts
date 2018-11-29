@@ -6,6 +6,7 @@ import {
 import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import { H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
+import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
@@ -181,13 +182,16 @@ const fetchAssetSchemeIfNeed = (assetType: H256) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch(setFetchingAssetScheme(assetType));
             const networkId = getState().globalReducer.networkId;
             const responseAssetScheme = await getAssetByAssetType(
                 assetType,
                 networkId
             );
+
             dispatch(cacheAssetScheme(assetType, responseAssetScheme));
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }
@@ -213,6 +217,7 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch(setFetchingAggsUTXOList(address));
             const networkId = getState().globalReducer.networkId;
             const UTXOResponse = await getAggsUTXOList(address, networkId);
@@ -223,6 +228,7 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
                 );
             });
             dispatch(calculateAvailableAssets(address));
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }
@@ -251,6 +257,7 @@ const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch(setFetchingUTXOList(address, assetType));
             const networkId = getState().globalReducer.networkId;
             const UTXOListResponse = await getUTXOListByAssetType(
@@ -259,6 +266,7 @@ const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
                 networkId
             );
             dispatch(cacheUTXOList(address, assetType, UTXOListResponse));
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }

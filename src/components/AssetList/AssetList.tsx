@@ -5,10 +5,8 @@ import {
 } from "codechain-indexer-types/lib/types";
 import { MetadataFormat } from "codechain-indexer-types/lib/utils";
 import * as _ from "lodash";
-import * as QRCode from "qrcode.react";
 import * as React from "react";
 import { connect } from "react-redux";
-import MediaQuery from "react-responsive";
 import { match } from "react-router";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -18,15 +16,10 @@ import assetActions from "../../redux/asset/assetActions";
 import chainActions from "../../redux/chain/chainActions";
 import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as CopyToClipboard from "react-copy-to-clipboard";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import "./AssetList.css";
-import * as copyBtnHover from "./img/copy-hover.svg";
-import * as copyBtn from "./img/copy.svg";
 import SendAsset from "./SendAsset/SendAsset";
+
+import AddressContainer from "../AddressContainer/AddressContainer";
+import "./AssetList.css";
 
 interface OwnProps {
     match: match<{ address: string }>;
@@ -54,7 +47,6 @@ interface DispatchProps {
 }
 
 interface State {
-    isCopyHovering: boolean;
     selectedAssetType?: string | null;
 }
 
@@ -65,7 +57,6 @@ class AssetList extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            isCopyHovering: false,
             selectedAssetType: undefined
         };
     }
@@ -106,7 +97,7 @@ class AssetList extends React.Component<Props, State> {
             availableAssets,
             networkId
         } = this.props;
-        const { isCopyHovering, selectedAssetType } = this.state;
+        const { selectedAssetType } = this.state;
         if (
             !addressUTXOList ||
             !pendingTxList ||
@@ -119,55 +110,16 @@ class AssetList extends React.Component<Props, State> {
             <div className="Asset-list">
                 <div className="d-flex">
                     <div className="left-panel mx-auto">
-                        <div className="address-container d-flex align-items-center">
-                            <Link to="/">
-                                <FontAwesomeIcon
-                                    className="back-btn"
-                                    icon="arrow-left"
-                                />
-                            </Link>
-                            <div className="qr-container">
-                                <QRCode value={address} size={57} />
-                            </div>
-                            <div className="ml-3 name-address-container">
-                                <h2 className="mb-0">Address1</h2>
-                                <span className="mono address-text mr-3">
-                                    <MediaQuery query="(max-width: 768px)">
-                                        {address.slice(0, 8)}
-                                        ...
-                                        {address.slice(
-                                            address.length - 8,
-                                            address.length
-                                        )}
-                                    </MediaQuery>
-                                    <MediaQuery query="(min-width: 769px)">
-                                        {address}
-                                    </MediaQuery>
-                                </span>
-                                <CopyToClipboard
-                                    text={address}
-                                    onCopy={this.handleCopyAddress}
-                                >
-                                    <img
-                                        className="copy-btn"
-                                        src={
-                                            isCopyHovering
-                                                ? copyBtnHover
-                                                : copyBtn
-                                        }
-                                        onMouseOver={this.hoverCopyBtn}
-                                        onMouseOut={this.outCopyBtn}
-                                        onBlur={this.outCopyBtn}
-                                    />
-                                </CopyToClipboard>
-                            </div>
-                        </div>
+                        <AddressContainer
+                            address={address}
+                            backButtonPath="/"
+                        />
                         <div>
                             <div className="element-container mb-3">
                                 <h4 className="mb-3">Asset list</h4>
-                                <div className="asset-item-container">
-                                    {availableAssets.length > 0 ? (
-                                        _.map(
+                                {availableAssets.length > 0 ? (
+                                    <div className="asset-item-container">
+                                        {_.map(
                                             availableAssets,
                                             availableAsset => (
                                                 <AssetItem
@@ -196,11 +148,11 @@ class AssetList extends React.Component<Props, State> {
                                                     }
                                                 />
                                             )
-                                        )
-                                    ) : (
-                                        <span>Empty</span>
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <span>Empty</span>
+                                )}
                             </div>
                             <div className="element-container mb-3">
                                 <h4 className="mb-3">Recent transaction</h4>
@@ -239,6 +191,7 @@ class AssetList extends React.Component<Props, State> {
         this.refresher = setInterval(() => {
             this.fetchAll();
         }, 5000);
+        this.fetchAll();
     };
     private clearInterval = () => {
         if (this.refresher) {
@@ -255,21 +208,6 @@ class AssetList extends React.Component<Props, State> {
         this.props.fetchPendingTxListIfNeed(address);
         this.props.fetchAggsUTXOListIfNeed(address);
         this.props.fetchAvailableAssets(address);
-    };
-
-    private hoverCopyBtn = () => {
-        this.setState({ isCopyHovering: true });
-    };
-
-    private outCopyBtn = () => {
-        this.setState({ isCopyHovering: false });
-    };
-
-    private handleCopyAddress = () => {
-        toast.info("Copied!", {
-            position: toast.POSITION.BOTTOM_CENTER,
-            autoClose: 3000
-        });
     };
 }
 

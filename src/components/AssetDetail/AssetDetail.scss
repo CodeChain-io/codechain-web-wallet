@@ -1,7 +1,61 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
 .Asset-detail {
-  table {
-    th {
-      width: 200px;
+  position: relative;
+  background: linear-gradient(180deg, $asset-blue 200px, transparent 0%);
+  .panel {
+    padding: 15px;
+    max-width: 1084px;
+    flex: 1;
+    min-width: 0;
+  }
+  .detail-history-container {
+    border-radius: 5px;
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    background-color: white;
+    padding: 32px 52px 32px 52px;
+
+    @include respond_below(sm) {
+      padding: 32px 30px 32px 30px;
+    }
+    .asset-image {
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    .name-quantity-container {
+      min-width: 0;
+      flex: 1;
+      .asset-type {
+        font-size: 1.16rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .total-text {
+        font-weight: bold;
+        color: $dark-grey;
+      }
+      .quantity-text {
+        font-size: 1.5rem;
+        color: $asset-blue;
+        font-weight: bold;
+      }
+    }
+
+    .info-container {
+      margin-bottom: 60px;
+      .row {
+        margin-bottom: 12px;
+      }
+      [class*="col-"]:nth-child(1) {
+        font-weight: 600;
+        color: $dark-grey;
+      }
+      [class*="col-"]:nth-child(2) {
+        @include number-mono-font();
+        color: $standard-grey;
+      }
     }
   }
 }

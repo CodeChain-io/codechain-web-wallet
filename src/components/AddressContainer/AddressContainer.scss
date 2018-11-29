@@ -1,0 +1,34 @@
+.Address-container {
+  position: relative;
+  padding: 15px 0 15px 0;
+
+  .back-btn {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    color: white;
+    opacity: 0.4;
+    font-size: 1.8rem;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+  .qr-container {
+    width: 67px;
+    height: 67px;
+    padding: 5px;
+    background-color: white;
+  }
+  .name-address-container {
+    flex: 1;
+    color: white;
+
+    .address-text {
+      opacity: 0.6;
+    }
+    .copy-btn {
+      cursor: pointer;
+    }
+  }
+}
