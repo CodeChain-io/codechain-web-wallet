@@ -61,6 +61,7 @@ interface State {
 type Props = OwnProps & StateProps & DispatchProps;
 
 class AssetList extends React.Component<Props, State> {
+    private refresher: any;
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -86,6 +87,10 @@ class AssetList extends React.Component<Props, State> {
 
     public componentDidMount() {
         this.init();
+    }
+
+    public componentWillUnmount() {
+        this.clearInterval();
     }
 
     public render() {
@@ -230,6 +235,17 @@ class AssetList extends React.Component<Props, State> {
         }
     };
     private init = async () => {
+        this.clearInterval();
+        this.refresher = setInterval(() => {
+            this.fetchAll();
+        }, 5000);
+    };
+    private clearInterval = () => {
+        if (this.refresher) {
+            clearInterval(this.refresher);
+        }
+    };
+    private fetchAll = async () => {
         const {
             match: {
                 params: { address }
@@ -244,9 +260,11 @@ class AssetList extends React.Component<Props, State> {
     private hoverCopyBtn = () => {
         this.setState({ isCopyHovering: true });
     };
+
     private outCopyBtn = () => {
         this.setState({ isCopyHovering: false });
     };
+
     private handleCopyAddress = () => {
         toast.info("Copied!", {
             position: toast.POSITION.BOTTOM_CENTER,
