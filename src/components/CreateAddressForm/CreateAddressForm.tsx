@@ -102,6 +102,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                             error={nameError}
                             onBlur={this.checkNameField}
                             isValid={isNameValid}
+                            showValidation={true}
                         />
                     </div>
                     <div className="input-container">
@@ -114,6 +115,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                             error={passwordError}
                             onBlur={this.checkPasswordField}
                             isValid={isPasswordValid}
+                            showValidation={true}
                         />
                     </div>
                     <div className="input-container">
@@ -126,6 +128,7 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                             error={passwordConfirmError}
                             onBlur={this.checkPasswordConfirmField}
                             isValid={isPasswordConfirmValid}
+                            showValidation={true}
                         />
                     </div>
                     <div className="d-flex cancel-add-btn-container">

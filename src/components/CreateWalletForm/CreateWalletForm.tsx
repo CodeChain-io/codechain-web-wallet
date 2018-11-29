@@ -50,6 +50,7 @@ class CreateWalletForm extends React.Component<Props, State> {
                             onBlur={this.checkWalletName}
                             error={nameError}
                             isValid={isValidWalletName}
+                            showValidation={true}
                         />
                     </div>
                 </div>

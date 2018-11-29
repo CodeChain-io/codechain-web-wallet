@@ -2,15 +2,10 @@
 @import "styles/mixin.scss";
 
 .Address-item {
-  width: 270px;
-  display: inline-block;
-  margin-left: 30px;
-  margin-right: 30px;
-  margin-bottom: 60px;
+  width: 100%;
 
   @include respond-below(sm) {
     & {
-      width: calc(100% - 60px);
       margin-bottom: 18px;
     }
   }

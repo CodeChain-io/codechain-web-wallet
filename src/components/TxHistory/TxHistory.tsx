@@ -74,6 +74,7 @@ class TxHistory extends React.Component<Props> {
         );
         return (
             <div className="Tx-history">
+                {validPendingTxList.length + txList.length === 0 && "Empty"}
                 {_.map(validPendingTxList, (pendingTx, index) => (
                     <TxItem
                         key={`${pendingTx.transaction.data.hash}-${index}`}

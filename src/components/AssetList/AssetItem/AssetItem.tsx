@@ -12,6 +12,9 @@ interface OwnProps {
     metadata: MetadataFormat;
     networkId: NetworkId;
     address: string;
+
+    isSelected: boolean;
+    onSelect: (assetType: string) => void;
 }
 
 type Props = RouteComponentProps & OwnProps;
@@ -21,9 +24,18 @@ class AssetItem extends React.Component<Props, any> {
         super(props);
     }
     public render() {
-        const { metadata, assetType, quantities, networkId } = this.props;
+        const {
+            metadata,
+            assetType,
+            quantities,
+            networkId,
+            isSelected
+        } = this.props;
         return (
-            <div onClick={this.handleClick} className="Asset-item">
+            <div
+                onClick={this.handleClick}
+                className={`Asset-item ${isSelected && "selected"}`}
+            >
                 <div className="d-flex align-items-center">
                     <div className="image-container">
                         <ImageLoader
@@ -45,13 +57,20 @@ class AssetItem extends React.Component<Props, any> {
                     <span className="mb-0 number asset-quantities">
                         {quantities.toLocaleString()}
                     </span>
-                    <FontAwesomeIcon className="info-icon" icon="info-circle" />
+                    <div onClick={this.handleClickInfo} className="info-icon">
+                        <FontAwesomeIcon icon="info-circle" />
+                    </div>
                 </div>
             </div>
         );
     }
 
     private handleClick = () => {
+        const { assetType, onSelect } = this.props;
+        onSelect(assetType);
+    };
+
+    private handleClickInfo = () => {
         const { assetType, address } = this.props;
         this.props.history.push(`/${address}/${assetType}`);
     };

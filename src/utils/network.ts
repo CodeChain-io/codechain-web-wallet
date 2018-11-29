@@ -14,16 +14,20 @@ export function getNetworkNameById(networkId: NetworkId) {
     throw new Error("Unknown networkId");
 }
 
-export function getServerHost(networkId: NetworkId) {
-    return server.host[networkId];
+export function getIndexerHost(networkId: NetworkId) {
+    return server.indexer[networkId];
 }
 
 export function getExplorerHost(networkId: NetworkId) {
-    return server.host[networkId];
+    return server.indexer[networkId];
+}
+
+export function getCodeChainHost(networkId: NetworkId) {
+    return server.chain[networkId];
 }
 
 const server = {
-    host: {
+    indexer: {
         cc: "https://husky.codechain.io/explorer",
         tc: "https://husky.codechain.io/explorer",
         sc: "https://saluki.codechain.io/explorer",
@@ -34,5 +38,11 @@ const server = {
         tc: "https://husky.codechain.io/gateway",
         sc: "https://saluki.codechain.io/gateway",
         wc: "https://corgi.codechain.io/gateway"
+    },
+    chain: {
+        cc: "https://husky.codechain.io/explorer",
+        tc: "http://52.79.108.1:8080",
+        sc: "https://saluki.codechain.io/explorer",
+        wc: "https://corgi.codechain.io/explorer"
     }
 };

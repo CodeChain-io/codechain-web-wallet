@@ -15,7 +15,7 @@ import {
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-import { getServerHost } from "../utils/network";
+import { getIndexerHost } from "../utils/network";
 
 async function getRequest<T>(url: string) {
     const response = await axios.get<T>(url);
@@ -42,7 +42,7 @@ export async function getAggsUTXOList(
     address: string,
     networkId: NetworkId
 ): Promise<AggsUTXO[]> {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     return await getRequest<AggsUTXO[]>(`${apiHost}/api/aggs-utxo/${address}`);
 }
 
@@ -50,7 +50,7 @@ export async function getAssetByAssetType(
     assetType: H256,
     networkId: NetworkId
 ) {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     return getRequest<AssetSchemeDoc>(
         `${apiHost}/api/asset/${assetType.value}`
     );
@@ -60,7 +60,7 @@ export async function getPlatformAccount(
     address: string,
     networkId: NetworkId
 ) {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     const response = await getRequest<{ balance: string; nonce: string }>(
         `${apiHost}/api/addr-platform-account/${address}`
     );
@@ -83,9 +83,11 @@ export async function getUTXOListByAssetType(
     assetType: H256,
     networkId: NetworkId
 ) {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     return await getRequest<UTXO[]>(
-        `${apiHost}/api/utxo/${assetType.value}/owner/${address}`
+        `${apiHost}/api/utxo/${
+            assetType.value
+        }/owner/${address}?itemsPerPage=10000&page=1`
     );
 }
 
@@ -104,7 +106,7 @@ export async function getPendingPaymentParcels(
     address: string,
     networkId: NetworkId
 ) {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     return await getRequest<PendingParcelDoc[]>(
         `${apiHost}/api/parcels/pending/${address}`
     );
@@ -114,7 +116,7 @@ export async function getPendingTransactions(
     address: string,
     networkId: NetworkId
 ) {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     return await getRequest<PendingTransactionDoc[]>(
         `${apiHost}/api/addr-asset-txs/pending/${address}`
     );
@@ -127,7 +129,7 @@ export async function getTxsByAddress(
     itemsPerPage: number,
     networkId: NetworkId
 ) {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     let query = `${apiHost}/api/addr-asset-txs/${address}?page=${page}&itemsPerPage=${itemsPerPage}`;
     if (onlyUnconfirmed) {
         query += `&onlyUnconfirmed=true&confirmThreshold=5`;
@@ -136,6 +138,6 @@ export async function getTxsByAddress(
 }
 
 export async function getBestBlockNumber(networkId: string) {
-    const apiHost = getServerHost(networkId);
+    const apiHost = getIndexerHost(networkId);
     return await getRequest<number>(`${apiHost}/api/blockNumber`);
 }

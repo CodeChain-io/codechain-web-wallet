@@ -1,14 +1,54 @@
 @import "styles/variables.scss";
+@import "styles/mixin.scss";
 
 .Asset-item {
-  width: 100%;
+  width: 306px;
+  display: inline-block;
   padding: 11px 20px 11px 20px;
   border-radius: 5px;
   box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
   border: 1px solid $disabledbg-grey;
   background-color: #ffffff;
   display: inline-block;
+  margin: 8px 8px 8px 8px;
   cursor: pointer;
+
+  @include respond_below(sm) {
+    width: calc(100% - 16px);
+  }
+
+  .asset-quantities {
+    font-size: 1.4rem;
+    color: $asset-blue;
+  }
+
+  .info-icon {
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 1.4rem;
+    color: $dark-grey;
+    opacity: 0.4;
+    line-height: 100%;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &.selected {
+    background-color: $wallet-blue;
+    opacity: 0.4;
+    color: white;
+
+    .asset-quantities {
+      color: white;
+    }
+
+    .info-icon {
+      color: white;
+      opacity: 1;
+    }
+  }
 
   .image-container {
     border-radius: 50%;
@@ -28,23 +68,6 @@
     .asset-name {
       font-weight: 600;
       font-size: 1.2rem;
-    }
-  }
-
-  .asset-quantities {
-    font-size: 1.4rem;
-    color: $asset-blue;
-  }
-
-  .info-icon {
-    cursor: pointer;
-    margin-left: 10px;
-    font-size: 1.4rem;
-    color: $dark-grey;
-    opacity: 0.4;
-
-    &:hover {
-      opacity: 0.8;
     }
   }
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NetworkId } from "../../model/address";
-import { getServerHost } from "../network";
+import { getIndexerHost } from "../network";
 const Identicon = require("identicon.js");
 const sha256 = require("js-sha256");
 
@@ -21,7 +21,7 @@ export class ImageLoader extends React.Component<Props, State> {
         super(prop);
         let requestUrl;
         if (prop.isAssetImage) {
-            const host = getServerHost(prop.networkId || "tc");
+            const host = getIndexerHost(prop.networkId || "tc");
             requestUrl = `${host}/api/asset/image/${prop.data}`;
         } else {
             requestUrl = this.getDefaultImage();

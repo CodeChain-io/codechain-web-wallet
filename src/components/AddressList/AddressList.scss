@@ -1,6 +1,12 @@
 @import "styles/variables.scss";
+@import "styles/mixin.scss";
 
 .Address-list {
+  @include respond-above(lg) {
+    .container {
+      max-width: 1300px;
+    }
+  }
   .asset-address-container {
     margin-top: 60px;
   }
@@ -18,9 +24,5 @@
   }
   .deco.asset-title-deco {
     background-color: $asset-blue;
-  }
-  .address-item-container {
-    margin-right: -30px;
-    margin-left: -30px;
   }
 }

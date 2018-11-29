@@ -9,11 +9,12 @@ interface Props {
     className?: string;
     error?: string | null;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    value: string;
+    value: string | number;
     type?: string;
     labelText?: string;
     onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
     isValid?: boolean;
+    showValidation: boolean;
     reverse?: boolean;
 }
 export default class ValidationInput extends React.Component<Props, any> {
@@ -28,7 +29,8 @@ export default class ValidationInput extends React.Component<Props, any> {
             error,
             onBlur,
             isValid,
-            reverse
+            reverse,
+            showValidation
         } = this.props;
         const guid = this.guid();
         return (
@@ -44,7 +46,8 @@ export default class ValidationInput extends React.Component<Props, any> {
                 <input
                     autoComplete="off"
                     type={`${type || "text"}`}
-                    className={`form-control ${reverse && "reverse"}`}
+                    className={`form-control ${reverse &&
+                        "reverse"} ${showValidation && "validation-form"}`}
                     id={`id-${guid}`}
                     placeholder={placeholder}
                     value={value}

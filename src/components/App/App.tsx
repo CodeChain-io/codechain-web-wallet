@@ -27,7 +27,6 @@ import Header from "../Header/Header";
 import Login from "../Login/Login";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
-import SendAsset from "../SendAsset/SendAsset";
 import SideMenu from "../SideMenu/SideMenu";
 import "./App.css";
 
@@ -102,10 +101,6 @@ class App extends React.Component<Props, any> {
                                     exact={true}
                                     path="/:address/:assetType"
                                     component={AssetDetail}
-                                />
-                                <PrivateRoute
-                                    path="/:address/:assetType/send"
-                                    component={SendAsset}
                                 />
                                 <Route component={NotFound} />
                             </Switch>

@@ -85,6 +85,7 @@ export default class TxItem extends React.Component<Props, any> {
                             {_.map(_.range(6), num => {
                                 return (
                                     <FontAwesomeIcon
+                                        key={num}
                                         className={`${num <= confirmNumber &&
                                             "circle-confirmed"} circle-icon`}
                                         icon="circle"

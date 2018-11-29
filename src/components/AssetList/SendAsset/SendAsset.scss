@@ -1,0 +1,50 @@
+@import "styles/variables.scss";
+
+.Send-asset {
+  padding: 50px;
+  position: relative;
+
+  @media screen and (max-width: 872px) {
+    & {
+      padding: 30px;
+    }
+  }
+
+  .title {
+    color: $wallet-blue;
+  }
+
+  .asset-info-item {
+    margin-top: 26px;
+
+    .asset-info-icon {
+      width: 36px;
+      height: 36px;
+      overflow: hidden;
+      border-radius: 50px;
+    }
+
+    .name {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .quantity {
+      color: $asset-blue;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+  }
+
+  .cancel-icon-container {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    cursor: pointer;
+    .cancel-icon {
+      font-size: 2rem;
+      color: $wallet-blue;
+    }
+  }
+}

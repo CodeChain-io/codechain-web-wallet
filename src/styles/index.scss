@@ -57,7 +57,8 @@ body {
 }
 
 input.form-control[type="text"],
-input.form-control[type="password"] {
+input.form-control[type="password"],
+input.form-control[type="number"] {
   background-color: transparent;
   border: none;
   border-bottom: 1px solid $wallet-blue;

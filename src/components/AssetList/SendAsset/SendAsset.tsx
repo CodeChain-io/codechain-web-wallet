@@ -1,3 +1,6 @@
+import * as React from "react";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AssetSchemeDoc, UTXO } from "codechain-indexer-types/lib/types";
 import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
 import { SDK } from "codechain-sdk";
@@ -10,23 +13,23 @@ import {
 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
-import * as React from "react";
 import { connect } from "react-redux";
-import { match } from "react-router";
-import { Container } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { NetworkId } from "../../model/address";
-import { getCCKey } from "../../model/keystore";
-import { ReducerConfigure } from "../../redux";
-import assetActions from "../../redux/asset/assetActions";
-import chainActions from "../../redux/chain/chainActions";
-import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
+import { NetworkId } from "../../../model/address";
+import { getCCKey } from "../../../model/keystore";
+import { ReducerConfigure } from "../../../redux";
+import assetActions from "../../../redux/asset/assetActions";
+import chainActions from "../../../redux/chain/chainActions";
+import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
+import { getCodeChainHost } from "../../../utils/network";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
 
 interface OwnProps {
-    match: match<{ address: string; assetType: string }>;
+    address: string;
+    selectedAssetType: string;
+    onClose: () => void;
 }
 
 interface StateProps {
@@ -55,46 +58,19 @@ interface DispatchProps {
 
 type Props = OwnProps & StateProps & DispatchProps;
 
-class SendAsset extends React.Component<Props> {
-    public constructor(props: Props) {
-        super(props);
-    }
-
-    public componentWillReceiveProps(props: Props) {
-        const {
-            match: {
-                params: { assetType }
-            }
-        } = this.props;
-        const {
-            match: {
-                params: { assetType: nextAssetType }
-            }
-        } = props;
-        if (nextAssetType !== assetType) {
-            this.init();
-        }
-    }
-
-    public async componentDidMount() {
-        this.init();
-    }
-
+class SendAsset extends React.Component<Props, any> {
     public render() {
+        const { onClose } = this.props;
         const {
             assetScheme,
-            match: {
-                params: { assetType }
-            },
+            selectedAssetType: assetType,
             networkId
         } = this.props;
         const { availableAssets, isSendingTx, UTXOList } = this.props;
         if (!assetScheme || !UTXOList || !availableAssets) {
             return (
                 <div>
-                    <Container>
-                        <div className="mt-5">Loading...</div>
-                    </Container>
+                    <div className="mt-5">Loading...</div>
                 </div>
             );
         }
@@ -105,43 +81,47 @@ class SendAsset extends React.Component<Props> {
         if (!availableAsset) {
             return (
                 <div>
-                    <Container>
-                        <div className="mt-5">Invalid assetType</div>
-                    </Container>
+                    <div className="mt-5">Invalid assetType</div>
                 </div>
             );
         }
         const metadata = Type.getMetadata(assetScheme.metadata);
         return (
             <div className="Send-asset">
-                <Container>
-                    <div className="mt-5">
-                        <h4>Send asset</h4>
-                    </div>
-                    <hr />
-                    <div className="d-flex align-items-center asset-info-item">
-                        <div>
-                            <ImageLoader
-                                data={assetType}
-                                isAssetImage={true}
-                                networkId={networkId}
-                                size={50}
-                            />
-                        </div>
-                        <div className="ml-2">
-                            <p className="mb-0">{metadata.name || assetType}</p>
-                            <p className="mb-0">{availableAsset.quantities}</p>
-                        </div>
-                    </div>
-                    <hr />
-                    <ReceiverContainer
-                        onSubmit={this.handleSubmit}
-                        totalQuantities={availableAsset.quantities}
+                <div className="cancel-icon-container" onClick={onClose}>
+                    <FontAwesomeIcon className="cancel-icon" icon="times" />
+                </div>
+                <h2 className="title">Send asset</h2>
+                <div className="d-flex align-items-center asset-info-item mb-5">
+                    <ImageLoader
+                        className="asset-info-icon"
+                        data={assetType}
+                        isAssetImage={true}
+                        networkId={networkId}
+                        size={50}
                     />
-                    {isSendingTx && <div>Sending...</div>}
-                </Container>
+                    <span className="name ml-3 mr-auto">
+                        {metadata.name ||
+                            `...${assetType.slice(
+                                assetType.length - 6,
+                                assetType.length
+                            )}`}
+                    </span>
+                    <span className="quantity number">
+                        {availableAsset.quantities.toLocaleString()}
+                    </span>
+                </div>
+                <ReceiverContainer
+                    onSubmit={this.handleSubmit}
+                    totalQuantity={availableAsset.quantities}
+                />
+                {isSendingTx && <div>Sending...</div>}
             </div>
         );
+    }
+
+    public async componentDidMount() {
+        this.init();
     }
 
     private init = () => {
@@ -151,25 +131,17 @@ class SendAsset extends React.Component<Props> {
     };
 
     private handleSubmit = async (
-        receivers: { receiver: string; quantities: number }[],
-        passphrase: string
+        receivers: { address: string; quantity: number }[]
     ) => {
         const { UTXOList } = this.props;
-        const {
-            match: {
-                params: { assetType, address }
-            },
-            networkId
-        } = this.props;
+        const { selectedAssetType: assetType, address, networkId } = this.props;
         const sumOfSendingAsset = _.sumBy(
             receivers,
-            receiver => receiver.quantities
+            receiver => receiver.quantity
         );
 
         const inputUTXO = [];
         let currentSum = 0;
-        // FIXME: Current UTXO List are containing only recent 25 temporary.
-        // Use the custom pagination options to get all of the utxo.
         for (const utxo of UTXOList!) {
             inputUTXO.push(utxo);
             currentSum += utxo.asset.amount;
@@ -179,7 +151,7 @@ class SendAsset extends React.Component<Props> {
         }
 
         const sdk = new SDK({
-            server: "http://52.79.108.1:8080",
+            server: getCodeChainHost(networkId),
             networkId
         });
         const ccKey = await getCCKey();
@@ -197,8 +169,8 @@ class SendAsset extends React.Component<Props> {
         });
         const outputData = _.map(receivers, receiver => {
             return {
-                recipient: receiver.receiver,
-                amount: receiver.quantities,
+                recipient: receiver.address,
+                amount: receiver.quantity,
                 assetType
             };
         });
@@ -225,7 +197,7 @@ class SendAsset extends React.Component<Props> {
                 _.map(inputAssets, (_A, index) => {
                     return sdk.key.signTransactionInput(transferTx, index, {
                         keyStore,
-                        passphrase
+                        passphrase: "rlfdud21"
                     });
                 })
             );
@@ -239,45 +211,29 @@ class SendAsset extends React.Component<Props> {
     };
 
     private getAssetScheme = async () => {
-        const {
-            match: {
-                params: { assetType }
-            }
-        } = this.props;
+        const { selectedAssetType: assetType } = this.props;
         this.props.fetchAssetSchemeIfNeed(new H256(assetType));
     };
 
     private getUTXOList = async () => {
-        const {
-            match: {
-                params: { address, assetType }
-            }
-        } = this.props;
+        const { selectedAssetType: assetType, address } = this.props;
         this.props.fetchUTXOListIfNeed(address, new H256(assetType));
     };
 
     private getAvailableAssets = async () => {
-        const {
-            match: {
-                params: { address }
-            }
-        } = this.props;
+        const { address } = this.props;
         this.props.fetchAvailableAssets(address);
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
-    const {
-        match: {
-            params: { assetType, address }
-        }
-    } = ownProps;
+    const { selectedAssetType, address } = ownProps;
     const assetScheme =
-        state.assetReducer.assetScheme[new H256(assetType).value];
+        state.assetReducer.assetScheme[new H256(selectedAssetType).value];
     const sendingTx = state.chainReducer.sendingTx[address];
     const UTXOListByAddress = state.assetReducer.UTXOList[address];
     const UTXOListByAddressAssetType =
-        UTXOListByAddress && UTXOListByAddress[assetType];
+        UTXOListByAddress && UTXOListByAddress[selectedAssetType];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
     return {
