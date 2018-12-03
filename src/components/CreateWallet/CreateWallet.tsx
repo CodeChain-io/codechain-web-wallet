@@ -47,7 +47,21 @@ class CreateWallet extends React.Component<any, State> {
                         />
                     )}
                     {currentPage === PageState.confirmSecretPhrase && (
-                        <ConfirmBackupPhrase />
+                        <ConfirmBackupPhrase
+                            phrases={[
+                                "popular",
+                                "fence",
+                                "nomineewear",
+                                "north",
+                                "tattoo",
+                                "ethics",
+                                "deputy",
+                                "raven",
+                                "obey",
+                                "junk",
+                                "guard"
+                            ]}
+                        />
                     )}
                 </div>
                 <div className="dot-indicator-container">

@@ -6,6 +6,10 @@ import "./InputPassphrase.css";
 interface State {
     passphrase: string;
     passphraseConfirm: string;
+    isPassphraseValid?: boolean | null;
+    passphraseError?: string | null;
+    isPassphraseConfirmValid?: boolean | null;
+    passphraseConfirmError?: string | null;
 }
 
 interface Props {
