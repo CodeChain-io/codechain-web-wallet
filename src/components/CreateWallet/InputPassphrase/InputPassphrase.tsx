@@ -8,8 +8,12 @@ interface State {
     passphraseConfirm: string;
 }
 
-class InputPassphrase extends React.Component<any, State> {
-    public constructor(props: any) {
+interface Props {
+    onSubmit: (passphrase: string) => void;
+}
+
+class InputPassphrase extends React.Component<Props, State> {
+    public constructor(props: Props) {
         super(props);
         this.state = {
             passphrase: "",
@@ -48,13 +52,28 @@ class InputPassphrase extends React.Component<any, State> {
                     />
                 </div>
                 <div className="mt-5">
-                    <button className="btn btn-primary reverse square main-btn">
+                    <button
+                        className="btn btn-primary reverse square main-btn"
+                        onClick={this.handleSubmit}
+                    >
                         OK
                     </button>
                 </div>
             </div>
         );
     }
+
+    private handleSubmit = () => {
+        const { onSubmit } = this.props;
+        const { passphrase, passphraseConfirm } = this.state;
+
+        // TODO: Check passphrase
+        if (passphrase !== passphraseConfirm) {
+            return;
+        }
+
+        onSubmit(passphrase);
+    };
 
     private handlePassphraseInput = (
         event: React.ChangeEvent<HTMLInputElement>

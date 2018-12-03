@@ -5,6 +5,7 @@ import { Action } from "redux";
 import actions from "../../redux/global/globalActions";
 import "./SelectKeyFile.css";
 
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
 import { AddressType, WalletAddress } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
@@ -30,7 +31,7 @@ interface State {
     isCreateBtnHover: boolean;
 }
 
-type Props = DispatchProps & StateProps;
+type Props = RouteComponentProps & DispatchProps & StateProps;
 class SelectKeyFile extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
@@ -80,7 +81,7 @@ class SelectKeyFile extends React.Component<Props, State> {
                     </div>
                     <div
                         className="button-item d-flex align-items-center justify-content-center"
-                        onClick={this.onClickLogin}
+                        onClick={this.onClickRestore}
                         onMouseEnter={this.handleImportButtonHover}
                         onMouseLeave={this.handleImportButtopOut}
                     >
@@ -118,11 +119,13 @@ class SelectKeyFile extends React.Component<Props, State> {
     private handleCreateButtonOut = () => {
         this.setState({ isCreateBtnHover: false });
     };
-    private onClickLogin = () => {
-        //
+    private onClickRestore = () => {
+        const { history } = this.props;
+        history.push(`/restoreWallet`);
     };
     private onClickCreateWallet = () => {
-        //
+        const { history } = this.props;
+        history.push(`/createWallet`);
     };
 }
 
@@ -162,4 +165,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(SelectKeyFile);
+)(withRouter(SelectKeyFile));

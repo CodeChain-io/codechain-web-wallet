@@ -23,19 +23,19 @@
   }
   .title-container {
     margin-top: 42px;
-    margin-bottom: 43px;
+    margin-bottom: 20px;
     .title {
-      font-size: 2.3rem;
+      font-size: 2rem;
       color: $wallet-blue;
     }
   }
   .main-btn {
     height: 48px;
     width: 100%;
-    font-size: 1.16rem;
   }
   .dot-indicator-container {
     margin-top: 69px;
+    margin-bottom: 60px;
 
     @include respond_below(sm) {
       & {

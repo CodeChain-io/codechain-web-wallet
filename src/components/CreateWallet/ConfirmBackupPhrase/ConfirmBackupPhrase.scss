@@ -1,0 +1,32 @@
+@import "styles/variables.scss";
+
+.Confirm-backup-phrase {
+  .description {
+    color: $dark-grey;
+    margin-bottom: 30px;
+  }
+
+  .backup-phrase-input {
+    height: 170px;
+    border-radius: 5px;
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    background-color: #ffffff;
+
+    border: 1px solid $wallet-blue;
+    overflow: hidden;
+    padding: 30px;
+
+    font-size: 1.7rem;
+    color: $wallet-blue;
+    text-align: center;
+  }
+
+  .backup-phrase-button-container {
+    margin-top: 26px;
+    margin-bottom: 26px;
+    .backup-phrase-btn {
+      margin-right: 12px;
+      margin-bottom: 12px;
+    }
+  }
+}

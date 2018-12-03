@@ -1,0 +1,44 @@
+@import "styles/variables.scss";
+
+.Show-backup-phrase {
+  .text-1 {
+    color: $dark-grey;
+  }
+  .warning-text {
+    margin-top: 6px;
+    color: $dark-grey;
+    font-weight: 600;
+  }
+
+  .tips-container {
+    margin-top: 15px;
+
+    .tips-text {
+      color: $dark-grey;
+      font-weight: 600;
+    }
+
+    .text-2 {
+      color: $dark-grey;
+    }
+  }
+
+  .backup-phrase-container {
+    margin-top: 30px;
+    margin-bottom: 26px;
+
+    .backup-phrase-panel {
+      height: 170px;
+      border-radius: 5px;
+      box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+      background-color: #ffffff;
+      border: 1px solid $wallet-blue;
+      overflow: hidden;
+      padding: 30px;
+
+      font-size: 1.7rem;
+      color: $wallet-blue;
+      text-align: center;
+    }
+  }
+}
