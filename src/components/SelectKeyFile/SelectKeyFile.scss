@@ -1,0 +1,65 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
+.Select-key-file {
+  position: relative;
+  .title-container {
+    margin-top: 100px;
+  }
+  .logo-title {
+    font-size: 4rem;
+  }
+  .logo {
+    width: 100px;
+    height: auto;
+  }
+  .button-container {
+    margin-top: 52px;
+    .button-item {
+      width: 250px;
+      height: 250px;
+      border-radius: 5px;
+      box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2);
+      background-color: #ffffff;
+      border: 1px solid $wallet-blue;
+      text-align: center;
+      color: $wallet-blue;
+      margin-right: 10px;
+      margin-left: 10px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $wallet-blue;
+        color: #ffffff;
+      }
+
+      .icon {
+        width: 98px;
+        height: 98px;
+      }
+
+      .text {
+        margin-top: 20px;
+        font-size: 24px;
+        @include heading-font();
+      }
+
+      @include respond-below(sm) {
+        & {
+          width: 150px;
+          height: 150px;
+
+          .icon {
+            width: 60px;
+            height: 60px;
+          }
+
+          .text {
+            font-size: 14px;
+            line-height: 1.25;
+          }
+        }
+      }
+    }
+  }
+}

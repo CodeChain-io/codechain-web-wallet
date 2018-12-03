@@ -17,7 +17,6 @@ body {
   border-radius: 21px;
   color: $wallet-blue;
   font-weight: bold;
-  font-size: 0.8rem;
 
   &.square {
     border-radius: 0;
@@ -65,6 +64,7 @@ input.form-control[type="number"] {
   border-radius: 0;
   @include number-mono-font();
   font-weight: bold;
+  font-size: 1.16rem;
   color: $dark-grey;
   outline: none;
   box-shadow: none;

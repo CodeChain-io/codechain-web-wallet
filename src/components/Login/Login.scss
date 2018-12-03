@@ -3,102 +3,31 @@
 
 .Login {
   position: relative;
-  height: 100%;
-  min-height: 520px;
 
-  .login-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    transform: translate(-50%, -50%);
+  .title-container {
+    margin-top: 100px;
+  }
 
-    .logo-title {
+  .logo-title {
+    font-size: 4rem;
+  }
+
+  .logo {
+    width: 100px;
+    height: auto;
+  }
+
+  .login-form-container {
+    margin-top: 50px;
+  }
+
+  .open-different-btn-container {
+    margin-top: 36px;
+    margin-bottom: 36px;
+    .open-different-btn {
+      font-size: 1.5rem;
       color: $wallet-blue;
-    }
-    .logo {
-      width: 100px;
-      height: auto;
-    }
-    .button-container {
-      margin-top: 52px;
-      .button-item {
-        width: 270px;
-        border-radius: 5px;
-        box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2);
-        background-color: #ffffff;
-        border: 1px solid $wallet-blue;
-        padding-top: 59px;
-        padding-bottom: 59px;
-        text-align: center;
-        color: $wallet-blue;
-        margin-right: 10px;
-        margin-left: 10px;
-        cursor: pointer;
-
-        &:hover {
-          background-color: $wallet-blue;
-          color: #ffffff;
-        }
-
-        .icon {
-          width: 116px;
-          height: 116px;
-        }
-
-        .text {
-          margin-top: 20px;
-          font-size: 24px;
-          @include heading-font();
-        }
-
-        @include respond-below(sm) {
-          & {
-            width: 150px;
-            padding-top: 39px;
-            padding-bottom: 39px;
-
-            .icon {
-              width: 70px;
-              height: 70px;
-            }
-
-            .text {
-              font-size: 14px;
-              line-height: 1.25;
-            }
-          }
-        }
-      }
-
-      .file-selector {
-        display: none;
-      }
-    }
-
-    .login-create-wallet-container {
-      .panel-container {
-        overflow: hidden;
-        border-radius: 5px;
-        box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
-        .create-left-panel {
-          width: 325px;
-          height: 520px;
-        }
-
-        .create-right-panel {
-          width: 325px;
-          height: 520px;
-        }
-      }
-      .login-button-container {
-        margin-top: 15px;
-        button {
-          width: 160px;
-          height: 42px;
-        }
-      }
+      font-weight: 600;
     }
   }
 }

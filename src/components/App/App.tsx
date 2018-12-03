@@ -27,6 +27,7 @@ import Header from "../Header/Header";
 import Login from "../Login/Login";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import SelectKeyFile from "../SelectKeyFile/SelectKeyFile";
 import SideMenu from "../SideMenu/SideMenu";
 import "./App.css";
 
@@ -79,6 +80,10 @@ class App extends React.Component<Props, any> {
                         >
                             <Switch>
                                 <Route path="/login" component={Login} />
+                                <Route
+                                    path="/selectKeyfile"
+                                    component={SelectKeyFile}
+                                />
                                 <PrivateRoute
                                     exact={true}
                                     path="/"
