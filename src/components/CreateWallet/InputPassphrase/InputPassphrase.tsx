@@ -23,7 +23,7 @@ class InputPassphrase extends React.Component<Props, State> {
     public render() {
         const { passphrase, passphraseConfirm } = this.state;
         return (
-            <div className="Input-passphrase">
+            <div className="Input-passphrase animated fadeIn">
                 <div className="title-container">
                     <h4 className="title">
                         Create

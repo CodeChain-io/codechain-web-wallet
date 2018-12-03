@@ -28,6 +28,7 @@ import Header from "../Header/Header";
 import Login from "../Login/Login";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import RestoreWallet from "../RestoreWallet/RestoreWallet";
 import SelectKeyFile from "../SelectKeyFile/SelectKeyFile";
 import SideMenu from "../SideMenu/SideMenu";
 import "./App.css";
@@ -88,6 +89,10 @@ class App extends React.Component<Props, any> {
                                 <Route
                                     path="/createWallet"
                                     component={CreateWallet}
+                                />
+                                <Route
+                                    path="/restoreWallet"
+                                    component={RestoreWallet}
                                 />
                                 <PrivateRoute
                                     exact={true}

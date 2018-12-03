@@ -12,7 +12,7 @@ class ShowBackupPhrase extends React.Component<Props, any> {
     public render() {
         const { onSubmit } = this.props;
         return (
-            <div className="Show-backup-phrase">
+            <div className="Show-backup-phrase animated fadeIn">
                 <div className="title-container">
                     <h4 className="title">
                         Your

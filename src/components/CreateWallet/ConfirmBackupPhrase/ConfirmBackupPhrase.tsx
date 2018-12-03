@@ -5,7 +5,7 @@ import "./ConfirmBackupPhrase.css";
 class ConfirmBackupPhrase extends React.Component<any, any> {
     public render() {
         return (
-            <div className="Confirm-backup-phrase">
+            <div className="Confirm-backup-phrase animated fadeIn">
                 <div className="title-container">
                     <h4 className="title">
                         Confirm your

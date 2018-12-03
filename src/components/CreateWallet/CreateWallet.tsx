@@ -29,7 +29,7 @@ class CreateWallet extends React.Component<any, State> {
     public render() {
         const { currentPage } = this.state;
         return (
-            <Container className="Create-wallet">
+            <Container className="Create-wallet animated fadeIn">
                 <div className="close-btn">
                     <Link to="/selectKeyfile">
                         <FontAwesomeIcon icon="times" className="icon" />
