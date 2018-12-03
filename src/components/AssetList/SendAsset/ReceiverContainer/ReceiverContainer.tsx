@@ -158,7 +158,7 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                         }
                     }
                 });
-                return;
+                return true;
             } catch (e) {
                 // nothing
             }
@@ -173,6 +173,7 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                 }
             }
         });
+        return false;
     };
 
     private handleQuantityValidationCheck = (index: number) => {
@@ -193,7 +194,7 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                     }
                 }
             });
-            return;
+            return false;
         }
         if (currentTotal > totalQuantity) {
             this.setState({
@@ -206,7 +207,7 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                     }
                 }
             });
-            return;
+            return false;
         }
         this.setState({
             quantityValidations: {
@@ -218,6 +219,7 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                 }
             }
         });
+        return true;
     };
 
     private handleAddressChange = (newIndex: number, address: string) => {
@@ -270,37 +272,20 @@ export default class ReceiverContainer extends React.Component<Props, State> {
 
     private handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const { totalQuantity } = this.props;
         const { receivers } = this.state;
 
         _.each(receivers, (__, index) => {
-            this.handleQuantityValidationCheck(index);
-            this.handleAddressValidationCheck(index);
+            if (!this.handleQuantityValidationCheck(index)) {
+                return;
+            }
         });
 
-        const currentTotal = _.sumBy(
-            receivers,
-            receiver => receiver.quantity || 0
-        );
-        if (currentTotal > totalQuantity) {
-            return;
-        }
-        if (!_.every(receivers, receiver => receiver.quantity > 0)) {
-            return;
-        }
-        if (
-            !_.every(receivers, receiver => {
-                try {
-                    AssetTransferAddress.fromString(receiver.address);
-                    return true;
-                } catch (e) {
-                    // nothing
-                }
-                return false;
-            })
-        ) {
-            return;
-        }
+        _.each(receivers, (__, index) => {
+            if (!this.handleAddressValidationCheck(index)) {
+                return;
+            }
+        });
+
         this.props.onSubmit(receivers);
     };
 }

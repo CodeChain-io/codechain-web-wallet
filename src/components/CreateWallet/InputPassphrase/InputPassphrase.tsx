@@ -6,10 +6,10 @@ import "./InputPassphrase.css";
 interface State {
     passphrase: string;
     passphraseConfirm: string;
-    isPassphraseValid?: boolean | null;
-    passphraseError?: string | null;
-    isPassphraseConfirmValid?: boolean | null;
-    passphraseConfirmError?: string | null;
+    isPassphraseValid?: boolean;
+    passphraseError?: string;
+    isPassphraseConfirmValid?: boolean;
+    passphraseConfirmError?: string;
 }
 
 interface Props {
@@ -21,11 +21,22 @@ class InputPassphrase extends React.Component<Props, State> {
         super(props);
         this.state = {
             passphrase: "",
-            passphraseConfirm: ""
+            passphraseConfirm: "",
+            isPassphraseValid: undefined,
+            passphraseError: undefined,
+            isPassphraseConfirmValid: undefined,
+            passphraseConfirmError: undefined
         };
     }
     public render() {
-        const { passphrase, passphraseConfirm } = this.state;
+        const {
+            passphrase,
+            passphraseConfirm,
+            isPassphraseConfirmValid,
+            isPassphraseValid,
+            passphraseConfirmError,
+            passphraseError
+        } = this.state;
         return (
             <div className="Input-passphrase animated fadeIn">
                 <div className="title-container">
@@ -43,6 +54,9 @@ class InputPassphrase extends React.Component<Props, State> {
                         showValidation={true}
                         placeholder="passphrase"
                         type="password"
+                        isValid={isPassphraseValid}
+                        error={passphraseError}
+                        onBlur={this.checkPassphraseValid}
                     />
                 </div>
                 <div>
@@ -53,6 +67,9 @@ class InputPassphrase extends React.Component<Props, State> {
                         showValidation={true}
                         placeholder="passphrase confirm"
                         type="password"
+                        isValid={isPassphraseConfirmValid}
+                        error={passphraseConfirmError}
+                        onBlur={this.checkPassphraseConfirm}
                     />
                 </div>
                 <div className="mt-5">
@@ -69,25 +86,70 @@ class InputPassphrase extends React.Component<Props, State> {
 
     private handleSubmit = () => {
         const { onSubmit } = this.props;
-        const { passphrase, passphraseConfirm } = this.state;
+        const { passphrase } = this.state;
 
-        // TODO: Check passphrase
-        if (passphrase !== passphraseConfirm) {
+        if (!this.checkPassphraseValid()) {
+            return;
+        }
+
+        if (!this.checkPassphraseConfirm()) {
             return;
         }
 
         onSubmit(passphrase);
     };
 
+    private checkPassphraseValid = () => {
+        const { passphrase } = this.state;
+        if (passphrase.length < 8) {
+            this.setState({
+                passphraseError: "Minimum length is 8 characters",
+                isPassphraseValid: false
+            });
+            return false;
+        }
+
+        this.setState({
+            passphraseError: undefined,
+            isPassphraseValid: true
+        });
+        return true;
+    };
+
+    private checkPassphraseConfirm = () => {
+        const { passphrase, passphraseConfirm } = this.state;
+        if (passphrase !== passphraseConfirm) {
+            this.setState({
+                passphraseConfirmError: "Password does not match!",
+                isPassphraseConfirmValid: false
+            });
+            return false;
+        }
+
+        this.setState({
+            passphraseConfirmError: undefined,
+            isPassphraseConfirmValid: true
+        });
+        return true;
+    };
+
     private handlePassphraseInput = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
+        this.setState({
+            passphraseError: undefined,
+            isPassphraseValid: undefined
+        });
         this.setState({ passphrase: event.target.value });
     };
 
     private handlePassphraseConfirmInput = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
+        this.setState({
+            passphraseConfirmError: undefined,
+            isPassphraseConfirmValid: undefined
+        });
         this.setState({ passphraseConfirm: event.target.value });
     };
 }

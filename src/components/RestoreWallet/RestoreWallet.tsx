@@ -6,20 +6,38 @@ import ValidationInput from "../ValidationInput/ValidationInput";
 import "./RestoreWallet.css";
 
 interface State {
+    secretPhrase: string;
     passphrase: string;
     passphraseConfirm: string;
+    isPassphraseValid?: boolean;
+    passphraseError?: string;
+    isPassphraseConfirmValid?: boolean;
+    passphraseConfirmError?: string;
 }
 
 class RestoreWallet extends React.Component<any, State> {
     public constructor(props: any) {
         super(props);
         this.state = {
+            secretPhrase: "",
             passphrase: "",
-            passphraseConfirm: ""
+            passphraseConfirm: "",
+            isPassphraseValid: undefined,
+            passphraseError: undefined,
+            isPassphraseConfirmValid: undefined,
+            passphraseConfirmError: undefined
         };
     }
     public render() {
-        const { passphrase, passphraseConfirm } = this.state;
+        const {
+            passphrase,
+            passphraseConfirm,
+            isPassphraseConfirmValid,
+            isPassphraseValid,
+            passphraseConfirmError,
+            passphraseError,
+            secretPhrase
+        } = this.state;
         return (
             <Container className="Restore-wallet animated fadeIn">
                 <div className="close-btn">
@@ -40,10 +58,11 @@ class RestoreWallet extends React.Component<any, State> {
                         your wallet.
                     </div>
                     <div className="phrase-container">
-                        <textarea className="phrase-input">
-                            popular fence nominee wear north tattoo ethics
-                            deputy raven obey junk guard
-                        </textarea>
+                        <textarea
+                            className="phrase-input"
+                            value={secretPhrase}
+                            onChange={this.handleChangeSecretPhraseInput}
+                        />
                     </div>
                     <div className="passphrase-input-container">
                         <ValidationInput
@@ -53,6 +72,9 @@ class RestoreWallet extends React.Component<any, State> {
                             showValidation={true}
                             placeholder="passphrase"
                             type="password"
+                            isValid={isPassphraseValid}
+                            error={passphraseError}
+                            onBlur={this.checkPassphraseValid}
                         />
                     </div>
                     <div className="passphrase-confirm-container">
@@ -63,6 +85,9 @@ class RestoreWallet extends React.Component<any, State> {
                             showValidation={true}
                             placeholder="passphrase confirm"
                             type="password"
+                            isValid={isPassphraseConfirmValid}
+                            error={passphraseConfirmError}
+                            onBlur={this.checkPassphraseConfirm}
                         />
                     </div>
                     <div className="main-btn-container">
@@ -79,23 +104,79 @@ class RestoreWallet extends React.Component<any, State> {
     }
 
     private handleSubmit = () => {
-        const { passphrase, passphraseConfirm } = this.state;
+        const { passphrase } = this.state;
 
-        // TODO: Check passphrase
-        if (passphrase !== passphraseConfirm) {
+        if (!this.checkPassphraseValid()) {
             return;
         }
+
+        if (!this.checkPassphraseConfirm()) {
+            return;
+        }
+        const splitPassphrases = passphrase.match(/\S+/g);
+
+        if (!splitPassphrases || splitPassphrases.length !== 12) {
+            return;
+        }
+    };
+
+    private handleChangeSecretPhraseInput = (
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        this.setState({ secretPhrase: event.target.value });
+    };
+
+    private checkPassphraseValid = () => {
+        const { passphrase } = this.state;
+        if (passphrase.length < 8) {
+            this.setState({
+                passphraseError: "Minimum length is 8 characters",
+                isPassphraseValid: false
+            });
+            return false;
+        }
+
+        this.setState({
+            passphraseError: undefined,
+            isPassphraseValid: true
+        });
+        return true;
+    };
+
+    private checkPassphraseConfirm = () => {
+        const { passphrase, passphraseConfirm } = this.state;
+        if (passphrase !== passphraseConfirm) {
+            this.setState({
+                passphraseConfirmError: "Password does not match!",
+                isPassphraseConfirmValid: false
+            });
+            return false;
+        }
+
+        this.setState({
+            passphraseConfirmError: undefined,
+            isPassphraseConfirmValid: true
+        });
+        return true;
     };
 
     private handlePassphraseInput = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
+        this.setState({
+            passphraseError: undefined,
+            isPassphraseValid: undefined
+        });
         this.setState({ passphrase: event.target.value });
     };
 
     private handlePassphraseConfirmInput = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
+        this.setState({
+            passphraseConfirmError: undefined,
+            isPassphraseConfirmValid: undefined
+        });
         this.setState({ passphraseConfirm: event.target.value });
     };
 }
