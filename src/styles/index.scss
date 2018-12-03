@@ -70,16 +70,16 @@ input.form-control[type="number"] {
   box-shadow: none;
 
   &::placeholder {
-    color: $dark-grey;
+    color: $disabled-grey;
     opacity: 0.7;
   }
 
   &:-ms-input-placeholder {
-    color: $dark-grey;
+    color: $disabled-grey;
   }
 
   &::-ms-input-placeholder {
-    color: $dark-grey;
+    color: $disabled-grey;
   }
 
   &.reverse {

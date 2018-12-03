@@ -23,6 +23,7 @@ import Account from "../Account/Account";
 import AddressList from "../AddressList/AddressList";
 import AssetDetail from "../AssetDetail/AssetDetail";
 import AssetList from "../AssetList/AssetList";
+import CreateWallet from "../CreateWallet/CreateWallet";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
 import NotFound from "../NotFound/NotFound";
@@ -83,6 +84,10 @@ class App extends React.Component<Props, any> {
                                 <Route
                                     path="/selectKeyfile"
                                     component={SelectKeyFile}
+                                />
+                                <Route
+                                    path="/createWallet"
+                                    component={CreateWallet}
                                 />
                                 <PrivateRoute
                                     exact={true}
