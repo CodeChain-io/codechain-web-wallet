@@ -1,7 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { Container } from "reactstrap";
+import { ThunkDispatch } from "redux-thunk";
+import { clearKeystore, importMnemonic } from "../../model/keystore";
+import { ReducerConfigure } from "../../redux";
+import globalActions, { Action } from "../../redux/global/globalActions";
+import { clearPassphrase, clearWalletKeys } from "../../utils/storage";
 import ValidationInput from "../ValidationInput/ValidationInput";
 import "./RestoreWallet.css";
 
@@ -15,7 +21,13 @@ interface State {
     passphraseConfirmError?: string;
 }
 
-class RestoreWallet extends React.Component<any, State> {
+interface DispatchProps {
+    login: (passpharase: string) => void;
+    clearData: () => void;
+}
+
+type Props = RouteComponentProps & DispatchProps;
+class RestoreWallet extends React.Component<Props, State> {
     public constructor(props: any) {
         super(props);
         this.state = {
@@ -27,6 +39,13 @@ class RestoreWallet extends React.Component<any, State> {
             isPassphraseConfirmValid: undefined,
             passphraseConfirmError: undefined
         };
+    }
+    public async componentDidMount() {
+        const { clearData } = this.props;
+        clearPassphrase();
+        clearData();
+        clearWalletKeys();
+        await clearKeystore();
     }
     public render() {
         const {
@@ -103,8 +122,9 @@ class RestoreWallet extends React.Component<any, State> {
         );
     }
 
-    private handleSubmit = () => {
-        const { passphrase } = this.state;
+    private handleSubmit = async () => {
+        const { passphrase, secretPhrase } = this.state;
+        const { login, history } = this.props;
 
         if (!this.checkPassphraseValid()) {
             return;
@@ -113,11 +133,15 @@ class RestoreWallet extends React.Component<any, State> {
         if (!this.checkPassphraseConfirm()) {
             return;
         }
-        const splitPassphrases = passphrase.match(/\S+/g);
+        const splitPassphrases = secretPhrase.match(/\S+/g);
 
         if (!splitPassphrases || splitPassphrases.length !== 12) {
             return;
         }
+
+        await importMnemonic(splitPassphrases.join(" "), passphrase);
+        login(passphrase!);
+        history.push("/");
     };
 
     private handleChangeSecretPhraseInput = (
@@ -180,4 +204,18 @@ class RestoreWallet extends React.Component<any, State> {
         this.setState({ passphraseConfirm: event.target.value });
     };
 }
-export default RestoreWallet;
+
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    login: (passphrase: string) => {
+        dispatch(globalActions.login(passphrase));
+    },
+    clearData: () => {
+        dispatch(globalActions.clearData());
+    }
+});
+export default connect(
+    () => ({}),
+    mapDispatchToProps
+)(withRouter(RestoreWallet));

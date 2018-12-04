@@ -117,7 +117,7 @@ class CreateWallet extends React.Component<Props, State> {
         const { history, login } = this.props;
         const { passphrase } = this.state;
         login(passphrase!);
-        history.push(`/`);
+        history.push("/");
     };
 }
 
