@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/global/globalActions";
 import { getNetworkNameById } from "../../utils/network";
 import "./Header.css";
 import * as Logo from "./img/logo.svg";
@@ -59,7 +58,7 @@ const mapStateToProps = (state: ReducerConfigure) => ({
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     toggleMenu: () => {
-        dispatch(actions.toggleMenu());
+        // nothing
     }
 });
 export default connect(

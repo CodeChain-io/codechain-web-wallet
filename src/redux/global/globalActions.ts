@@ -3,12 +3,11 @@ import { ReducerConfigure } from "..";
 import { NetworkId } from "../../model/address";
 import { clearPassphrase, savePassphrase } from "../../utils/storage";
 
-export type Action = Login | ToggleMenu | ClearData | Logout | UpdateNetwork;
+export type Action = Login | ClearData | Logout | UpdateNetwork;
 
 export enum ActionType {
     Login = 1000,
     ClearData,
-    ToggleMenu,
     Logout,
     UpdateNetwork
 }
@@ -18,10 +17,6 @@ export interface Login {
     data: {
         passphrase: string;
     };
-}
-
-export interface ToggleMenu {
-    type: ActionType.ToggleMenu;
 }
 
 export interface ClearData {
@@ -92,14 +87,9 @@ const clearData = () => {
     };
 };
 
-const toggleMenu = (): ToggleMenu => ({
-    type: ActionType.ToggleMenu
-});
-
 export default {
     login,
     logout,
-    toggleMenu,
     clearData,
     updateNetworkId
 };

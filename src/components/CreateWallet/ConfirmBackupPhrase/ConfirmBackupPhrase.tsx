@@ -20,6 +20,9 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
             suffledPhrases: _.shuffle(this.props.phrases)
         };
     }
+    public componentDidMount() {
+        window.scrollTo(0, 0);
+    }
     public render() {
         const { phrases, onConfirm } = this.props;
         const { selectedPhrases, suffledPhrases } = this.state;

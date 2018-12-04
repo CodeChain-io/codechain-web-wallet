@@ -13,7 +13,6 @@ import {
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
-import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import * as ReactModal from "react-modal";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -30,7 +29,6 @@ import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import RestoreWallet from "../RestoreWallet/RestoreWallet";
 import SelectKeyFile from "../SelectKeyFile/SelectKeyFile";
-import SideMenu from "../SideMenu/SideMenu";
 import "./App.css";
 
 library.add(
@@ -49,7 +47,6 @@ library.add(
 
 interface StateProps {
     passphrase?: string | null;
-    isSideMenuOpen: boolean;
 }
 type Props = StateProps;
 class App extends React.Component<Props, any> {
@@ -62,65 +59,48 @@ class App extends React.Component<Props, any> {
         ReactModal.setAppElement(this.appRef.current);
     }
     public render() {
-        const { passphrase, isSideMenuOpen } = this.props;
+        const { passphrase } = this.props;
         return (
             <Router>
                 <div id="app" className="app" ref={this.appRef}>
                     <ToastContainer className="custom-toast" />
                     {passphrase && <Header />}
-                    <div className="d-flex">
-                        <ReactCSSTransitionGroup
-                            transitionName="slide-menu-effect"
-                            transitionEnterTimeout={150}
-                            transitionLeaveTimeout={150}
-                        >
-                            {passphrase && isSideMenuOpen && <SideMenu />}
-                        </ReactCSSTransitionGroup>
-                        <div
-                            className={`content-container ${!passphrase &&
-                                "remove-header"}`}
-                        >
-                            <Switch>
-                                <Route path="/login" component={Login} />
-                                <Route
-                                    path="/selectKeyfile"
-                                    component={SelectKeyFile}
-                                />
-                                <Route
-                                    path="/createWallet"
-                                    component={CreateWallet}
-                                />
-                                <Route
-                                    path="/restoreWallet"
-                                    component={RestoreWallet}
-                                />
-                                <PrivateRoute
-                                    exact={true}
-                                    path="/"
-                                    component={AddressList}
-                                />
-                                <PrivateRoute
-                                    exact={true}
-                                    path="/index.html"
-                                    component={AddressList}
-                                />
-                                <PrivateRoute
-                                    path="/:address/assets"
-                                    component={AssetList}
-                                />
-                                <PrivateRoute
-                                    path="/:address/account"
-                                    component={Account}
-                                />
-                                <PrivateRoute
-                                    exact={true}
-                                    path="/:address/:assetType"
-                                    component={AssetDetail}
-                                />
-                                <Route component={NotFound} />
-                            </Switch>
-                        </div>
-                    </div>
+                    <Switch>
+                        <Route path="/login" component={Login} />
+                        <Route
+                            path="/selectKeyfile"
+                            component={SelectKeyFile}
+                        />
+                        <Route path="/createWallet" component={CreateWallet} />
+                        <Route
+                            path="/restoreWallet"
+                            component={RestoreWallet}
+                        />
+                        <PrivateRoute
+                            exact={true}
+                            path="/"
+                            component={AddressList}
+                        />
+                        <PrivateRoute
+                            exact={true}
+                            path="/index.html"
+                            component={AddressList}
+                        />
+                        <PrivateRoute
+                            path="/:address/assets"
+                            component={AssetList}
+                        />
+                        <PrivateRoute
+                            path="/:address/account"
+                            component={Account}
+                        />
+                        <PrivateRoute
+                            exact={true}
+                            path="/:address/:assetType"
+                            component={AssetDetail}
+                        />
+                        <Route component={NotFound} />
+                    </Switch>
                 </div>
             </Router>
         );
@@ -128,7 +108,6 @@ class App extends React.Component<Props, any> {
 }
 
 const mapStateToProps = (state: ReducerConfigure) => ({
-    passphrase: state.globalReducer.passphrase,
-    isSideMenuOpen: state.globalReducer.isSideMenuOpen
+    passphrase: state.globalReducer.passphrase
 });
 export default connect(mapStateToProps)(App);
