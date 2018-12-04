@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -17,6 +18,8 @@ interface StateProps {
 
 interface DispatchProps {
     fetchWalletFromStorageIfNeed: () => void;
+    createWalletAssetAddress: () => void;
+    createWalletPlatformAddress: () => void;
 }
 type Props = StateProps & DispatchProps;
 
@@ -38,6 +41,18 @@ class AddressList extends React.Component<Props, any> {
                                     <AddressItem walletAddress={address} />
                                 </Col>
                             ))}
+                            <Col md={6} lg={4} xl={3}>
+                                <div
+                                    onClick={this.createAssetAddress}
+                                    className="add-address-btn asset d-flex align-items-center justify-content-center"
+                                >
+                                    ADD ADDRESS
+                                    <FontAwesomeIcon
+                                        className="ml-2"
+                                        icon="plus-circle"
+                                    />
+                                </div>
+                            </Col>
                         </Row>
                     </div>
                     <hr />
@@ -53,12 +68,33 @@ class AddressList extends React.Component<Props, any> {
                                     </Col>
                                 )
                             )}
+                            <Col md={6} lg={4} xl={3}>
+                                <div
+                                    onClick={this.createPlatformAddress}
+                                    className="add-address-btn platform d-flex align-items-center justify-content-center"
+                                >
+                                    ADD ADDRESS
+                                    <FontAwesomeIcon
+                                        className="ml-2"
+                                        icon="plus-circle"
+                                    />
+                                </div>
+                            </Col>
                         </Row>
                     </div>
                 </Container>
             </div>
         );
     }
+    private createPlatformAddress = async () => {
+        const { createWalletPlatformAddress } = this.props;
+        createWalletPlatformAddress();
+    };
+
+    private createAssetAddress = async () => {
+        const { createWalletAssetAddress } = this.props;
+        createWalletAssetAddress();
+    };
 }
 const mapStateToProps = (state: ReducerConfigure) => ({
     platformAddresses: state.walletReducer.platformAddresses,
@@ -69,6 +105,12 @@ const mapDispatchToProps = (
 ) => ({
     fetchWalletFromStorageIfNeed: () => {
         dispatch(actions.fetchWalletFromStorageIfNeed());
+    },
+    createWalletPlatformAddress: () => {
+        dispatch(actions.createWalletPlatformAddress());
+    },
+    createWalletAssetAddress: () => {
+        dispatch(actions.createWalletAssetAddress());
     }
 });
 export default connect(

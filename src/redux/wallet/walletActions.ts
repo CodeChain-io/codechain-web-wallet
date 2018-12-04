@@ -148,7 +148,8 @@ const createWalletPlatformAddress = () => {
     ) => {
         const networkId = getState().globalReducer.networkId;
         const platformAddresses = getState().walletReducer.platformAddresses;
-        const newAddresses = await createPlatformAddress(networkId);
+        const passphrase = getState().globalReducer.passphrase!;
+        const newAddresses = await createPlatformAddress(passphrase, networkId);
         if (platformAddresses) {
             dispatch(
                 updateWalletPlatformAddresses([
@@ -169,7 +170,8 @@ const createWalletAssetAddress = () => {
     ) => {
         const networkId = getState().globalReducer.networkId;
         const assetAddresses = getState().walletReducer.assetAddresses;
-        const newAddresses = await createAssetAddress(networkId);
+        const passphrase = getState().globalReducer.passphrase!;
+        const newAddresses = await createAssetAddress(passphrase, networkId);
         if (assetAddresses) {
             dispatch(
                 updateWalletAssetAddresses([...assetAddresses, newAddresses])

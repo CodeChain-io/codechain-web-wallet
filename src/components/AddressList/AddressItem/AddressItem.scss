@@ -3,6 +3,7 @@
 
 .Address-item {
   width: 100%;
+  margin-bottom: 18px;
 
   @include respond-below(sm) {
     & {

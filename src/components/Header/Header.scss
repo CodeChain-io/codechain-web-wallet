@@ -7,6 +7,10 @@
   position: relative;
   z-index: 5;
 
+  .header-container {
+    padding: 0 24px 0 24px;
+  }
+
   @include respond-above(lg) {
     .container {
       max-width: 1300px;

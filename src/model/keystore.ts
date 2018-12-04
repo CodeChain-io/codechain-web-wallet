@@ -118,20 +118,24 @@ export async function restorePlatformAddresses(
     return retValue;
 }
 
-export async function createPlatformAddress(networkId: NetworkId) {
+export async function createPlatformAddress(
+    passphrase: string,
+    networkId: NetworkId
+) {
     const ccKey = await getCCKey();
     const seedHash = await getFirstSeedHash();
     const savedPlatformKeys = getPlatformKeys();
     let pathIndex;
     if (savedPlatformKeys && savedPlatformKeys.length > 0) {
-        pathIndex = _.last(savedPlatformKeys)!.pathIndex + 1;
+        pathIndex = _.last(savedPlatformKeys)!.pathIndex;
     } else {
         pathIndex = 0;
     }
     const newPathIndex = pathIndex + 1;
     const platformPubkey = await ccKey.hdwseed.getPublicKeyFromSeed({
         seedHash,
-        path: platformAddressPath + newPathIndex
+        path: platformAddressPath + newPathIndex,
+        passphrase
     });
     const key = blake160(platformPubkey);
     if (savedPlatformKeys && savedPlatformKeys.length > 0) {
@@ -162,20 +166,24 @@ export async function createPlatformAddress(networkId: NetworkId) {
     };
 }
 
-export async function createAssetAddress(networkId: NetworkId) {
+export async function createAssetAddress(
+    passphrase: string,
+    networkId: NetworkId
+) {
     const ccKey = await getCCKey();
     const seedHash = await getFirstSeedHash();
     const savedAssetKeys = getAssetKeys();
     let pathIndex;
     if (savedAssetKeys && savedAssetKeys.length > 0) {
-        pathIndex = _.last(savedAssetKeys)!.pathIndex + 1;
+        pathIndex = _.last(savedAssetKeys)!.pathIndex;
     } else {
         pathIndex = 0;
     }
     const newPathIndex = pathIndex + 1;
     const assetPubKey = await ccKey.hdwseed.getPublicKeyFromSeed({
         seedHash,
-        path: assetAddressPath + pathIndex
+        path: assetAddressPath + pathIndex,
+        passphrase
     });
     const key = blake160(assetPubKey);
     if (savedAssetKeys && savedAssetKeys.length > 0) {
