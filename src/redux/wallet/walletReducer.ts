@@ -60,6 +60,13 @@ export const walletReducer = (state = walletInitState, action: Action) => {
                 accounts
             };
         }
+        case ActionType.ClearWalletAddresses: {
+            return {
+                ...state,
+                platformAddresses: undefined,
+                assetAddresses: undefined
+            };
+        }
     }
     return state;
 };

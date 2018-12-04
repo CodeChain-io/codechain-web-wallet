@@ -56,7 +56,8 @@ class PrivateRoute extends React.Component<Props, State> {
                     ) : isKeyExisted ? (
                         <Redirect
                             to={{
-                                pathname: "/login"
+                                pathname: "/login",
+                                state: { from: props.location }
                             }}
                         />
                     ) : (

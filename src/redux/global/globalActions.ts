@@ -1,7 +1,9 @@
+import { Action as ReduxAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { NetworkId } from "../../model/address";
 import { clearPassphrase, savePassphrase } from "../../utils/storage";
+import { ActionType as WalletActions } from "../wallet/walletActions";
 
 export type Action = Login | ClearData | Logout | UpdateNetwork;
 
@@ -36,9 +38,12 @@ export interface UpdateNetwork {
 
 const updateNetworkId = (networkId: NetworkId) => {
     return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        dispatch: ThunkDispatch<ReducerConfigure, void, ReduxAction>,
         getState: () => ReducerConfigure
     ) => {
+        dispatch({
+            type: WalletActions.ClearWalletAddresses
+        });
         dispatch({
             type: ActionType.UpdateNetwork,
             data: {

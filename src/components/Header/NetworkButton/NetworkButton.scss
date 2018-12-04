@@ -1,0 +1,14 @@
+@import "styles/variables.scss";
+@import "styles/variables.scss";
+
+.Network-button {
+  border-radius: 24px;
+  color: $wallet-blue;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px 20px 10px 20px;
+
+  &:hover {
+    background-color: #93a7ea42;
+  }
+}

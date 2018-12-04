@@ -1,5 +1,4 @@
 import { NetworkId } from "../../model/address";
-import { getPassphrase } from "../../utils/storage";
 import { Action, ActionType } from "./globalActions";
 
 export interface GlobalState {
@@ -8,7 +7,7 @@ export interface GlobalState {
 }
 
 export const globalInitState: GlobalState = {
-    passphrase: getPassphrase(),
+    passphrase: undefined,
     networkId: "tc"
 };
 

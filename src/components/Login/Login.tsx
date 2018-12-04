@@ -5,11 +5,16 @@ import { Action } from "redux";
 import actions from "../../redux/global/globalActions";
 import "./Login.css";
 
-import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+import {
+    Link,
+    Redirect,
+    RouteComponentProps,
+    withRouter
+} from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
 import { checkPassphrase } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
-import { clearPassphrase } from "../../utils/storage";
+import { getPassphrase } from "../../utils/storage";
 import * as Logo from "./img/logo-vertical.svg";
 import LoginForm from "./LoginForm/LoginForm";
 
@@ -18,26 +23,47 @@ interface DispatchProps {
     clearData: () => void;
 }
 
+interface OwnProps {
+    location: {
+        state: {
+            from: string;
+        };
+    };
+}
+
 interface State {
     passphrase: string;
     isValid?: boolean;
+    redirectToReferrer: boolean;
 }
 
-type Props = RouteComponentProps & DispatchProps;
+type Props = RouteComponentProps & DispatchProps & OwnProps;
 class Login extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
             passphrase: "",
-            isValid: undefined
+            isValid: undefined,
+            redirectToReferrer: false
         };
     }
     public componentDidMount() {
-        clearPassphrase();
+        const { login } = this.props;
         this.props.clearData();
+        const savedPassphrase = getPassphrase();
+        if (savedPassphrase) {
+            login(savedPassphrase);
+            this.setState({ redirectToReferrer: true });
+        }
     }
     public render() {
-        const { passphrase, isValid } = this.state;
+        const { passphrase, isValid, redirectToReferrer } = this.state;
+        const { from } = this.props.location.state || {
+            from: { pathname: "/" }
+        };
+        if (redirectToReferrer) {
+            return <Redirect to={from} />;
+        }
         return (
             <Container className="Login animated fadeIn">
                 <div className="title-container text-center">

@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Col, Container, Row } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { WalletAddress } from "../../model/address";
+import { NetworkId, WalletAddress } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/wallet/walletActions";
 import AddressItem from "./AddressItem/AddressItem";
@@ -14,6 +14,7 @@ import "./AddressList.css";
 interface StateProps {
     platformAddresses: WalletAddress[];
     assetAddresses: WalletAddress[];
+    networkId: NetworkId;
 }
 
 interface DispatchProps {
@@ -26,6 +27,13 @@ type Props = StateProps & DispatchProps;
 class AddressList extends React.Component<Props, any> {
     public componentDidMount() {
         this.props.fetchWalletFromStorageIfNeed();
+    }
+    public componentWillReceiveProps(props: Props) {
+        const { networkId } = this.props;
+        const { networkId: nextNetworkId } = props;
+        if (networkId !== nextNetworkId) {
+            this.props.fetchWalletFromStorageIfNeed();
+        }
     }
     public render() {
         const { platformAddresses, assetAddresses } = this.props;
@@ -98,7 +106,8 @@ class AddressList extends React.Component<Props, any> {
 }
 const mapStateToProps = (state: ReducerConfigure) => ({
     platformAddresses: state.walletReducer.platformAddresses,
-    assetAddresses: state.walletReducer.assetAddresses
+    assetAddresses: state.walletReducer.assetAddresses,
+    networkId: state.globalReducer.networkId
 });
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>

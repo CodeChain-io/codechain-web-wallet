@@ -25,14 +25,15 @@ export type Action =
     | UpdateWalletPlatformAddresses
     | UpdateWalletAssetAddresses
     | UpdateAccount
-    | SetFetchingAccount;
+    | SetFetchingAccount
+    | ClearWalletAddresses;
 
 export enum ActionType {
     UpdateWalletPlatformAddresses = 3000,
     UpdateWalletAssetAddresses,
     UpdateAccount,
     SetFetchingAccount,
-    ClearWallet
+    ClearWalletAddresses
 }
 
 export interface UpdateWalletPlatformAddresses {
@@ -62,6 +63,10 @@ export interface SetFetchingAccount {
     data: {
         address: string;
     };
+}
+
+export interface ClearWalletAddresses {
+    type: ActionType.ClearWalletAddresses;
 }
 
 const updateWalletPlatformAddresses = (
