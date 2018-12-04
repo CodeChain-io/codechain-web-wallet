@@ -4,6 +4,7 @@ import {
 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
+import { toast } from "react-toastify";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
@@ -148,6 +149,13 @@ const createWalletPlatformAddress = () => {
     ) => {
         const networkId = getState().globalReducer.networkId;
         const platformAddresses = getState().walletReducer.platformAddresses;
+        if (platformAddresses && platformAddresses.length >= 10) {
+            toast.error("Address limit is 10", {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 3000
+            });
+            return;
+        }
         const passphrase = getState().globalReducer.passphrase!;
         const newAddresses = await createPlatformAddress(passphrase, networkId);
         if (platformAddresses) {
@@ -170,6 +178,13 @@ const createWalletAssetAddress = () => {
     ) => {
         const networkId = getState().globalReducer.networkId;
         const assetAddresses = getState().walletReducer.assetAddresses;
+        if (assetAddresses && assetAddresses.length >= 10) {
+            toast.error("Address limit is 10", {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 3000
+            });
+            return;
+        }
         const passphrase = getState().globalReducer.passphrase!;
         const newAddresses = await createAssetAddress(passphrase, networkId);
         if (assetAddresses) {
