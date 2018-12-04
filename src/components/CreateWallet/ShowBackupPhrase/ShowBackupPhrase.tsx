@@ -3,6 +3,7 @@ import "./ShowBackupPhrase.css";
 
 interface Props {
     onSubmit: () => void;
+    mnemonic: string[];
 }
 
 class ShowBackupPhrase extends React.Component<Props, any> {
@@ -10,7 +11,7 @@ class ShowBackupPhrase extends React.Component<Props, any> {
         window.scrollTo(0, 0);
     }
     public render() {
-        const { onSubmit } = this.props;
+        const { onSubmit, mnemonic } = this.props;
         return (
             <div className="Show-backup-phrase animated fadeIn">
                 <div className="title-container">
@@ -40,8 +41,7 @@ class ShowBackupPhrase extends React.Component<Props, any> {
                 </div>
                 <div className="backup-phrase-container">
                     <div className="backup-phrase-panel d-flex align-items-center justify-content-center">
-                        popular fence nominee wear north tattoo ethics deputy
-                        raven obey junk guard
+                        {mnemonic.join(" ")}
                     </div>
                 </div>
                 <div>

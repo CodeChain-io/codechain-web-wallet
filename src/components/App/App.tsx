@@ -48,7 +48,7 @@ library.add(
 );
 
 interface StateProps {
-    isAuthenticated: boolean;
+    passphrase?: string | null;
     isSideMenuOpen: boolean;
 }
 type Props = StateProps;
@@ -62,22 +62,22 @@ class App extends React.Component<Props, any> {
         ReactModal.setAppElement(this.appRef.current);
     }
     public render() {
-        const { isAuthenticated, isSideMenuOpen } = this.props;
+        const { passphrase, isSideMenuOpen } = this.props;
         return (
             <Router>
                 <div id="app" className="app" ref={this.appRef}>
                     <ToastContainer className="custom-toast" />
-                    {isAuthenticated && <Header />}
+                    {passphrase && <Header />}
                     <div className="d-flex">
                         <ReactCSSTransitionGroup
                             transitionName="slide-menu-effect"
                             transitionEnterTimeout={150}
                             transitionLeaveTimeout={150}
                         >
-                            {isAuthenticated && isSideMenuOpen && <SideMenu />}
+                            {passphrase && isSideMenuOpen && <SideMenu />}
                         </ReactCSSTransitionGroup>
                         <div
-                            className={`content-container ${!isAuthenticated &&
+                            className={`content-container ${!passphrase &&
                                 "remove-header"}`}
                         >
                             <Switch>
@@ -128,7 +128,7 @@ class App extends React.Component<Props, any> {
 }
 
 const mapStateToProps = (state: ReducerConfigure) => ({
-    isAuthenticated: state.globalReducer.isAuthenticated,
+    passphrase: state.globalReducer.passphrase,
     isSideMenuOpen: state.globalReducer.isSideMenuOpen
 });
 export default connect(mapStateToProps)(App);

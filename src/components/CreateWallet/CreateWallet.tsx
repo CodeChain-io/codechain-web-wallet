@@ -3,7 +3,18 @@ import * as React from "react";
 import { Container } from "reactstrap";
 
 import * as _ from "lodash";
-import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
+import {
+    clearKeystore,
+    createSeed,
+    exportMnemonic
+} from "../../model/keystore";
+import { ReducerConfigure } from "../../redux";
+import globalActions from "../../redux/global/globalActions";
+import { clearPassphrase, clearWalletKeys } from "../../utils/storage";
 import ConfirmBackupPhrase from "./ConfirmBackupPhrase/ConfirmBackupPhrase";
 import "./CreateWallet.css";
 import InputPassphrase from "./InputPassphrase/InputPassphrase";
@@ -17,17 +28,33 @@ enum PageState {
 
 interface State {
     currentPage: PageState;
+    passphrase?: string | null;
+    mnemonic?: string[];
 }
 
-class CreateWallet extends React.Component<any, State> {
+interface DispatchProps {
+    login: (passpharase: string) => void;
+    clearData: () => void;
+}
+
+type Props = RouteComponentProps & DispatchProps;
+class CreateWallet extends React.Component<Props, State> {
     public constructor(props: any) {
         super(props);
         this.state = {
-            currentPage: PageState.inputPassPhrase
+            currentPage: PageState.inputPassPhrase,
+            passphrase: undefined
         };
     }
+    public async componentDidMount() {
+        const { clearData } = this.props;
+        clearPassphrase();
+        clearData();
+        clearWalletKeys();
+        await clearKeystore();
+    }
     public render() {
-        const { currentPage } = this.state;
+        const { currentPage, mnemonic } = this.state;
         return (
             <Container className="Create-wallet animated fadeIn">
                 <div className="close-btn">
@@ -44,23 +71,13 @@ class CreateWallet extends React.Component<any, State> {
                     {currentPage === PageState.showSecretPhrase && (
                         <ShowBackupPhrase
                             onSubmit={this.handleSumitShowPhrase}
+                            mnemonic={mnemonic!}
                         />
                     )}
                     {currentPage === PageState.confirmSecretPhrase && (
                         <ConfirmBackupPhrase
-                            phrases={[
-                                "popular",
-                                "fence",
-                                "nomineewear",
-                                "north",
-                                "tattoo",
-                                "ethics",
-                                "deputy",
-                                "raven",
-                                "obey",
-                                "junk",
-                                "guard"
-                            ]}
+                            phrases={mnemonic!}
+                            onConfirm={this.handleConfirmPhrase}
                         />
                     )}
                 </div>
@@ -81,13 +98,41 @@ class CreateWallet extends React.Component<any, State> {
         );
     }
 
-    private handleSubmitPassphraseInput = () => {
-        this.setState({ currentPage: PageState.showSecretPhrase });
+    private handleSubmitPassphraseInput = async (passphrase: string) => {
+        await createSeed(passphrase);
+        const mnemonicString = await exportMnemonic(passphrase);
+        const mnemonic = mnemonicString.split(" ");
+        this.setState({
+            currentPage: PageState.showSecretPhrase,
+            passphrase,
+            mnemonic
+        });
     };
 
     private handleSumitShowPhrase = () => {
         this.setState({ currentPage: PageState.confirmSecretPhrase });
     };
+
+    private handleConfirmPhrase = () => {
+        const { history, login } = this.props;
+        const { passphrase } = this.state;
+        login(passphrase!);
+        history.push(`/`);
+    };
 }
 
-export default CreateWallet;
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    login: (passphrase: string) => {
+        dispatch(globalActions.login(passphrase));
+    },
+    clearData: () => {
+        dispatch(globalActions.clearData());
+    }
+});
+
+export default connect(
+    () => ({}),
+    mapDispatchToProps
+)(withRouter(CreateWallet));

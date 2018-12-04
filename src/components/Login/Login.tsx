@@ -5,20 +5,15 @@ import { Action } from "redux";
 import actions from "../../redux/global/globalActions";
 import "./Login.css";
 
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
-import { AddressType, WalletAddress } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
-import walletActions from "../../redux/wallet/walletActions";
+import { clearPassphrase } from "../../utils/storage";
 import * as Logo from "./img/logo-vertical.svg";
 import LoginForm from "./LoginForm/LoginForm";
-interface StateProps {
-    creatingAddresses?: WalletAddress[] | null;
-    walletName?: string | null;
-}
 
 interface DispatchProps {
-    login: () => void;
+    login: (passphrase: string) => void;
     clearData: () => void;
 }
 
@@ -26,7 +21,7 @@ interface State {
     passphrase: string;
 }
 
-type Props = DispatchProps & StateProps;
+type Props = RouteComponentProps & DispatchProps;
 class Login extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
@@ -35,6 +30,7 @@ class Login extends React.Component<Props, State> {
         };
     }
     public componentDidMount() {
+        clearPassphrase();
         this.props.clearData();
     }
     public render() {
@@ -68,37 +64,19 @@ class Login extends React.Component<Props, State> {
     };
 
     public handleSignIn = () => {
+        const { history, login } = this.props;
+        const { passphrase } = this.state;
         // TODO
+        login(passphrase);
+        history.push(`/`);
     };
 }
-
-const mapStateToProps = (state: ReducerConfigure) => {
-    const creatingAddresses = state.walletReducer.creatingAddresses;
-    const walletName = state.walletReducer.walletName;
-    return {
-        creatingAddresses,
-        walletName
-    };
-};
 
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    login: () => {
-        dispatch(actions.login());
-    },
-    createWalletAddress: (
-        addressType: AddressType,
-        name: string,
-        passphrase: string
-    ) => {
-        if (addressType === AddressType.Asset) {
-            dispatch(walletActions.createWalletAssetAddress(name, passphrase));
-        } else {
-            dispatch(
-                walletActions.createWalletPlatformAddress(name, passphrase)
-            );
-        }
+    login: (passphrase: string) => {
+        dispatch(actions.login(passphrase));
     },
     clearData: () => {
         dispatch(actions.clearData());
@@ -106,6 +84,6 @@ const mapDispatchToProps = (
 });
 
 export default connect(
-    mapStateToProps,
+    () => ({}),
     mapDispatchToProps
-)(Login);
+)(withRouter(Login));

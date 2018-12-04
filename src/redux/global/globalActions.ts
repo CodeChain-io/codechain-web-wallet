@@ -1,7 +1,7 @@
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { NetworkId } from "../../model/address";
-import { clearKeystore } from "../../model/keystore";
+import { clearPassphrase, savePassphrase } from "../../utils/storage";
 
 export type Action = Login | ToggleMenu | ClearData | Logout | UpdateNetwork;
 
@@ -15,6 +15,9 @@ export enum ActionType {
 
 export interface Login {
     type: ActionType.Login;
+    data: {
+        passphrase: string;
+    };
 }
 
 export interface ToggleMenu {
@@ -50,15 +53,27 @@ const updateNetworkId = (networkId: NetworkId) => {
     };
 };
 
-const login = (): Login => ({
-    type: ActionType.Login
-});
+const login = (passphrase: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        savePassphrase(passphrase);
+        dispatch({
+            type: ActionType.Login,
+            data: {
+                passphrase
+            }
+        });
+    };
+};
 
 const logout = () => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
+        clearPassphrase();
         dispatch(clearData());
         dispatch({
             type: ActionType.Logout
@@ -71,7 +86,6 @@ const clearData = () => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        await clearKeystore();
         dispatch({
             type: ActionType.ClearData
         });

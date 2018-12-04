@@ -7,9 +7,10 @@ import "./SelectKeyFile.css";
 
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
-import { AddressType, WalletAddress } from "../../model/address";
+import { WalletAddress } from "../../model/address";
+import { clearKeystore } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
-import walletActions from "../../redux/wallet/walletActions";
+import { clearPassphrase, clearWalletKeys } from "../../utils/storage";
 import * as Logo from "./img/logo-vertical.svg";
 import * as CreateNewWalletIconHover from "./img/plus-hover.svg";
 import * as CreateNewWalletIcon from "./img/plus-standard.svg";
@@ -22,7 +23,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    login: () => void;
     clearData: () => void;
 }
 
@@ -40,7 +40,10 @@ class SelectKeyFile extends React.Component<Props, State> {
             isImportBtnHover: false
         };
     }
-    public componentDidMount() {
+    public async componentDidMount() {
+        await clearKeystore();
+        clearWalletKeys();
+        clearPassphrase();
         this.props.clearData();
     }
     public render() {
@@ -128,41 +131,15 @@ class SelectKeyFile extends React.Component<Props, State> {
         history.push(`/createWallet`);
     };
 }
-
-const mapStateToProps = (state: ReducerConfigure) => {
-    const creatingAddresses = state.walletReducer.creatingAddresses;
-    const walletName = state.walletReducer.walletName;
-    return {
-        creatingAddresses,
-        walletName
-    };
-};
-
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    login: () => {
-        dispatch(actions.login());
-    },
-    createWalletAddress: (
-        addressType: AddressType,
-        name: string,
-        passphrase: string
-    ) => {
-        if (addressType === AddressType.Asset) {
-            dispatch(walletActions.createWalletAssetAddress(name, passphrase));
-        } else {
-            dispatch(
-                walletActions.createWalletPlatformAddress(name, passphrase)
-            );
-        }
-    },
     clearData: () => {
         dispatch(actions.clearData());
     }
 });
 
 export default connect(
-    mapStateToProps,
+    () => ({}),
     mapDispatchToProps
 )(withRouter(SelectKeyFile));

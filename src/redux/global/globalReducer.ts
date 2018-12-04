@@ -1,14 +1,15 @@
 import { NetworkId } from "../../model/address";
+import { getPassphrase } from "../../utils/storage";
 import { Action, ActionType } from "./globalActions";
 
 export interface GlobalState {
-    isAuthenticated: boolean;
+    passphrase?: string | null;
     isSideMenuOpen: boolean;
     networkId: NetworkId;
 }
 
 export const globalInitState: GlobalState = {
-    isAuthenticated: false,
+    passphrase: getPassphrase(),
     isSideMenuOpen: false,
     networkId: "tc"
 };
@@ -18,12 +19,12 @@ export const globalReducer = (state = globalInitState, action: Action) => {
         case ActionType.Login:
             return {
                 ...state,
-                isAuthenticated: true
+                passphrase: action.data.passphrase
             };
         case ActionType.Logout:
             return {
                 ...state,
-                isAuthenticated: false
+                passphrase: undefined
             };
         case ActionType.ToggleMenu:
             return {

@@ -21,6 +21,7 @@ export default class LoginForm extends React.Component<Props, any> {
                         showValidation={true}
                         labelText="PASSPHRASE"
                         placeholder="passphrase"
+                        type="password"
                     />
                 </div>
                 <div>

@@ -4,6 +4,7 @@ import "./ConfirmBackupPhrase.css";
 
 interface Props {
     phrases: string[];
+    onConfirm: () => void;
 }
 
 interface State {
@@ -20,7 +21,7 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
         };
     }
     public render() {
-        const { phrases } = this.props;
+        const { phrases, onConfirm } = this.props;
         const { selectedPhrases, suffledPhrases } = this.state;
         return (
             <div className="Confirm-backup-phrase animated fadeIn">
@@ -67,6 +68,7 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
                             selectedPhrases == null ||
                             !_.isEqual(phrases, selectedPhrases)
                         }
+                        onClick={onConfirm}
                     >
                         CONFIRM
                     </button>

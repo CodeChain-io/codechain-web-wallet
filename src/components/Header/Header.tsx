@@ -13,7 +13,7 @@ import * as Logo from "./img/logo.svg";
 import * as MainNet from "./img/mainnet.svg";
 
 interface StateProps {
-    isAuthenticated: boolean;
+    passphrase?: string | null;
     networkId: NetworkId;
 }
 
@@ -55,7 +55,7 @@ class Header extends React.Component<Props> {
 }
 const mapStateToProps = (state: ReducerConfigure) => ({
     networkId: state.globalReducer.networkId,
-    isAuthenticated: state.globalReducer.isAuthenticated
+    passphrase: state.globalReducer.passphrase
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     toggleMenu: () => {

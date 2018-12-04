@@ -1,83 +1,88 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
-import { Dispatch } from "redux";
 import { isKeystoreExisted } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/global/globalActions";
 
 interface State {
-    checkedSessionStorage: boolean;
+    isKeyExisted?: boolean | null;
 }
-class PrivateRoute extends React.Component<any, State> {
+
+interface OwnProps {
+    component: any;
+}
+
+interface StateProps {
+    passphrase?: string | null;
+}
+
+type Props = StateProps & OwnProps;
+class PrivateRoute extends React.Component<Props, State> {
     public constructor(props: any) {
         super(props);
         this.state = {
-            checkedSessionStorage: false
+            isKeyExisted: undefined
         };
     }
 
     public componentDidUpdate() {
-        const { isAuthenticated } = this.props;
-        const { checkedSessionStorage } = this.state;
-        if (!isAuthenticated && !checkedSessionStorage) {
-            this.checkSessionStorage();
+        const { passphrase } = this.props;
+        const { isKeyExisted } = this.state;
+        if (!passphrase && isKeyExisted == null) {
+            this.checkLogin();
         }
     }
 
     public componentDidMount() {
-        const { isAuthenticated } = this.props;
-        const { checkedSessionStorage } = this.state;
-        if (!isAuthenticated && !checkedSessionStorage) {
-            this.checkSessionStorage();
+        const { passphrase } = this.props;
+        const { isKeyExisted } = this.state;
+        if (!passphrase && isKeyExisted == null) {
+            this.checkLogin();
         }
     }
 
     public render() {
-        const { isAuthenticated, component: Component, ...rest } = this.props;
-        const { checkedSessionStorage } = this.state;
+        const { passphrase, component: Component, ...rest } = this.props;
+        const { isKeyExisted } = this.state;
         return (
             <Route
                 {...rest}
                 // tslint:disable-next-line:jsx-no-lambda
                 render={props =>
-                    isAuthenticated ? (
+                    passphrase ? (
                         <Component {...props} />
-                    ) : checkedSessionStorage ? (
+                    ) : isKeyExisted == null ? (
+                        <div>Loading...</div>
+                    ) : isKeyExisted ? (
                         <Redirect
                             to={{
                                 pathname: "/login"
                             }}
                         />
                     ) : (
-                        <div>Loading...</div>
+                        <Redirect
+                            to={{
+                                pathname: "/selectKeyfile"
+                            }}
+                        />
                     )
                 }
             />
         );
     }
 
-    private checkSessionStorage = async () => {
+    private checkLogin = async () => {
         const keyExisted = await isKeystoreExisted();
         if (keyExisted) {
-            this.props.login();
+            this.setState({ isKeyExisted: true });
         } else {
-            this.setState({ checkedSessionStorage: true });
+            this.setState({ isKeyExisted: false });
         }
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure) => ({
-    isAuthenticated: state.globalReducer.isAuthenticated
+    passphrase: state.globalReducer.passphrase
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    login: () => {
-        dispatch(actions.login());
-    }
-});
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(PrivateRoute);
+export default connect(mapStateToProps)(PrivateRoute);

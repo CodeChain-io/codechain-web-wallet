@@ -23,6 +23,7 @@ import assetActions from "../../../redux/asset/assetActions";
 import chainActions from "../../../redux/chain/chainActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
 import { getCodeChainHost } from "../../../utils/network";
+import { getPassphrase } from "../../../utils/storage";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
 
@@ -155,7 +156,8 @@ class SendAsset extends React.Component<Props, any> {
             networkId
         });
         const ccKey = await getCCKey();
-        const keyStore = new LocalKeyStore(ccKey);
+        // FIXME: remove any
+        const keyStore = new LocalKeyStore(ccKey as any);
 
         const inputAssets = _.map(inputUTXO, utxo => {
             return Asset.fromJSON({
@@ -197,7 +199,7 @@ class SendAsset extends React.Component<Props, any> {
                 _.map(inputAssets, (_A, index) => {
                     return sdk.key.signTransactionInput(transferTx, index, {
                         keyStore,
-                        passphrase: "rlfdud21"
+                        passphrase: getPassphrase()!
                     });
                 })
             );

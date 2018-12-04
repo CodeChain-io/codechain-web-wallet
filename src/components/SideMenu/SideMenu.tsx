@@ -9,8 +9,7 @@ import actions from "../../redux/global/globalActions";
 import "./SideMenu.css";
 
 interface StateProps {
-    isAuthenticated: boolean;
-    walletName?: string | null;
+    passphrase?: string | null;
     assetAddresses?: WalletAddress[] | null;
     platformAddresses?: WalletAddress[] | null;
 }
@@ -25,12 +24,7 @@ class SideMenu extends React.Component<Props, any> {
         super(props);
     }
     public render() {
-        const {
-            isAuthenticated,
-            walletName,
-            platformAddresses,
-            assetAddresses
-        } = this.props;
+        const { passphrase, platformAddresses, assetAddresses } = this.props;
         return (
             <div className="side-menu">
                 <div className="left-arrow" onClick={this.handleToggleMenu}>
@@ -38,7 +32,7 @@ class SideMenu extends React.Component<Props, any> {
                 </div>
                 <div className="title-container">
                     <span className="grey mb-2">KEYFILE</span>
-                    <h3 className="mb-4">{walletName}</h3>
+                    <h3 className="mb-4">Wallet</h3>
                     <hr />
                     <p className="mb-0 grey">
                         <span className="number">
@@ -71,7 +65,7 @@ class SideMenu extends React.Component<Props, any> {
                         </button>
                     </div>
                 </div>
-                {isAuthenticated && (
+                {passphrase && (
                     <div onClick={this.handleLogout} className="logout-btn">
                         <h5>Logout</h5>
                     </div>
@@ -90,8 +84,7 @@ class SideMenu extends React.Component<Props, any> {
 }
 
 const mapStateToProps = (state: ReducerConfigure) => ({
-    isAuthenticated: state.globalReducer.isAuthenticated,
-    walletName: state.walletReducer.walletName,
+    passphrase: state.globalReducer.passphrase,
     assetAddresses: state.walletReducer.assetAddresses,
     platformAddresses: state.walletReducer.platformAddresses
 });
