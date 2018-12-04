@@ -6,14 +6,16 @@
   border-bottom: 1px solid $disabledbg-grey;
   position: relative;
   z-index: 5;
+
+  @include respond-above(lg) {
+    .container {
+      max-width: 1300px;
+    }
+  }
+
   .logo {
     width: auto;
     height: 24px;
-  }
-  .menu-btn {
-    padding: 25px;
-    color: $disabled-grey;
-    cursor: pointer;
   }
   .loading-bar {
     background-color: #f2b04c;

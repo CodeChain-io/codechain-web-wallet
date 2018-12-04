@@ -1,8 +1,8 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import { connect } from "react-redux";
 import LoadingBar from "react-redux-loading-bar";
 import { Link } from "react-router-dom";
+import Container from "reactstrap/lib/Container";
 import { Dispatch } from "redux";
 import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
@@ -29,10 +29,7 @@ class Header extends React.Component<Props> {
         const { networkId } = this.props;
         return (
             <div className="Header" key="header">
-                <div className="d-flex align-items-center h-100">
-                    <div className="menu-btn" onClick={this.handleToggleMenu}>
-                        <FontAwesomeIcon icon="bars" />
-                    </div>
+                <Container className="d-flex align-items-center h-100">
                     <Link to="/">
                         <img src={Logo} className="logo" />
                     </Link>
@@ -42,15 +39,11 @@ class Header extends React.Component<Props> {
                     <div>
                         <img src={MainNet} />
                     </div>
-                </div>
+                </Container>
                 <LoadingBar className="loading-bar" />
             </div>
         );
     }
-
-    private handleToggleMenu = async () => {
-        this.props.toggleMenu();
-    };
 }
 const mapStateToProps = (state: ReducerConfigure) => ({
     networkId: state.globalReducer.networkId,

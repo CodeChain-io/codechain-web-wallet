@@ -9,7 +9,6 @@ import { __await } from "tslib";
 import { getAggsUTXOList, getPlatformAccount } from "../networks/Api";
 import {
     getAssetKeys,
-    getPassphrase,
     getPlatformKeys,
     saveAssetKeys,
     savePlatformKeys,
@@ -71,6 +70,7 @@ const assetAddressPath = "m/44'/3276/1'/0/";
 const restoringCheckingRange = 10;
 
 export async function restorePlatformAddresses(
+    passphrase: string,
     networkId: NetworkId
 ): Promise<WalletAddress[]> {
     const ccKey = await getCCKey();
@@ -83,7 +83,7 @@ export async function restorePlatformAddresses(
         const platformPubkey = await ccKey.hdwseed.getPublicKeyFromSeed({
             seedHash,
             path: platformAddressPath + currentPath,
-            passphrase: getPassphrase()!
+            passphrase
         });
         const key = blake160(platformPubkey);
         const address = PlatformAddress.fromAccountId(key, {
@@ -206,7 +206,21 @@ export async function createAssetAddress(networkId: NetworkId) {
     };
 }
 
+export async function checkPassphrase(passphrase: string) {
+    const ccKey = await getCCKey();
+    const seedHashes = await ccKey.hdwseed.getSeedHashes();
+    const seedHash = seedHashes[0];
+    try {
+        await ccKey.hdwseed.exportMnemonic({ seedHash, passphrase });
+        return true;
+    } catch (e) {
+        console.log(e);
+    }
+    return false;
+}
+
 export async function restoreAssetAddresses(
+    passphrase: string,
     networkId: NetworkId
 ): Promise<WalletAddress[]> {
     const ccKey = await getCCKey();
@@ -219,7 +233,7 @@ export async function restoreAssetAddresses(
         const assetPubKey = await ccKey.hdwseed.getPublicKeyFromSeed({
             seedHash,
             path: assetAddressPath + currentPath,
-            passphrase: getPassphrase()!
+            passphrase
         });
         const key = blake160(assetPubKey);
         const address = AssetTransferAddress.fromTypeAndPayload(1, key, {

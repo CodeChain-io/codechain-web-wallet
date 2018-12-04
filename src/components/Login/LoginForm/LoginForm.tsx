@@ -6,11 +6,12 @@ interface Props {
     onChange: (passphrase: string) => void;
     onSignIn: () => void;
     passphrase: string;
+    isValid?: boolean;
 }
 
 export default class LoginForm extends React.Component<Props, any> {
     public render() {
-        const { passphrase, onSignIn } = this.props;
+        const { passphrase, onSignIn, isValid } = this.props;
         return (
             <div className="login-form">
                 <h4 className="welcome-text">Welcome back!</h4>
@@ -22,6 +23,10 @@ export default class LoginForm extends React.Component<Props, any> {
                         labelText="PASSPHRASE"
                         placeholder="passphrase"
                         type="password"
+                        isValid={isValid}
+                        error={
+                            isValid === false ? "invalid passphrase" : undefined
+                        }
                     />
                 </div>
                 <div>

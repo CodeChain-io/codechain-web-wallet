@@ -7,6 +7,7 @@ import "./Login.css";
 
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
+import { checkPassphrase } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import { clearPassphrase } from "../../utils/storage";
 import * as Logo from "./img/logo-vertical.svg";
@@ -19,6 +20,7 @@ interface DispatchProps {
 
 interface State {
     passphrase: string;
+    isValid?: boolean;
 }
 
 type Props = RouteComponentProps & DispatchProps;
@@ -26,7 +28,8 @@ class Login extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            passphrase: ""
+            passphrase: "",
+            isValid: undefined
         };
     }
     public componentDidMount() {
@@ -34,7 +37,7 @@ class Login extends React.Component<Props, State> {
         this.props.clearData();
     }
     public render() {
-        const { passphrase } = this.state;
+        const { passphrase, isValid } = this.state;
         return (
             <Container className="Login animated fadeIn">
                 <div className="title-container text-center">
@@ -47,6 +50,7 @@ class Login extends React.Component<Props, State> {
                             onChange={this.handleOnChangePassphrase}
                             passphrase={passphrase}
                             onSignIn={this.handleSignIn}
+                            isValid={isValid}
                         />
                     </div>
                 </div>
@@ -63,9 +67,16 @@ class Login extends React.Component<Props, State> {
         this.setState({ passphrase });
     };
 
-    public handleSignIn = () => {
+    public handleSignIn = async () => {
         const { history, login } = this.props;
         const { passphrase } = this.state;
+
+        const isValid = await checkPassphrase(passphrase);
+        if (!isValid) {
+            this.setState({ isValid: false });
+            return;
+        }
+
         // TODO
         login(passphrase);
         history.push(`/`);

@@ -88,6 +88,7 @@ const fetchWalletFromStorageIfNeed = () => {
     ) => {
         dispatch(showLoading() as any);
         const networkId = getState().globalReducer.networkId;
+        const passphrase = getState().globalReducer.passphrase!;
         if (!getState().walletReducer.platformAddresses) {
             const savedPlatformKeys = getPlatformKeys();
             let platformAddresses;
@@ -103,7 +104,10 @@ const fetchWalletFromStorageIfNeed = () => {
                     };
                 });
             } else {
-                platformAddresses = await restorePlatformAddresses(networkId);
+                platformAddresses = await restorePlatformAddresses(
+                    passphrase,
+                    networkId
+                );
             }
             dispatch(updateWalletPlatformAddresses(platformAddresses));
         }
@@ -126,7 +130,10 @@ const fetchWalletFromStorageIfNeed = () => {
                     };
                 });
             } else {
-                assetAddresses = await restoreAssetAddresses(networkId);
+                assetAddresses = await restoreAssetAddresses(
+                    passphrase,
+                    networkId
+                );
             }
             dispatch(updateWalletAssetAddresses(assetAddresses));
         }

@@ -63,7 +63,9 @@ export function savePassphrase(passphrase: string) {
 export function getPassphrase() {
     const encryptedKey = sessionStorage.getItem(passphraseKey);
     if (encryptedKey) {
-        return CryptoJS.AES.decrypt(encryptedKey, cryptoKey).toString();
+        return CryptoJS.AES.decrypt(encryptedKey, cryptoKey).toString(
+            CryptoJS.enc.Utf8
+        );
     }
     return null;
 }

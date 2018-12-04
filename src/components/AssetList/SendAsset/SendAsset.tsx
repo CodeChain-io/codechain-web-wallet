@@ -23,7 +23,6 @@ import assetActions from "../../../redux/asset/assetActions";
 import chainActions from "../../../redux/chain/chainActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
 import { getCodeChainHost } from "../../../utils/network";
-import { getPassphrase } from "../../../utils/storage";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
 
@@ -45,6 +44,7 @@ interface StateProps {
           }[]
         | null;
     networkId: NetworkId;
+    passphrase: string;
 }
 
 interface DispatchProps {
@@ -135,7 +135,12 @@ class SendAsset extends React.Component<Props, any> {
         receivers: { address: string; quantity: number }[]
     ) => {
         const { UTXOList } = this.props;
-        const { selectedAssetType: assetType, address, networkId } = this.props;
+        const {
+            selectedAssetType: assetType,
+            address,
+            networkId,
+            passphrase
+        } = this.props;
         const sumOfSendingAsset = _.sumBy(
             receivers,
             receiver => receiver.quantity
@@ -199,7 +204,7 @@ class SendAsset extends React.Component<Props, any> {
                 _.map(inputAssets, (_A, index) => {
                     return sdk.key.signTransactionInput(transferTx, index, {
                         keyStore,
-                        passphrase: getPassphrase()!
+                        passphrase
                     });
                 })
             );
@@ -238,12 +243,14 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
         UTXOListByAddress && UTXOListByAddress[selectedAssetType];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
+    const passphrase = state.globalReducer.passphrase!;
     return {
         assetScheme: assetScheme && assetScheme.data,
         isSendingTx: sendingTx != null,
         UTXOList: UTXOListByAddressAssetType && UTXOListByAddressAssetType.data,
         availableAssets,
-        networkId
+        networkId,
+        passphrase
     };
 };
 
