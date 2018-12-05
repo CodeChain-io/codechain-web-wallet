@@ -16,7 +16,6 @@ import {
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
-import * as ReactModal from "react-modal";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -60,9 +59,6 @@ class App extends React.Component<Props, any> {
     public constructor(props: any) {
         super(props);
         this.appRef = React.createRef();
-    }
-    public componentDidMount() {
-        ReactModal.setAppElement(this.appRef.current);
     }
     public render() {
         const { passphrase } = this.props;

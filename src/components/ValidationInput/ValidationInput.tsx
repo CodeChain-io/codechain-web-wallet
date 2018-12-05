@@ -16,6 +16,7 @@ interface Props {
     isValid?: boolean;
     showValidation: boolean;
     reverse?: boolean;
+    disable?: boolean;
 }
 export default class ValidationInput extends React.Component<Props, any> {
     public render() {
@@ -30,7 +31,8 @@ export default class ValidationInput extends React.Component<Props, any> {
             onBlur,
             isValid,
             reverse,
-            showValidation
+            showValidation,
+            disable
         } = this.props;
         const guid = this.guid();
         return (
@@ -53,6 +55,7 @@ export default class ValidationInput extends React.Component<Props, any> {
                     value={value}
                     onChange={onChange}
                     onBlur={onBlur}
+                    disabled={disable}
                 />
                 {isValid && (
                     <img
