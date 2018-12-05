@@ -18,6 +18,7 @@ import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 import SendAsset from "./SendAsset/SendAsset";
 
+import walletActions from "../../redux/wallet/walletActions";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import "./AssetList.css";
 
@@ -37,6 +38,7 @@ interface StateProps {
           }[]
         | null;
     networkId: NetworkId;
+    addressName?: string | null;
 }
 
 interface DispatchProps {
@@ -44,6 +46,7 @@ interface DispatchProps {
     fetchPendingTxListIfNeed: (address: string) => void;
     fetchUnconfirmedTxListIfNeed: (address: string) => void;
     fetchAvailableAssets: (address: string) => void;
+    fetchWalletFromStorageIfNeed: () => void;
 }
 
 interface State {
@@ -95,7 +98,8 @@ class AssetList extends React.Component<Props, State> {
             pendingTxList,
             unconfirmedTxList,
             availableAssets,
-            networkId
+            networkId,
+            addressName
         } = this.props;
         const { selectedAssetType } = this.state;
         if (
@@ -113,6 +117,7 @@ class AssetList extends React.Component<Props, State> {
                         <AddressContainer
                             address={address}
                             backButtonPath="/"
+                            addressName={addressName}
                         />
                         <div>
                             <div className="element-container mb-3">
@@ -208,6 +213,7 @@ class AssetList extends React.Component<Props, State> {
         this.props.fetchPendingTxListIfNeed(address);
         this.props.fetchAggsUTXOListIfNeed(address);
         this.props.fetchAvailableAssets(address);
+        this.props.fetchWalletFromStorageIfNeed();
     };
 }
 
@@ -222,12 +228,17 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const unconfirmedTxList = state.chainReducer.unconfirmedTxList[address];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
+    const assetAddress = _.find(
+        state.walletReducer.assetAddresses,
+        aa => aa.address === address
+    );
     return {
         addressUTXOList: aggsUTXOList && aggsUTXOList.data,
         pendingTxList: pendingTxList && pendingTxList.data,
         unconfirmedTxList: unconfirmedTxList && unconfirmedTxList.data,
         availableAssets,
-        networkId
+        networkId,
+        addressName: assetAddress && assetAddress.name
     };
 };
 const mapDispatchToProps = (
@@ -244,6 +255,9 @@ const mapDispatchToProps = (
     },
     fetchAvailableAssets: (address: string) => {
         dispatch(assetActions.fetchAvailableAssets(address));
+    },
+    fetchWalletFromStorageIfNeed: () => {
+        dispatch(walletActions.fetchWalletFromStorageIfNeed());
     }
 });
 export default connect(

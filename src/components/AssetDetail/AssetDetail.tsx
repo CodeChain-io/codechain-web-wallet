@@ -11,6 +11,7 @@ import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
+import walletActions from "../../redux/wallet/walletActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import TxHistory from "../TxHistory/TxHistory";
@@ -28,11 +29,13 @@ interface StateProps {
         quantities: number;
         metadata: MetadataFormat;
     } | null;
+    addressName?: string | null;
 }
 
 interface DispatchProps {
     fetchAssetSchemeIfNeed: (assetType: H256) => void;
     fetchAvailableAssets: (address: string) => void;
+    fetchWalletFromStorageIfNeed: () => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -49,7 +52,8 @@ class AssetDetail extends React.Component<Props, any> {
                 params: { assetType, address }
             },
             networkId,
-            availableAsset
+            availableAsset,
+            addressName
         } = this.props;
         if (!assetScheme || !availableAsset) {
             return null;
@@ -62,6 +66,7 @@ class AssetDetail extends React.Component<Props, any> {
                     <AddressContainer
                         address={address}
                         backButtonPath={`/${address}/assets`}
+                        addressName={addressName}
                     />
                     <div className="detail-history-container">
                         <h4 className="mr-auto">Asset detail</h4>
@@ -126,6 +131,7 @@ class AssetDetail extends React.Component<Props, any> {
         } = this.props;
         this.props.fetchAssetSchemeIfNeed(new H256(assetType));
         this.props.fetchAvailableAssets(address);
+        this.props.fetchWalletFromStorageIfNeed();
     };
 }
 
@@ -143,10 +149,15 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
         availableAssets,
         asset => asset.assetType === new H256(assetType).value
     );
+    const assetAddress = _.find(
+        state.walletReducer.assetAddresses,
+        aa => aa.address === address
+    );
     return {
         assetScheme: assetScheme && assetScheme.data,
         networkId,
-        availableAsset
+        availableAsset,
+        addressName: assetAddress && assetAddress.name
     };
 };
 const mapDispatchToProps = (
@@ -157,6 +168,9 @@ const mapDispatchToProps = (
     },
     fetchAvailableAssets: (address: string) => {
         dispatch(assetActions.fetchAvailableAssets(address));
+    },
+    fetchWalletFromStorageIfNeed: () => {
+        dispatch(walletActions.fetchWalletFromStorageIfNeed());
     }
 });
 export default connect(

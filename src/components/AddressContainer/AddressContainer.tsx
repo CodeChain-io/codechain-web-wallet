@@ -14,6 +14,7 @@ import "./AddressContainer.css";
 interface Props {
     address: string;
     backButtonPath: string;
+    addressName?: string | null;
 }
 
 interface State {
@@ -28,7 +29,7 @@ class AddressContainer extends React.Component<Props, State> {
         };
     }
     public render() {
-        const { address, backButtonPath } = this.props;
+        const { address, backButtonPath, addressName } = this.props;
         const { isCopyHovering } = this.state;
         return (
             <div className="Address-container d-flex align-items-center">
@@ -39,7 +40,7 @@ class AddressContainer extends React.Component<Props, State> {
                     <QRCode value={address} size={57} />
                 </div>
                 <div className="ml-3 name-address-container">
-                    <h2 className="mb-0">Address1</h2>
+                    <h2 className="mb-0">{addressName}</h2>
                     <span className="mono address-text mr-3">
                         <MediaQuery query="(max-width: 768px)">
                             {address.slice(0, 8)}
