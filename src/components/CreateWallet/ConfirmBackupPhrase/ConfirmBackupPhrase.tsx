@@ -8,7 +8,7 @@ interface Props {
 }
 
 interface State {
-    selectedPhrases?: string[] | null;
+    selectedPhrasesIndex?: number[] | null;
     suffledPhrases: string[];
 }
 
@@ -16,7 +16,7 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            selectedPhrases: undefined,
+            selectedPhrasesIndex: undefined,
             suffledPhrases: _.shuffle(this.props.phrases)
         };
     }
@@ -25,7 +25,7 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
     }
     public render() {
         const { phrases, onConfirm } = this.props;
-        const { selectedPhrases, suffledPhrases } = this.state;
+        const { selectedPhrasesIndex, suffledPhrases } = this.state;
         return (
             <div className="Confirm-backup-phrase animated fadeIn">
                 <div className="title-container">
@@ -41,20 +41,24 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <div className="backup-phrase-input d-flex align-items-center justify-content-center">
-                        {selectedPhrases && selectedPhrases.join(" ")}
+                        {selectedPhrasesIndex &&
+                            this.indexToString(selectedPhrasesIndex).join(" ")}
                     </div>
                     <div className="backup-phrase-button-container text-center">
                         <div>
-                            {_.map(suffledPhrases, text => {
+                            {_.map(suffledPhrases, (text, index) => {
                                 return (
                                     <button
                                         key={`phrase-${text}`}
-                                        className={`btn btn-primary backup-phrase-btn ${selectedPhrases &&
-                                            _.includes(selectedPhrases, text) &&
+                                        className={`btn btn-primary backup-phrase-btn ${selectedPhrasesIndex &&
+                                            _.includes(
+                                                selectedPhrasesIndex,
+                                                index
+                                            ) &&
                                             "reverse"}`}
                                         onClick={_.partial(
                                             this.toggleSelectPhrase,
-                                            text
+                                            index
                                         )}
                                     >
                                         {text}
@@ -68,8 +72,11 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
                     <button
                         className="btn btn-primary reverse square main-btn"
                         disabled={
-                            selectedPhrases == null ||
-                            !_.isEqual(phrases, selectedPhrases)
+                            selectedPhrasesIndex == null ||
+                            !_.isEqual(
+                                phrases,
+                                this.indexToString(selectedPhrasesIndex)
+                            )
                         }
                         onClick={onConfirm}
                     >
@@ -79,18 +86,27 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
             </div>
         );
     }
-    private toggleSelectPhrase = (phrase: string) => {
-        const { selectedPhrases } = this.state;
-        if (!selectedPhrases) {
-            this.setState({ selectedPhrases: [phrase] });
+    private indexToString = (selectedPhraseIndex: number[]) => {
+        const { suffledPhrases } = this.state;
+        return _.map(selectedPhraseIndex, i => suffledPhrases[i]);
+    };
+    private toggleSelectPhrase = (index: number) => {
+        const { selectedPhrasesIndex } = this.state;
+        if (!selectedPhrasesIndex) {
+            this.setState({ selectedPhrasesIndex: [index] });
             return;
         }
-        if (_.includes(selectedPhrases, phrase)) {
+        if (_.includes(selectedPhrasesIndex, index)) {
             this.setState({
-                selectedPhrases: _.filter(selectedPhrases, sp => sp !== phrase)
+                selectedPhrasesIndex: _.filter(
+                    selectedPhrasesIndex,
+                    sp => sp !== index
+                )
             });
         } else {
-            this.setState({ selectedPhrases: [...selectedPhrases, phrase] });
+            this.setState({
+                selectedPhrasesIndex: [...selectedPhrasesIndex, index]
+            });
         }
     };
 }
