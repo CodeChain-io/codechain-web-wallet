@@ -1,4 +1,6 @@
 import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import { toast } from "react-toastify";
 import "./ShowBackupPhrase.css";
 
 interface Props {
@@ -41,7 +43,12 @@ class ShowBackupPhrase extends React.Component<Props, any> {
                 </div>
                 <div className="backup-phrase-container">
                     <div className="backup-phrase-panel d-flex align-items-center justify-content-center">
-                        {mnemonic.join(" ")}
+                        <CopyToClipboard
+                            text={mnemonic.join(" ")}
+                            onCopy={this.handleCopyPhrase}
+                        >
+                            <span>{mnemonic.join(" ")}</span>
+                        </CopyToClipboard>
                     </div>
                 </div>
                 <div>
@@ -55,6 +62,13 @@ class ShowBackupPhrase extends React.Component<Props, any> {
             </div>
         );
     }
+
+    private handleCopyPhrase = () => {
+        toast.info("Copied!", {
+            position: toast.POSITION.BOTTOM_CENTER,
+            autoClose: 3000
+        });
+    };
 }
 
 export default ShowBackupPhrase;
