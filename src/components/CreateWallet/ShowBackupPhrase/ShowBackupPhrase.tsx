@@ -66,7 +66,9 @@ class ShowBackupPhrase extends React.Component<Props, any> {
     private handleCopyPhrase = () => {
         toast.info("Copied!", {
             position: toast.POSITION.BOTTOM_CENTER,
-            autoClose: 3000
+            autoClose: 1000,
+            closeButton: false,
+            hideProgressBar: true
         });
     };
 }

@@ -1,4 +1,6 @@
 import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { checkPassphrase, exportMnemonic } from "../../model/keystore";
 import ValidationInput from "../ValidationInput/ValidationInput";
@@ -50,7 +52,14 @@ class ExportBackupPopup extends React.Component<Props, State> {
                 <ModalBody>
                     <div className="passphrase-container">
                         <div className="d-flex align-items-center justify-content-center passphrase-panel">
-                            <span>{backupPhraseString}</span>
+                            {backupPhraseString && (
+                                <CopyToClipboard
+                                    text={backupPhraseString}
+                                    onCopy={this.handleCopyPhrase}
+                                >
+                                    <span>{backupPhraseString}</span>
+                                </CopyToClipboard>
+                            )}
                         </div>
                         {!revealBackupPhrase && (
                             <div className="d-flex align-items-center justify-content-center disable-panel">
@@ -124,6 +133,14 @@ class ExportBackupPopup extends React.Component<Props, State> {
         this.setState({
             revealBackupPhrase: true,
             backupPhraseString
+        });
+    };
+    private handleCopyPhrase = () => {
+        toast.info("Copied!", {
+            position: toast.POSITION.BOTTOM_CENTER,
+            autoClose: 1000,
+            closeButton: false,
+            hideProgressBar: true
         });
     };
 }
