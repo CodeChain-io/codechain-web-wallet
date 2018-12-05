@@ -125,13 +125,12 @@ export async function createPlatformAddress(
     const ccKey = await getCCKey();
     const seedHash = await getFirstSeedHash();
     const savedPlatformKeys = getPlatformKeys();
-    let pathIndex;
+    let newPathIndex;
     if (savedPlatformKeys && savedPlatformKeys.length > 0) {
-        pathIndex = _.last(savedPlatformKeys)!.pathIndex;
+        newPathIndex = _.last(savedPlatformKeys)!.pathIndex + 1;
     } else {
-        pathIndex = 0;
+        newPathIndex = 0;
     }
-    const newPathIndex = pathIndex + 1;
     const platformPubkey = await ccKey.hdwseed.getPublicKeyFromSeed({
         seedHash,
         path: platformAddressPath + newPathIndex,
@@ -173,16 +172,15 @@ export async function createAssetAddress(
     const ccKey = await getCCKey();
     const seedHash = await getFirstSeedHash();
     const savedAssetKeys = getAssetKeys();
-    let pathIndex;
+    let newPathIndex;
     if (savedAssetKeys && savedAssetKeys.length > 0) {
-        pathIndex = _.last(savedAssetKeys)!.pathIndex;
+        newPathIndex = _.last(savedAssetKeys)!.pathIndex + 1;
     } else {
-        pathIndex = 0;
+        newPathIndex = 0;
     }
-    const newPathIndex = pathIndex + 1;
     const assetPubKey = await ccKey.hdwseed.getPublicKeyFromSeed({
         seedHash,
-        path: assetAddressPath + pathIndex,
+        path: assetAddressPath + newPathIndex,
         passphrase
     });
     const key = blake160(assetPubKey);
