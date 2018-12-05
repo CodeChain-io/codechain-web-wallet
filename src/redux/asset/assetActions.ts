@@ -306,8 +306,12 @@ const calculateAvailableAssets = (address: string) => {
             return;
         }
 
-        const aggregatedUnconfirmedAsset = _.flatMap(
+        const validUnconfirmedTxList = _.filter(
             unconfirmedTxList,
+            utx => utx.data.invoice === true
+        );
+        const aggregatedUnconfirmedAsset = _.flatMap(
+            validUnconfirmedTxList,
             unconfirmedTx => {
                 return TxUtil.getAssetAggregationFromTransactionDoc(
                     address,
