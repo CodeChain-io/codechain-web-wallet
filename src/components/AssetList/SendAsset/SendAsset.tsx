@@ -88,7 +88,7 @@ class SendAsset extends React.Component<Props, any> {
         }
         const metadata = Type.getMetadata(assetScheme.metadata);
         return (
-            <div className="Send-asset">
+            <div className="Send-asset animated fadeIn">
                 <div className="cancel-icon-container" onClick={onClose}>
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>

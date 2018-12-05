@@ -33,7 +33,7 @@ export default class ReceiverItem extends React.Component<Props, any> {
             quantityError
         } = this.props;
         return (
-            <div className="Receiver-item">
+            <div className="Receiver-item animated fadeIn">
                 <div className="d-flex align-items-end">
                     <span className="mr-auto receiver-item-index">
                         {index + 1}

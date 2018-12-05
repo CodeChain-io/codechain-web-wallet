@@ -34,7 +34,8 @@ class AssetItem extends React.Component<Props, any> {
         return (
             <div
                 onClick={this.handleClick}
-                className={`Asset-item ${isSelected && "selected"}`}
+                className={`Asset-item animated-fadeIn ${isSelected &&
+                    "selected"}`}
             >
                 <div className="d-flex align-items-center">
                     <div className="image-container">

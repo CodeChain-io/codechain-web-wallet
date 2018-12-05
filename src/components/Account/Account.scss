@@ -1,0 +1,48 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
+.Account {
+  position: relative;
+  background: linear-gradient(180deg, $platform-green 200px, transparent 0%);
+
+  .left-panel {
+    padding: 15px;
+    max-width: 1084px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .element-container {
+    background-color: white;
+    padding-left: 52px;
+    padding-right: 52px;
+    padding-top: 30px;
+    padding-bottom: 42px;
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    border-radius: 5px;
+
+    @include respond_below(sm) {
+      & {
+        padding-left: 30px;
+        padding-right: 30px;
+      }
+    }
+
+    .element-title {
+      font-size: 1.28rem;
+    }
+    .ccc-text {
+      color: $platform-green;
+      font-size: 3rem;
+
+      @include respond_below(sm) {
+        & {
+          font-size: 2rem;
+        }
+      }
+    }
+    .send-btn {
+      width: 168px;
+    }
+  }
+}

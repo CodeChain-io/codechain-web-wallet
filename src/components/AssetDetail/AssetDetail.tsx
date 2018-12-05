@@ -61,7 +61,7 @@ class AssetDetail extends React.Component<Props, any> {
 
         const metadata = Type.getMetadata(assetScheme.metadata);
         return (
-            <div className="Asset-detail d-flex">
+            <div className="Asset-detail d-flex animated fadeIn">
                 <div className="panel mx-auto">
                     <AddressContainer
                         address={address}

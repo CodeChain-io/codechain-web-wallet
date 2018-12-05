@@ -2,6 +2,7 @@
 @import "styles/variables.scss";
 
 .Header {
+  background-color: white;
   height: $header-height;
   border-bottom: 1px solid $disabledbg-grey;
   position: relative;

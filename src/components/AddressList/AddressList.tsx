@@ -38,7 +38,7 @@ class AddressList extends React.Component<Props, any> {
     public render() {
         const { platformAddresses, assetAddresses } = this.props;
         return (
-            <div className="Address-list">
+            <div className="Address-list animated fadeIn">
                 <Container>
                     <div className="asset-address-container mb-5">
                         <div className="deco asset-title-deco" />

@@ -111,7 +111,7 @@ class AssetList extends React.Component<Props, State> {
             return null;
         }
         return (
-            <div className="Asset-list">
+            <div className="Asset-list animated fadeIn">
                 <div className="d-flex">
                     <div className="left-panel mx-auto">
                         <AddressContainer

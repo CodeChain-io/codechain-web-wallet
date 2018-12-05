@@ -50,7 +50,7 @@ class AddressItem extends React.Component<Props, State> {
         const { isCopyHovering } = this.state;
         return (
             <div
-                className={`Address-item ${className}`}
+                className={`Address-item animated fadeIn ${className}`}
                 onClick={this.handleClick}
             >
                 <div
