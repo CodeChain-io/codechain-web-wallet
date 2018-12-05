@@ -10,6 +10,7 @@ interface State {
     passphraseError?: string;
     isPassphraseConfirmValid?: boolean;
     passphraseConfirmError?: string;
+    isSubmitted: boolean;
 }
 
 interface Props {
@@ -25,7 +26,8 @@ class InputPassphrase extends React.Component<Props, State> {
             isPassphraseValid: undefined,
             passphraseError: undefined,
             isPassphraseConfirmValid: undefined,
-            passphraseConfirmError: undefined
+            passphraseConfirmError: undefined,
+            isSubmitted: false
         };
     }
     public render() {
@@ -35,7 +37,8 @@ class InputPassphrase extends React.Component<Props, State> {
             isPassphraseConfirmValid,
             isPassphraseValid,
             passphraseConfirmError,
-            passphraseError
+            passphraseError,
+            isSubmitted
         } = this.state;
         return (
             <div className="Input-passphrase animated fadeIn">
@@ -76,8 +79,9 @@ class InputPassphrase extends React.Component<Props, State> {
                     <button
                         className="btn btn-primary reverse square main-btn"
                         onClick={this.handleSubmit}
+                        disabled={isSubmitted}
                     >
-                        OK
+                        {isSubmitted ? "CREATING..." : "OK"}
                     </button>
                 </div>
             </div>
@@ -96,7 +100,11 @@ class InputPassphrase extends React.Component<Props, State> {
             return;
         }
 
-        onSubmit(passphrase);
+        this.setState({ isSubmitted: true });
+
+        setTimeout(() => {
+            onSubmit(passphrase);
+        }, 500);
     };
 
     private checkPassphraseValid = () => {
