@@ -1,5 +1,6 @@
 import { loadingBarReducer } from "react-redux-loading-bar";
 import { combineReducers } from "redux";
+import { accountReducer, AccountState } from "./account/accountReducer";
 import { assetReducer, AssetState } from "./asset/assetReducer";
 import { chainReducer, ChainState } from "./chain/chainReducer";
 import { ActionType } from "./global/globalActions";
@@ -11,6 +12,7 @@ export interface ReducerConfigure {
     walletReducer: WalletState;
     assetReducer: AssetState;
     chainReducer: ChainState;
+    accountReducer: AccountState;
 }
 
 const appReducer = combineReducers({
@@ -18,6 +20,7 @@ const appReducer = combineReducers({
     walletReducer,
     assetReducer,
     chainReducer,
+    accountReducer,
     loadingBar: loadingBarReducer
 });
 

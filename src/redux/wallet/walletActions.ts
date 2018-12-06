@@ -7,32 +7,23 @@ import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { toast } from "react-toastify";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
-import {
-    AddressType,
-    PlatformAccount,
-    WalletAddress
-} from "../../model/address";
+import { AddressType, WalletAddress } from "../../model/address";
 import {
     createAssetAddress,
     createPlatformAddress,
     restoreAssetAddresses,
     restorePlatformAddresses
 } from "../../model/keystore";
-import { getPlatformAccount } from "../../networks/Api";
 import { getAssetKeys, getPlatformKeys } from "../../utils/storage";
 
 export type Action =
     | UpdateWalletPlatformAddresses
     | UpdateWalletAssetAddresses
-    | UpdateAccount
-    | SetFetchingAccount
     | ClearWalletAddresses;
 
 export enum ActionType {
     UpdateWalletPlatformAddresses = 3000,
     UpdateWalletAssetAddresses,
-    UpdateAccount,
-    SetFetchingAccount,
     ClearWalletAddresses
 }
 
@@ -47,21 +38,6 @@ export interface UpdateWalletAssetAddresses {
     type: ActionType.UpdateWalletAssetAddresses;
     data: {
         assetAddresses: WalletAddress[];
-    };
-}
-
-export interface UpdateAccount {
-    type: ActionType.UpdateAccount;
-    data: {
-        address: string;
-        account: PlatformAccount;
-    };
-}
-
-export interface SetFetchingAccount {
-    type: ActionType.SetFetchingAccount;
-    data: {
-        address: string;
     };
 }
 
@@ -206,59 +182,8 @@ const createWalletAssetAddress = () => {
     };
 };
 
-const setFetchingAccount = (address: string): SetFetchingAccount => ({
-    type: ActionType.SetFetchingAccount,
-    data: {
-        address
-    }
-});
-
-const updateAccount = (
-    address: string,
-    account: PlatformAccount
-): UpdateAccount => ({
-    type: ActionType.UpdateAccount,
-    data: {
-        address,
-        account
-    }
-});
-
-const fetchAccountIfNeed = (address: string) => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        const cachedAccount = getState().walletReducer.accounts[address];
-        if (cachedAccount && cachedAccount.isFetching) {
-            return;
-        }
-        if (
-            cachedAccount &&
-            cachedAccount.updatedAt &&
-            +new Date() - cachedAccount.updatedAt < 3000
-        ) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch(setFetchingAccount(address));
-            const networkId = getState().globalReducer.networkId;
-            const accountResponse = await getPlatformAccount(
-                address,
-                networkId
-            );
-            dispatch(updateAccount(address, accountResponse));
-            dispatch(hideLoading() as any);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-};
-
 export default {
     fetchWalletFromStorageIfNeed,
-    fetchAccountIfNeed,
     createWalletAssetAddress,
     createWalletPlatformAddress
 };

@@ -1,4 +1,6 @@
 import {
+    ParcelDoc,
+    PendingParcelDoc,
     PendingTransactionDoc,
     TransactionDoc
 } from "codechain-indexer-types/lib/types";
@@ -49,6 +51,27 @@ export interface ChainState {
         isFetching: boolean;
         updatedAt?: number | null;
     } | null;
+    paymentParcelList: {
+        [address: string]: {
+            data?: ParcelDoc[] | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
+    unconfirmedPaymentParcelList: {
+        [address: string]: {
+            data?: ParcelDoc[] | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
+    pendingPaymentParcelList: {
+        [address: string]: {
+            data?: PendingParcelDoc[] | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
 }
 
 export const chainInitState: ChainState = {
@@ -58,7 +81,10 @@ export const chainInitState: ChainState = {
     sendingTx: {},
     bestBlockNumber: undefined,
     txListById: {},
-    pendingTxListById: {}
+    pendingTxListById: {},
+    paymentParcelList: {},
+    unconfirmedPaymentParcelList: {},
+    pendingPaymentParcelList: {}
 };
 
 export const getIdByAddressAssetType = (address: string, assetType: H256) => {
@@ -226,6 +252,99 @@ export const chainReducer = (
             return {
                 ...state,
                 txListById
+            };
+        }
+        case ActionType.CachePayamentParcelList: {
+            const address = action.data.address;
+            const currentParcelList = {
+                data: action.data.parcelList,
+                updatedAt: +new Date(),
+                isFetching: false
+            };
+            const paymentParcelList = {
+                ...state.paymentParcelList,
+                [address]: currentParcelList
+            };
+            return {
+                ...state,
+                paymentParcelList
+            };
+        }
+        case ActionType.CachePendingPaymentParcelList: {
+            const address = action.data.address;
+            const currentPendingParcelList = {
+                data: action.data.pendingParcelList,
+                updatedAt: +new Date(),
+                isFetching: false
+            };
+            const pendingPaymentParcelList = {
+                ...state.pendingPaymentParcelList,
+                [address]: currentPendingParcelList
+            };
+            return {
+                ...state,
+                pendingPaymentParcelList
+            };
+        }
+        case ActionType.CacheUnconfirmedPaymentParcelList: {
+            const address = action.data.address;
+            const currentParcelList = {
+                data: action.data.parcelList,
+                updatedAt: +new Date(),
+                isFetching: false
+            };
+            const unconfirmedPaymentParcelList = {
+                ...state.unconfirmedPaymentParcelList,
+                [address]: currentParcelList
+            };
+            return {
+                ...state,
+                unconfirmedPaymentParcelList
+            };
+        }
+        case ActionType.SetFetchingPaymentParcelList: {
+            const address = action.data.address;
+            const currentParcelList = {
+                ...state.paymentParcelList,
+                isFetching: true
+            };
+            const paymentParcelList = {
+                ...state.paymentParcelList,
+                [address]: currentParcelList
+            };
+            return {
+                ...state,
+                paymentParcelList
+            };
+        }
+        case ActionType.SetFetchingPendingPaymentParcelList: {
+            const address = action.data.address;
+            const currentPendingParcelList = {
+                ...state.pendingPaymentParcelList[address],
+                isFetching: true
+            };
+            const pendingPaymentParcelList = {
+                ...state.pendingPaymentParcelList,
+                [address]: currentPendingParcelList
+            };
+            return {
+                ...state,
+                pendingPaymentParcelList
+            };
+        }
+        case ActionType.SetFetchingUnconfirmedPaymentParcelList: {
+            const address = action.data.address;
+            const currentParcelList = {
+                ...state.unconfirmedPaymentParcelList[address],
+                isFetching: true
+            };
+            const unconfirmedPaymentParcelList = {
+                ...state.unconfirmedPaymentParcelList,
+                [address]: currentParcelList
+            };
+            return {
+                ...state,
+                unconfirmedPaymentParcelList
             };
         }
     }

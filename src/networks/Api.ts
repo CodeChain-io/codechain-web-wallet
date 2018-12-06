@@ -2,6 +2,7 @@ import axios from "axios";
 import {
     AggsUTXO,
     AssetSchemeDoc,
+    ParcelDoc,
     PendingParcelDoc,
     PendingTransactionDoc,
     TransactionDoc,
@@ -110,6 +111,21 @@ export async function getPendingPaymentParcels(
     return await getRequest<PendingParcelDoc[]>(
         `${apiHost}/api/parcels/pending/${address}`
     );
+}
+
+export async function getParcels(
+    address: string,
+    onlyUnconfirmed: boolean,
+    page: number,
+    itemsPerPage: number,
+    networkId: NetworkId
+) {
+    const apiHost = getIndexerHost(networkId);
+    let query = `${apiHost}/api/parcels?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
+    if (onlyUnconfirmed) {
+        query += `&onlyUnconfirmed=true&confirmThreshold=5`;
+    }
+    return await getRequest<ParcelDoc[]>(query);
 }
 
 export async function getPendingTransactions(

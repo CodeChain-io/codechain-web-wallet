@@ -5,16 +5,13 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import {
-    AddressType,
-    PlatformAccount,
-    WalletAddress
-} from "../../../model/address";
+import { AddressType, WalletAddress } from "../../../model/address";
 import { ReducerConfigure } from "../../../redux";
-import walletActions from "../../../redux/wallet/walletActions";
 import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./AddressItem.css";
 
+import { U256 } from "codechain-sdk/lib/core/classes";
+import accountActions from "../../../redux/account/accountActions";
 import * as copyBtnHover from "./img/copy-hover.svg";
 import * as copyBtn from "./img/copy.svg";
 
@@ -23,10 +20,10 @@ interface OwnProps {
     className?: string | null;
 }
 interface DispatchProps {
-    fetchAccountIfNeed: (address: string) => void;
+    fetchAvailableCCC: (address: string) => void;
 }
 interface StateProps {
-    account?: PlatformAccount | null;
+    availableCCC?: U256 | null;
 }
 interface State {
     isCopyHovering: boolean;
@@ -42,11 +39,11 @@ class AddressItem extends React.Component<Props, State> {
         };
     }
     public componentDidMount() {
-        const { walletAddress, fetchAccountIfNeed } = this.props;
-        fetchAccountIfNeed(walletAddress.address);
+        const { walletAddress, fetchAvailableCCC } = this.props;
+        fetchAvailableCCC(walletAddress.address);
     }
     public render() {
-        const { walletAddress, className, account } = this.props;
+        const { walletAddress, className, availableCCC } = this.props;
         const { isCopyHovering } = this.state;
         return (
             <div
@@ -87,9 +84,9 @@ class AddressItem extends React.Component<Props, State> {
                 </div>
                 {walletAddress.type === AddressType.Platform && (
                     <div className="platform-account">
-                        {account ? (
+                        {availableCCC ? (
                             <span className="number balance">
-                                {changeQuarkToCCCString(account.balance)} CCC
+                                {changeQuarkToCCCString(availableCCC)} CCC
                             </span>
                         ) : (
                             <span className="number balance">Loading...</span>
@@ -129,16 +126,17 @@ class AddressItem extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const { walletAddress } = props;
-    const account = state.walletReducer.accounts[walletAddress.address];
+    const availableCCC =
+        state.accountReducer.availableCCC[walletAddress.address];
     return {
-        account: account && account.data
+        availableCCC
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAccountIfNeed: (address: string) => {
-        dispatch(walletActions.fetchAccountIfNeed(address));
+    fetchAvailableCCC: (address: string) => {
+        dispatch(accountActions.fetchAvailableCCC(address));
     }
 });
 export default connect(

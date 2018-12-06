@@ -1,4 +1,6 @@
 import {
+    ParcelDoc,
+    PendingParcelDoc,
     PendingTransactionDoc,
     TransactionDoc
 } from "codechain-indexer-types/lib/types";
@@ -9,10 +11,13 @@ import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
     getBestBlockNumber,
+    getParcels,
+    getPendingPaymentParcels,
     getPendingTransactions,
     getTxsByAddress,
     sendTxToGateway
 } from "../../networks/Api";
+import accountActions from "../account/accountActions";
 import assetActions from "../asset/assetActions";
 import { getIdByAddressAssetType } from "./chainReducer";
 
@@ -27,7 +32,13 @@ export type Action =
     | UpdateBestBlockNumber
     | SetFetchingBestBlockNumber
     | SetFetchingTxListById
-    | CacheTxListById;
+    | CacheTxListById
+    | CachePendingPaymentParcelList
+    | CacheUnconfirmedPaymentParcelList
+    | CachePayamentParcelList
+    | SetFetchingPaymentParcelList
+    | SetFetchingPendingPaymentParcelList
+    | SetFetchingUnconfirmedPaymentParcelList;
 
 export enum ActionType {
     CachePendingTxList = 2000,
@@ -40,7 +51,58 @@ export enum ActionType {
     SetFetchingBestBlockNumber,
     SetFetchingTxList,
     SetFetchingTxListById,
-    CacheTxListById
+    CacheTxListById,
+    CachePendingPaymentParcelList,
+    CacheUnconfirmedPaymentParcelList,
+    CachePayamentParcelList,
+    SetFetchingPaymentParcelList,
+    SetFetchingPendingPaymentParcelList,
+    SetFetchingUnconfirmedPaymentParcelList
+}
+
+export interface CachePendingPaymentParcelList {
+    type: ActionType.CachePendingPaymentParcelList;
+    data: {
+        address: string;
+        pendingParcelList: PendingParcelDoc[];
+    };
+}
+
+export interface CacheUnconfirmedPaymentParcelList {
+    type: ActionType.CacheUnconfirmedPaymentParcelList;
+    data: {
+        address: string;
+        parcelList: ParcelDoc[];
+    };
+}
+
+export interface CachePayamentParcelList {
+    type: ActionType.CachePayamentParcelList;
+    data: {
+        address: string;
+        parcelList: ParcelDoc[];
+    };
+}
+
+export interface SetFetchingPaymentParcelList {
+    type: ActionType.SetFetchingPaymentParcelList;
+    data: {
+        address: string;
+    };
+}
+
+export interface SetFetchingPendingPaymentParcelList {
+    type: ActionType.SetFetchingPendingPaymentParcelList;
+    data: {
+        address: string;
+    };
+}
+
+export interface SetFetchingUnconfirmedPaymentParcelList {
+    type: ActionType.SetFetchingUnconfirmedPaymentParcelList;
+    data: {
+        address: string;
+    };
 }
 
 export interface SetFetchingTxListById {
@@ -253,6 +315,7 @@ const fetchTxListIfNeed = (address: string) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch({
                 type: ActionType.SetFetchingTxList,
                 data: {
@@ -275,6 +338,7 @@ const fetchTxListIfNeed = (address: string) => {
                     txList
                 }
             });
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }
@@ -306,6 +370,7 @@ const sendTransaction = (
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch(setSendingTx(address, transferTx));
             const networkId = getState().globalReducer.networkId;
             await sendTxToGateway(transferTx, networkId);
@@ -325,6 +390,7 @@ const sendTransaction = (
                 ) {
                     dispatch(setSendingTx(address, null));
                     clearInterval(checkingIndexingFunc);
+                    dispatch(hideLoading() as any);
                 }
             }, 1000);
         } catch (e) {
@@ -383,6 +449,7 @@ const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H256) => {
             return;
         }
         try {
+            dispatch(showLoading() as any);
             dispatch({
                 type: ActionType.SetFetchingTxListById,
                 data: {
@@ -408,6 +475,153 @@ const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H256) => {
                     txList
                 }
             });
+            dispatch(hideLoading() as any);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+const fetchPaymentParcelListIfNeed = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const paymentParcelList = getState().chainReducer.paymentParcelList[
+            address
+        ];
+        if (paymentParcelList && paymentParcelList.isFetching) {
+            return;
+        }
+        if (
+            paymentParcelList &&
+            paymentParcelList.updatedAt &&
+            +new Date() - paymentParcelList.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch(showLoading() as any);
+            dispatch({
+                type: ActionType.SetFetchingPaymentParcelList,
+                data: {
+                    address
+                }
+            });
+            const networkId = getState().globalReducer.networkId;
+            // FIXME: Add pagination
+            const parcelList = await getParcels(
+                address,
+                false,
+                1,
+                10,
+                networkId
+            );
+            dispatch({
+                type: ActionType.CachePayamentParcelList,
+                data: {
+                    address,
+                    parcelList
+                }
+            });
+            dispatch(hideLoading() as any);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+const fetchUnconfirmedPaymentParcelListIfNeed = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const cachedUnconfirmedPaymentParcelList = getState().chainReducer
+            .unconfirmedPaymentParcelList[address];
+        if (
+            cachedUnconfirmedPaymentParcelList &&
+            cachedUnconfirmedPaymentParcelList.isFetching
+        ) {
+            return;
+        }
+        if (
+            cachedUnconfirmedPaymentParcelList &&
+            cachedUnconfirmedPaymentParcelList.updatedAt &&
+            +new Date() - cachedUnconfirmedPaymentParcelList.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch(showLoading() as any);
+            dispatch({
+                type: ActionType.SetFetchingUnconfirmedPaymentParcelList,
+                data: {
+                    address
+                }
+            });
+            const networkId = getState().globalReducer.networkId;
+            const parcelList = await getParcels(
+                address,
+                true,
+                1,
+                10000,
+                networkId
+            );
+            dispatch({
+                type: ActionType.CacheUnconfirmedPaymentParcelList,
+                data: {
+                    address,
+                    parcelList
+                }
+            });
+            dispatch(accountActions.calculateAvailableCCC(address));
+            dispatch(hideLoading() as any);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+const fetchPendingPaymentParcelListIfNeed = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const cachedPendingPaymentParcelList = getState().chainReducer
+            .pendingPaymentParcelList[address];
+        if (
+            cachedPendingPaymentParcelList &&
+            cachedPendingPaymentParcelList.isFetching
+        ) {
+            return;
+        }
+        if (
+            cachedPendingPaymentParcelList &&
+            cachedPendingPaymentParcelList.updatedAt &&
+            +new Date() - cachedPendingPaymentParcelList.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch(showLoading() as any);
+            dispatch({
+                type: ActionType.SetFetchingPendingPaymentParcelList,
+                data: { address }
+            });
+            const networkId = getState().globalReducer.networkId;
+            const pendingParcelList = await getPendingPaymentParcels(
+                address,
+                networkId
+            );
+            dispatch({
+                type: ActionType.CachePendingPaymentParcelList,
+                data: {
+                    address,
+                    pendingParcelList
+                }
+            });
+            dispatch(accountActions.calculateAvailableCCC(address));
+            dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
         }
@@ -420,5 +634,8 @@ export default {
     sendTransaction,
     fetchBestBlockNumberIfNeed,
     fetchTxListIfNeed,
-    fetchTxListByAssetTypeIfNeed
+    fetchTxListByAssetTypeIfNeed,
+    fetchPaymentParcelListIfNeed,
+    fetchUnconfirmedPaymentParcelListIfNeed,
+    fetchPendingPaymentParcelListIfNeed
 };

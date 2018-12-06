@@ -13,21 +13,24 @@ export const globalInitState: GlobalState = {
 
 export const globalReducer = (state = globalInitState, action: Action) => {
     switch (action.type) {
-        case ActionType.Login:
+        case ActionType.Login: {
             return {
                 ...state,
                 passphrase: action.data.passphrase
             };
-        case ActionType.Logout:
+        }
+        case ActionType.Logout: {
             return {
                 ...state,
                 passphrase: undefined
             };
-        case ActionType.UpdateNetwork:
+        }
+        case ActionType.UpdateNetwork: {
             return {
                 ...state,
                 networkId: action.data.networkId
             };
+        }
     }
     return state;
 };

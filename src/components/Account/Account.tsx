@@ -1,14 +1,14 @@
+import { U256 } from "codechain-sdk/lib/core/classes";
+import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { PlatformAccount } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
-import actions from "../../redux/wallet/walletActions";
+import accountActions from "../../redux/account/accountActions";
+import walletActions from "../../redux/wallet/walletActions";
 import { changeQuarkToCCCString } from "../../utils/unit";
-
-import * as _ from "lodash";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import "./Account.css";
 
@@ -17,12 +17,12 @@ interface OwnProps {
 }
 
 interface StateProps {
-    account?: PlatformAccount | null;
+    availableCCC?: U256 | null;
     addressName?: string | null;
 }
 
 interface DispatchProps {
-    fetchAccountIfNeed: (address: string) => void;
+    fetchAvailableCCC: (address: string) => void;
     fetchWalletFromStorageIfNeed: () => void;
 }
 
@@ -52,13 +52,13 @@ class Account extends React.Component<Props> {
     }
     public render() {
         const {
-            account,
+            availableCCC,
             match: {
                 params: { address }
             },
             addressName
         } = this.props;
-        if (!account) {
+        if (!availableCCC) {
             return null;
         }
         return (
@@ -75,9 +75,7 @@ class Account extends React.Component<Props> {
                                 <h5 className="element-title">Balance</h5>
                                 <div className="ccc-text number">
                                     <span className="mr-2">
-                                        {changeQuarkToCCCString(
-                                            account.balance
-                                        )}
+                                        {changeQuarkToCCCString(availableCCC)}
                                     </span>
                                     <span>CCC</span>
                                 </div>
@@ -105,7 +103,7 @@ class Account extends React.Component<Props> {
                 params: { address }
             }
         } = this.props;
-        this.props.fetchAccountIfNeed(address);
+        this.props.fetchAvailableCCC(address);
         this.props.fetchWalletFromStorageIfNeed();
     };
 }
@@ -116,24 +114,24 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
             params: { address }
         }
     } = props;
-    const account = state.walletReducer.accounts[address];
+    const availableCCC = state.accountReducer.availableCCC[address];
     const assetAddress = _.find(
         state.walletReducer.platformAddresses,
         aa => aa.address === address
     );
     return {
-        account: account && account.data,
+        availableCCC,
         addressName: assetAddress && assetAddress.name
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAccountIfNeed: (address: string) => {
-        dispatch(actions.fetchAccountIfNeed(address));
+    fetchAvailableCCC: (address: string) => {
+        dispatch(accountActions.fetchAvailableCCC(address));
     },
     fetchWalletFromStorageIfNeed: () => {
-        dispatch(actions.fetchWalletFromStorageIfNeed());
+        dispatch(walletActions.fetchWalletFromStorageIfNeed());
     }
 });
 export default connect(
