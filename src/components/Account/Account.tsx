@@ -10,6 +10,7 @@ import accountActions from "../../redux/account/accountActions";
 import walletActions from "../../redux/wallet/walletActions";
 import { changeQuarkToCCCString } from "../../utils/unit";
 import AddressContainer from "../AddressContainer/AddressContainer";
+import ParcelHistory from "../ParcelHistory/ParcelHistory";
 import "./Account.css";
 
 interface OwnProps {
@@ -86,9 +87,8 @@ class Account extends React.Component<Props> {
                                 </div>
                             </div>
                             <div className="element-container">
-                                <h5 className="element-title">
-                                    Transaction history
-                                </h5>
+                                <h4 className="mb-3">Transaction history</h4>
+                                <ParcelHistory address={address} />
                             </div>
                         </div>
                     </div>

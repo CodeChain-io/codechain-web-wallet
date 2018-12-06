@@ -1,8 +1,4 @@
-import {
-    PendingTransactionDoc,
-    TransactionDoc
-} from "codechain-indexer-types/lib/types";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import { ParcelDoc, PendingParcelDoc } from "codechain-indexer-types/lib/types";
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -11,39 +7,36 @@ import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import chainActions from "../../redux/chain/chainActions";
-import { getIdByAddressAssetType } from "../../redux/chain/chainReducer";
 import * as Empty from "./img/cautiondisabled.svg";
-import "./TxHistory.css";
-import TxItem from "./TxItem/TxItem";
+import "./ParcelHistory.css";
+import ParcelItem from "./ParcelItem/ParcelItem";
 
 interface OwnProps {
     address: string;
-    assetType?: H256;
 }
 
 interface StateProps {
-    pendingTxList?: PendingTransactionDoc[] | null;
-    txList?: TransactionDoc[] | null;
+    pendingParcelList?: PendingParcelDoc[] | null;
+    parcelList?: ParcelDoc[] | null;
     bestBlockNumber?: number | null;
     networkId: NetworkId;
 }
 
 interface DispatchProps {
-    fetchPendingTxListIfNeed: (address: string) => void;
-    fetchTxListIfNeed: (address: string) => void;
+    fetchPendingPaymentParcelListIfNeed: (address: string) => void;
+    fetchPaymentParcelListIfNeed: (address: string) => void;
     fetchBestBlockNumberIfNeed: () => void;
-    fetchTxListByAssetTypeIfNeed: (address: string, assetType: H256) => void;
 }
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-class TxHistory extends React.Component<Props> {
+class ParcelHistory extends React.Component<Props> {
     private refresher: any;
     public constructor(props: Props) {
         super(props);
         this.state = {
-            pendingTxList: undefined,
-            txList: undefined,
+            pendingParcelList: undefined,
+            parcelList: undefined,
             bestBlockNumber: undefined
         };
     }
@@ -58,24 +51,24 @@ class TxHistory extends React.Component<Props> {
 
     public render() {
         const {
-            pendingTxList,
-            txList,
+            pendingParcelList,
+            parcelList,
             bestBlockNumber,
             address,
             networkId
         } = this.props;
-        if (!pendingTxList || !txList || !bestBlockNumber) {
+        if (!pendingParcelList || !parcelList || !bestBlockNumber) {
             return <div>Loading...</div>;
         }
-        const txHashList = _.map(txList, tx => tx.data.hash);
-        const validPendingTxList = _.filter(
-            pendingTxList,
-            pendingTx =>
-                !_.includes(txHashList, pendingTx.transaction.data.hash)
+        const parcelHashList = _.map(parcelList, parcel => parcel.hash);
+        const validPendingParcelList = _.filter(
+            pendingParcelList,
+            pendingParcel =>
+                !_.includes(parcelHashList, pendingParcel.parcel.hash)
         );
         return (
-            <div className="Tx-history">
-                {validPendingTxList.length + txList.length === 0 && (
+            <div className="Parcel-history">
+                {validPendingParcelList.length + parcelList.length === 0 && (
                     <div className="d-flex align-items-center justify-content-center">
                         <div>
                             <div className="text-center mt-3">
@@ -87,10 +80,10 @@ class TxHistory extends React.Component<Props> {
                         </div>
                     </div>
                 )}
-                {_.map(validPendingTxList, pendingTx => (
-                    <TxItem
-                        key={pendingTx.transaction.data.hash}
-                        tx={pendingTx.transaction}
+                {_.map(validPendingParcelList, pendingTx => (
+                    <ParcelItem
+                        key={pendingTx.parcel.hash}
+                        parcel={pendingTx.parcel}
                         bestBlockNumber={bestBlockNumber}
                         address={address}
                         networkId={networkId}
@@ -98,15 +91,15 @@ class TxHistory extends React.Component<Props> {
                         timestamp={pendingTx.timestamp}
                     />
                 ))}
-                {_.map(txList, tx => (
-                    <TxItem
-                        key={tx.data.hash}
-                        tx={tx}
+                {_.map(parcelList, parcel => (
+                    <ParcelItem
+                        key={parcel.hash}
+                        parcel={parcel}
                         address={address}
                         bestBlockNumber={bestBlockNumber}
                         networkId={networkId}
                         isPending={false}
-                        timestamp={tx.data.timestamp}
+                        timestamp={parcel.timestamp}
                     />
                 ))}
             </div>
@@ -131,35 +124,25 @@ class TxHistory extends React.Component<Props> {
         const {
             address,
             fetchBestBlockNumberIfNeed,
-            fetchPendingTxListIfNeed,
-            fetchTxListIfNeed,
-            assetType,
-            fetchTxListByAssetTypeIfNeed
+            fetchPaymentParcelListIfNeed,
+            fetchPendingPaymentParcelListIfNeed
         } = this.props;
         fetchBestBlockNumberIfNeed();
-        fetchPendingTxListIfNeed(address);
-
-        if (assetType) {
-            fetchTxListByAssetTypeIfNeed(address, assetType);
-        } else {
-            fetchTxListIfNeed(address);
-        }
+        fetchPendingPaymentParcelListIfNeed(address);
+        fetchPaymentParcelListIfNeed(address);
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
-    const { address, assetType } = props;
-    const pendingTxList = state.chainReducer.pendingTxList[address];
-    const txList = assetType
-        ? state.chainReducer.txListById[
-              getIdByAddressAssetType(address, assetType)
-          ]
-        : state.chainReducer.txList[address];
+    const { address } = props;
+    const pendingParcelList =
+        state.chainReducer.pendingPaymentParcelList[address];
+    const parcelList = state.chainReducer.paymentParcelList[address];
     const bestBlockNumber = state.chainReducer.bestBlockNumber;
     const networkId = state.globalReducer.networkId;
     return {
-        pendingTxList: pendingTxList && pendingTxList.data,
-        txList: txList && txList.data,
+        pendingParcelList: pendingParcelList && pendingParcelList.data,
+        parcelList: parcelList && parcelList.data,
         bestBlockNumber: bestBlockNumber && bestBlockNumber.data,
         networkId
     };
@@ -167,20 +150,17 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchPendingTxListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchPendingTxListIfNeed(address));
+    fetchPendingPaymentParcelListIfNeed: (address: string) => {
+        dispatch(chainActions.fetchPendingPaymentParcelListIfNeed(address));
     },
-    fetchTxListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchTxListIfNeed(address));
+    fetchPaymentParcelListIfNeed: (address: string) => {
+        dispatch(chainActions.fetchPaymentParcelListIfNeed(address));
     },
     fetchBestBlockNumberIfNeed: () => {
         dispatch(chainActions.fetchBestBlockNumberIfNeed());
-    },
-    fetchTxListByAssetTypeIfNeed: (address: string, assetType: H256) => {
-        dispatch(chainActions.fetchTxListByAssetTypeIfNeed(address, assetType));
     }
 });
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(TxHistory);
+)(ParcelHistory);

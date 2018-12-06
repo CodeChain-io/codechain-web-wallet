@@ -1,5 +1,3 @@
-import BigNumber from "bignumber.js";
-import { ParcelDoc } from "codechain-indexer-types/lib/types";
 import { U256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
@@ -7,6 +5,7 @@ import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { PlatformAccount } from "../../model/address";
 import { getPlatformAccount } from "../../networks/Api";
+import { getAggrPaymentParcel } from "../../utils/parcel";
 import chainActions from "../chain/chainActions";
 
 export type Action = UpdateAvailableCCC | UpdateAccount | SetFetchingAccount;
@@ -145,36 +144,6 @@ const calculateAvailableCCC = (address: string) => {
             }
         });
     };
-};
-
-const getAggrPaymentParcel = (
-    address: string,
-    paymentParcelList: ParcelDoc[]
-) => {
-    return _.reduce(
-        paymentParcelList,
-        (memo, paymentParcel: ParcelDoc) => {
-            let output = new BigNumber(0);
-            let input = new BigNumber(0);
-            if (paymentParcel.action.action === "payment") {
-                const amount = paymentParcel.action.amount;
-                if (paymentParcel.action.receiver === address) {
-                    output = output.plus(new BigNumber(amount));
-                }
-                if (paymentParcel.signer === address) {
-                    input = input.plus(new BigNumber(amount));
-                }
-            }
-            return {
-                input: memo.input.plus(input),
-                output: memo.output.plus(output)
-            };
-        },
-        {
-            input: new BigNumber(0),
-            output: new BigNumber(0)
-        }
-    );
 };
 
 export default {

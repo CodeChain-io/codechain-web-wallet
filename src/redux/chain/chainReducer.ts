@@ -305,7 +305,7 @@ export const chainReducer = (
         case ActionType.SetFetchingPaymentParcelList: {
             const address = action.data.address;
             const currentParcelList = {
-                ...state.paymentParcelList,
+                ...state.paymentParcelList[address],
                 isFetching: true
             };
             const paymentParcelList = {
