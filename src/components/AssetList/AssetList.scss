@@ -4,7 +4,11 @@
 .Asset-list {
   position: relative;
   background: linear-gradient(180deg, $asset-blue 200px, transparent 0%);
-
+  .empty {
+    color: $disabled-grey;
+    font-size: 1.14rem;
+    font-weight: bold;
+  }
   .left-panel {
     padding: 15px;
     max-width: 1084px;

@@ -118,7 +118,7 @@ export async function getPendingTransactions(
 ) {
     const apiHost = getIndexerHost(networkId);
     return await getRequest<PendingTransactionDoc[]>(
-        `${apiHost}/api/addr-asset-txs/pending/${address}`
+        `${apiHost}/api/txs/pending/${address}`
     );
 }
 
@@ -127,12 +127,16 @@ export async function getTxsByAddress(
     onlyUnconfirmed: boolean,
     page: number,
     itemsPerPage: number,
-    networkId: NetworkId
+    networkId: NetworkId,
+    assetType?: H256
 ) {
     const apiHost = getIndexerHost(networkId);
-    let query = `${apiHost}/api/addr-asset-txs/${address}?page=${page}&itemsPerPage=${itemsPerPage}`;
+    let query = `${apiHost}/api/txs?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
     if (onlyUnconfirmed) {
         query += `&onlyUnconfirmed=true&confirmThreshold=5`;
+    }
+    if (assetType) {
+        query += `&assetType=${assetType.value}`;
     }
     return await getRequest<TransactionDoc[]>(query);
 }

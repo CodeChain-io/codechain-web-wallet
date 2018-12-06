@@ -3,6 +3,7 @@ import { TransactionDoc } from "codechain-indexer-types/lib/types";
 import * as _ from "lodash";
 import * as moment from "moment";
 import * as React from "react";
+import MediaQuery from "react-responsive";
 import { NetworkId } from "../../../model/address";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
 import { getExplorerHost } from "../../../utils/network";
@@ -39,7 +40,12 @@ export default class TxItem extends React.Component<Props, any> {
                 className="d-flex Tx-item align-items-center"
             >
                 <div className="date-container number">
-                    {moment.unix(timestamp).format("MM-DD[\r\n]HH:mm")}
+                    <MediaQuery query="(max-width: 768px)">
+                        {moment.unix(timestamp).format("MM-DD[\r\n]HH:mm")}
+                    </MediaQuery>
+                    <MediaQuery query="(min-width: 769px)">
+                        {moment.unix(timestamp).format("YYYY-MM-DD[\r\n]HH:mm")}
+                    </MediaQuery>
                 </div>
                 <div className="asset-info-container">
                     <div className="d-flex">

@@ -15,7 +15,13 @@
   .date-container {
     white-space: pre;
     color: $dark-grey;
-    text-align: center;
+    font-weight: 400;
+
+    @include respond_below(sm) {
+      & {
+        text-align: center;
+      }
+    }
   }
   .asset-info-container {
     flex: 1;

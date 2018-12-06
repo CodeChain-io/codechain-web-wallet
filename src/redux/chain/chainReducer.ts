@@ -2,7 +2,7 @@ import {
     PendingTransactionDoc,
     TransactionDoc
 } from "codechain-indexer-types/lib/types";
-import { AssetTransferTransaction } from "codechain-sdk/lib/core/classes";
+import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
 import { Action, ActionType } from "./chainActions";
 
 export interface ChainState {
@@ -27,6 +27,20 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
+    pendingTxListById: {
+        [id: string]: {
+            data?: PendingTransactionDoc[] | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
+    txListById: {
+        [id: string]: {
+            data?: TransactionDoc[] | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
     sendingTx: {
         [address: string]: AssetTransferTransaction | null;
     };
@@ -42,10 +56,19 @@ export const chainInitState: ChainState = {
     unconfirmedTxList: {},
     txList: {},
     sendingTx: {},
-    bestBlockNumber: undefined
+    bestBlockNumber: undefined,
+    txListById: {},
+    pendingTxListById: {}
 };
 
-export const chainReducer = (state = chainInitState, action: Action) => {
+export const getIdByAddressAssetType = (address: string, assetType: H256) => {
+    return `${address}-${assetType.value}`;
+};
+
+export const chainReducer = (
+    state = chainInitState,
+    action: Action
+): ChainState => {
     switch (action.type) {
         case ActionType.CachePendingTxList: {
             const address = action.data.address;
@@ -168,6 +191,41 @@ export const chainReducer = (state = chainInitState, action: Action) => {
             return {
                 ...state,
                 txList
+            };
+        }
+        case ActionType.SetFetchingTxListById: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const id = getIdByAddressAssetType(address, assetType);
+            const currentTxList = {
+                ...state.txListById[id],
+                isFetching: true
+            };
+            const txListById = {
+                ...state.txListById,
+                [id]: currentTxList
+            };
+            return {
+                ...state,
+                txListById
+            };
+        }
+        case ActionType.CacheTxListById: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const id = getIdByAddressAssetType(address, assetType);
+            const currentTxList = {
+                data: action.data.txList,
+                updatedAt: +new Date(),
+                isFetching: false
+            };
+            const txListById = {
+                ...state.txListById,
+                [id]: currentTxList
+            };
+            return {
+                ...state,
+                txListById
             };
         }
     }

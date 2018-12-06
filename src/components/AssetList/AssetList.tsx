@@ -14,13 +14,13 @@ import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import chainActions from "../../redux/chain/chainActions";
-import TxHistory from "../TxHistory/TxHistory";
-import AssetItem from "./AssetItem/AssetItem";
-import SendAsset from "./SendAsset/SendAsset";
-
 import walletActions from "../../redux/wallet/walletActions";
 import AddressContainer from "../AddressContainer/AddressContainer";
+import TxHistory from "../TxHistory/TxHistory";
+import AssetItem from "./AssetItem/AssetItem";
 import "./AssetList.css";
+import * as Empty from "./img/cautiondisabled.svg";
+import SendAsset from "./SendAsset/SendAsset";
 
 interface OwnProps {
     match: match<{ address: string }>;
@@ -156,7 +156,16 @@ class AssetList extends React.Component<Props, State> {
                                         )}
                                     </div>
                                 ) : (
-                                    <span>Empty</span>
+                                    <div className="d-flex align-items-center justify-content-center">
+                                        <div>
+                                            <div className="text-center mt-3">
+                                                <img src={Empty} />
+                                            </div>
+                                            <div className="mt-3 empty">
+                                                There is no asset
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                             <div className="element-container mb-3">

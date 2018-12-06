@@ -2,7 +2,7 @@ import {
     PendingTransactionDoc,
     TransactionDoc
 } from "codechain-indexer-types/lib/types";
-import { AssetTransferTransaction } from "codechain-sdk/lib/core/classes";
+import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
@@ -14,6 +14,7 @@ import {
     sendTxToGateway
 } from "../../networks/Api";
 import assetActions from "../asset/assetActions";
+import { getIdByAddressAssetType } from "./chainReducer";
 
 export type Action =
     | CachePendingTxList
@@ -24,7 +25,9 @@ export type Action =
     | SetFetchingTxList
     | SetSendingTx
     | UpdateBestBlockNumber
-    | SetFetchingBestBlockNumber;
+    | SetFetchingBestBlockNumber
+    | SetFetchingTxListById
+    | CacheTxListById;
 
 export enum ActionType {
     CachePendingTxList = 2000,
@@ -35,7 +38,26 @@ export enum ActionType {
     SetSendingTx,
     UpdateBestBlockNumber,
     SetFetchingBestBlockNumber,
-    SetFetchingTxList
+    SetFetchingTxList,
+    SetFetchingTxListById,
+    CacheTxListById
+}
+
+export interface SetFetchingTxListById {
+    type: ActionType.SetFetchingTxListById;
+    data: {
+        address: string;
+        assetType: H256;
+    };
+}
+
+export interface CacheTxListById {
+    type: ActionType.CacheTxListById;
+    data: {
+        address: string;
+        assetType: H256;
+        txList: TransactionDoc[];
+    };
 }
 
 export interface CachePendingTxList {
@@ -343,10 +365,60 @@ const fetchBestBlockNumberIfNeed = () => {
     };
 };
 
+const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H256) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const id = getIdByAddressAssetType(address, assetType);
+        const cachedTxListById = getState().chainReducer.txListById[id];
+        if (cachedTxListById && cachedTxListById.isFetching) {
+            return;
+        }
+        if (
+            cachedTxListById &&
+            cachedTxListById.updatedAt &&
+            +new Date() - cachedTxListById.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch({
+                type: ActionType.SetFetchingTxListById,
+                data: {
+                    address,
+                    assetType
+                }
+            });
+            const networkId = getState().globalReducer.networkId;
+            // FIXME: Add pagination
+            const txList = await getTxsByAddress(
+                address,
+                false,
+                1,
+                10,
+                networkId,
+                assetType
+            );
+            dispatch({
+                type: ActionType.CacheTxListById,
+                data: {
+                    address,
+                    assetType,
+                    txList
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
 export default {
     fetchPendingTxListIfNeed,
     fetchUnconfirmedTxListIfNeed,
     sendTransaction,
     fetchBestBlockNumberIfNeed,
-    fetchTxListIfNeed
+    fetchTxListIfNeed,
+    fetchTxListByAssetTypeIfNeed
 };

@@ -116,7 +116,10 @@ class AssetDetail extends React.Component<Props, any> {
                             </Row>
                         </div>
                         <h4 className="mb-3">Transaction history</h4>
-                        <TxHistory address={address} />
+                        <TxHistory
+                            address={address}
+                            assetType={new H256(assetType)}
+                        />
                     </div>
                 </div>
             </div>
