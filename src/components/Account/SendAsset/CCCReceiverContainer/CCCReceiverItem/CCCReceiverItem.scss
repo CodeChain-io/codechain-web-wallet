@@ -1,0 +1,14 @@
+@import "styles/variables.scss";
+
+.CCCReceiver-item {
+  .max-btn {
+    width: 55px;
+    margin-bottom: 18px;
+    margin-left: 5px;
+  }
+  .receiver-item-index {
+    font-size: 1.2rem;
+    color: $wallet-blue;
+    font-weight: bold;
+  }
+}

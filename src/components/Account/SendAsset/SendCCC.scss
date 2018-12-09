@@ -1,0 +1,39 @@
+@import "styles/variables.scss";
+
+.Send-CCC {
+  padding: 50px;
+  position: relative;
+
+  @media screen and (max-width: 872px) {
+    & {
+      padding: 30px;
+    }
+  }
+
+  .title {
+    color: $wallet-blue;
+  }
+
+  .balance-container {
+    .balance-text {
+      font-size: 1.28rem;
+      color: $dark-grey;
+      font-weight: bold;
+    }
+    .amount {
+      font-size: 1.14rem;
+    }
+  }
+
+  .cancel-icon-container {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    cursor: pointer;
+    .cancel-icon {
+      font-size: 2rem;
+      color: $wallet-blue;
+    }
+  }
+}

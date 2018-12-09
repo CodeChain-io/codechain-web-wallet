@@ -8,16 +8,16 @@ import { getPlatformAccount } from "../../networks/Api";
 import { getAggrPaymentParcel } from "../../utils/parcel";
 import chainActions from "../chain/chainActions";
 
-export type Action = UpdateAvailableCCC | UpdateAccount | SetFetchingAccount;
+export type Action = UpdateAvailableQuark | UpdateAccount | SetFetchingAccount;
 
 export enum ActionType {
-    UpdateAvailableCCC = 4000,
+    UpdateAvailableQuark = 4000,
     UpdateAccount,
     SetFetchingAccount
 }
 
-export interface UpdateAvailableCCC {
-    type: ActionType.UpdateAvailableCCC;
+export interface UpdateAvailableQuark {
+    type: ActionType.UpdateAvailableQuark;
     data: {
         address: string;
         amount: U256;
@@ -75,7 +75,7 @@ const fetchAccountIfNeed = (address: string) => {
                 networkId
             );
             dispatch(updateAccount(address, accountResponse));
-            dispatch(calculateAvailableCCC(address));
+            dispatch(calculateAvailableQuark(address));
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -83,7 +83,7 @@ const fetchAccountIfNeed = (address: string) => {
     };
 };
 
-const fetchAvailableCCC = (address: string) => {
+const fetchAvailableQuark = (address: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
@@ -101,7 +101,7 @@ export interface SetFetchingAccount {
     };
 }
 
-const calculateAvailableCCC = (address: string) => {
+const calculateAvailableQuark = (address: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
@@ -133,21 +133,21 @@ const calculateAvailableCCC = (address: string) => {
             address,
             _.map(pendingPaymentParcelList, p => p.parcel)
         );
-        const availableCCC = account.balance.value
+        const availableQuark = account.balance.value
             .minus(aggrUnconfirmedPaymentParcel.output)
             .minus(aggrPendingPaymentParcel.input);
         dispatch({
-            type: ActionType.UpdateAvailableCCC,
+            type: ActionType.UpdateAvailableQuark,
             data: {
                 address,
-                amount: new U256(availableCCC)
+                amount: new U256(availableQuark)
             }
         });
     };
 };
 
 export default {
-    calculateAvailableCCC,
+    calculateAvailableQuark,
     fetchAccountIfNeed,
-    fetchAvailableCCC
+    fetchAvailableQuark
 };

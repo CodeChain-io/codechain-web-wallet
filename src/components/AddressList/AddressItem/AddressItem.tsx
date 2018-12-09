@@ -20,10 +20,10 @@ interface OwnProps {
     className?: string | null;
 }
 interface DispatchProps {
-    fetchAvailableCCC: (address: string) => void;
+    fetchAvailableQuark: (address: string) => void;
 }
 interface StateProps {
-    availableCCC?: U256 | null;
+    availableQuark?: U256 | null;
 }
 interface State {
     isCopyHovering: boolean;
@@ -39,11 +39,11 @@ class AddressItem extends React.Component<Props, State> {
         };
     }
     public componentDidMount() {
-        const { walletAddress, fetchAvailableCCC } = this.props;
-        fetchAvailableCCC(walletAddress.address);
+        const { walletAddress, fetchAvailableQuark } = this.props;
+        fetchAvailableQuark(walletAddress.address);
     }
     public render() {
-        const { walletAddress, className, availableCCC } = this.props;
+        const { walletAddress, className, availableQuark } = this.props;
         const { isCopyHovering } = this.state;
         return (
             <div
@@ -84,9 +84,9 @@ class AddressItem extends React.Component<Props, State> {
                 </div>
                 {walletAddress.type === AddressType.Platform && (
                     <div className="platform-account">
-                        {availableCCC ? (
+                        {availableQuark ? (
                             <span className="number balance">
-                                {changeQuarkToCCCString(availableCCC)} CCC
+                                {changeQuarkToCCCString(availableQuark)} CCC
                             </span>
                         ) : (
                             <span className="number balance">Loading...</span>
@@ -126,17 +126,17 @@ class AddressItem extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const { walletAddress } = props;
-    const availableCCC =
-        state.accountReducer.availableCCC[walletAddress.address];
+    const availableQuark =
+        state.accountReducer.availableQuark[walletAddress.address];
     return {
-        availableCCC
+        availableQuark
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAvailableCCC: (address: string) => {
-        dispatch(accountActions.fetchAvailableCCC(address));
+    fetchAvailableQuark: (address: string) => {
+        dispatch(accountActions.fetchAvailableQuark(address));
     }
 });
 export default connect(

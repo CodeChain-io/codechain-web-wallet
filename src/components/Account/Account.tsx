@@ -12,26 +12,34 @@ import { changeQuarkToCCCString } from "../../utils/unit";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import ParcelHistory from "../ParcelHistory/ParcelHistory";
 import "./Account.css";
+import SendCCC from "./SendAsset/SendCCC";
 
 interface OwnProps {
     match: match<{ address: string }>;
 }
 
 interface StateProps {
-    availableCCC?: U256 | null;
+    availableQuark?: U256 | null;
     addressName?: string | null;
 }
 
 interface DispatchProps {
-    fetchAvailableCCC: (address: string) => void;
+    fetchAvailableQuark: (address: string) => void;
     fetchWalletFromStorageIfNeed: () => void;
+}
+
+interface State {
+    sendingCCC: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
 
-class Account extends React.Component<Props> {
+class Account extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
+        this.state = {
+            sendingCCC: false
+        };
     }
     public componentWillReceiveProps(props: Props) {
         const {
@@ -53,13 +61,14 @@ class Account extends React.Component<Props> {
     }
     public render() {
         const {
-            availableCCC,
+            availableQuark,
             match: {
                 params: { address }
             },
             addressName
         } = this.props;
-        if (!availableCCC) {
+        const { sendingCCC } = this.state;
+        if (!availableQuark) {
             return null;
         }
         return (
@@ -76,12 +85,16 @@ class Account extends React.Component<Props> {
                                 <h5 className="element-title">Balance</h5>
                                 <div className="ccc-text number">
                                     <span className="mr-2">
-                                        {changeQuarkToCCCString(availableCCC)}
+                                        {changeQuarkToCCCString(availableQuark)}
                                     </span>
                                     <span>CCC</span>
                                 </div>
                                 <div className="mt-4">
-                                    <button className="btn btn-primary square reverse send-btn">
+                                    <button
+                                        className="btn btn-primary square reverse send-btn"
+                                        onClick={this.openSendingCCC}
+                                        disabled={sendingCCC}
+                                    >
                                         SEND
                                     </button>
                                 </div>
@@ -92,10 +105,31 @@ class Account extends React.Component<Props> {
                             </div>
                         </div>
                     </div>
+                    {sendingCCC && (
+                        <div className="send-ccc-container">
+                            <div className="send-ccc-panel">
+                                <SendCCC
+                                    address={address}
+                                    isSendingCCC={sendingCCC}
+                                    onClose={this.handleCloseSendingCCC}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );
     }
+
+    private openSendingCCC = () => {
+        this.setState({ sendingCCC: true });
+    };
+
+    private handleCloseSendingCCC = () => {
+        this.setState({
+            sendingCCC: false
+        });
+    };
 
     private init = async () => {
         const {
@@ -103,7 +137,7 @@ class Account extends React.Component<Props> {
                 params: { address }
             }
         } = this.props;
-        this.props.fetchAvailableCCC(address);
+        this.props.fetchAvailableQuark(address);
         this.props.fetchWalletFromStorageIfNeed();
     };
 }
@@ -114,21 +148,21 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
             params: { address }
         }
     } = props;
-    const availableCCC = state.accountReducer.availableCCC[address];
+    const availableQuark = state.accountReducer.availableQuark[address];
     const assetAddress = _.find(
         state.walletReducer.platformAddresses,
         aa => aa.address === address
     );
     return {
-        availableCCC,
+        availableQuark,
         addressName: assetAddress && assetAddress.name
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAvailableCCC: (address: string) => {
-        dispatch(accountActions.fetchAvailableCCC(address));
+    fetchAvailableQuark: (address: string) => {
+        dispatch(accountActions.fetchAvailableQuark(address));
     },
     fetchWalletFromStorageIfNeed: () => {
         dispatch(walletActions.fetchWalletFromStorageIfNeed());

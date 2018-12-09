@@ -3,7 +3,7 @@ import { PlatformAccount } from "../../model/address";
 import { Action, ActionType } from "./accountActions";
 
 export interface AccountState {
-    availableCCC: {
+    availableQuark: {
         [address: string]: U256 | null | undefined;
     };
     accounts: {
@@ -16,21 +16,21 @@ export interface AccountState {
 }
 
 export const accountInitState: AccountState = {
-    availableCCC: {},
+    availableQuark: {},
     accounts: {}
 };
 
 export const accountReducer = (state = accountInitState, action: Action) => {
     switch (action.type) {
-        case ActionType.UpdateAvailableCCC: {
+        case ActionType.UpdateAvailableQuark: {
             const address = action.data.address;
-            const availableCCC = {
-                ...state.availableCCC,
+            const availableQuark = {
+                ...state.availableQuark,
                 [address]: action.data.amount
             };
             return {
                 ...state,
-                availableCCC
+                availableQuark
             };
         }
         case ActionType.SetFetchingAccount: {

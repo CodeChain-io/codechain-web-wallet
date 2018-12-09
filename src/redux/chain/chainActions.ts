@@ -574,7 +574,7 @@ const fetchUnconfirmedPaymentParcelListIfNeed = (address: string) => {
                     parcelList
                 }
             });
-            dispatch(accountActions.calculateAvailableCCC(address));
+            dispatch(accountActions.calculateAvailableQuark(address));
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -620,7 +620,7 @@ const fetchPendingPaymentParcelListIfNeed = (address: string) => {
                     pendingParcelList
                 }
             });
-            dispatch(accountActions.calculateAvailableCCC(address));
+            dispatch(accountActions.calculateAvailableQuark(address));
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
