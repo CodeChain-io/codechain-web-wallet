@@ -4,6 +4,7 @@ import { AddressType, NetworkId } from "../model/address";
 
 const localstorageKeyOfPlatform = "platformKeys";
 const localstorageKeyOfAsset = "assetKeys";
+const networkIdKey = "netowrkId";
 const passphraseKey = "authKey";
 export interface StoredKey {
     pathIndex: number;
@@ -56,6 +57,14 @@ export function clearWalletKeys() {
 
 export function clearPassphrase() {
     sessionStorage.removeItem(passphraseKey);
+}
+
+export function saveNetworkId(netowrkId: NetworkId) {
+    sessionStorage.setItem(networkIdKey, netowrkId);
+}
+
+export function getNetworkId(): NetworkId {
+    return sessionStorage.getItem(networkIdKey) as NetworkId;
 }
 
 export function savePlatformKeys(

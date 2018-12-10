@@ -2,7 +2,11 @@ import { Action as ReduxAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { NetworkId } from "../../model/address";
-import { clearPassphrase, savePassphrase } from "../../utils/storage";
+import {
+    clearPassphrase,
+    saveNetworkId,
+    savePassphrase
+} from "../../utils/storage";
 import { ActionType as WalletActions } from "../wallet/walletActions";
 
 export type Action = Login | ClearData | Logout | UpdateNetwork;
@@ -50,6 +54,7 @@ const updateNetworkId = (networkId: NetworkId) => {
                 networkId
             }
         });
+        saveNetworkId(networkId);
     };
 };
 

@@ -403,17 +403,27 @@ const sendTransaction = (
             await sendTxToGateway(transferTx, networkId);
             checkingIndexingFuncForSendingTx = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
+                dispatch(fetchUnconfirmedTxListIfNeed(address));
                 const pendingTxList = getState().chainReducer.pendingTxList[
                     address
                 ];
+                const unconfirmedTxList = getState().chainReducer
+                    .unconfirmedTxList[address];
                 if (
-                    pendingTxList &&
-                    pendingTxList.data &&
-                    _.find(
-                        pendingTxList.data,
-                        tx =>
-                            tx.transaction.data.hash === transferTx.hash().value
-                    )
+                    (pendingTxList &&
+                        pendingTxList.data &&
+                        _.find(
+                            pendingTxList.data,
+                            tx =>
+                                tx.transaction.data.hash ===
+                                transferTx.hash().value
+                        )) ||
+                    (unconfirmedTxList &&
+                        unconfirmedTxList.data &&
+                        _.find(
+                            unconfirmedTxList.data,
+                            tx => tx.data.hash === transferTx.hash().value
+                        ))
                 ) {
                     dispatch(setSendingTx(address, null));
                     clearInterval(checkingIndexingFuncForSendingTx);
@@ -447,15 +457,24 @@ const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
             await sdk.rpc.chain.sendSignedParcel(signedParcel);
             checkingIndexingFuncForSendingParcel = setInterval(() => {
                 dispatch(fetchPendingPaymentParcelListIfNeed(address));
+                dispatch(fetchUnconfirmedPaymentParcelListIfNeed(address));
                 const pendingPaymentParcelList = getState().chainReducer
                     .pendingPaymentParcelList[address];
+                const unconfirmedPaymentParcelList = getState().chainReducer
+                    .unconfirmedPaymentParcelList[address];
                 if (
-                    pendingPaymentParcelList &&
-                    pendingPaymentParcelList.data &&
-                    _.find(
-                        pendingPaymentParcelList.data,
-                        ppp => ppp.parcel.hash === signedParcel.hash().value
-                    )
+                    (pendingPaymentParcelList &&
+                        pendingPaymentParcelList.data &&
+                        _.find(
+                            pendingPaymentParcelList.data,
+                            ppp => ppp.parcel.hash === signedParcel.hash().value
+                        )) ||
+                    (unconfirmedPaymentParcelList &&
+                        unconfirmedPaymentParcelList.data &&
+                        _.find(
+                            unconfirmedPaymentParcelList.data,
+                            upp => upp.hash === signedParcel.hash().value
+                        ))
                 ) {
                     dispatch(setSendingSignedParcel(address, null));
                     clearInterval(checkingIndexingFuncForSendingParcel);

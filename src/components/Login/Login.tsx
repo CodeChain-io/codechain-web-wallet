@@ -12,15 +12,17 @@ import {
     withRouter
 } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
+import { NetworkId } from "../../model/address";
 import { checkPassphrase } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
-import { getPassphrase } from "../../utils/storage";
+import { getNetworkId, getPassphrase } from "../../utils/storage";
 import * as Logo from "./img/logo-vertical.svg";
 import LoginForm from "./LoginForm/LoginForm";
 
 interface DispatchProps {
     login: (passphrase: string) => void;
     clearData: () => void;
+    updateNetworkId: (networkId: NetworkId) => void;
 }
 
 interface OwnProps {
@@ -48,8 +50,14 @@ class Login extends React.Component<Props, State> {
         };
     }
     public componentDidMount() {
-        const { login } = this.props;
+        const { login, updateNetworkId } = this.props;
         this.props.clearData();
+
+        const savedNetworkId = getNetworkId();
+        if (savedNetworkId) {
+            updateNetworkId(savedNetworkId);
+        }
+
         const savedPassphrase = getPassphrase();
         if (savedPassphrase) {
             login(savedPassphrase);
@@ -117,6 +125,9 @@ const mapDispatchToProps = (
     },
     clearData: () => {
         dispatch(actions.clearData());
+    },
+    updateNetworkId: (netowrkId: NetworkId) => {
+        dispatch(actions.updateNetworkId(netowrkId));
     }
 });
 
