@@ -129,13 +129,26 @@ const calculateAvailableQuark = (address: string) => {
             address,
             unconfirmedPaymentParcelList
         );
+        const unconfirmedPaymentParcelHashList = _.map(
+            unconfirmedPaymentParcelList,
+            parcel => parcel.hash
+        );
+        const validPendingParcelList = _.filter(
+            pendingPaymentParcelList,
+            pendingPaymentParcel =>
+                !_.includes(
+                    unconfirmedPaymentParcelHashList,
+                    pendingPaymentParcel.parcel.hash
+                )
+        );
         const aggrPendingPaymentParcel = getAggrPaymentParcel(
             address,
-            _.map(pendingPaymentParcelList, p => p.parcel)
+            _.map(validPendingParcelList, p => p.parcel)
         );
         const availableQuark = account.balance.value
             .minus(aggrUnconfirmedPaymentParcel.output)
             .minus(aggrPendingPaymentParcel.input);
+
         dispatch({
             type: ActionType.UpdateAvailableQuark,
             data: {
