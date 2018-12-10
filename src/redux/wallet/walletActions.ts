@@ -90,7 +90,7 @@ const fetchWalletFromStorageIfNeed = () => {
         const networkId = getState().globalReducer.networkId;
         const passphrase = getState().globalReducer.passphrase!;
         if (!getState().walletReducer.assetAddresses) {
-            const savedAssetKeys = getAssetKeys();
+            const savedAssetKeys = getAssetKeys(networkId);
             let assetAddresses;
             if (savedAssetKeys) {
                 assetAddresses = _.map(savedAssetKeys, key => {
@@ -128,7 +128,7 @@ const fetchWalletFromStorageIfNeed = () => {
             dispatch(updateWalletAssetAddresses(assetAddresses));
         }
         if (!getState().walletReducer.platformAddresses) {
-            const savedPlatformKeys = getPlatformKeys();
+            const savedPlatformKeys = getPlatformKeys(networkId);
             let platformAddresses;
             if (savedPlatformKeys) {
                 platformAddresses = _.map(savedPlatformKeys, key => {

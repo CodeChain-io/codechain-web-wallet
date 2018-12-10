@@ -1,5 +1,6 @@
 import * as CryptoJS from "crypto-js";
-import { AddressType } from "../model/address";
+import * as _ from "lodash";
+import { AddressType, NetworkId } from "../model/address";
 
 const localstorageKeyOfPlatform = "platformKeys";
 const localstorageKeyOfAsset = "assetKeys";
@@ -10,8 +11,18 @@ export interface StoredKey {
     key: string;
 }
 
-export function getPlatformKeys(): StoredKey[] | null {
-    const platformKeysString = localStorage.getItem(localstorageKeyOfPlatform);
+function getStorageKeyOfPlatform(networkId: NetworkId) {
+    return `${localstorageKeyOfPlatform}_${networkId}`;
+}
+
+function getStorageKeyOfAsset(networkId: NetworkId) {
+    return `${localstorageKeyOfAsset}_${networkId}`;
+}
+
+export function getPlatformKeys(networkId: NetworkId): StoredKey[] | null {
+    const platformKeysString = localStorage.getItem(
+        getStorageKeyOfPlatform(networkId)
+    );
     if (platformKeysString) {
         try {
             return JSON.parse(platformKeysString);
@@ -22,8 +33,10 @@ export function getPlatformKeys(): StoredKey[] | null {
     return null;
 }
 
-export function getAssetKeys(): StoredKey[] | null {
-    const assetKeysString = localStorage.getItem(localstorageKeyOfAsset);
+export function getAssetKeys(networkId: NetworkId): StoredKey[] | null {
+    const assetKeysString = localStorage.getItem(
+        getStorageKeyOfAsset(networkId)
+    );
     if (assetKeysString) {
         try {
             return JSON.parse(assetKeysString);
@@ -35,23 +48,31 @@ export function getAssetKeys(): StoredKey[] | null {
 }
 
 export function clearWalletKeys() {
-    localStorage.removeItem(localstorageKeyOfAsset);
-    localStorage.removeItem(localstorageKeyOfPlatform);
+    _.each(["cc", "tc", "wc", "sc"], network => {
+        localStorage.removeItem(getStorageKeyOfAsset(network as NetworkId));
+        localStorage.removeItem(getStorageKeyOfPlatform(network as NetworkId));
+    });
 }
 
 export function clearPassphrase() {
     sessionStorage.removeItem(passphraseKey);
 }
 
-export function savePlatformKeys(platformKeys: StoredKey[]) {
+export function savePlatformKeys(
+    platformKeys: StoredKey[],
+    networkId: NetworkId
+) {
     localStorage.setItem(
-        localstorageKeyOfPlatform,
+        getStorageKeyOfPlatform(networkId),
         JSON.stringify(platformKeys)
     );
 }
 
-export function saveAssetKeys(assetKeys: StoredKey[]) {
-    localStorage.setItem(localstorageKeyOfAsset, JSON.stringify(assetKeys));
+export function saveAssetKeys(assetKeys: StoredKey[], netowrkId: NetworkId) {
+    localStorage.setItem(
+        getStorageKeyOfAsset(netowrkId),
+        JSON.stringify(assetKeys)
+    );
 }
 
 const cryptoKey = "secret key";

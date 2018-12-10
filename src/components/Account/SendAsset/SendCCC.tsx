@@ -137,8 +137,8 @@ class SendCCC extends React.Component<Props, State> {
 
         const ccKey = await getCCKey();
 
-        const storedPlatformKeys = getPlatformKeys();
-        const storedAssetKeys = getAssetKeys();
+        const storedPlatformKeys = getPlatformKeys(networkId);
+        const storedAssetKeys = getAssetKeys(networkId);
         const seedHash = await getFirstSeedHash();
 
         let keyMapping = _.reduce(

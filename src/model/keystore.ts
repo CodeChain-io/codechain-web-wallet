@@ -125,7 +125,7 @@ export async function restorePlatformAddresses(
         retValue = platformAddresses.slice(0, lastValidPlatfromPathIndex + 1);
         retKeys = platformKeys.slice(0, lastValidPlatfromPathIndex + 1);
     }
-    savePlatformKeys(retKeys);
+    savePlatformKeys(retKeys, networkId);
     return retValue;
 }
 
@@ -135,7 +135,7 @@ export async function createPlatformAddress(
 ) {
     const ccKey = await getCCKey();
     const seedHash = await getFirstSeedHash();
-    const savedPlatformKeys = getPlatformKeys();
+    const savedPlatformKeys = getPlatformKeys(networkId);
     let newPathIndex;
     if (savedPlatformKeys && savedPlatformKeys.length > 0) {
         newPathIndex = _.last(savedPlatformKeys)!.pathIndex + 1;
@@ -149,22 +149,28 @@ export async function createPlatformAddress(
     });
     const key = blake160(platformPubkey);
     if (savedPlatformKeys && savedPlatformKeys.length > 0) {
-        savePlatformKeys([
-            ...savedPlatformKeys,
-            {
-                pathIndex: newPathIndex,
-                type: AddressType.Platform,
-                key
-            }
-        ]);
+        savePlatformKeys(
+            [
+                ...savedPlatformKeys,
+                {
+                    pathIndex: newPathIndex,
+                    type: AddressType.Platform,
+                    key
+                }
+            ],
+            networkId
+        );
     } else {
-        savePlatformKeys([
-            {
-                pathIndex: newPathIndex,
-                type: AddressType.Platform,
-                key
-            }
-        ]);
+        savePlatformKeys(
+            [
+                {
+                    pathIndex: newPathIndex,
+                    type: AddressType.Platform,
+                    key
+                }
+            ],
+            networkId
+        );
     }
     const address = PlatformAddress.fromAccountId(key, {
         networkId
@@ -182,7 +188,7 @@ export async function createAssetAddress(
 ) {
     const ccKey = await getCCKey();
     const seedHash = await getFirstSeedHash();
-    const savedAssetKeys = getAssetKeys();
+    const savedAssetKeys = getAssetKeys(networkId);
     let newPathIndex;
     if (savedAssetKeys && savedAssetKeys.length > 0) {
         newPathIndex = _.last(savedAssetKeys)!.pathIndex + 1;
@@ -196,22 +202,28 @@ export async function createAssetAddress(
     });
     const key = blake160(assetPubKey);
     if (savedAssetKeys && savedAssetKeys.length > 0) {
-        saveAssetKeys([
-            ...savedAssetKeys,
-            {
-                pathIndex: newPathIndex,
-                type: AddressType.Platform,
-                key
-            }
-        ]);
+        saveAssetKeys(
+            [
+                ...savedAssetKeys,
+                {
+                    pathIndex: newPathIndex,
+                    type: AddressType.Platform,
+                    key
+                }
+            ],
+            networkId
+        );
     } else {
-        saveAssetKeys([
-            {
-                pathIndex: newPathIndex,
-                type: AddressType.Platform,
-                key
-            }
-        ]);
+        saveAssetKeys(
+            [
+                {
+                    pathIndex: newPathIndex,
+                    type: AddressType.Platform,
+                    key
+                }
+            ],
+            networkId
+        );
     }
     const address = AssetTransferAddress.fromTypeAndPayload(1, key, {
         networkId
@@ -282,6 +294,6 @@ export async function restoreAssetAddresses(
         retValue = assetAddresses.slice(0, lastValidAssetPathIndex + 1);
         retKeys = assetKeys.slice(0, lastValidAssetPathIndex + 1);
     }
-    saveAssetKeys(retKeys);
+    saveAssetKeys(retKeys, networkId);
     return retValue;
 }
