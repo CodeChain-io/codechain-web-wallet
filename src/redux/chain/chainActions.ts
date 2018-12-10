@@ -4,7 +4,12 @@ import {
     PendingTransactionDoc,
     TransactionDoc
 } from "codechain-indexer-types/lib/types";
-import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
+import { SDK } from "codechain-sdk";
+import {
+    AssetTransferTransaction,
+    H256,
+    SignedParcel
+} from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
@@ -17,6 +22,7 @@ import {
     getTxsByAddress,
     sendTxToGateway
 } from "../../networks/Api";
+import { getCodeChainHost } from "../../utils/network";
 import accountActions from "../account/accountActions";
 import assetActions from "../asset/assetActions";
 import { getIdByAddressAssetType } from "./chainReducer";
@@ -38,7 +44,8 @@ export type Action =
     | CachePayamentParcelList
     | SetFetchingPaymentParcelList
     | SetFetchingPendingPaymentParcelList
-    | SetFetchingUnconfirmedPaymentParcelList;
+    | SetFetchingUnconfirmedPaymentParcelList
+    | SetSendingSignedParcel;
 
 export enum ActionType {
     CachePendingTxList = 2000,
@@ -57,7 +64,8 @@ export enum ActionType {
     CachePayamentParcelList,
     SetFetchingPaymentParcelList,
     SetFetchingPendingPaymentParcelList,
-    SetFetchingUnconfirmedPaymentParcelList
+    SetFetchingUnconfirmedPaymentParcelList,
+    SetSendingSignedParcel
 }
 
 export interface CachePendingPaymentParcelList {
@@ -172,6 +180,14 @@ export interface SetSendingTx {
     data: {
         address: string;
         tx: AssetTransferTransaction | null;
+    };
+}
+
+export interface SetSendingSignedParcel {
+    type: ActionType.SetSendingSignedParcel;
+    data: {
+        address: string;
+        signedParcel: SignedParcel | null;
     };
 }
 
@@ -356,7 +372,18 @@ const setSendingTx = (
     }
 });
 
-let checkingIndexingFunc: NodeJS.Timer;
+const setSendingSignedParcel = (
+    address: string,
+    signedParcel: SignedParcel | null
+): SetSendingSignedParcel => ({
+    type: ActionType.SetSendingSignedParcel,
+    data: {
+        address,
+        signedParcel
+    }
+});
+
+let checkingIndexingFuncForSendingTx: NodeJS.Timer;
 const sendTransaction = (
     address: string,
     transferTx: AssetTransferTransaction
@@ -374,7 +401,7 @@ const sendTransaction = (
             dispatch(setSendingTx(address, transferTx));
             const networkId = getState().globalReducer.networkId;
             await sendTxToGateway(transferTx, networkId);
-            checkingIndexingFunc = setInterval(() => {
+            checkingIndexingFuncForSendingTx = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
                 const pendingTxList = getState().chainReducer.pendingTxList[
                     address
@@ -389,7 +416,49 @@ const sendTransaction = (
                     )
                 ) {
                     dispatch(setSendingTx(address, null));
-                    clearInterval(checkingIndexingFunc);
+                    clearInterval(checkingIndexingFuncForSendingTx);
+                    dispatch(hideLoading() as any);
+                }
+            }, 1000);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+let checkingIndexingFuncForSendingParcel: NodeJS.Timer;
+const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const sendingTx = getState().chainReducer.sendingTx[address];
+        if (sendingTx) {
+            return;
+        }
+        try {
+            dispatch(showLoading() as any);
+            dispatch(setSendingSignedParcel(address, signedParcel));
+            const networkId = getState().globalReducer.networkId;
+            const sdk = new SDK({
+                server: getCodeChainHost(networkId),
+                networkId
+            });
+            await sdk.rpc.chain.sendSignedParcel(signedParcel);
+            checkingIndexingFuncForSendingParcel = setInterval(() => {
+                dispatch(fetchPendingPaymentParcelListIfNeed(address));
+                const pendingPaymentParcelList = getState().chainReducer
+                    .pendingPaymentParcelList[address];
+                if (
+                    pendingPaymentParcelList &&
+                    pendingPaymentParcelList.data &&
+                    _.find(
+                        pendingPaymentParcelList.data,
+                        ppp => ppp.parcel.hash === signedParcel.hash().value
+                    )
+                ) {
+                    dispatch(setSendingSignedParcel(address, null));
+                    clearInterval(checkingIndexingFuncForSendingParcel);
                     dispatch(hideLoading() as any);
                 }
             }, 1000);
@@ -637,5 +706,6 @@ export default {
     fetchTxListByAssetTypeIfNeed,
     fetchPaymentParcelListIfNeed,
     fetchUnconfirmedPaymentParcelListIfNeed,
-    fetchPendingPaymentParcelListIfNeed
+    fetchPendingPaymentParcelListIfNeed,
+    sendSignedParcel
 };

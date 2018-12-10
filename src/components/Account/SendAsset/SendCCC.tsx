@@ -1,16 +1,29 @@
 import * as React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { U256 } from "codechain-sdk/lib/core/classes";
+import { SDK } from "codechain-sdk";
+import { SignedParcel, U256 } from "codechain-sdk/lib/core/classes";
+import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
 import { connect } from "react-redux";
+import * as Spinner from "react-spinkit";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../../model/address";
+import {
+    getAssetAddressPath,
+    getCCKey,
+    getFirstSeedHash,
+    getPlatformAddressPath
+} from "../../../model/keystore";
 import { ReducerConfigure } from "../../../redux";
 import accountActions from "../../../redux/account/accountActions";
+import chainActions from "../../../redux/chain/chainActions";
+import { getCodeChainHost } from "../../../utils/network";
+import { getAssetKeys, getPlatformKeys } from "../../../utils/storage";
 import { changeQuarkToCCCString } from "../../../utils/unit";
 import CCCReceiverContainer from "./CCCReceiverContainer/CCCReceiverContainer";
+import * as CheckIcon from "./img/check_icon.svg";
 import "./SendCCC.css";
 
 interface OwnProps {
@@ -23,18 +36,30 @@ interface StateProps {
     availableQuark?: U256 | null;
     networkId: NetworkId;
     passphrase: string;
+    isSendingParcel: boolean;
 }
 
 interface DispatchProps {
     fetchAvailableQuark: (address: string) => void;
+    sendSignedParcel: (address: string, signedParcel: SignedParcel) => void;
+}
+
+interface State {
+    isSendBtnClicked?: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
 
-class SendCCC extends React.Component<Props, any> {
+class SendCCC extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            isSendBtnClicked: undefined
+        };
+    }
     public render() {
-        const { onClose } = this.props;
-        const { availableQuark } = this.props;
+        const { onClose, availableQuark, isSendingParcel } = this.props;
+        const { isSendBtnClicked } = this.state;
         if (!availableQuark) {
             return (
                 <div>
@@ -48,17 +73,37 @@ class SendCCC extends React.Component<Props, any> {
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
                 <h2 className="title">Send CCC</h2>
-                <div className="d-flex align-items-center balance-container mb-4">
-                    <div className="mr-auto balance-text">Balance</div>
-                    <span className="amount number">
-                        {changeQuarkToCCCString(availableQuark)}
-                        CCC
-                    </span>
-                </div>
-                <CCCReceiverContainer
-                    onSubmit={this.handleSubmit}
-                    totalAmount={availableQuark}
-                />
+                {isSendBtnClicked && !isSendingParcel ? (
+                    <div className="d-flex align-items-center justify-content-center text-center complete-container">
+                        <div className="text-center">
+                            <div>
+                                <img src={CheckIcon} />
+                            </div>
+                            <div className="mt-3">
+                                <span>COMPLETE!</span>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <div className="d-flex align-items-center balance-container mb-4">
+                            <div className="mr-auto balance-text">Balance</div>
+                            <span className="amount number">
+                                {changeQuarkToCCCString(availableQuark)}
+                                CCC
+                            </span>
+                        </div>
+                        <CCCReceiverContainer
+                            onSubmit={this.handleSubmit}
+                            totalAmount={availableQuark}
+                        />
+                    </div>
+                )}
+                {isSendingParcel && (
+                    <div className="sending-panel d-flex align-items-center justify-content-center">
+                        <Spinner name="line-scale" color="white" />
+                    </div>
+                )}
             </div>
         );
     }
@@ -79,34 +124,64 @@ class SendCCC extends React.Component<Props, any> {
         },
         fee: U256
     ) => {
-        console.log(receiver.address);
-        console.log(receiver.amount.value.toString(10));
-        console.log(fee.value.toString(10));
-        /*
-        const { UTXOList } = this.props;
-        const { address, networkId, passphrase } = this.props;
-        const sumOfSendingAsset = _.sumBy(
-            receivers,
-            receiver => receiver.quantity
-        );
-
-        const inputUTXO = [];
-        let currentSum = 0;
-        for (const utxo of UTXOList!) {
-            inputUTXO.push(utxo);
-            currentSum += utxo.asset.amount;
-            if (currentSum > sumOfSendingAsset) {
-                break;
-            }
-        }
-
+        const { networkId, address, passphrase } = this.props;
         const sdk = new SDK({
             server: getCodeChainHost(networkId),
             networkId
         });
+
+        const parcel = sdk.core.createPaymentParcel({
+            recipient: receiver.address,
+            amount: receiver.amount
+        });
+
         const ccKey = await getCCKey();
-        // FIXME: remove any
-        const keyStore = new LocalKeyStore(ccKey as any);*/
+
+        const storedPlatformKeys = getPlatformKeys();
+        const storedAssetKeys = getAssetKeys();
+        const seedHash = await getFirstSeedHash();
+
+        let keyMapping = _.reduce(
+            storedPlatformKeys,
+            (memo, storedPlatformKey) => {
+                return {
+                    ...memo,
+                    [storedPlatformKey.key]: {
+                        seedHash,
+                        path: getPlatformAddressPath(
+                            storedPlatformKey.pathIndex
+                        )
+                    }
+                };
+            },
+            {}
+        );
+
+        keyMapping = _.reduce(
+            storedAssetKeys,
+            (memo, storedAssetKey) => {
+                return {
+                    ...memo,
+                    [storedAssetKey.key]: {
+                        seedHash,
+                        path: getAssetAddressPath(storedAssetKey.pathIndex)
+                    }
+                };
+            },
+            keyMapping
+        );
+
+        const keyStore = new LocalKeyStore(ccKey, keyMapping);
+        const nonce = await sdk.rpc.chain.getNonce(address);
+        const signedParcel = await sdk.key.signParcel(parcel, {
+            account: address,
+            keyStore,
+            fee,
+            nonce,
+            passphrase
+        });
+        this.props.sendSignedParcel(address, signedParcel);
+        this.setState({ isSendBtnClicked: true });
     };
 }
 
@@ -115,10 +190,12 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const availableQuark = state.accountReducer.availableQuark[address];
     const networkId = state.globalReducer.networkId;
     const passphrase = state.globalReducer.passphrase!;
+    const sendingSignedParcel = state.chainReducer.sendingSignedParcel[address];
     return {
         availableQuark,
         networkId,
-        passphrase
+        passphrase,
+        isSendingParcel: sendingSignedParcel != null
     };
 };
 
@@ -127,6 +204,9 @@ const mapDispatchToProps = (
 ) => ({
     fetchAvailableQuark: (address: string) => {
         dispatch(accountActions.fetchAvailableQuark(address));
+    },
+    sendSignedParcel: (address: string, signedParcel: SignedParcel) => {
+        dispatch(chainActions.sendSignedParcel(address, signedParcel));
     }
 });
 

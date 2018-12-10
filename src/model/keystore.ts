@@ -69,6 +69,14 @@ const platformAddressPath = "m/44'/3276/0'/0/";
 const assetAddressPath = "m/44'/3276/1'/0/";
 const restoringCheckingRange = 10;
 
+export function getPlatformAddressPath(index: number) {
+    return platformAddressPath + index;
+}
+
+export function getAssetAddressPath(index: number) {
+    return assetAddressPath + index;
+}
+
 export async function restorePlatformAddresses(
     passphrase: string,
     networkId: NetworkId

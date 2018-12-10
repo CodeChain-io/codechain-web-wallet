@@ -14,15 +14,24 @@ import {
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
 import { connect } from "react-redux";
+import * as Spinner from "react-spinkit";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { NetworkId } from "../../../model/address";
-import { getCCKey } from "../../../model/keystore";
+import { NetworkId, WalletAddress } from "../../../model/address";
+import {
+    getAssetAddressPath,
+    getCCKey,
+    getFirstSeedHash,
+    getPlatformAddressPath
+} from "../../../model/keystore";
 import { ReducerConfigure } from "../../../redux";
 import assetActions from "../../../redux/asset/assetActions";
 import chainActions from "../../../redux/chain/chainActions";
+import walletActions from "../../../redux/wallet/walletActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
 import { getCodeChainHost } from "../../../utils/network";
+import { getAssetKeys, getPlatformKeys } from "../../../utils/storage";
+import * as CheckIcon from "./img/check_icon.svg";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
 
@@ -45,6 +54,12 @@ interface StateProps {
         | null;
     networkId: NetworkId;
     passphrase: string;
+    assetAddresses?: WalletAddress[] | null;
+    platformAddresses?: WalletAddress[] | null;
+}
+
+interface State {
+    isSendBtnClicked?: boolean;
 }
 
 interface DispatchProps {
@@ -55,20 +70,40 @@ interface DispatchProps {
         address: string,
         transferTx: AssetTransferTransaction
     ) => void;
+    fetchWalletFromStorageIfNeed: () => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
 
-class SendAsset extends React.Component<Props, any> {
+class SendAsset extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            isSendBtnClicked: undefined
+        };
+    }
     public render() {
         const { onClose } = this.props;
+        const { isSendBtnClicked } = this.state;
         const {
             assetScheme,
             selectedAssetType: assetType,
             networkId
         } = this.props;
-        const { availableAssets, isSendingTx, UTXOList } = this.props;
-        if (!assetScheme || !UTXOList || !availableAssets) {
+        const {
+            availableAssets,
+            isSendingTx,
+            UTXOList,
+            platformAddresses,
+            assetAddresses
+        } = this.props;
+        if (
+            !assetScheme ||
+            !UTXOList ||
+            !availableAssets ||
+            !platformAddresses ||
+            !assetAddresses
+        ) {
             return (
                 <div>
                     <div className="mt-5">Loading...</div>
@@ -93,30 +128,49 @@ class SendAsset extends React.Component<Props, any> {
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
                 <h2 className="title">Send asset</h2>
-                <div className="d-flex align-items-center asset-info-item mb-5">
-                    <ImageLoader
-                        className="asset-info-icon"
-                        data={assetType}
-                        isAssetImage={true}
-                        networkId={networkId}
-                        size={50}
-                    />
-                    <span className="name ml-3 mr-auto">
-                        {metadata.name ||
-                            `...${assetType.slice(
-                                assetType.length - 6,
-                                assetType.length
-                            )}`}
-                    </span>
-                    <span className="quantity number">
-                        {availableAsset.quantities.toLocaleString()}
-                    </span>
-                </div>
-                <ReceiverContainer
-                    onSubmit={this.handleSubmit}
-                    totalQuantity={availableAsset.quantities}
-                />
-                {isSendingTx && <div>Sending...</div>}
+                {isSendBtnClicked && !isSendingTx ? (
+                    <div className="d-flex align-items-center justify-content-center text-center complete-container">
+                        <div className="text-center">
+                            <div>
+                                <img src={CheckIcon} />
+                            </div>
+                            <div className="mt-3">
+                                <span>COMPLETE!</span>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <div className="d-flex align-items-center asset-info-item mb-5">
+                            <ImageLoader
+                                className="asset-info-icon"
+                                data={assetType}
+                                isAssetImage={true}
+                                networkId={networkId}
+                                size={50}
+                            />
+                            <span className="name ml-3 mr-auto">
+                                {metadata.name ||
+                                    `...${assetType.slice(
+                                        assetType.length - 6,
+                                        assetType.length
+                                    )}`}
+                            </span>
+                            <span className="quantity number">
+                                {availableAsset.quantities.toLocaleString()}
+                            </span>
+                        </div>
+                        <ReceiverContainer
+                            onSubmit={this.handleSubmit}
+                            totalQuantity={availableAsset.quantities}
+                        />
+                    </div>
+                )}
+                {isSendingTx && (
+                    <div className="sending-panel d-flex align-items-center justify-content-center">
+                        <Spinner name="line-scale" color="white" />
+                    </div>
+                )}
             </div>
         );
     }
@@ -129,6 +183,7 @@ class SendAsset extends React.Component<Props, any> {
         this.getAssetScheme();
         this.getAvailableAssets();
         this.getUTXOList();
+        this.fetchWalletFromStorageIfNeed();
     };
 
     private handleSubmit = async (
@@ -139,8 +194,16 @@ class SendAsset extends React.Component<Props, any> {
             selectedAssetType: assetType,
             address,
             networkId,
-            passphrase
+            passphrase,
+            assetAddresses,
+            platformAddresses
         } = this.props;
+
+        // FIXME: Handle loading state
+        if (!assetAddresses || !platformAddresses) {
+            return;
+        }
+
         const sumOfSendingAsset = _.sumBy(
             receivers,
             receiver => receiver.quantity
@@ -161,8 +224,42 @@ class SendAsset extends React.Component<Props, any> {
             networkId
         });
         const ccKey = await getCCKey();
-        // FIXME: remove any
-        const keyStore = new LocalKeyStore(ccKey as any);
+
+        const storedPlatformKeys = getPlatformKeys();
+        const storedAssetKeys = getAssetKeys();
+        const seedHash = await getFirstSeedHash();
+
+        let keyMapping = _.reduce(
+            storedPlatformKeys,
+            (memo, storedPlatformKey) => {
+                return {
+                    ...memo,
+                    [storedPlatformKey.key]: {
+                        seedHash,
+                        path: getPlatformAddressPath(
+                            storedPlatformKey.pathIndex
+                        )
+                    }
+                };
+            },
+            {}
+        );
+
+        keyMapping = _.reduce(
+            storedAssetKeys,
+            (memo, storedAssetKey) => {
+                return {
+                    ...memo,
+                    [storedAssetKey.key]: {
+                        seedHash,
+                        path: getAssetAddressPath(storedAssetKey.pathIndex)
+                    }
+                };
+            },
+            keyMapping
+        );
+
+        const keyStore = new LocalKeyStore(ccKey, keyMapping);
 
         const inputAssets = _.map(inputUTXO, utxo => {
             return Asset.fromJSON({
@@ -209,6 +306,7 @@ class SendAsset extends React.Component<Props, any> {
                 })
             );
             this.props.sendTransaction(address, transferTx);
+            this.setState({ isSendBtnClicked: true });
         } catch (e) {
             if (e.message === "DecryptionFailed") {
                 alert("Invalid password");
@@ -231,6 +329,11 @@ class SendAsset extends React.Component<Props, any> {
         const { address } = this.props;
         this.props.fetchAvailableAssets(address);
     };
+
+    private fetchWalletFromStorageIfNeed = async () => {
+        const { fetchWalletFromStorageIfNeed } = this.props;
+        fetchWalletFromStorageIfNeed();
+    };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
@@ -244,13 +347,17 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
     const passphrase = state.globalReducer.passphrase!;
+    const assetAddresses = state.walletReducer.assetAddresses;
+    const platformAddresses = state.walletReducer.platformAddresses;
     return {
         assetScheme: assetScheme && assetScheme.data,
         isSendingTx: sendingTx != null,
         UTXOList: UTXOListByAddressAssetType && UTXOListByAddressAssetType.data,
         availableAssets,
         networkId,
-        passphrase
+        passphrase,
+        platformAddresses,
+        assetAddresses
     };
 };
 
@@ -271,6 +378,9 @@ const mapDispatchToProps = (
     },
     fetchUTXOListIfNeed: (address: string, assetType: H256) => {
         dispatch(assetActions.fetchUTXOListIfNeed(address, assetType));
+    },
+    fetchWalletFromStorageIfNeed: () => {
+        dispatch(walletActions.fetchWalletFromStorageIfNeed());
     }
 });
 

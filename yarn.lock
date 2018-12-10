@@ -135,6 +135,12 @@
     "@types/history" "*"
     "@types/react" "*"
 
+"@types/react-spinkit@^3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@types/react-spinkit/-/react-spinkit-3.0.5.tgz#446ef206d00bc1c70dcbcf2deafc463774f8c9a8"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@^16.4.14":
   version "16.4.14"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.14.tgz#47c604c8e46ed674bbdf4aabf82b34b9041c6a04"
@@ -1736,18 +1742,6 @@ codechain-keystore@^0.4.0:
     lowdb "^1.0.0"
     uuid "^3.3.2"
 
-codechain-keystore@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/codechain-keystore/-/codechain-keystore-0.5.4.tgz#46bf95509d19ed19242d30067b80d3085547160f"
-  dependencies:
-    bitcore-lib "^0.15.0"
-    codechain-primitives "^0.3.0"
-    config "^2.0.1"
-    lodash "^4.17.10"
-    lowdb "^1.0.0"
-    lowdb-session-storage-adapter "^1.0.0"
-    uuid "^3.3.2"
-
 codechain-keystore@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/codechain-keystore/-/codechain-keystore-0.6.0.tgz#c6199c1a07174da2d574a7db3dc944876c93fb74"
@@ -1760,6 +1754,21 @@ codechain-keystore@^0.6.0:
     lowdb "^1.0.0"
     lowdb-session-storage-adapter "^1.0.0"
     uuid "^3.3.2"
+
+codechain-primitives@0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/codechain-primitives/-/codechain-primitives-0.3.4.tgz#9ba6dfa53bcf6a083430eadaaba5e2130daea66e"
+  dependencies:
+    bignumber.js "^7.2.1"
+    blakejs "^1.1.0"
+    bn.js "^4.11.8"
+    buffer "^5.2.1"
+    elliptic "^6.4.1"
+    hmac-drbg "^1.0.1"
+    lodash "^4.17.11"
+    node-forge "^0.7.6"
+    ripemd160 "^2.0.2"
+    rlp "^2.1.0"
 
 codechain-primitives@^0.3.0:
   version "0.3.2"
@@ -1790,21 +1799,6 @@ codechain-primitives@^0.3.1:
     ripemd160 "^2.0.2"
     rlp "^2.1.0"
 
-codechain-primitives@^0.3.3:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/codechain-primitives/-/codechain-primitives-0.3.4.tgz#9ba6dfa53bcf6a083430eadaaba5e2130daea66e"
-  dependencies:
-    bignumber.js "^7.2.1"
-    blakejs "^1.1.0"
-    bn.js "^4.11.8"
-    buffer "^5.2.1"
-    elliptic "^6.4.1"
-    hmac-drbg "^1.0.1"
-    lodash "^4.17.11"
-    node-forge "^0.7.6"
-    ripemd160 "^2.0.2"
-    rlp "^2.1.0"
-
 codechain-sdk@^0.4.0-rc3:
   version "0.4.0-rc3"
   resolved "https://registry.yarnpkg.com/codechain-sdk/-/codechain-sdk-0.4.0-rc3.tgz#8eba4a74297b176d0aecb090005364c854393a44"
@@ -1818,13 +1812,26 @@ codechain-sdk@^0.4.0-rc3:
     request-promise "^4.2.2"
     rlp "^2.0.0"
 
-codechain-sdk@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/codechain-sdk/-/codechain-sdk-0.5.1.tgz#10551f0e0a8976eae2949b7a8c5eba1e83135430"
+codechain-sdk@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/codechain-sdk/-/codechain-sdk-0.5.2.tgz#073132f8fa6c9abbe4c1f192706c287b63497241"
   dependencies:
     buffer "5.1.0"
-    codechain-keystore "^0.5.4"
-    codechain-primitives "^0.3.3"
+    codechain-keystore "^0.6.0"
+    codechain-primitives "0.3.4"
+    jayson "^2.0.6"
+    lodash "^4.17.10"
+    node-fetch "^2.1.2"
+    request-promise "^4.2.2"
+    rlp "^2.0.0"
+
+"codechain-sdk@https://github.com/majecty/codechain-sdk-js-1#e03e384812ad0f61996374d7e2d5655bbd29fd63":
+  version "0.5.2"
+  resolved "https://github.com/majecty/codechain-sdk-js-1#e03e384812ad0f61996374d7e2d5655bbd29fd63"
+  dependencies:
+    buffer "5.1.0"
+    codechain-keystore "^0.6.0"
+    codechain-primitives "0.3.4"
     jayson "^2.0.6"
     lodash "^4.17.10"
     node-fetch "^2.1.2"
@@ -4804,6 +4811,10 @@ loader-utils@^1.0.2, loader-utils@^1.1.0:
     emojis-list "^2.0.0"
     json5 "^0.5.0"
 
+loaders.css@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/loaders.css/-/loaders.css-0.1.2.tgz#3a9fb43726c73334a38142af9d0629019b658743"
+
 locate-path@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-2.0.0.tgz#2b568b265eec944c6d9c0de9c3dbbbca0354cd8e"
@@ -6523,6 +6534,15 @@ react-scripts-ts@3.1.0:
     whatwg-fetch "2.0.3"
   optionalDependencies:
     fsevents "^1.1.3"
+
+react-spinkit@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-spinkit/-/react-spinkit-3.0.0.tgz#31fdaf4e18177766c57d1b1f3330290f8492a85a"
+  dependencies:
+    classnames "^2.2.3"
+    loaders.css "^0.1.2"
+    object-assign "^4.1.0"
+    prop-types "^15.5.8"
 
 react-toastify@^4.4.3:
   version "4.4.3"

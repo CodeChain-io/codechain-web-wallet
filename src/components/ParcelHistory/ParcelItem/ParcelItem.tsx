@@ -31,6 +31,7 @@ export default class ParcelItem extends React.Component<Props, any> {
         } = this.props;
         const aggrParcel = getAggrPaymentParcel(address, [parcel]);
         const confirmNumber = bestBlockNumber - (parcel.blockNumber || 0);
+        const isSender = parcel.signer === address;
         return (
             <div className="d-flex Parcel-item align-items-center">
                 <div className="date-container number">
@@ -54,12 +55,41 @@ export default class ParcelItem extends React.Component<Props, any> {
                     </a>
                 </div>
                 <div className="balance-container number">
-                    {aggrParcel.output.minus(aggrParcel.input).comparedTo(0) &&
-                        "+"}
-                    {changeQuarkToCCCString(
-                        new U256(aggrParcel.output.minus(aggrParcel.input))
+                    {isSender ? (
+                        <span>
+                            {aggrParcel.output
+                                .minus(aggrParcel.input)
+                                .minus(parcel.fee)
+                                .comparedTo(0) === 1
+                                ? "+"
+                                : "-"}
+                            {changeQuarkToCCCString(
+                                new U256(
+                                    aggrParcel.output
+                                        .minus(aggrParcel.input)
+                                        .minus(parcel.fee)
+                                        .abs()
+                                )
+                            )}
+                            CCC
+                        </span>
+                    ) : (
+                        <span>
+                            {aggrParcel.output
+                                .minus(aggrParcel.input)
+                                .comparedTo(0) === 1
+                                ? "+"
+                                : "-"}
+                            {changeQuarkToCCCString(
+                                new U256(
+                                    aggrParcel.output
+                                        .minus(aggrParcel.input)
+                                        .abs()
+                                )
+                            )}
+                            CCC
+                        </span>
                     )}
-                    CCC
                 </div>
                 <div className="status-container">
                     {isPending ? (
