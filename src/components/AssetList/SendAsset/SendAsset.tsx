@@ -26,6 +26,7 @@ import {
 } from "../../../model/keystore";
 import { ReducerConfigure } from "../../../redux";
 import assetActions from "../../../redux/asset/assetActions";
+import { getIdForCacheUTXO } from "../../../redux/asset/assetReducer";
 import chainActions from "../../../redux/chain/chainActions";
 import walletActions from "../../../redux/wallet/walletActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
@@ -66,9 +67,10 @@ interface DispatchProps {
     fetchAssetSchemeIfNeed: (assetType: H256) => void;
     fetchAvailableAssets: (address: string) => void;
     fetchUTXOListIfNeed: (address: string, assetType: H256) => void;
-    sendTransaction: (
+    sendTransactionByGateway: (
         address: string,
-        transferTx: AssetTransferTransaction
+        transferTx: AssetTransferTransaction,
+        getewayURL: string
     ) => void;
     fetchWalletFromStorageIfNeed: () => void;
 }
@@ -165,6 +167,9 @@ class SendAsset extends React.Component<Props, State> {
                             address={address}
                             onSubmit={this.handleSubmit}
                             totalQuantity={availableAsset.quantities}
+                            gatewayURL={
+                                metadata.gateway && metadata.gateway.url
+                            }
                         />
                     </div>
                 )}
@@ -182,10 +187,11 @@ class SendAsset extends React.Component<Props, State> {
     }
 
     private init = () => {
-        this.getAssetScheme();
-        this.getAvailableAssets();
-        this.getUTXOList();
-        this.fetchWalletFromStorageIfNeed();
+        const { selectedAssetType, address } = this.props;
+        this.props.fetchAssetSchemeIfNeed(new H256(selectedAssetType));
+        this.props.fetchUTXOListIfNeed(address, new H256(selectedAssetType));
+        this.props.fetchAvailableAssets(address);
+        this.props.fetchWalletFromStorageIfNeed();
     };
 
     private handleSubmit = async (
@@ -198,11 +204,12 @@ class SendAsset extends React.Component<Props, State> {
             networkId,
             passphrase,
             assetAddresses,
-            platformAddresses
+            platformAddresses,
+            assetScheme
         } = this.props;
 
         // FIXME: Handle loading state
-        if (!assetAddresses || !platformAddresses) {
+        if (!assetAddresses || !platformAddresses || !assetScheme) {
             return;
         }
 
@@ -310,7 +317,13 @@ class SendAsset extends React.Component<Props, State> {
                     });
                 })
             );
-            this.props.sendTransaction(address, transferTx);
+
+            const metadata = Type.getMetadata(assetScheme.metadata);
+            this.props.sendTransactionByGateway(
+                address,
+                transferTx,
+                metadata.gateway!.url
+            );
             this.setState({ isSendBtnClicked: true });
         } catch (e) {
             if (e.message === "DecryptionFailed") {
@@ -319,26 +332,6 @@ class SendAsset extends React.Component<Props, State> {
             console.log(e);
         }
     };
-
-    private getAssetScheme = async () => {
-        const { selectedAssetType: assetType } = this.props;
-        this.props.fetchAssetSchemeIfNeed(new H256(assetType));
-    };
-
-    private getUTXOList = async () => {
-        const { selectedAssetType: assetType, address } = this.props;
-        this.props.fetchUTXOListIfNeed(address, new H256(assetType));
-    };
-
-    private getAvailableAssets = async () => {
-        const { address } = this.props;
-        this.props.fetchAvailableAssets(address);
-    };
-
-    private fetchWalletFromStorageIfNeed = async () => {
-        const { fetchWalletFromStorageIfNeed } = this.props;
-        fetchWalletFromStorageIfNeed();
-    };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
@@ -346,9 +339,8 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const assetScheme =
         state.assetReducer.assetScheme[new H256(selectedAssetType).value];
     const sendingTx = state.chainReducer.sendingTx[address];
-    const UTXOListByAddress = state.assetReducer.UTXOList[address];
-    const UTXOListByAddressAssetType =
-        UTXOListByAddress && UTXOListByAddress[selectedAssetType];
+    const id = getIdForCacheUTXO(address, new H256(selectedAssetType));
+    const UTXOList = state.assetReducer.UTXOList[id];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
     const passphrase = state.globalReducer.passphrase!;
@@ -357,7 +349,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     return {
         assetScheme: assetScheme && assetScheme.data,
         isSendingTx: sendingTx != null,
-        UTXOList: UTXOListByAddressAssetType && UTXOListByAddressAssetType.data,
+        UTXOList: UTXOList && UTXOList.data,
         availableAssets,
         networkId,
         passphrase,
@@ -375,11 +367,18 @@ const mapDispatchToProps = (
     fetchAvailableAssets: (address: string) => {
         dispatch(assetActions.fetchAvailableAssets(address));
     },
-    sendTransaction: (
+    sendTransactionByGateway: (
         address: string,
-        transferTx: AssetTransferTransaction
+        transferTx: AssetTransferTransaction,
+        gatewayURL: string
     ) => {
-        dispatch(chainActions.sendTransaction(address, transferTx));
+        dispatch(
+            chainActions.sendTransactionByGateway(
+                address,
+                transferTx,
+                gatewayURL
+            )
+        );
     },
     fetchUTXOListIfNeed: (address: string, assetType: H256) => {
         dispatch(assetActions.fetchUTXOListIfNeed(address, assetType));

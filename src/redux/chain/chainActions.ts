@@ -384,9 +384,10 @@ const setSendingSignedParcel = (
 });
 
 let checkingIndexingFuncForSendingTx: NodeJS.Timer;
-const sendTransaction = (
+const sendTransactionByGateway = (
     address: string,
-    transferTx: AssetTransferTransaction
+    transferTx: AssetTransferTransaction,
+    gatewayURL: string
 ) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
@@ -399,8 +400,7 @@ const sendTransaction = (
         try {
             dispatch(showLoading() as any);
             dispatch(setSendingTx(address, transferTx));
-            const networkId = getState().globalReducer.networkId;
-            await sendTxToGateway(transferTx, networkId);
+            await sendTxToGateway(transferTx, gatewayURL);
             checkingIndexingFuncForSendingTx = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
                 dispatch(fetchUnconfirmedTxListIfNeed(address));
@@ -719,7 +719,7 @@ const fetchPendingPaymentParcelListIfNeed = (address: string) => {
 export default {
     fetchPendingTxListIfNeed,
     fetchUnconfirmedTxListIfNeed,
-    sendTransaction,
+    sendTransactionByGateway,
     fetchBestBlockNumberIfNeed,
     fetchTxListIfNeed,
     fetchTxListByAssetTypeIfNeed,

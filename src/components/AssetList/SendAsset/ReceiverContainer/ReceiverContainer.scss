@@ -5,4 +5,15 @@
     padding-left: 12px;
     padding-right: 12px;
   }
+  .fee-input-container {
+    width: 150px;
+    margin-right: 10px;
+  }
+  .fee-payer-container {
+    .payer-label {
+      font-weight: bold;
+      color: $standard-grey;
+    }
+    flex: 1;
+  }
 }

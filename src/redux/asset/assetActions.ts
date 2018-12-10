@@ -16,6 +16,7 @@ import {
 } from "../../networks/Api";
 import { TxUtil } from "../../utils/transaction";
 import chainActions from "../chain/chainActions";
+import { getIdForCacheUTXO } from "./assetReducer";
 
 export type Action =
     | CacheAssetScheme
@@ -70,7 +71,7 @@ export interface SetFetchingUTXOList {
     type: ActionType.SetFetchingUTXOList;
     data: {
         address: string;
-        assetType: string;
+        assetType: H256;
     };
 }
 
@@ -78,7 +79,7 @@ export interface CacheUTXOList {
     type: ActionType.CacheUTXOList;
     data: {
         address: string;
-        assetType: string;
+        assetType: H256;
         UTXOList: UTXO[];
     };
 }
@@ -125,7 +126,7 @@ const cacheUTXOList = (
     type: ActionType.CacheUTXOList,
     data: {
         address,
-        assetType: assetType.value,
+        assetType,
         UTXOList
     }
 });
@@ -166,7 +167,7 @@ const setFetchingUTXOList = (
     type: ActionType.SetFetchingUTXOList,
     data: {
         address,
-        assetType: assetType.value
+        assetType
     }
 });
 
@@ -240,19 +241,16 @@ const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const UTXOListByAddress = getState().assetReducer.UTXOList[address];
-        const cachedUTXOListByAddressAssetType =
-            UTXOListByAddress && UTXOListByAddress[assetType.value];
-        if (
-            cachedUTXOListByAddressAssetType &&
-            cachedUTXOListByAddressAssetType.isFetching
-        ) {
+        const id = getIdForCacheUTXO(address, assetType);
+        const UTXOList = getState().assetReducer.UTXOList[id];
+        const cachedUTXOList = UTXOList && UTXOList[assetType.value];
+        if (cachedUTXOList && cachedUTXOList.isFetching) {
             return;
         }
         if (
-            cachedUTXOListByAddressAssetType &&
-            cachedUTXOListByAddressAssetType.updatedAt &&
-            +new Date() - cachedUTXOListByAddressAssetType.updatedAt < 3000
+            cachedUTXOList &&
+            cachedUTXOList.updatedAt &&
+            +new Date() - cachedUTXOList.updatedAt < 3000
         ) {
             return;
         }

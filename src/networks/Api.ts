@@ -94,11 +94,10 @@ export async function getUTXOListByAssetType(
 
 export async function sendTxToGateway(
     tx: AssetTransferTransaction,
-    networkId: NetworkId
+    gatewayURl: string
 ) {
-    const gatewayHost = getGatewayHost(networkId);
-
-    return await postRequest<void>(`${gatewayHost}/send_asset`, {
+    console.log(gatewayURl);
+    return await postRequest<void>(`${gatewayURl}`, {
         tx
     });
 }

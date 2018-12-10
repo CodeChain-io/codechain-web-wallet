@@ -1,6 +1,13 @@
-import { AssetTransferAddress } from "codechain-sdk/lib/core/classes";
+import { AssetTransferAddress, U256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { connect } from "react-redux";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
+import { WalletAddress } from "../../../../model/address";
+import { ReducerConfigure } from "../../../../redux";
+import walletActions from "../../../../redux/wallet/walletActions";
+import ValidationInput from "../../../ValidationInput/ValidationInput";
 import "./ReceiverContainer.css";
 import ReceiverItem from "./ReceiverItem/ReceiverItem";
 
@@ -25,15 +32,34 @@ interface State {
               }
             | undefined;
     };
+    feeString: string;
+    feePayer?: string;
 }
 
-interface Props {
+interface OwnProps {
     address: string;
     totalQuantity: number;
-    onSubmit: (receivers: { address: string; quantity: number }[]) => void;
+    onSubmit: (
+        receivers: { address: string; quantity: number }[],
+        fee?: {
+            payer: string;
+            amount: U256;
+        } | null
+    ) => void;
+    gatewayURL?: string | null;
 }
 
-export default class ReceiverContainer extends React.Component<Props, State> {
+interface StateProps {
+    platformAddresses?: WalletAddress[] | null;
+}
+
+interface DispatchProps {
+    fetchWalletFromStorageIfNeed: () => void;
+}
+
+type Props = OwnProps & DispatchProps & StateProps;
+
+class ReceiverContainer extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -44,15 +70,26 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                 }
             ],
             addressValidations: {},
-            quantityValidations: {}
+            quantityValidations: {},
+            feeString: props.gatewayURL ? "0" : "0.01",
+            feePayer: undefined
         };
+    }
+    public componentDidMount() {
+        this.props.fetchWalletFromStorageIfNeed();
     }
     public render() {
         const {
             receivers,
             addressValidations,
-            quantityValidations
+            quantityValidations,
+            feeString,
+            feePayer
         } = this.state;
+        const { platformAddresses, gatewayURL } = this.props;
+        if (!platformAddresses) {
+            return <span>Loading...</span>;
+        }
         return (
             <div className="Receiver-container">
                 <form onSubmit={this.handleSubmit}>
@@ -102,7 +139,53 @@ export default class ReceiverContainer extends React.Component<Props, State> {
                             add receiver
                         </button>
                     </div>
-                    <div className="mt-5">
+                    <div className="d-flex mt-5">
+                        <div className="fee-input-container">
+                            <ValidationInput
+                                value={feeString}
+                                onChange={this.handleChangeFee}
+                                showValidation={true}
+                                labelText="FEE"
+                                placeholder="fee (CCC)"
+                                disable={gatewayURL != null}
+                            />
+                        </div>
+                        <div className="fee-payer-container">
+                            <div className="payer-label">FEE PAYER</div>
+                            {gatewayURL != null ? (
+                                <select
+                                    className="form-control"
+                                    disabled={true}
+                                >
+                                    <option>Gateway</option>
+                                </select>
+                            ) : platformAddresses.length === 0 ? (
+                                <select
+                                    className="form-control"
+                                    disabled={true}
+                                >
+                                    <option>Empty address</option>
+                                </select>
+                            ) : (
+                                <select
+                                    className="form-control"
+                                    value={feePayer}
+                                    defaultValue={platformAddresses[0].address}
+                                    onChange={this.handleChangeFeePayer}
+                                >
+                                    {_.map(platformAddresses, pa => (
+                                        <option
+                                            value={pa.address}
+                                            key={pa.address}
+                                        >
+                                            {pa.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                        </div>
+                    </div>
+                    <div className="mt-2">
                         <button
                             type="submit"
                             className="btn btn-primary square w-100 send-btn"
@@ -115,6 +198,16 @@ export default class ReceiverContainer extends React.Component<Props, State> {
             </div>
         );
     }
+
+    private handleChangeFeePayer = (
+        event: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+        console.log(event.target.value);
+    };
+
+    private handleChangeFee = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ feeString: event.target.value });
+    };
 
     private handleRemoveReceiver = (myIndex: number) => {
         const { receivers } = this.state;
@@ -301,3 +394,23 @@ export default class ReceiverContainer extends React.Component<Props, State> {
         this.props.onSubmit(receivers);
     };
 }
+
+const mapStateToProps = (state: ReducerConfigure) => {
+    const platformAddresses = state.walletReducer.platformAddresses;
+    return {
+        platformAddresses
+    };
+};
+
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchWalletFromStorageIfNeed: () => {
+        dispatch(walletActions.fetchWalletFromStorageIfNeed());
+    }
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ReceiverContainer);

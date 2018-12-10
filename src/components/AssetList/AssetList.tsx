@@ -75,6 +75,7 @@ class AssetList extends React.Component<Props, State> {
             }
         } = props;
         if (nextAddress !== address) {
+            this.setState({ selectedAssetType: undefined });
             this.init();
         }
     }
@@ -194,10 +195,15 @@ class AssetList extends React.Component<Props, State> {
     };
     private handleSelectAsset = (assetType: string) => {
         const selectedAssetType = this.state.selectedAssetType;
-        if (selectedAssetType === assetType) {
+        if (!selectedAssetType) {
+            this.setState({ selectedAssetType: assetType });
+        } else if (selectedAssetType === assetType) {
             this.setState({ selectedAssetType: undefined });
         } else {
-            this.setState({ selectedAssetType: assetType });
+            this.setState({ selectedAssetType: undefined });
+            setTimeout(() => {
+                this.setState({ selectedAssetType: assetType });
+            }, 100);
         }
     };
     private init = async () => {
