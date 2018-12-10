@@ -274,17 +274,14 @@ export default class ReceiverContainer extends React.Component<Props, State> {
         event.preventDefault();
         const { receivers } = this.state;
 
-        _.each(receivers, (__, index) => {
-            if (!this.handleQuantityValidationCheck(index)) {
+        for (let i = 0; i < receivers.length; i++) {
+            if (!this.handleAddressValidationCheck(i)) {
                 return;
             }
-        });
-
-        _.each(receivers, (__, index) => {
-            if (!this.handleAddressValidationCheck(index)) {
+            if (!this.handleQuantityValidationCheck(i)) {
                 return;
             }
-        });
+        }
 
         this.props.onSubmit(receivers);
     };
