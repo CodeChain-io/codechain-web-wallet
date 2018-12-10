@@ -33,16 +33,10 @@ const server = {
         sc: "https://saluki.codechain.io/explorer",
         wc: "https://corgi.codechain.io/explorer"
     },
-    gateway: {
-        cc: "https://husky.codechain.io/gateway",
-        tc: "https://husky.codechain.io/gateway",
-        sc: "https://saluki.codechain.io/gateway",
-        wc: "https://corgi.codechain.io/gateway"
-    },
     chain: {
         cc: "https://husky.codechain.io/explorer",
         tc: "http://52.79.108.1:8080",
-        sc: "https://saluki.codechain.io/explorer",
-        wc: "https://corgi.codechain.io/explorer"
+        sc: "http://52.78.210.78:8080",
+        wc: "http://52.78.215.10:8080"
     }
 };
