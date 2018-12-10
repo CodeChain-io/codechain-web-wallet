@@ -358,6 +358,13 @@ const calculateAvailableAssets = (address: string) => {
                 (asset.inputQuantities + asset.burnQuantities);
 
             if (quantities > 0) {
+                if (!availableAssets[asset.assetType]) {
+                    availableAssets[asset.assetType] = {
+                        assetType: asset.assetType,
+                        quantities: 0,
+                        metadata: asset.metadata
+                    };
+                }
                 availableAssets[asset.assetType] = {
                     ...availableAssets[asset.assetType],
                     quantities:
@@ -371,6 +378,13 @@ const calculateAvailableAssets = (address: string) => {
                 (asset.inputQuantities + asset.burnQuantities);
 
             if (quantities < 0) {
+                if (!availableAssets[asset.assetType]) {
+                    availableAssets[asset.assetType] = {
+                        assetType: asset.assetType,
+                        quantities: 0,
+                        metadata: asset.metadata
+                    };
+                }
                 availableAssets[asset.assetType] = {
                     ...availableAssets[asset.assetType],
                     quantities:
