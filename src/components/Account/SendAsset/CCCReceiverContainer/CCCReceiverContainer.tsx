@@ -21,6 +21,7 @@ interface State {
 }
 
 interface Props {
+    address: string;
     totalAmount: U256;
     onSubmit: (receiver: { address: string; amount: U256 }, fee: U256) => void;
 }
@@ -110,7 +111,15 @@ export default class CCCReceiverContainer extends React.Component<
 
     private handleAddressValidationCheck = () => {
         const { receiver } = this.state;
+        const { address: myAddress } = this.props;
         const address = receiver.address;
+        if (address === myAddress) {
+            this.setState({
+                isAddressValid: false,
+                addressError: "can't send CCC to sender's address"
+            });
+            return false;
+        }
         if (address) {
             try {
                 PlatformAddress.fromString(address);

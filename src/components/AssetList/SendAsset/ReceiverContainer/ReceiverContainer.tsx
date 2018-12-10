@@ -28,6 +28,7 @@ interface State {
 }
 
 interface Props {
+    address: string;
     totalQuantity: number;
     onSubmit: (receivers: { address: string; quantity: number }[]) => void;
 }
@@ -144,8 +145,22 @@ export default class ReceiverContainer extends React.Component<Props, State> {
 
     private handleAddressValidationCheck = (index: number) => {
         const { receivers } = this.state;
+        const { address: myAddress } = this.props;
         const address = receivers[index].address;
         if (address) {
+            if (address === myAddress) {
+                this.setState({
+                    addressValidations: {
+                        ...this.state.addressValidations,
+                        [index]: {
+                            ...this.state.addressValidations[index],
+                            isAddressValid: false,
+                            addressError: "can't send asset to sender's address"
+                        }
+                    }
+                });
+                return false;
+            }
             try {
                 AssetTransferAddress.fromString(address);
                 this.setState({

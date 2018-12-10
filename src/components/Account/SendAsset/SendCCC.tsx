@@ -58,7 +58,12 @@ class SendCCC extends React.Component<Props, State> {
         };
     }
     public render() {
-        const { onClose, availableQuark, isSendingParcel } = this.props;
+        const {
+            onClose,
+            availableQuark,
+            isSendingParcel,
+            address
+        } = this.props;
         const { isSendBtnClicked } = this.state;
         if (!availableQuark) {
             return (
@@ -94,6 +99,7 @@ class SendCCC extends React.Component<Props, State> {
                             </span>
                         </div>
                         <CCCReceiverContainer
+                            address={address}
                             onSubmit={this.handleSubmit}
                             totalAmount={availableQuark}
                         />

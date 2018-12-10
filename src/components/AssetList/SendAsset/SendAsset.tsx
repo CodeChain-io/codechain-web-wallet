@@ -88,7 +88,8 @@ class SendAsset extends React.Component<Props, State> {
         const {
             assetScheme,
             selectedAssetType: assetType,
-            networkId
+            networkId,
+            address
         } = this.props;
         const {
             availableAssets,
@@ -161,6 +162,7 @@ class SendAsset extends React.Component<Props, State> {
                             </span>
                         </div>
                         <ReceiverContainer
+                            address={address}
                             onSubmit={this.handleSubmit}
                             totalQuantity={availableAsset.quantities}
                         />
