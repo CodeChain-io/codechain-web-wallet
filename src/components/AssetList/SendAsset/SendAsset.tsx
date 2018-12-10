@@ -229,7 +229,7 @@ class SendAsset extends React.Component<Props, State> {
         const storedAssetKeys = getAssetKeys(networkId);
         const seedHash = await getFirstSeedHash();
 
-        let keyMapping = _.reduce(
+        const platformKeyMapping = _.reduce(
             storedPlatformKeys,
             (memo, storedPlatformKey) => {
                 return {
@@ -245,7 +245,7 @@ class SendAsset extends React.Component<Props, State> {
             {}
         );
 
-        keyMapping = _.reduce(
+        const assetKeyMapping = _.reduce(
             storedAssetKeys,
             (memo, storedAssetKey) => {
                 return {
@@ -256,10 +256,13 @@ class SendAsset extends React.Component<Props, State> {
                     }
                 };
             },
-            keyMapping
+            {}
         );
 
-        const keyStore = new LocalKeyStore(ccKey, keyMapping);
+        const keyStore = new LocalKeyStore(ccKey, {
+            platform: platformKeyMapping,
+            asset: assetKeyMapping
+        });
 
         const inputAssets = _.map(inputUTXO, utxo => {
             return Asset.fromJSON({

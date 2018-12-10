@@ -141,7 +141,7 @@ class SendCCC extends React.Component<Props, State> {
         const storedAssetKeys = getAssetKeys(networkId);
         const seedHash = await getFirstSeedHash();
 
-        let keyMapping = _.reduce(
+        const platformKeyMapping = _.reduce(
             storedPlatformKeys,
             (memo, storedPlatformKey) => {
                 return {
@@ -157,7 +157,7 @@ class SendCCC extends React.Component<Props, State> {
             {}
         );
 
-        keyMapping = _.reduce(
+        const assetKeyMapping = _.reduce(
             storedAssetKeys,
             (memo, storedAssetKey) => {
                 return {
@@ -168,10 +168,13 @@ class SendCCC extends React.Component<Props, State> {
                     }
                 };
             },
-            keyMapping
+            {}
         );
 
-        const keyStore = new LocalKeyStore(ccKey, keyMapping);
+        const keyStore = new LocalKeyStore(ccKey, {
+            platform: platformKeyMapping,
+            asset: assetKeyMapping
+        });
         const nonce = await sdk.rpc.chain.getNonce(address);
         const signedParcel = await sdk.key.signParcel(parcel, {
             account: address,
