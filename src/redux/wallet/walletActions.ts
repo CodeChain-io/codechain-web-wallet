@@ -19,12 +19,16 @@ import { getAssetKeys, getPlatformKeys } from "../../utils/storage";
 export type Action =
     | UpdateWalletPlatformAddresses
     | UpdateWalletAssetAddresses
-    | ClearWalletAddresses;
+    | ClearWalletAddresses
+    | SetLoadingAssetAddresses
+    | SetLoadingPlatformAddresses;
 
 export enum ActionType {
     UpdateWalletPlatformAddresses = 3000,
     UpdateWalletAssetAddresses,
-    ClearWalletAddresses
+    ClearWalletAddresses,
+    SetLoadingPlatformAddresses,
+    SetLoadingAssetAddresses
 }
 
 export interface UpdateWalletPlatformAddresses {
@@ -43,6 +47,20 @@ export interface UpdateWalletAssetAddresses {
 
 export interface ClearWalletAddresses {
     type: ActionType.ClearWalletAddresses;
+}
+
+export interface SetLoadingAssetAddresses {
+    type: ActionType.SetLoadingAssetAddresses;
+    data: {
+        isLoading: boolean;
+    };
+}
+
+export interface SetLoadingPlatformAddresses {
+    type: ActionType.SetLoadingPlatformAddresses;
+    data: {
+        isLoading: boolean;
+    };
 }
 
 const updateWalletPlatformAddresses = (
@@ -71,28 +89,6 @@ const fetchWalletFromStorageIfNeed = () => {
         dispatch(showLoading() as any);
         const networkId = getState().globalReducer.networkId;
         const passphrase = getState().globalReducer.passphrase!;
-        if (!getState().walletReducer.platformAddresses) {
-            const savedPlatformKeys = getPlatformKeys();
-            let platformAddresses;
-            if (savedPlatformKeys) {
-                platformAddresses = _.map(savedPlatformKeys, key => {
-                    const address = PlatformAddress.fromAccountId(key.key, {
-                        networkId
-                    }).value;
-                    return {
-                        name: `P-address ${key.pathIndex}`,
-                        address,
-                        type: AddressType.Platform
-                    };
-                });
-            } else {
-                platformAddresses = await restorePlatformAddresses(
-                    passphrase,
-                    networkId
-                );
-            }
-            dispatch(updateWalletPlatformAddresses(platformAddresses));
-        }
         if (!getState().walletReducer.assetAddresses) {
             const savedAssetKeys = getAssetKeys();
             let assetAddresses;
@@ -112,12 +108,58 @@ const fetchWalletFromStorageIfNeed = () => {
                     };
                 });
             } else {
+                dispatch({
+                    type: ActionType.SetLoadingAssetAddresses,
+                    data: {
+                        isLoading: true
+                    }
+                });
                 assetAddresses = await restoreAssetAddresses(
                     passphrase,
                     networkId
                 );
+                dispatch({
+                    type: ActionType.SetLoadingAssetAddresses,
+                    data: {
+                        isLoading: false
+                    }
+                });
             }
             dispatch(updateWalletAssetAddresses(assetAddresses));
+        }
+        if (!getState().walletReducer.platformAddresses) {
+            const savedPlatformKeys = getPlatformKeys();
+            let platformAddresses;
+            if (savedPlatformKeys) {
+                platformAddresses = _.map(savedPlatformKeys, key => {
+                    const address = PlatformAddress.fromAccountId(key.key, {
+                        networkId
+                    }).value;
+                    return {
+                        name: `P-address ${key.pathIndex}`,
+                        address,
+                        type: AddressType.Platform
+                    };
+                });
+            } else {
+                dispatch({
+                    type: ActionType.SetLoadingPlatformAddresses,
+                    data: {
+                        isLoading: true
+                    }
+                });
+                platformAddresses = await restorePlatformAddresses(
+                    passphrase,
+                    networkId
+                );
+                dispatch({
+                    type: ActionType.SetLoadingPlatformAddresses,
+                    data: {
+                        isLoading: false
+                    }
+                });
+            }
+            dispatch(updateWalletPlatformAddresses(platformAddresses));
         }
         dispatch(hideLoading() as any);
     };

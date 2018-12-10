@@ -15,6 +15,8 @@ interface StateProps {
     platformAddresses: WalletAddress[];
     assetAddresses: WalletAddress[];
     networkId: NetworkId;
+    isLoadingAssetAddresses?: boolean | null;
+    isLoadingPlatformAddresses?: boolean | null;
 }
 
 interface DispatchProps {
@@ -36,7 +38,12 @@ class AddressList extends React.Component<Props, any> {
         }
     }
     public render() {
-        const { platformAddresses, assetAddresses } = this.props;
+        const {
+            platformAddresses,
+            assetAddresses,
+            isLoadingAssetAddresses,
+            isLoadingPlatformAddresses
+        } = this.props;
         return (
             <div className="Address-list animated fadeIn">
                 <Container>
@@ -50,16 +57,22 @@ class AddressList extends React.Component<Props, any> {
                                 </Col>
                             ))}
                             <Col md={6} lg={4} xl={3}>
-                                <div
-                                    onClick={this.createAssetAddress}
-                                    className="add-address-btn asset d-flex align-items-center justify-content-center"
-                                >
-                                    ADD ADDRESS
-                                    <FontAwesomeIcon
-                                        className="ml-2"
-                                        icon="plus-circle"
-                                    />
-                                </div>
+                                {isLoadingAssetAddresses ? (
+                                    <div className="add-address-btn asset loading d-flex align-items-center justify-content-center">
+                                        Restoring...
+                                    </div>
+                                ) : (
+                                    <div
+                                        onClick={this.createAssetAddress}
+                                        className="add-address-btn asset d-flex align-items-center justify-content-center"
+                                    >
+                                        ADD ADDRESS
+                                        <FontAwesomeIcon
+                                            className="ml-2"
+                                            icon="plus-circle"
+                                        />
+                                    </div>
+                                )}
                             </Col>
                         </Row>
                     </div>
@@ -77,16 +90,22 @@ class AddressList extends React.Component<Props, any> {
                                 )
                             )}
                             <Col md={6} lg={4} xl={3}>
-                                <div
-                                    onClick={this.createPlatformAddress}
-                                    className="add-address-btn platform d-flex align-items-center justify-content-center"
-                                >
-                                    ADD ADDRESS
-                                    <FontAwesomeIcon
-                                        className="ml-2"
-                                        icon="plus-circle"
-                                    />
-                                </div>
+                                {isLoadingPlatformAddresses ? (
+                                    <div className="add-address-btn platform loading d-flex align-items-center justify-content-center">
+                                        Restoring...
+                                    </div>
+                                ) : (
+                                    <div
+                                        onClick={this.createPlatformAddress}
+                                        className="add-address-btn platform d-flex align-items-center justify-content-center"
+                                    >
+                                        ADD ADDRESS
+                                        <FontAwesomeIcon
+                                            className="ml-2"
+                                            icon="plus-circle"
+                                        />
+                                    </div>
+                                )}
                             </Col>
                         </Row>
                     </div>
@@ -107,7 +126,9 @@ class AddressList extends React.Component<Props, any> {
 const mapStateToProps = (state: ReducerConfigure) => ({
     platformAddresses: state.walletReducer.platformAddresses,
     assetAddresses: state.walletReducer.assetAddresses,
-    networkId: state.globalReducer.networkId
+    networkId: state.globalReducer.networkId,
+    isLoadingAssetAddresses: state.walletReducer.isLoadingAssetAddresses,
+    isLoadingPlatformAddresses: state.walletReducer.isLoadingPlatformAddresses
 });
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>

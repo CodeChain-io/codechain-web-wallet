@@ -274,7 +274,6 @@ export async function restoreAssetAddresses(
         retValue = assetAddresses.slice(0, lastValidAssetPathIndex + 1);
         retKeys = assetKeys.slice(0, lastValidAssetPathIndex + 1);
     }
-    console.log(retValue);
     saveAssetKeys(retKeys);
     return retValue;
 }

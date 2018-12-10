@@ -4,13 +4,15 @@ import { Action, ActionType } from "./walletActions";
 export interface WalletState {
     platformAddresses?: WalletAddress[] | null;
     assetAddresses?: WalletAddress[] | null;
-    isLoadingAddresses?: boolean | null;
+    isLoadingPlatformAddresses?: boolean | null;
+    isLoadingAssetAddresses?: boolean | null;
 }
 
 export const walletInitState: WalletState = {
     platformAddresses: undefined,
     assetAddresses: undefined,
-    isLoadingAddresses: undefined
+    isLoadingPlatformAddresses: undefined,
+    isLoadingAssetAddresses: undefined
 };
 
 export const walletReducer = (state = walletInitState, action: Action) => {
@@ -30,6 +32,18 @@ export const walletReducer = (state = walletInitState, action: Action) => {
                 ...state,
                 platformAddresses: undefined,
                 assetAddresses: undefined
+            };
+        }
+        case ActionType.SetLoadingAssetAddresses: {
+            return {
+                ...state,
+                isLoadingAssetAddresses: action.data.isLoading
+            };
+        }
+        case ActionType.SetLoadingPlatformAddresses: {
+            return {
+                ...state,
+                isLoadingPlatformAddresses: action.data.isLoading
             };
         }
     }

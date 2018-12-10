@@ -28,6 +28,9 @@
     &.platform {
       height: 168px;
     }
+    &.loading {
+      cursor: default;
+    }
   }
   .deco {
     width: 64px;
