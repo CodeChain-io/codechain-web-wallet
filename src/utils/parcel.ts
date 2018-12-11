@@ -2,23 +2,24 @@ import BigNumber from "bignumber.js";
 import { ParcelDoc } from "codechain-indexer-types/lib/types";
 import * as _ from "lodash";
 
-export const getAggrPaymentParcel = (
-    address: string,
-    paymentParcelList: ParcelDoc[]
-) =>
+export const getAggsParcel = (address: string, parcelList: ParcelDoc[]) =>
     _.reduce(
-        paymentParcelList,
-        (memo, paymentParcel: ParcelDoc) => {
+        parcelList,
+        (memo, parcel: ParcelDoc) => {
             let output = new BigNumber(0);
             let input = new BigNumber(0);
-            if (paymentParcel.action.action === "payment") {
-                const amount = paymentParcel.action.amount;
-                if (paymentParcel.action.receiver === address) {
+            if (parcel.action.action === "payment") {
+                const amount = parcel.action.amount;
+                if (parcel.action.receiver === address) {
                     output = output.plus(new BigNumber(amount));
                 }
-                if (paymentParcel.signer === address) {
+                if (parcel.signer === address) {
                     input = input.plus(new BigNumber(amount));
                 }
+            }
+            if (parcel.signer === address) {
+                const fee = parcel.fee;
+                input = input.plus(new BigNumber(fee));
             }
             return {
                 input: memo.input.plus(input),

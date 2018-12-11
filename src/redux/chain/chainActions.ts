@@ -18,7 +18,7 @@ import { ReducerConfigure } from "..";
 import {
     getBestBlockNumber,
     getParcels,
-    getPendingPaymentParcels,
+    getPendingParcels,
     getPendingTransactions,
     getTxsByAddress,
     sendTxToGateway
@@ -40,12 +40,12 @@ export type Action =
     | SetFetchingBestBlockNumber
     | SetFetchingTxListById
     | CacheTxListById
-    | CachePendingPaymentParcelList
-    | CacheUnconfirmedPaymentParcelList
+    | CachePendingParcelList
+    | CacheUnconfirmedParcelList
     | CachePayamentParcelList
-    | SetFetchingPaymentParcelList
-    | SetFetchingPendingPaymentParcelList
-    | SetFetchingUnconfirmedPaymentParcelList
+    | SetFetchingParcelList
+    | SetFetchingPendingParcelList
+    | SetFetchingUnconfirmedParcelList
     | SetSendingSignedParcel;
 
 export enum ActionType {
@@ -60,25 +60,25 @@ export enum ActionType {
     SetFetchingTxList,
     SetFetchingTxListById,
     CacheTxListById,
-    CachePendingPaymentParcelList,
-    CacheUnconfirmedPaymentParcelList,
-    CachePayamentParcelList,
-    SetFetchingPaymentParcelList,
-    SetFetchingPendingPaymentParcelList,
-    SetFetchingUnconfirmedPaymentParcelList,
+    CachePendingParcelList,
+    CacheUnconfirmedParcelList,
+    CacheParcelList,
+    SetFetchingParcelList,
+    SetFetchingPendingParcelList,
+    SetFetchingUnconfirmedParcelList,
     SetSendingSignedParcel
 }
 
-export interface CachePendingPaymentParcelList {
-    type: ActionType.CachePendingPaymentParcelList;
+export interface CachePendingParcelList {
+    type: ActionType.CachePendingParcelList;
     data: {
         address: string;
         pendingParcelList: PendingParcelDoc[];
     };
 }
 
-export interface CacheUnconfirmedPaymentParcelList {
-    type: ActionType.CacheUnconfirmedPaymentParcelList;
+export interface CacheUnconfirmedParcelList {
+    type: ActionType.CacheUnconfirmedParcelList;
     data: {
         address: string;
         parcelList: ParcelDoc[];
@@ -86,29 +86,29 @@ export interface CacheUnconfirmedPaymentParcelList {
 }
 
 export interface CachePayamentParcelList {
-    type: ActionType.CachePayamentParcelList;
+    type: ActionType.CacheParcelList;
     data: {
         address: string;
         parcelList: ParcelDoc[];
     };
 }
 
-export interface SetFetchingPaymentParcelList {
-    type: ActionType.SetFetchingPaymentParcelList;
+export interface SetFetchingParcelList {
+    type: ActionType.SetFetchingParcelList;
     data: {
         address: string;
     };
 }
 
-export interface SetFetchingPendingPaymentParcelList {
-    type: ActionType.SetFetchingPendingPaymentParcelList;
+export interface SetFetchingPendingParcelList {
+    type: ActionType.SetFetchingPendingParcelList;
     data: {
         address: string;
     };
 }
 
-export interface SetFetchingUnconfirmedPaymentParcelList {
-    type: ActionType.SetFetchingUnconfirmedPaymentParcelList;
+export interface SetFetchingUnconfirmedParcelList {
+    type: ActionType.SetFetchingUnconfirmedParcelList;
     data: {
         address: string;
     };
@@ -410,17 +410,16 @@ const sendTransactionByParcel = (
             checkingIndexingFuncForSendingTx = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
                 dispatch(fetchUnconfirmedTxListIfNeed(address));
-                dispatch(fetchPaymentParcelListIfNeed(feePayer));
-                dispatch(fetchPendingPaymentParcelListIfNeed(feePayer));
+                dispatch(fetchParcelListIfNeed(feePayer));
+                dispatch(fetchPendingParcelListIfNeed(feePayer));
                 const pendingTxList = getState().chainReducer.pendingTxList[
                     address
                 ];
                 const unconfirmedTxList = getState().chainReducer
                     .unconfirmedTxList[address];
-                const paymentParcelList = getState().chainReducer
-                    .paymentParcelList[feePayer];
-                const pendingPaymentParcelList = getState().chainReducer
-                    .pendingPaymentParcelList[feePayer];
+                const parcelList = getState().chainReducer.parcelList[feePayer];
+                const pendingParcelList = getState().chainReducer
+                    .pendingParcelList[feePayer];
                 if (
                     ((pendingTxList &&
                         pendingTxList.data &&
@@ -436,16 +435,16 @@ const sendTransactionByParcel = (
                                 unconfirmedTxList.data,
                                 tx => tx.data.hash === transferTx.hash().value
                             ))) &&
-                    ((paymentParcelList &&
-                        paymentParcelList.data &&
+                    ((parcelList &&
+                        parcelList.data &&
                         _.find(
-                            paymentParcelList.data,
+                            parcelList.data,
                             parcel => parcel.hash === signedParcel.hash().value
                         )) ||
-                        (pendingPaymentParcelList &&
-                            pendingPaymentParcelList.data &&
+                        (pendingParcelList &&
+                            pendingParcelList.data &&
                             _.find(
-                                pendingPaymentParcelList.data,
+                                pendingParcelList.data,
                                 pendingParcel =>
                                     pendingParcel.parcel.hash ===
                                     signedParcel.hash().value
@@ -546,23 +545,23 @@ const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
             });
             await sdk.rpc.chain.sendSignedParcel(signedParcel);
             checkingIndexingFuncForSendingParcel = setInterval(() => {
-                dispatch(fetchPendingPaymentParcelListIfNeed(address));
-                dispatch(fetchUnconfirmedPaymentParcelListIfNeed(address));
-                const pendingPaymentParcelList = getState().chainReducer
-                    .pendingPaymentParcelList[address];
-                const unconfirmedPaymentParcelList = getState().chainReducer
-                    .unconfirmedPaymentParcelList[address];
+                dispatch(fetchPendingParcelListIfNeed(address));
+                dispatch(fetchUnconfirmedParcelListIfNeed(address));
+                const pendingParcelList = getState().chainReducer
+                    .pendingParcelList[address];
+                const unconfirmedParcelList = getState().chainReducer
+                    .unconfirmedParcelList[address];
                 if (
-                    (pendingPaymentParcelList &&
-                        pendingPaymentParcelList.data &&
+                    (pendingParcelList &&
+                        pendingParcelList.data &&
                         _.find(
-                            pendingPaymentParcelList.data,
+                            pendingParcelList.data,
                             ppp => ppp.parcel.hash === signedParcel.hash().value
                         )) ||
-                    (unconfirmedPaymentParcelList &&
-                        unconfirmedPaymentParcelList.data &&
+                    (unconfirmedParcelList &&
+                        unconfirmedParcelList.data &&
                         _.find(
-                            unconfirmedPaymentParcelList.data,
+                            unconfirmedParcelList.data,
                             upp => upp.hash === signedParcel.hash().value
                         ))
                 ) {
@@ -660,35 +659,33 @@ const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H256) => {
     };
 };
 
-const fetchPaymentParcelListIfNeed = (address: string) => {
+const fetchParcelListIfNeed = (address: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const paymentParcelList = getState().chainReducer.paymentParcelList[
-            address
-        ];
-        if (paymentParcelList && paymentParcelList.isFetching) {
+        const parcelList = getState().chainReducer.parcelList[address];
+        if (parcelList && parcelList.isFetching) {
             return;
         }
         if (
-            paymentParcelList &&
-            paymentParcelList.updatedAt &&
-            +new Date() - paymentParcelList.updatedAt < 3000
+            parcelList &&
+            parcelList.updatedAt &&
+            +new Date() - parcelList.updatedAt < 3000
         ) {
             return;
         }
         try {
             dispatch(showLoading() as any);
             dispatch({
-                type: ActionType.SetFetchingPaymentParcelList,
+                type: ActionType.SetFetchingParcelList,
                 data: {
                     address
                 }
             });
             const networkId = getState().globalReducer.networkId;
             // FIXME: Add pagination
-            const parcelList = await getParcels(
+            const parcelResponse = await getParcels(
                 address,
                 false,
                 1,
@@ -696,10 +693,10 @@ const fetchPaymentParcelListIfNeed = (address: string) => {
                 networkId
             );
             dispatch({
-                type: ActionType.CachePayamentParcelList,
+                type: ActionType.CacheParcelList,
                 data: {
                     address,
-                    parcelList
+                    parcelList: parcelResponse
                 }
             });
             dispatch(hideLoading() as any);
@@ -709,30 +706,30 @@ const fetchPaymentParcelListIfNeed = (address: string) => {
     };
 };
 
-const fetchUnconfirmedPaymentParcelListIfNeed = (address: string) => {
+const fetchUnconfirmedParcelListIfNeed = (address: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const cachedUnconfirmedPaymentParcelList = getState().chainReducer
-            .unconfirmedPaymentParcelList[address];
+        const cachedUnconfirmedParcelList = getState().chainReducer
+            .unconfirmedParcelList[address];
         if (
-            cachedUnconfirmedPaymentParcelList &&
-            cachedUnconfirmedPaymentParcelList.isFetching
+            cachedUnconfirmedParcelList &&
+            cachedUnconfirmedParcelList.isFetching
         ) {
             return;
         }
         if (
-            cachedUnconfirmedPaymentParcelList &&
-            cachedUnconfirmedPaymentParcelList.updatedAt &&
-            +new Date() - cachedUnconfirmedPaymentParcelList.updatedAt < 3000
+            cachedUnconfirmedParcelList &&
+            cachedUnconfirmedParcelList.updatedAt &&
+            +new Date() - cachedUnconfirmedParcelList.updatedAt < 3000
         ) {
             return;
         }
         try {
             dispatch(showLoading() as any);
             dispatch({
-                type: ActionType.SetFetchingUnconfirmedPaymentParcelList,
+                type: ActionType.SetFetchingUnconfirmedParcelList,
                 data: {
                     address
                 }
@@ -746,7 +743,7 @@ const fetchUnconfirmedPaymentParcelListIfNeed = (address: string) => {
                 networkId
             );
             dispatch({
-                type: ActionType.CacheUnconfirmedPaymentParcelList,
+                type: ActionType.CacheUnconfirmedParcelList,
                 data: {
                     address,
                     parcelList
@@ -760,39 +757,36 @@ const fetchUnconfirmedPaymentParcelListIfNeed = (address: string) => {
     };
 };
 
-const fetchPendingPaymentParcelListIfNeed = (address: string) => {
+const fetchPendingParcelListIfNeed = (address: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const cachedPendingPaymentParcelList = getState().chainReducer
-            .pendingPaymentParcelList[address];
-        if (
-            cachedPendingPaymentParcelList &&
-            cachedPendingPaymentParcelList.isFetching
-        ) {
+        const cachedPendingParcelList = getState().chainReducer
+            .pendingParcelList[address];
+        if (cachedPendingParcelList && cachedPendingParcelList.isFetching) {
             return;
         }
         if (
-            cachedPendingPaymentParcelList &&
-            cachedPendingPaymentParcelList.updatedAt &&
-            +new Date() - cachedPendingPaymentParcelList.updatedAt < 3000
+            cachedPendingParcelList &&
+            cachedPendingParcelList.updatedAt &&
+            +new Date() - cachedPendingParcelList.updatedAt < 3000
         ) {
             return;
         }
         try {
             dispatch(showLoading() as any);
             dispatch({
-                type: ActionType.SetFetchingPendingPaymentParcelList,
+                type: ActionType.SetFetchingPendingParcelList,
                 data: { address }
             });
             const networkId = getState().globalReducer.networkId;
-            const pendingParcelList = await getPendingPaymentParcels(
+            const pendingParcelList = await getPendingParcels(
                 address,
                 networkId
             );
             dispatch({
-                type: ActionType.CachePendingPaymentParcelList,
+                type: ActionType.CachePendingParcelList,
                 data: {
                     address,
                     pendingParcelList
@@ -813,9 +807,9 @@ export default {
     fetchBestBlockNumberIfNeed,
     fetchTxListIfNeed,
     fetchTxListByAssetTypeIfNeed,
-    fetchPaymentParcelListIfNeed,
-    fetchUnconfirmedPaymentParcelListIfNeed,
-    fetchPendingPaymentParcelListIfNeed,
+    fetchParcelListIfNeed,
+    fetchUnconfirmedParcelListIfNeed,
+    fetchPendingParcelListIfNeed,
     sendSignedParcel,
     sendTransactionByParcel
 };

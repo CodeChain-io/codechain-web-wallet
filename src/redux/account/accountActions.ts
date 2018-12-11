@@ -5,7 +5,7 @@ import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { PlatformAccount } from "../../model/address";
 import { getPlatformAccount } from "../../networks/Api";
-import { getAggrPaymentParcel } from "../../utils/parcel";
+import { getAggsParcel } from "../../utils/parcel";
 import chainActions from "../chain/chainActions";
 
 export type Action = UpdateAvailableQuark | UpdateAccount | SetFetchingAccount;
@@ -88,8 +88,8 @@ const fetchAvailableQuark = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        dispatch(chainActions.fetchUnconfirmedPaymentParcelListIfNeed(address));
-        dispatch(chainActions.fetchPendingPaymentParcelListIfNeed(address));
+        dispatch(chainActions.fetchUnconfirmedParcelListIfNeed(address));
+        dispatch(chainActions.fetchPendingParcelListIfNeed(address));
         dispatch(fetchAccountIfNeed(address));
     };
 };
@@ -106,48 +106,43 @@ const calculateAvailableQuark = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const unconfirmedPaymentParcelListObj = getState().chainReducer
-            .unconfirmedPaymentParcelList[address];
+        const unconfirmedParcelListObj = getState().chainReducer
+            .unconfirmedParcelList[address];
         const accountObj = getState().accountReducer.accounts[address];
-        const pendingPaymentParcelListObj = getState().chainReducer
-            .pendingPaymentParcelList[address];
-
-        const unconfirmedPaymentParcelList =
-            unconfirmedPaymentParcelListObj &&
-            unconfirmedPaymentParcelListObj.data;
+        const pendingParcelListObj = getState().chainReducer.pendingParcelList[
+            address
+        ];
+        const unconfirmedParcelList =
+            unconfirmedParcelListObj && unconfirmedParcelListObj.data;
         const account = accountObj && accountObj.data;
-        const pendingPaymentParcelList =
-            pendingPaymentParcelListObj && pendingPaymentParcelListObj.data;
-        if (
-            !unconfirmedPaymentParcelList ||
-            !account ||
-            !pendingPaymentParcelList
-        ) {
+        const pendingParcelList =
+            pendingParcelListObj && pendingParcelListObj.data;
+        if (!unconfirmedParcelList || !account || !pendingParcelList) {
             return;
         }
-        const aggrUnconfirmedPaymentParcel = getAggrPaymentParcel(
+        const aggrUnconfirmedParcel = getAggsParcel(
             address,
-            unconfirmedPaymentParcelList
+            unconfirmedParcelList
         );
-        const unconfirmedPaymentParcelHashList = _.map(
-            unconfirmedPaymentParcelList,
+        const unconfirmedParcelHashList = _.map(
+            unconfirmedParcelList,
             parcel => parcel.hash
         );
         const validPendingParcelList = _.filter(
-            pendingPaymentParcelList,
-            pendingPaymentParcel =>
+            pendingParcelList,
+            pendingParcel =>
                 !_.includes(
-                    unconfirmedPaymentParcelHashList,
-                    pendingPaymentParcel.parcel.hash
+                    unconfirmedParcelHashList,
+                    pendingParcel.parcel.hash
                 )
         );
-        const aggrPendingPaymentParcel = getAggrPaymentParcel(
+        const aggrPendingParcel = getAggsParcel(
             address,
             _.map(validPendingParcelList, p => p.parcel)
         );
         const availableQuark = account.balance.value
-            .minus(aggrUnconfirmedPaymentParcel.output)
-            .minus(aggrPendingPaymentParcel.input);
+            .minus(aggrUnconfirmedParcel.output)
+            .minus(aggrPendingParcel.input);
 
         dispatch({
             type: ActionType.UpdateAvailableQuark,

@@ -23,8 +23,8 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    fetchPendingPaymentParcelListIfNeed: (address: string) => void;
-    fetchPaymentParcelListIfNeed: (address: string) => void;
+    fetchPendingParcelListIfNeed: (address: string) => void;
+    fetchParcelListIfNeed: (address: string) => void;
     fetchBestBlockNumberIfNeed: () => void;
 }
 
@@ -124,20 +124,19 @@ class ParcelHistory extends React.Component<Props> {
         const {
             address,
             fetchBestBlockNumberIfNeed,
-            fetchPaymentParcelListIfNeed,
-            fetchPendingPaymentParcelListIfNeed
+            fetchParcelListIfNeed,
+            fetchPendingParcelListIfNeed
         } = this.props;
         fetchBestBlockNumberIfNeed();
-        fetchPendingPaymentParcelListIfNeed(address);
-        fetchPaymentParcelListIfNeed(address);
+        fetchPendingParcelListIfNeed(address);
+        fetchParcelListIfNeed(address);
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const { address } = props;
-    const pendingParcelList =
-        state.chainReducer.pendingPaymentParcelList[address];
-    const parcelList = state.chainReducer.paymentParcelList[address];
+    const pendingParcelList = state.chainReducer.pendingParcelList[address];
+    const parcelList = state.chainReducer.parcelList[address];
     const bestBlockNumber = state.chainReducer.bestBlockNumber;
     const networkId = state.globalReducer.networkId;
     return {
@@ -150,11 +149,11 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchPendingPaymentParcelListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchPendingPaymentParcelListIfNeed(address));
+    fetchPendingParcelListIfNeed: (address: string) => {
+        dispatch(chainActions.fetchPendingParcelListIfNeed(address));
     },
-    fetchPaymentParcelListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchPaymentParcelListIfNeed(address));
+    fetchParcelListIfNeed: (address: string) => {
+        dispatch(chainActions.fetchParcelListIfNeed(address));
     },
     fetchBestBlockNumberIfNeed: () => {
         dispatch(chainActions.fetchBestBlockNumberIfNeed());

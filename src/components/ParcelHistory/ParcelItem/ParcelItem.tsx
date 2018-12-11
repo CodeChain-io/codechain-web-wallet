@@ -7,7 +7,7 @@ import * as React from "react";
 import MediaQuery from "react-responsive";
 import { NetworkId } from "../../../model/address";
 import { getExplorerHost } from "../../../utils/network";
-import { getAggrPaymentParcel } from "../../../utils/parcel";
+import { getAggsParcel } from "../../../utils/parcel";
 import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./ParcelItem.css";
 
@@ -29,9 +29,8 @@ export default class ParcelItem extends React.Component<Props, any> {
             isPending,
             timestamp
         } = this.props;
-        const aggrParcel = getAggrPaymentParcel(address, [parcel]);
+        const aggrParcel = getAggsParcel(address, [parcel]);
         const confirmNumber = bestBlockNumber - (parcel.blockNumber || 0);
-        const isSender = parcel.signer === address;
         return (
             <div className="d-flex Parcel-item align-items-center">
                 <div className="date-container number">
@@ -55,41 +54,19 @@ export default class ParcelItem extends React.Component<Props, any> {
                     </a>
                 </div>
                 <div className="balance-container number">
-                    {isSender ? (
-                        <span>
-                            {aggrParcel.output
-                                .minus(aggrParcel.input)
-                                .minus(parcel.fee)
-                                .comparedTo(0) === 1
-                                ? "+"
-                                : "-"}
-                            {changeQuarkToCCCString(
-                                new U256(
-                                    aggrParcel.output
-                                        .minus(aggrParcel.input)
-                                        .minus(parcel.fee)
-                                        .abs()
-                                )
-                            )}
-                            CCC
-                        </span>
-                    ) : (
-                        <span>
-                            {aggrParcel.output
-                                .minus(aggrParcel.input)
-                                .comparedTo(0) === 1
-                                ? "+"
-                                : "-"}
-                            {changeQuarkToCCCString(
-                                new U256(
-                                    aggrParcel.output
-                                        .minus(aggrParcel.input)
-                                        .abs()
-                                )
-                            )}
-                            CCC
-                        </span>
-                    )}
+                    <span>
+                        {aggrParcel.output
+                            .minus(aggrParcel.input)
+                            .comparedTo(0) === 1
+                            ? "+"
+                            : "-"}
+                        {changeQuarkToCCCString(
+                            new U256(
+                                aggrParcel.output.minus(aggrParcel.input).abs()
+                            )
+                        )}
+                        CCC
+                    </span>
                 </div>
                 <div className="status-container">
                     {isPending ? (

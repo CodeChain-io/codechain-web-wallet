@@ -102,10 +102,7 @@ export async function sendTxToGateway(
     });
 }
 
-export async function getPendingPaymentParcels(
-    address: string,
-    networkId: NetworkId
-) {
+export async function getPendingParcels(address: string, networkId: NetworkId) {
     const apiHost = getIndexerHost(networkId);
     return await getRequest<PendingParcelDoc[]>(
         `${apiHost}/api/parcels/pending/${address}?page=1&itemsPerPage=10000`
