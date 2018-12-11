@@ -16,7 +16,6 @@
     width: 100px;
     height: auto;
   }
-
   .login-form-container {
     margin-top: 50px;
   }
@@ -29,6 +28,22 @@
       font-size: 1.28rem;
       color: $wallet-blue;
       font-weight: 600;
+    }
+  }
+
+  @include respond-below(sm) {
+    .logo-title {
+      font-size: 2rem;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+    }
+    .open-different-btn-container {
+      .open-different-btn {
+        font-size: 1rem;
+      }
     }
   }
 }

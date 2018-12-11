@@ -3,16 +3,31 @@
 
 .Select-key-file {
   position: relative;
+
   .title-container {
     margin-top: 100px;
   }
+
   .logo-title {
     font-size: 3.5rem;
   }
+
   .logo {
     width: 100px;
     height: auto;
   }
+
+  @include respond-below(sm) {
+    .logo-title {
+      font-size: 2rem;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+    }
+  }
+
   .button-container {
     margin-top: 52px;
     .button-item {
