@@ -45,6 +45,7 @@
     "start-js": "react-scripts-ts start",
     "start": "npm-run-all -p watch-css start-js",
     "build": "npm run build-css && react-scripts-ts build",
+    "build-chrome": "REACT_APP_BUILD_TARGET=chrome-extension npm run build-css && react-scripts-ts build && node build-scripts/build-chrome-extension.js",
     "test": "npm run build-css && react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
     "lint": "tslint -p tsconfig.json && prettier 'src/**/*.{ts,tsx,scss,json,html,js,jsx}' -l",
@@ -68,6 +69,7 @@
     "@types/react-spinkit": "^3.0.5",
     "@types/reactstrap": "^6.4.0",
     "@types/redux-thunk": "^2.1.0",
+    "fs-extra": "^7.0.1",
     "prettier": "^1.14.3",
     "typescript": "^3.1.1"
   }
