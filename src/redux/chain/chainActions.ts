@@ -12,6 +12,7 @@ import {
 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
+import { toast } from "react-toastify";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
@@ -431,7 +432,16 @@ const sendTransactionByGateway = (
                 }
             }, 1000);
         } catch (e) {
+            dispatch(setSendingTx(address, null));
+            dispatch(hideLoading() as any);
+
             console.log(e);
+            toast.error("Gateway is not responding.", {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 3000,
+                closeButton: false,
+                hideProgressBar: true
+            });
         }
     };
 };
