@@ -9,12 +9,15 @@ import {
     AssetTransferAddress,
     AssetTransferOutput,
     AssetTransferTransaction,
-    H256
+    H256,
+    SignedParcel,
+    U256
 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
 import { connect } from "react-redux";
 import * as Spinner from "react-spinkit";
+import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { NetworkId, WalletAddress } from "../../../model/address";
@@ -73,6 +76,12 @@ interface DispatchProps {
         getewayURL: string
     ) => void;
     fetchWalletFromStorageIfNeed: () => void;
+    sendTransactionByParcel: (
+        address: string,
+        signedParcel: SignedParcel,
+        transferTx: AssetTransferTransaction,
+        feePayer: string
+    ) => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -195,7 +204,11 @@ class SendAsset extends React.Component<Props, State> {
     };
 
     private handleSubmit = async (
-        receivers: { address: string; quantity: number }[]
+        receivers: { address: string; quantity: number }[],
+        fee?: {
+            payer: string;
+            amount: U256;
+        } | null
     ) => {
         const { UTXOList } = this.props;
         const {
@@ -208,7 +221,6 @@ class SendAsset extends React.Component<Props, State> {
             assetScheme
         } = this.props;
 
-        // FIXME: Handle loading state
         if (!assetAddresses || !platformAddresses || !assetScheme) {
             return;
         }
@@ -317,20 +329,46 @@ class SendAsset extends React.Component<Props, State> {
                     });
                 })
             );
-
-            const metadata = Type.getMetadata(assetScheme.metadata);
+        } catch (e) {
+            if (e.message === "DecryptionFailed") {
+                toast.error("Invalid password", {
+                    position: toast.POSITION.BOTTOM_CENTER,
+                    autoClose: 1000,
+                    closeButton: false,
+                    hideProgressBar: true
+                });
+            }
+            console.log(e);
+            return;
+        }
+        const metadata = Type.getMetadata(assetScheme.metadata);
+        if (metadata.gateway) {
             this.props.sendTransactionByGateway(
                 address,
                 transferTx,
-                metadata.gateway!.url
+                metadata.gateway.url
             );
-            this.setState({ isSendBtnClicked: true });
-        } catch (e) {
-            if (e.message === "DecryptionFailed") {
-                alert("Invalid password");
-            }
-            console.log(e);
+        } else {
+            const parcel = sdk.core.createAssetTransactionGroupParcel({
+                transactions: [transferTx]
+            });
+            const feePayer = fee!.payer;
+            const nonce = await sdk.rpc.chain.getNonce(feePayer);
+            const signedParcel = await sdk.key.signParcel(parcel, {
+                account: feePayer,
+                keyStore,
+                fee: fee!.amount,
+                nonce,
+                passphrase
+            });
+            this.props.sendTransactionByParcel(
+                address,
+                signedParcel,
+                transferTx,
+                feePayer
+            );
         }
+        this.setState({ isSendBtnClicked: true });
     };
 }
 
@@ -377,6 +415,21 @@ const mapDispatchToProps = (
                 address,
                 transferTx,
                 gatewayURL
+            )
+        );
+    },
+    sendTransactionByParcel: (
+        address: string,
+        signedParcel: SignedParcel,
+        transferTx: AssetTransferTransaction,
+        feePayer: string
+    ) => {
+        dispatch(
+            chainActions.sendTransactionByParcel(
+                address,
+                signedParcel,
+                transferTx,
+                feePayer
             )
         );
     },

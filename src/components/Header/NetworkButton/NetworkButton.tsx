@@ -92,8 +92,12 @@ class NetworkButton extends React.Component<Props, State> {
         this.setState({ popoverOpen: !this.state.popoverOpen });
     };
     private chagneNetworkId = (networkId: NetworkId) => {
-        const { updateNetworkId } = this.props;
+        const { updateNetworkId, networkId: currentNetworkId } = this.props;
         const { history } = this.props;
+        this.toggle();
+        if (networkId === currentNetworkId) {
+            return;
+        }
         updateNetworkId(networkId);
         history.replace("/");
     };

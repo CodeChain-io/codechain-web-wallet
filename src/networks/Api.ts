@@ -108,7 +108,7 @@ export async function getPendingPaymentParcels(
 ) {
     const apiHost = getIndexerHost(networkId);
     return await getRequest<PendingParcelDoc[]>(
-        `${apiHost}/api/parcels/pending/${address}`
+        `${apiHost}/api/parcels/pending/${address}?page=1&itemsPerPage=10000`
     );
 }
 
@@ -133,7 +133,7 @@ export async function getPendingTransactions(
 ) {
     const apiHost = getIndexerHost(networkId);
     return await getRequest<PendingTransactionDoc[]>(
-        `${apiHost}/api/txs/pending/${address}`
+        `${apiHost}/api/txs/pending/${address}?page=1&itemsPerPage=10000`
     );
 }
 

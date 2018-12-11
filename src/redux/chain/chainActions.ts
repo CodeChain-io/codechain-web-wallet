@@ -384,6 +384,84 @@ const setSendingSignedParcel = (
     }
 });
 
+const sendTransactionByParcel = (
+    address: string,
+    signedParcel: SignedParcel,
+    transferTx: AssetTransferTransaction,
+    feePayer: string
+) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const sendingTx = getState().chainReducer.sendingTx[address];
+        if (sendingTx) {
+            return;
+        }
+        try {
+            dispatch(showLoading() as any);
+            dispatch(setSendingTx(address, transferTx));
+            const networkId = getState().globalReducer.networkId;
+            const sdk = new SDK({
+                server: getCodeChainHost(networkId),
+                networkId
+            });
+            await sdk.rpc.chain.sendSignedParcel(signedParcel);
+            checkingIndexingFuncForSendingTx = setInterval(() => {
+                dispatch(fetchPendingTxListIfNeed(address));
+                dispatch(fetchUnconfirmedTxListIfNeed(address));
+                dispatch(fetchPaymentParcelListIfNeed(feePayer));
+                dispatch(fetchPendingPaymentParcelListIfNeed(feePayer));
+                const pendingTxList = getState().chainReducer.pendingTxList[
+                    address
+                ];
+                const unconfirmedTxList = getState().chainReducer
+                    .unconfirmedTxList[address];
+                const paymentParcelList = getState().chainReducer
+                    .paymentParcelList[feePayer];
+                const pendingPaymentParcelList = getState().chainReducer
+                    .pendingPaymentParcelList[feePayer];
+                if (
+                    ((pendingTxList &&
+                        pendingTxList.data &&
+                        _.find(
+                            pendingTxList.data,
+                            tx =>
+                                tx.transaction.data.hash ===
+                                transferTx.hash().value
+                        )) ||
+                        (unconfirmedTxList &&
+                            unconfirmedTxList.data &&
+                            _.find(
+                                unconfirmedTxList.data,
+                                tx => tx.data.hash === transferTx.hash().value
+                            ))) &&
+                    ((paymentParcelList &&
+                        paymentParcelList.data &&
+                        _.find(
+                            paymentParcelList.data,
+                            parcel => parcel.hash === signedParcel.hash().value
+                        )) ||
+                        (pendingPaymentParcelList &&
+                            pendingPaymentParcelList.data &&
+                            _.find(
+                                pendingPaymentParcelList.data,
+                                pendingParcel =>
+                                    pendingParcel.parcel.hash ===
+                                    signedParcel.hash().value
+                            )))
+                ) {
+                    dispatch(setSendingTx(address, null));
+                    clearInterval(checkingIndexingFuncForSendingTx);
+                    dispatch(hideLoading() as any);
+                }
+            }, 1000);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
 let checkingIndexingFuncForSendingTx: NodeJS.Timer;
 const sendTransactionByGateway = (
     address: string,
@@ -452,8 +530,10 @@ const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const sendingTx = getState().chainReducer.sendingTx[address];
-        if (sendingTx) {
+        const sendingSignedParcel = getState().chainReducer.sendingSignedParcel[
+            address
+        ];
+        if (sendingSignedParcel) {
             return;
         }
         try {
@@ -736,5 +816,6 @@ export default {
     fetchPaymentParcelListIfNeed,
     fetchUnconfirmedPaymentParcelListIfNeed,
     fetchPendingPaymentParcelListIfNeed,
-    sendSignedParcel
+    sendSignedParcel,
+    sendTransactionByParcel
 };

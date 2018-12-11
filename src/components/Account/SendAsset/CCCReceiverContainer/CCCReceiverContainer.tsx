@@ -37,7 +37,7 @@ export default class CCCReceiverContainer extends React.Component<
                 address: "",
                 amount: ""
             },
-            fee: "0.01",
+            fee: "0.0000001",
             isFeeValid: undefined,
             feeError: undefined,
             isAddressValid: undefined,
@@ -185,10 +185,10 @@ export default class CCCReceiverContainer extends React.Component<
             });
             return false;
         }
-        if (feeQuark.lt(1)) {
+        if (feeQuark.lt(10)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "minimum value is 0.000000001"
+                feeError: "minimum value is 0.00000001"
             });
             return false;
         }
