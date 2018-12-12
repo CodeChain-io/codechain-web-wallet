@@ -4,7 +4,7 @@
   "version": "0.2",
   "manifest_version": 2,
   "icons": { "16": "logo-16.png", "128": "logo-128.png" },
-  "permissions": ["declarativeContent", "storage"],
+  "permissions": ["declarativeContent", "storage", "activeTab"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
@@ -17,5 +17,14 @@
       "48": "logo-48.png",
       "128": "logo-128.png"
     }
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["contentscript.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": ["inpage.js"]
 }
