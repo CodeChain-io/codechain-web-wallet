@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+import * as fs from "fs";
+import * as path from "path";
 const extension = require("extensionizer");
 const inpageContent = fs
   .readFileSync(path.join(__dirname, "..", "build", "inpage.js"))
@@ -21,11 +21,11 @@ function shouldInjectSDK() {
   );
 }
 
-function injectScript(content) {
+function injectScript(content: string) {
   try {
-    const container = document.head || document.documentElement;
+    const container = document.head || document.documentElement!;
     const scriptTag = document.createElement("script");
-    scriptTag.setAttribute("async", false);
+    scriptTag.setAttribute("async", "false");
     scriptTag.textContent = content;
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
@@ -46,6 +46,7 @@ function doctypeCheck() {
 function suffixCheck() {
   const prohibitedTypes = [/\.xml$/, /\.pdf$/];
   const currentUrl = window.location.pathname;
+  // tslint:disable-next-line:prefer-for-of
   for (let i = 0; i < prohibitedTypes.length; i++) {
     if (prohibitedTypes[i].test(currentUrl)) {
       return false;
@@ -55,7 +56,7 @@ function suffixCheck() {
 }
 
 function documentElementCheck() {
-  let documentElement = document.documentElement.nodeName;
+  const documentElement = document.documentElement!.nodeName;
   if (documentElement) {
     return documentElement.toLowerCase() === "html";
   }
@@ -63,7 +64,7 @@ function documentElementCheck() {
 }
 
 function blacklistedDomainCheck() {
-  let blacklistedDomains = [
+  const blacklistedDomains = [
     "uscourts.gov",
     "dropbox.com",
     "webbyawards.com",
@@ -74,8 +75,9 @@ function blacklistedDomainCheck() {
     "ani.gamer.com.tw",
     "blueskybooking.com"
   ];
-  let currentUrl = window.location.href;
+  const currentUrl = window.location.href;
   let currentRegex;
+  // tslint:disable-next-line:prefer-for-of
   for (let i = 0; i < blacklistedDomains.length; i++) {
     const blacklistedDomain = blacklistedDomains[i].replace(".", "\\.");
     currentRegex = new RegExp(

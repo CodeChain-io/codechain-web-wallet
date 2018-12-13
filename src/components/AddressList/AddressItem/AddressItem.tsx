@@ -129,7 +129,7 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const availableQuark =
         state.accountReducer.availableQuark[walletAddress.address];
     return {
-        availableQuark
+        availableQuark: availableQuark && new U256(availableQuark)
     };
 };
 const mapDispatchToProps = (

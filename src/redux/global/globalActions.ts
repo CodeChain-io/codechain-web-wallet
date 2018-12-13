@@ -12,10 +12,10 @@ import { ActionType as WalletActions } from "../wallet/walletActions";
 export type Action = Login | ClearData | Logout | UpdateNetwork;
 
 export enum ActionType {
-    Login = 1000,
-    ClearData,
-    Logout,
-    UpdateNetwork
+    Login = "Login",
+    ClearData = "ClearData",
+    Logout = "Logout",
+    UpdateNetwork = "UpdateNetwork"
 }
 
 export interface Login {

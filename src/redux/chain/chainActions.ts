@@ -49,24 +49,24 @@ export type Action =
     | SetSendingSignedParcel;
 
 export enum ActionType {
-    CachePendingTxList = 2000,
-    CacheUnconfirmedTxList,
-    CacheTxList,
-    SetFetchingPendingTxList,
-    SetFetchingUnconfirmedTxList,
-    SetSendingTx,
-    UpdateBestBlockNumber,
-    SetFetchingBestBlockNumber,
-    SetFetchingTxList,
-    SetFetchingTxListById,
-    CacheTxListById,
-    CachePendingParcelList,
-    CacheUnconfirmedParcelList,
-    CacheParcelList,
-    SetFetchingParcelList,
-    SetFetchingPendingParcelList,
-    SetFetchingUnconfirmedParcelList,
-    SetSendingSignedParcel
+    CachePendingTxList = "CachePendingTxList",
+    CacheUnconfirmedTxList = "CacheUnconfirmedTxList",
+    CacheTxList = "CacheTxList",
+    SetFetchingPendingTxList = "SetFetchingPendingTxList",
+    SetFetchingUnconfirmedTxList = "SetFetchingUnconfirmedTxList",
+    SetSendingTx = "SetSendingTx",
+    UpdateBestBlockNumber = "UpdateBestBlockNumber",
+    SetFetchingBestBlockNumber = "SetFetchingBestBlockNumber",
+    SetFetchingTxList = "SetFetchingTxList",
+    SetFetchingTxListById = "SetFetchingTxListById",
+    CacheTxListById = "CacheTxListById",
+    CachePendingParcelList = "CachePendingParcelList",
+    CacheUnconfirmedParcelList = "CacheUnconfirmedParcelList",
+    CacheParcelList = "CacheParcelList",
+    SetFetchingParcelList = "SetFetchingParcelList",
+    SetFetchingPendingParcelList = "SetFetchingPendingParcelList",
+    SetFetchingUnconfirmedParcelList = "SetFetchingUnconfirmedParcelList",
+    SetSendingSignedParcel = "SetSendingSignedParcel"
 }
 
 export interface CachePendingParcelList {

@@ -8,11 +8,7 @@ import {
     TransactionDoc,
     UTXO
 } from "codechain-indexer-types/lib/types";
-import {
-    AssetTransferTransaction,
-    H256,
-    U256
-} from "codechain-sdk/lib/core/classes";
+import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
@@ -68,13 +64,13 @@ export async function getPlatformAccount(
 
     if (response) {
         return {
-            balance: new U256(response.balance),
-            nonce: new U256(response.nonce)
+            balance: response.balance,
+            nonce: response.nonce
         } as PlatformAccount;
     } else {
         return {
-            balance: new U256(0),
-            nonce: new U256(0)
+            balance: "0",
+            nonce: "0"
         } as PlatformAccount;
     }
 }

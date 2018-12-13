@@ -24,11 +24,11 @@ export type Action =
     | SetLoadingPlatformAddresses;
 
 export enum ActionType {
-    UpdateWalletPlatformAddresses = 3000,
-    UpdateWalletAssetAddresses,
-    ClearWalletAddresses,
-    SetLoadingPlatformAddresses,
-    SetLoadingAssetAddresses
+    UpdateWalletPlatformAddresses = "UpdateWalletPlatformAddresses",
+    UpdateWalletAssetAddresses = "UpdateWalletAssetAddresses",
+    ClearWalletAddresses = "ClearWalletAddresses",
+    SetLoadingPlatformAddresses = "SetLoadingPlatformAddresses",
+    SetLoadingAssetAddresses = "SetLoadingAssetAddresses"
 }
 
 export interface UpdateWalletPlatformAddresses {

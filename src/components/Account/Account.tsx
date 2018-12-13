@@ -173,7 +173,7 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
         aa => aa.address === address
     );
     return {
-        availableQuark,
+        availableQuark: availableQuark && new U256(availableQuark),
         addressName: assetAddress && assetAddress.name
     };
 };

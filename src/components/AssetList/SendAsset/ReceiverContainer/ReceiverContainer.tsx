@@ -56,7 +56,7 @@ interface OwnProps {
 
 interface StateProps {
     platformAddresses?: WalletAddress[] | null;
-    availableQuarkList: { [address: string]: U256 | null };
+    availableQuarkList: { [address: string]: string | null };
 }
 
 interface DispatchProps {
@@ -219,9 +219,11 @@ class ReceiverContainer extends React.Component<Props, State> {
                                         availableQuarkList[feePayer] && (
                                             <span className="available-ccc-text number pl-2 pr-2">
                                                 {changeQuarkToCCCString(
-                                                    availableQuarkList[
-                                                        feePayer
-                                                    ]!
+                                                    new U256(
+                                                        availableQuarkList[
+                                                            feePayer
+                                                        ]!
+                                                    )
                                                 )}
                                                 CCC
                                             </span>
@@ -265,7 +267,9 @@ class ReceiverContainer extends React.Component<Props, State> {
             });
             return false;
         }
-        const availableQuark = availableQuarkList[feePayer];
+        const availableQuark =
+            availableQuarkList[feePayer] &&
+            new U256(availableQuarkList[feePayer]!);
         if (!availableQuark) {
             throw Error("invalid balacne");
         }

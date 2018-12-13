@@ -201,7 +201,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const passphrase = state.globalReducer.passphrase!;
     const sendingSignedParcel = state.chainReducer.sendingSignedParcel[address];
     return {
-        availableQuark,
+        availableQuark: availableQuark && new U256(availableQuark),
         networkId,
         passphrase,
         isSendingParcel: sendingSignedParcel != null

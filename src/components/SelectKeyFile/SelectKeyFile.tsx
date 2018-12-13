@@ -1,21 +1,20 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Container } from "reactstrap";
 import { Action } from "redux";
-import actions from "../../redux/global/globalActions";
-import "./SelectKeyFile.css";
-
-import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
 import { WalletAddress } from "../../model/address";
 import { clearKeystore } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
+import globalActions from "../../redux/global/globalActions";
 import { clearPassphrase, clearWalletKeys } from "../../utils/storage";
 import * as Logo from "./img/logo-vertical.svg";
 import * as CreateNewWalletIconHover from "./img/plus-hover.svg";
 import * as CreateNewWalletIcon from "./img/plus-standard.svg";
 import * as ImportKeyIconHover from "./img/restore-hover.svg";
 import * as ImportKeyIcon from "./img/restore-standard.svg";
+import "./SelectKeyFile.css";
 
 interface StateProps {
     creatingAddresses?: WalletAddress[] | null;
@@ -135,7 +134,7 @@ const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     clearData: () => {
-        dispatch(actions.clearData());
+        dispatch(globalActions.clearData());
     }
 });
 

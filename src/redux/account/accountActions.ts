@@ -1,4 +1,4 @@
-import { U256 } from "codechain-sdk/lib/core/classes";
+import BigNumber from "bignumber.js";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
@@ -11,16 +11,16 @@ import chainActions from "../chain/chainActions";
 export type Action = UpdateAvailableQuark | UpdateAccount | SetFetchingAccount;
 
 export enum ActionType {
-    UpdateAvailableQuark = 4000,
-    UpdateAccount,
-    SetFetchingAccount
+    UpdateAvailableQuark = "UpdateAvailableQuark",
+    UpdateAccount = "UpdateAccount",
+    SetFetchingAccount = "SetFetchingAccount"
 }
 
 export interface UpdateAvailableQuark {
     type: ActionType.UpdateAvailableQuark;
     data: {
         address: string;
-        amount: U256;
+        amount: string;
     };
 }
 
@@ -140,15 +140,14 @@ const calculateAvailableQuark = (address: string) => {
             address,
             _.map(validPendingParcelList, p => p.parcel)
         );
-        const availableQuark = account.balance.value
+        const availableQuark = new BigNumber(account.balance)
             .minus(aggrUnconfirmedParcel.output)
             .minus(aggrPendingParcel.input);
-
         dispatch({
             type: ActionType.UpdateAvailableQuark,
             data: {
                 address,
-                amount: new U256(availableQuark)
+                amount: availableQuark.toString(10)
             }
         });
     };

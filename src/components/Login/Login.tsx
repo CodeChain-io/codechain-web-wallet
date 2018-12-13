@@ -102,7 +102,7 @@ class Login extends React.Component<Props, State> {
     };
 
     public handleSignIn = async () => {
-        const { history, login } = this.props;
+        const { login } = this.props;
         const { passphrase } = this.state;
 
         const isValid = await checkPassphrase(passphrase);
@@ -113,7 +113,7 @@ class Login extends React.Component<Props, State> {
 
         // TODO
         login(passphrase);
-        history.push(`/`);
+        // history.push(`/`);
     };
 }
 

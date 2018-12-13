@@ -1,5 +1,3 @@
-import { U256 } from "codechain-sdk/lib/core/classes";
-
 export type NetworkId = "cc" | "tc" | "sc" | "wc";
 
 export interface WalletAddress {
@@ -14,6 +12,6 @@ export enum AddressType {
 }
 
 export interface PlatformAccount {
-    balance: U256;
-    nonce: U256;
+    balance: string;
+    nonce: string;
 }

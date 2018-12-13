@@ -124,7 +124,7 @@ class RestoreWallet extends React.Component<Props, State> {
 
     private handleSubmit = async () => {
         const { passphrase, secretPhrase } = this.state;
-        const { login, history } = this.props;
+        const { login } = this.props;
 
         if (!this.checkPassphraseValid()) {
             return;
@@ -141,7 +141,7 @@ class RestoreWallet extends React.Component<Props, State> {
 
         await importMnemonic(splitPassphrases.join(" "), passphrase);
         login(passphrase!);
-        history.push("/");
+        // history.push("/");
     };
 
     private handleChangeSecretPhraseInput = (

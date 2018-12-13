@@ -114,10 +114,10 @@ class CreateWallet extends React.Component<Props, State> {
     };
 
     private handleConfirmPhrase = () => {
-        const { history, login } = this.props;
+        const { login } = this.props;
         const { passphrase } = this.state;
         login(passphrase!);
-        history.push("/");
+        // history.push("/");
     };
 }
 
