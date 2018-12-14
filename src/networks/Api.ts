@@ -64,8 +64,8 @@ export async function getPlatformAccount(
 
     if (response) {
         return {
-            balance: response.balance,
-            nonce: response.nonce
+            balance: response.balance.toString(),
+            nonce: response.nonce.toString()
         } as PlatformAccount;
     } else {
         return {
