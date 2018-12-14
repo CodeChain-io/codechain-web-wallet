@@ -73,7 +73,9 @@ function blacklistedDomainCheck() {
     "gravityforms.com",
     "harbourair.com",
     "ani.gamer.com.tw",
-    "blueskybooking.com"
+    "blueskybooking.com",
+    "localhost:3000",
+    "52.78.210.78:9000"
   ];
   const currentUrl = window.location.href;
   let currentRegex;
