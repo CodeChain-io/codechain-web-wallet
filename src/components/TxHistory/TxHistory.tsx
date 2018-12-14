@@ -38,7 +38,6 @@ interface DispatchProps {
 type Props = StateProps & OwnProps & DispatchProps;
 
 class TxHistory extends React.Component<Props> {
-    private refresher: any;
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -50,10 +49,6 @@ class TxHistory extends React.Component<Props> {
 
     public componentDidMount() {
         this.init();
-    }
-
-    public componentWillUnmount() {
-        this.clearInterval();
     }
 
     public render() {
@@ -114,17 +109,7 @@ class TxHistory extends React.Component<Props> {
     }
 
     private init = async () => {
-        this.clearInterval();
-        this.refresher = setInterval(() => {
-            this.fetchAll();
-        }, 5000);
         this.fetchAll();
-    };
-
-    private clearInterval = () => {
-        if (this.refresher) {
-            clearInterval(this.refresher);
-        }
     };
 
     private fetchAll = () => {

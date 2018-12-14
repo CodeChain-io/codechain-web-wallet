@@ -35,7 +35,6 @@ interface State {
 type Props = OwnProps & StateProps & DispatchProps;
 
 class Account extends React.Component<Props, State> {
-    private refresher: any;
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -60,10 +59,6 @@ class Account extends React.Component<Props, State> {
 
     public componentDidMount() {
         this.init();
-    }
-
-    public componentWillUnmount() {
-        this.clearInterval();
     }
 
     public render() {
@@ -139,17 +134,9 @@ class Account extends React.Component<Props, State> {
     };
 
     private init = async () => {
-        this.clearInterval();
-        this.refresher = setInterval(() => {
-            this.fetchAll();
-        }, 5000);
         this.fetchAll();
     };
-    private clearInterval = () => {
-        if (this.refresher) {
-            clearInterval(this.refresher);
-        }
-    };
+
     private fetchAll = async () => {
         const {
             match: {
