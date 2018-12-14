@@ -114,10 +114,14 @@ class CreateWallet extends React.Component<Props, State> {
     };
 
     private handleConfirmPhrase = () => {
-        const { login } = this.props;
+        const { login, history } = this.props;
         const { passphrase } = this.state;
         login(passphrase!);
-        // history.push("/");
+        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+        // This code is temporary for solving this problem.
+        setTimeout(() => {
+            history.push(`/`);
+        }, 300);
     };
 }
 

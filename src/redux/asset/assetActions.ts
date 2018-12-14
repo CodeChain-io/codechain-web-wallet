@@ -228,7 +228,11 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
                     cacheAssetScheme(new H256(u.assetType), u.assetScheme)
                 );
             });
-            dispatch(calculateAvailableAssets(address));
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                dispatch(calculateAvailableAssets(address));
+            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);

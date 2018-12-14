@@ -75,7 +75,11 @@ const fetchAccountIfNeed = (address: string) => {
                 networkId
             );
             dispatch(updateAccount(address, accountResponse));
-            dispatch(calculateAvailableQuark(address));
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                dispatch(calculateAvailableQuark(address));
+            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -84,7 +88,7 @@ const fetchAccountIfNeed = (address: string) => {
 };
 
 const fetchAvailableQuark = (address: string) => {
-    return async (
+    return (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
@@ -102,7 +106,7 @@ export interface SetFetchingAccount {
 }
 
 const calculateAvailableQuark = (address: string) => {
-    return async (
+    return (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {

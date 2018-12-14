@@ -102,7 +102,7 @@ class Login extends React.Component<Props, State> {
     };
 
     public handleSignIn = async () => {
-        const { login } = this.props;
+        const { login, history } = this.props;
         const { passphrase } = this.state;
 
         const isValid = await checkPassphrase(passphrase);
@@ -111,9 +111,12 @@ class Login extends React.Component<Props, State> {
             return;
         }
 
-        // TODO
         login(passphrase);
-        // history.push(`/`);
+        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+        // This code is temporary for solving this problem.
+        setTimeout(() => {
+            history.push(`/`);
+        }, 300);
     };
 }
 

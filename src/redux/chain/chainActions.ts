@@ -250,7 +250,11 @@ const fetchPendingTxListIfNeed = (address: string) => {
                 networkId
             );
             dispatch(cachePendingTxList(address, pendingTxList));
-            dispatch(assetActions.calculateAvailableAssets(address));
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                dispatch(assetActions.calculateAvailableAssets(address));
+            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -307,7 +311,11 @@ const fetchUnconfirmedTxListIfNeed = (address: string) => {
                 networkId
             );
             dispatch(cacheUnconfirmedTxList(address, unconfirmedTxList));
-            dispatch(assetActions.calculateAvailableAssets(address));
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                dispatch(assetActions.calculateAvailableAssets(address));
+            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -749,7 +757,11 @@ const fetchUnconfirmedParcelListIfNeed = (address: string) => {
                     parcelList
                 }
             });
-            dispatch(accountActions.calculateAvailableQuark(address));
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                dispatch(accountActions.calculateAvailableQuark(address));
+            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -792,7 +804,11 @@ const fetchPendingParcelListIfNeed = (address: string) => {
                     pendingParcelList
                 }
             });
-            dispatch(accountActions.calculateAvailableQuark(address));
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                dispatch(accountActions.calculateAvailableQuark(address));
+            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);

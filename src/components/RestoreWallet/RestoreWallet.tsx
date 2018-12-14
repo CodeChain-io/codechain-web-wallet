@@ -124,7 +124,7 @@ class RestoreWallet extends React.Component<Props, State> {
 
     private handleSubmit = async () => {
         const { passphrase, secretPhrase } = this.state;
-        const { login } = this.props;
+        const { login, history } = this.props;
 
         if (!this.checkPassphraseValid()) {
             return;
@@ -141,7 +141,11 @@ class RestoreWallet extends React.Component<Props, State> {
 
         await importMnemonic(splitPassphrases.join(" "), passphrase);
         login(passphrase!);
-        // history.push("/");
+        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+        // This code is temporary for solving this problem.
+        setTimeout(() => {
+            history.push(`/`);
+        }, 300);
     };
 
     private handleChangeSecretPhraseInput = (
