@@ -40,7 +40,9 @@ class AddressItem extends React.Component<Props, State> {
     }
     public componentDidMount() {
         const { walletAddress, fetchAvailableQuark } = this.props;
-        fetchAvailableQuark(walletAddress.address);
+        if (walletAddress.type === AddressType.Platform) {
+            fetchAvailableQuark(walletAddress.address);
+        }
     }
     public render() {
         const { walletAddress, className, availableQuark } = this.props;
