@@ -25,8 +25,6 @@ interface API {
 export default class WalletAPI implements API {
   public signTXInput: (tx: AssetTransferInput) => Promise<AssetTransferInput>;
   public signParcel: (parcel: Parcel) => Promise<SignedParcel>;
-  public getPlatformAddresses: () => Promise<string[]>;
-  public getAssetAddresses: () => Promise<string[]>;
 
   private messageTunnel: MessageTunnel;
   constructor(messageTunnel: MessageTunnel) {
@@ -63,6 +61,20 @@ export default class WalletAPI implements API {
       body: {
         address: assetAddress
       }
+    });
+    return response;
+  };
+
+  public getAssetAddresses = async () => {
+    const response = await this.messageTunnel.request<string[]>({
+      type: "getAssetAddresses"
+    });
+    return response;
+  };
+
+  public getPlatformAddresses = async () => {
+    const response = await this.messageTunnel.request<string[]>({
+      type: "getPlatformAddresses"
     });
     return response;
   };

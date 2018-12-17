@@ -10,10 +10,17 @@ enum Actions {
   getNetworkId = "getNetworkId",
   isAuthenticated = "isAuthenticated",
   getAvailableQuark = "getAvailableQuark",
-  getAvailableAssets = "getAvailableAssets"
+  getAvailableAssets = "getAvailableAssets",
+  getPlatformAddresses = "getPlatformAddresses",
+  getAssetAddresses = "getAssetAddresses"
 }
 
-const needAuthActions = [Actions.getAvailableQuark, Actions.getAvailableAssets];
+const needAuthActions = [
+  Actions.getAvailableQuark,
+  Actions.getAvailableAssets,
+  Actions.getAssetAddresses,
+  Actions.getPlatformAddresses
+];
 export default class APIHandler {
   private store;
   constructor(store: Store) {
@@ -65,6 +72,18 @@ export default class APIHandler {
         }
         const availableAssets = await this.loadAvailableAssetsIfNeed(address);
         sendResponse(this.createMessage(availableAssets));
+        return;
+      }
+      case Actions.getAssetAddresses: {
+        const state = this.store.getState() as ReducerConfigure;
+        const assetAddresses = state.walletReducer.assetAddresses;
+        sendResponse(this.createMessage(assetAddresses));
+        return;
+      }
+      case Actions.getPlatformAddresses: {
+        const state = this.store.getState() as ReducerConfigure;
+        const platformAddresses = state.walletReducer.platformAddresses;
+        sendResponse(this.createMessage(platformAddresses));
         return;
       }
     }
