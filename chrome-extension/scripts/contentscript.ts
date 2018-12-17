@@ -103,11 +103,20 @@ const messageTunnel = new MessageTunnel({
 
 messageTunnel.addEventHandler(
   async (req: MessageFormat, response: (result: any) => void) => {
-    const responseFromBackground = await sendMessageToBackground<any>({
-      type: req.type,
-      data: req.body
-    });
-    response(responseFromBackground);
+    try {
+      const responseFromBackground = await sendMessageToBackground<any>({
+        type: req.type,
+        data: req.body
+      });
+      response({
+        status: "success",
+        data: responseFromBackground
+      });
+    } catch (e) {
+      response({
+        status: e
+      });
+    }
   }
 );
 

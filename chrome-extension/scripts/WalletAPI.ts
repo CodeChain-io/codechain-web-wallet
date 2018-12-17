@@ -39,21 +39,21 @@ export default class WalletAPI implements API {
   }
 
   public isAuthenticated = async () => {
-    const response = await this.messageTunnel.request<boolean>({
+    const response = await this.sendRequest<boolean>({
       type: "isAuthenticated"
     });
     return response;
   };
 
   public getNetworkId = async () => {
-    const response = await this.messageTunnel.request<string>({
+    const response = await this.sendRequest<string>({
       type: "getNetworkId"
     });
     return response;
   };
 
   public getAvailableQuark = async (platformAddress: string) => {
-    const response = await this.messageTunnel.request<U256 | null>({
+    const response = await this.sendRequest<U256 | null>({
       type: "getAvailableQuark",
       body: {
         address: platformAddress
@@ -63,7 +63,7 @@ export default class WalletAPI implements API {
   };
 
   public getAvailableAssets = async (assetAddress: string) => {
-    const response = await this.messageTunnel.request<AggsUTXO | null>({
+    const response = await this.sendRequest<AggsUTXO | null>({
       type: "getAvailableAssets",
       body: {
         address: assetAddress
@@ -73,14 +73,14 @@ export default class WalletAPI implements API {
   };
 
   public getAssetAddresses = async () => {
-    const response = await this.messageTunnel.request<string[]>({
+    const response = await this.sendRequest<string[]>({
       type: "getAssetAddresses"
     });
     return response;
   };
 
   public getPlatformAddresses = async () => {
-    const response = await this.messageTunnel.request<string[]>({
+    const response = await this.sendRequest<string[]>({
       type: "getPlatformAddresses"
     });
     return response;
@@ -90,15 +90,13 @@ export default class WalletAPI implements API {
     assetTransferTransaction: AssetTransferTransaction,
     index: number
   ) => {
-    const response = await this.messageTunnel.request<AssetTransferTransaction>(
-      {
-        type: "signTxInput",
-        body: {
-          tx: assetTransferTransaction,
-          index
-        }
+    const response = await this.sendRequest<AssetTransferTransaction>({
+      type: "signTxInput",
+      body: {
+        tx: assetTransferTransaction,
+        index
       }
-    );
+    });
     return response;
   };
 
@@ -109,7 +107,7 @@ export default class WalletAPI implements API {
       fee: U256;
     }
   ) => {
-    const response = await this.messageTunnel.request<SignedParcel>({
+    const response = await this.sendRequest<SignedParcel>({
       type: "signParcel",
       body: {
         parcel,
@@ -125,5 +123,16 @@ export default class WalletAPI implements API {
 
   public getIndexerHost = (networkId: NetworkId) => {
     return getIndexerHost(networkId);
+  };
+
+  private sendRequest = async <T>(param) => {
+    const response = await this.messageTunnel.request<{
+      status: string;
+      data: T;
+    }>(param);
+    if (response.status !== "success") {
+      throw new Error(response.status);
+    }
+    return response.data;
   };
 }
