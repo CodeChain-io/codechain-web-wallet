@@ -1,10 +1,20 @@
+import { SDK } from "codechain-sdk";
+import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
 import { Store } from "redux";
-import { isKeystoreExisted } from "../../src/model/keystore";
+import {
+  getAssetAddressPath,
+  getCCKey,
+  getFirstSeedHash,
+  getPlatformAddressPath,
+  isKeystoreExisted
+} from "../../src/model/keystore";
 import { ReducerConfigure } from "../../src/redux";
 import accountActions from "../../src/redux/account/accountActions";
 import assetActions from "../../src/redux/asset/assetActions";
 import walletActions from "../../src/redux/wallet/walletActions";
+import { getCodeChainHost } from "../../src/utils/network";
+import { getAssetKeys, getPlatformKeys } from "../../src/utils/storage";
 
 enum Actions {
   getNetworkId = "getNetworkId",
@@ -12,14 +22,18 @@ enum Actions {
   getAvailableQuark = "getAvailableQuark",
   getAvailableAssets = "getAvailableAssets",
   getPlatformAddresses = "getPlatformAddresses",
-  getAssetAddresses = "getAssetAddresses"
+  getAssetAddresses = "getAssetAddresses",
+  signTxInput = "signTxInput",
+  signParcel = "signParcel"
 }
 
 const needAuthActions = [
   Actions.getAvailableQuark,
   Actions.getAvailableAssets,
   Actions.getAssetAddresses,
-  Actions.getPlatformAddresses
+  Actions.getPlatformAddresses,
+  Actions.signParcel,
+  Actions.signTxInput
 ];
 export default class APIHandler {
   private store;
@@ -86,7 +100,104 @@ export default class APIHandler {
         sendResponse(this.createMessage(platformAddresses));
         return;
       }
+      case Actions.signParcel: {
+        const parcel = request.data.parcel;
+        const feePayer = request.data.options && request.data.options.feePayer;
+        const fee = request.data.options && request.data.options.fee;
+        if (!parcel || !feePayer || !fee) {
+          sendResponse(this.createFailMessage("invalid params"));
+          return;
+        }
+
+        const state = this.store.getState() as ReducerConfigure;
+        const networkId = state.globalReducer.networkId;
+        const sdk = new SDK({
+          server: getCodeChainHost(networkId),
+          networkId
+        });
+        const keyStore = await this.getKeystore();
+        const passphrase = state.globalReducer.passphrase;
+        const nonce = await sdk.rpc.chain.getNonce(feePayer);
+        const signedParcel = await sdk.key.signParcel(parcel, {
+          account: feePayer,
+          keyStore,
+          fee: fee!.amount,
+          nonce,
+          passphrase
+        });
+
+        sendResponse(this.createMessage(signedParcel));
+        return;
+      }
+      case Actions.signTxInput: {
+        const tx = request.data.tx;
+        const index = request.data.index;
+
+        if (!tx || !index) {
+          sendResponse(this.createFailMessage("invalid params"));
+          return;
+        }
+
+        const state = this.store.getState() as ReducerConfigure;
+        const networkId = state.globalReducer.networkId;
+
+        const sdk = new SDK({
+          server: getCodeChainHost(networkId),
+          networkId
+        });
+
+        const keyStore = await this.getKeystore();
+        const passphrase = state.globalReducer.passphrase;
+        const signedTx = sdk.key.signTransactionInput(tx, index, {
+          keyStore,
+          passphrase
+        });
+
+        sendResponse(this.createMessage(signedTx));
+        return;
+      }
     }
+  };
+
+  private getKeystore = async () => {
+    const state = this.store.getState() as ReducerConfigure;
+    const networkId = state.globalReducer.networkId;
+    const ccKey = await getCCKey();
+    const storedPlatformKeys = getPlatformKeys(networkId);
+    const storedAssetKeys = getAssetKeys(networkId);
+    const seedHash = await getFirstSeedHash();
+
+    const platformKeyMapping = _.reduce(
+      storedPlatformKeys,
+      (memo, storedPlatformKey) => {
+        return {
+          ...memo,
+          [storedPlatformKey.key]: {
+            seedHash,
+            path: getPlatformAddressPath(storedPlatformKey.pathIndex)
+          }
+        };
+      },
+      {}
+    );
+
+    const assetKeyMapping = _.reduce(
+      storedAssetKeys,
+      (memo, storedAssetKey) => {
+        return {
+          ...memo,
+          [storedAssetKey.key]: {
+            seedHash,
+            path: getAssetAddressPath(storedAssetKey.pathIndex)
+          }
+        };
+      },
+      {}
+    );
+    return new LocalKeyStore(ccKey, {
+      platform: platformKeyMapping,
+      asset: assetKeyMapping
+    });
   };
 
   private hasAuthentication = async () => {

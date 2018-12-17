@@ -2,6 +2,7 @@ import { AggsUTXO } from "codechain-indexer-types/lib/types";
 import { PlatformAddress } from "codechain-primitives/lib";
 import {
   AssetTransferInput,
+  AssetTransferTransaction,
   Parcel,
   SignedParcel,
   U256
@@ -11,8 +12,17 @@ import { getCodeChainHost, getIndexerHost } from "../../src/utils/network";
 import MessageTunnel from "./MessageTunnel";
 
 interface API {
-  signTXInput: (tx: AssetTransferInput) => Promise<AssetTransferInput>;
-  signParcel: (parcel: Parcel) => Promise<SignedParcel>;
+  signTxInput: (
+    assetTransferTransaction: AssetTransferTransaction,
+    index: number
+  ) => Promise<AssetTransferTransaction>;
+  signParcel: (
+    parcel: Parcel,
+    options: {
+      feePayer: string;
+      fee: U256;
+    }
+  ) => Promise<SignedParcel>;
   getNetworkId: () => Promise<NetworkId>;
   getPlatformAddresses: () => Promise<string[]>;
   getAssetAddresses: () => Promise<string[]>;
@@ -23,9 +33,6 @@ interface API {
 }
 
 export default class WalletAPI implements API {
-  public signTXInput: (tx: AssetTransferInput) => Promise<AssetTransferInput>;
-  public signParcel: (parcel: Parcel) => Promise<SignedParcel>;
-
   private messageTunnel: MessageTunnel;
   constructor(messageTunnel: MessageTunnel) {
     this.messageTunnel = messageTunnel;
@@ -75,6 +82,39 @@ export default class WalletAPI implements API {
   public getPlatformAddresses = async () => {
     const response = await this.messageTunnel.request<string[]>({
       type: "getPlatformAddresses"
+    });
+    return response;
+  };
+
+  public signTxInput = async (
+    assetTransferTransaction: AssetTransferTransaction,
+    index: number
+  ) => {
+    const response = await this.messageTunnel.request<AssetTransferTransaction>(
+      {
+        type: "signTxInput",
+        body: {
+          tx: assetTransferTransaction,
+          index
+        }
+      }
+    );
+    return response;
+  };
+
+  public signParcel = async (
+    parcel: Parcel,
+    options: {
+      feePayer: string;
+      fee: U256;
+    }
+  ) => {
+    const response = await this.messageTunnel.request<SignedParcel>({
+      type: "signParcel",
+      body: {
+        parcel,
+        options
+      }
     });
     return response;
   };
