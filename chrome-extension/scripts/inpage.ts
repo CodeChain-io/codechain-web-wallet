@@ -1,5 +1,11 @@
-import { SDK } from "codechain-sdk";
+import MessageTunnel from "./MessageTunnel";
+import WalletAPI from "./WalletAPI";
 
-console.warn("Injecting CodeChain-SDK to the window object");
+console.warn("Injecting Wallet-API to the window object");
 
-(window as any).codechainSDK = SDK;
+const messageTunnel = new MessageTunnel({
+  from: "wallet_inpage",
+  to: "wallet_contentscript"
+});
+
+(window as any).walletAPI = new WalletAPI(messageTunnel);

@@ -1,5 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
+import MessageTunnel, { MessageFormat } from "./MessageTunnel";
+
 const extension = require("extensionizer");
 const inpageContent = fs
   .readFileSync(path.join(__dirname, "..", "build", "inpage.js"))
@@ -7,6 +9,8 @@ const inpageContent = fs
 const inpageSuffix =
   "//# sourceURL=" + extension.extension.getURL("inpage.js") + "\n";
 const inpageBundle = inpageContent + inpageSuffix;
+
+const isEnabled = false;
 
 if (shouldInjectSDK()) {
   injectScript(inpageBundle);
@@ -91,3 +95,40 @@ function blacklistedDomainCheck() {
   }
   return false;
 }
+
+const messageTunnel = new MessageTunnel({
+  from: "wallet_contentscript",
+  to: "wallet_inpage"
+});
+
+messageTunnel.addEventHandler(
+  async (req: MessageFormat, response: (result: any) => void) => {
+    const responseFromBackground = await sendMessageToBackground<any>({
+      type: req.type,
+      data: req.body
+    });
+    response(responseFromBackground);
+  }
+);
+
+const sendMessageToBackground = <T>(message: {
+  type: string;
+  data?: any;
+}): Promise<T | null> => {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject("timeout");
+    }, 15000);
+    chrome.runtime.sendMessage(message, response => {
+      clearTimeout(timeout);
+      if (!response) {
+        reject("invalid response from background script");
+      }
+      if (response.status === "success") {
+        resolve(response.data);
+      } else {
+        reject(response.status);
+      }
+    });
+  });
+};
