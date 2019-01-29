@@ -10,6 +10,8 @@ interface State {
 
 interface OwnProps {
     component: any;
+    exact?: boolean;
+    path: string;
 }
 
 interface StateProps {

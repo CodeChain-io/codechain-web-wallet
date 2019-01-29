@@ -84,7 +84,7 @@ export default class TxItem extends React.Component<Props, any> {
                     {isPending ? (
                         <span className="pending">pending...</span>
                     ) : confirmNumber > 5 ? (
-                        <span className="confirmed">confrimed</span>
+                        <span className="confirmed">confirmed</span>
                     ) : (
                         <div className="text-center confirming">
                             <p className="mb-0">confirming</p>
