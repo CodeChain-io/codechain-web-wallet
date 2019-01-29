@@ -281,7 +281,7 @@ const fetchAvailableAssets = (address: string) => {
         getState: () => ReducerConfigure
     ) => {
         dispatch(chainActions.fetchPendingTxListIfNeed(address));
-        dispatch(chainActions.fetchUnconfirmedTxListIfNeed(address));
+        dispatch(chainActions.fetchTxListIfNeed(address));
         dispatch(fetchAggsUTXOListIfNeed(address));
     };
 };
@@ -291,38 +291,21 @@ const calculateAvailableAssets = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const unconfirmedTxListObj = getState().chainReducer.unconfirmedTxList[
-            address
-        ];
         const addressUTXOListObj = getState().assetReducer.aggsUTXOList[
             address
         ];
         const pendingTxListObj = getState().chainReducer.pendingTxList[address];
+        const txListObject = getState().chainReducer.txList[address];
 
-        const unconfirmedTxList =
-            unconfirmedTxListObj && unconfirmedTxListObj.data;
         const addressUTXOList = addressUTXOListObj && addressUTXOListObj.data;
         const pendingTxList = pendingTxListObj && pendingTxListObj.data;
+        const txList = txListObject && txListObject.data;
 
-        if (!addressUTXOList || !pendingTxList || !unconfirmedTxList) {
+        if (!addressUTXOList || !pendingTxList || !txList) {
             return;
         }
 
-        const validUnconfirmedTxList = _.filter(
-            unconfirmedTxList,
-            utx => utx.data.invoice === true
-        );
-        const aggregatedUnconfirmedAsset = _.flatMap(
-            validUnconfirmedTxList,
-            unconfirmedTx => {
-                return TxUtil.getAssetAggregationFromTransactionDoc(
-                    address,
-                    unconfirmedTx
-                );
-            }
-        );
-
-        const txHashList = _.map(unconfirmedTxList, tx => tx.data.hash);
+        const txHashList = _.map(txList, tx => tx.data.hash);
         const validPendingTxList = _.filter(
             pendingTxList,
             pendingTx =>
@@ -353,26 +336,6 @@ const calculateAvailableAssets = (address: string) => {
                     addressConfirmedUTXO.assetScheme.metadata
                 )
             };
-        });
-        _.each(aggregatedUnconfirmedAsset, asset => {
-            const quantities =
-                asset.outputQuantities -
-                (asset.inputQuantities + asset.burnQuantities);
-
-            if (quantities > 0) {
-                if (!availableAssets[asset.assetType]) {
-                    availableAssets[asset.assetType] = {
-                        assetType: asset.assetType,
-                        quantities: 0,
-                        metadata: asset.metadata
-                    };
-                }
-                availableAssets[asset.assetType] = {
-                    ...availableAssets[asset.assetType],
-                    quantities:
-                        availableAssets[asset.assetType].quantities - quantities
-                };
-            }
         });
         _.each(aggregatedPendingAsset, asset => {
             const quantities =

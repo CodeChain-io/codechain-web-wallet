@@ -30,10 +30,8 @@ import { getIdByAddressAssetType } from "./chainReducer";
 
 export type Action =
     | CachePendingTxList
-    | CacheUnconfirmedTxList
     | CacheTxList
     | SetFetchingPendingTxList
-    | SetFetchingUnconfirmedTxList
     | SetFetchingTxList
     | SetSendingTx
     | UpdateBestBlockNumber
@@ -41,19 +39,15 @@ export type Action =
     | SetFetchingTxListById
     | CacheTxListById
     | CachePendingParcelList
-    | CacheUnconfirmedParcelList
     | CachePayamentParcelList
     | SetFetchingParcelList
     | SetFetchingPendingParcelList
-    | SetFetchingUnconfirmedParcelList
     | SetSendingSignedParcel;
 
 export enum ActionType {
     CachePendingTxList = "CachePendingTxList",
-    CacheUnconfirmedTxList = "CacheUnconfirmedTxList",
     CacheTxList = "CacheTxList",
     SetFetchingPendingTxList = "SetFetchingPendingTxList",
-    SetFetchingUnconfirmedTxList = "SetFetchingUnconfirmedTxList",
     SetSendingTx = "SetSendingTx",
     UpdateBestBlockNumber = "UpdateBestBlockNumber",
     SetFetchingBestBlockNumber = "SetFetchingBestBlockNumber",
@@ -61,11 +55,9 @@ export enum ActionType {
     SetFetchingTxListById = "SetFetchingTxListById",
     CacheTxListById = "CacheTxListById",
     CachePendingParcelList = "CachePendingParcelList",
-    CacheUnconfirmedParcelList = "CacheUnconfirmedParcelList",
     CacheParcelList = "CacheParcelList",
     SetFetchingParcelList = "SetFetchingParcelList",
     SetFetchingPendingParcelList = "SetFetchingPendingParcelList",
-    SetFetchingUnconfirmedParcelList = "SetFetchingUnconfirmedParcelList",
     SetSendingSignedParcel = "SetSendingSignedParcel"
 }
 
@@ -74,14 +66,6 @@ export interface CachePendingParcelList {
     data: {
         address: string;
         pendingParcelList: PendingParcelDoc[];
-    };
-}
-
-export interface CacheUnconfirmedParcelList {
-    type: ActionType.CacheUnconfirmedParcelList;
-    data: {
-        address: string;
-        parcelList: ParcelDoc[];
     };
 }
 
@@ -102,13 +86,6 @@ export interface SetFetchingParcelList {
 
 export interface SetFetchingPendingParcelList {
     type: ActionType.SetFetchingPendingParcelList;
-    data: {
-        address: string;
-    };
-}
-
-export interface SetFetchingUnconfirmedParcelList {
-    type: ActionType.SetFetchingUnconfirmedParcelList;
     data: {
         address: string;
     };
@@ -139,14 +116,6 @@ export interface CachePendingTxList {
     };
 }
 
-export interface CacheUnconfirmedTxList {
-    type: ActionType.CacheUnconfirmedTxList;
-    data: {
-        address: string;
-        unconfirmedTxList: TransactionDoc[];
-    };
-}
-
 export interface CacheTxList {
     type: ActionType.CacheTxList;
     data: {
@@ -157,13 +126,6 @@ export interface CacheTxList {
 
 export interface SetFetchingPendingTxList {
     type: ActionType.SetFetchingPendingTxList;
-    data: {
-        address: string;
-    };
-}
-
-export interface SetFetchingUnconfirmedTxList {
-    type: ActionType.SetFetchingUnconfirmedTxList;
     data: {
         address: string;
     };
@@ -262,67 +224,6 @@ const fetchPendingTxListIfNeed = (address: string) => {
     };
 };
 
-const cacheUnconfirmedTxList = (
-    address: string,
-    unconfirmedTxList: TransactionDoc[]
-): CacheUnconfirmedTxList => ({
-    type: ActionType.CacheUnconfirmedTxList,
-    data: {
-        address,
-        unconfirmedTxList
-    }
-});
-
-const setFetchingUnconfirmedTxList = (
-    address: string
-): SetFetchingUnconfirmedTxList => ({
-    type: ActionType.SetFetchingUnconfirmedTxList,
-    data: {
-        address
-    }
-});
-
-const fetchUnconfirmedTxListIfNeed = (address: string) => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        const cachedUnconfirmedTxList = getState().chainReducer
-            .unconfirmedTxList[address];
-        if (cachedUnconfirmedTxList && cachedUnconfirmedTxList.isFetching) {
-            return;
-        }
-        if (
-            cachedUnconfirmedTxList &&
-            cachedUnconfirmedTxList.updatedAt &&
-            +new Date() - cachedUnconfirmedTxList.updatedAt < 3000
-        ) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch(setFetchingUnconfirmedTxList(address));
-            const networkId = getState().globalReducer.networkId;
-            const unconfirmedTxList = await getTxsByAddress(
-                address,
-                true,
-                1,
-                10000,
-                networkId
-            );
-            dispatch(cacheUnconfirmedTxList(address, unconfirmedTxList));
-            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-            // This code is temporary for solving this problem.
-            setTimeout(() => {
-                dispatch(assetActions.calculateAvailableAssets(address));
-            }, 300);
-            dispatch(hideLoading() as any);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-};
-
 const fetchTxListIfNeed = (address: string) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
@@ -349,13 +250,7 @@ const fetchTxListIfNeed = (address: string) => {
             });
             const networkId = getState().globalReducer.networkId;
             // FIXME: Add pagination
-            const txList = await getTxsByAddress(
-                address,
-                false,
-                1,
-                10,
-                networkId
-            );
+            const txList = await getTxsByAddress(address, 1, 10, networkId);
             dispatch({
                 type: ActionType.CacheTxList,
                 data: {
@@ -417,14 +312,12 @@ const sendTransactionByParcel = (
             await sdk.rpc.chain.sendSignedParcel(signedParcel);
             checkingIndexingFuncForSendingTx = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
-                dispatch(fetchUnconfirmedTxListIfNeed(address));
                 dispatch(fetchParcelListIfNeed(feePayer));
                 dispatch(fetchPendingParcelListIfNeed(feePayer));
                 const pendingTxList = getState().chainReducer.pendingTxList[
                     address
                 ];
-                const unconfirmedTxList = getState().chainReducer
-                    .unconfirmedTxList[address];
+                const txList = getState().chainReducer.txList[address];
                 const parcelList = getState().chainReducer.parcelList[feePayer];
                 const pendingParcelList = getState().chainReducer
                     .pendingParcelList[feePayer];
@@ -437,10 +330,10 @@ const sendTransactionByParcel = (
                                 tx.transaction.data.hash ===
                                 transferTx.hash().value
                         )) ||
-                        (unconfirmedTxList &&
-                            unconfirmedTxList.data &&
+                        (txList &&
+                            txList.data &&
                             _.find(
-                                unconfirmedTxList.data,
+                                txList.data,
                                 tx => tx.data.hash === transferTx.hash().value
                             ))) &&
                     ((parcelList &&
@@ -489,12 +382,11 @@ const sendTransactionByGateway = (
             await sendTxToGateway(transferTx, gatewayURL);
             checkingIndexingFuncForSendingTx = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
-                dispatch(fetchUnconfirmedTxListIfNeed(address));
+                dispatch(fetchParcelListIfNeed(address));
                 const pendingTxList = getState().chainReducer.pendingTxList[
                     address
                 ];
-                const unconfirmedTxList = getState().chainReducer
-                    .unconfirmedTxList[address];
+                const txList = getState().chainReducer.txList[address];
                 if (
                     (pendingTxList &&
                         pendingTxList.data &&
@@ -504,10 +396,10 @@ const sendTransactionByGateway = (
                                 tx.transaction.data.hash ===
                                 transferTx.hash().value
                         )) ||
-                    (unconfirmedTxList &&
-                        unconfirmedTxList.data &&
+                    (txList &&
+                        txList.data &&
                         _.find(
-                            unconfirmedTxList.data,
+                            txList.data,
                             tx => tx.data.hash === transferTx.hash().value
                         ))
                 ) {
@@ -554,11 +446,10 @@ const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
             await sdk.rpc.chain.sendSignedParcel(signedParcel);
             checkingIndexingFuncForSendingParcel = setInterval(() => {
                 dispatch(fetchPendingParcelListIfNeed(address));
-                dispatch(fetchUnconfirmedParcelListIfNeed(address));
+                dispatch(fetchParcelListIfNeed(address));
                 const pendingParcelList = getState().chainReducer
                     .pendingParcelList[address];
-                const unconfirmedParcelList = getState().chainReducer
-                    .unconfirmedParcelList[address];
+                const parcelList = getState().chainReducer.parcelList[address];
                 if (
                     (pendingParcelList &&
                         pendingParcelList.data &&
@@ -566,10 +457,10 @@ const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
                             pendingParcelList.data,
                             ppp => ppp.parcel.hash === signedParcel.hash().value
                         )) ||
-                    (unconfirmedParcelList &&
-                        unconfirmedParcelList.data &&
+                    (parcelList &&
+                        parcelList.data &&
                         _.find(
-                            unconfirmedParcelList.data,
+                            parcelList.data,
                             upp => upp.hash === signedParcel.hash().value
                         ))
                 ) {
@@ -646,7 +537,6 @@ const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H256) => {
             // FIXME: Add pagination
             const txList = await getTxsByAddress(
                 address,
-                false,
                 1,
                 10,
                 networkId,
@@ -693,13 +583,7 @@ const fetchParcelListIfNeed = (address: string) => {
             });
             const networkId = getState().globalReducer.networkId;
             // FIXME: Add pagination
-            const parcelResponse = await getParcels(
-                address,
-                false,
-                1,
-                10,
-                networkId
-            );
+            const parcelResponse = await getParcels(address, 1, 10, networkId);
             dispatch({
                 type: ActionType.CacheParcelList,
                 data: {
@@ -707,61 +591,6 @@ const fetchParcelListIfNeed = (address: string) => {
                     parcelList: parcelResponse
                 }
             });
-            dispatch(hideLoading() as any);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-};
-
-const fetchUnconfirmedParcelListIfNeed = (address: string) => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        const cachedUnconfirmedParcelList = getState().chainReducer
-            .unconfirmedParcelList[address];
-        if (
-            cachedUnconfirmedParcelList &&
-            cachedUnconfirmedParcelList.isFetching
-        ) {
-            return;
-        }
-        if (
-            cachedUnconfirmedParcelList &&
-            cachedUnconfirmedParcelList.updatedAt &&
-            +new Date() - cachedUnconfirmedParcelList.updatedAt < 3000
-        ) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch({
-                type: ActionType.SetFetchingUnconfirmedParcelList,
-                data: {
-                    address
-                }
-            });
-            const networkId = getState().globalReducer.networkId;
-            const parcelList = await getParcels(
-                address,
-                true,
-                1,
-                10000,
-                networkId
-            );
-            dispatch({
-                type: ActionType.CacheUnconfirmedParcelList,
-                data: {
-                    address,
-                    parcelList
-                }
-            });
-            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-            // This code is temporary for solving this problem.
-            setTimeout(() => {
-                dispatch(accountActions.calculateAvailableQuark(address));
-            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -818,13 +647,11 @@ const fetchPendingParcelListIfNeed = (address: string) => {
 
 export default {
     fetchPendingTxListIfNeed,
-    fetchUnconfirmedTxListIfNeed,
     sendTransactionByGateway,
     fetchBestBlockNumberIfNeed,
     fetchTxListIfNeed,
     fetchTxListByAssetTypeIfNeed,
     fetchParcelListIfNeed,
-    fetchUnconfirmedParcelListIfNeed,
     fetchPendingParcelListIfNeed,
     sendSignedParcel,
     sendTransactionByParcel

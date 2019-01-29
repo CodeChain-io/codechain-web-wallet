@@ -18,14 +18,12 @@ interface OwnProps {
 interface StateProps {
     pendingParcelList?: PendingParcelDoc[] | null;
     parcelList?: ParcelDoc[] | null;
-    bestBlockNumber?: number | null;
     networkId: NetworkId;
 }
 
 interface DispatchProps {
     fetchPendingParcelListIfNeed: (address: string) => void;
     fetchParcelListIfNeed: (address: string) => void;
-    fetchBestBlockNumberIfNeed: () => void;
 }
 
 type Props = StateProps & OwnProps & DispatchProps;
@@ -35,8 +33,7 @@ class ParcelHistory extends React.Component<Props> {
         super(props);
         this.state = {
             pendingParcelList: undefined,
-            parcelList: undefined,
-            bestBlockNumber: undefined
+            parcelList: undefined
         };
     }
 
@@ -48,11 +45,10 @@ class ParcelHistory extends React.Component<Props> {
         const {
             pendingParcelList,
             parcelList,
-            bestBlockNumber,
             address,
             networkId
         } = this.props;
-        if (!pendingParcelList || !parcelList || !bestBlockNumber) {
+        if (!pendingParcelList || !parcelList) {
             return <div>Loading...</div>;
         }
         const parcelHashList = _.map(parcelList, parcel => parcel.hash);
@@ -79,7 +75,6 @@ class ParcelHistory extends React.Component<Props> {
                     <ParcelItem
                         key={pendingTx.parcel.hash}
                         parcel={pendingTx.parcel}
-                        bestBlockNumber={bestBlockNumber}
                         address={address}
                         networkId={networkId}
                         isPending={true}
@@ -91,7 +86,6 @@ class ParcelHistory extends React.Component<Props> {
                         key={parcel.hash}
                         parcel={parcel}
                         address={address}
-                        bestBlockNumber={bestBlockNumber}
                         networkId={networkId}
                         isPending={false}
                         timestamp={parcel.timestamp}
@@ -108,11 +102,9 @@ class ParcelHistory extends React.Component<Props> {
     private fetchAll = () => {
         const {
             address,
-            fetchBestBlockNumberIfNeed,
             fetchParcelListIfNeed,
             fetchPendingParcelListIfNeed
         } = this.props;
-        fetchBestBlockNumberIfNeed();
         fetchPendingParcelListIfNeed(address);
         fetchParcelListIfNeed(address);
     };
@@ -122,12 +114,10 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const { address } = props;
     const pendingParcelList = state.chainReducer.pendingParcelList[address];
     const parcelList = state.chainReducer.parcelList[address];
-    const bestBlockNumber = state.chainReducer.bestBlockNumber;
     const networkId = state.globalReducer.networkId;
     return {
         pendingParcelList: pendingParcelList && pendingParcelList.data,
         parcelList: parcelList && parcelList.data,
-        bestBlockNumber: bestBlockNumber && bestBlockNumber.data,
         networkId
     };
 };
@@ -139,9 +129,6 @@ const mapDispatchToProps = (
     },
     fetchParcelListIfNeed: (address: string) => {
         dispatch(chainActions.fetchParcelListIfNeed(address));
-    },
-    fetchBestBlockNumberIfNeed: () => {
-        dispatch(chainActions.fetchBestBlockNumberIfNeed());
     }
 });
 export default connect(

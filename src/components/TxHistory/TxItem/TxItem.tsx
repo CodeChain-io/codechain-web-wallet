@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TransactionDoc } from "codechain-indexer-types/lib/types";
 import * as _ from "lodash";
 import * as moment from "moment";
@@ -16,24 +15,15 @@ interface Props {
     isPending: boolean;
     timestamp: number;
     address: string;
-    bestBlockNumber: number;
     networkId: NetworkId;
 }
 export default class TxItem extends React.Component<Props, any> {
     public render() {
-        const {
-            tx,
-            address,
-            bestBlockNumber,
-            networkId,
-            isPending,
-            timestamp
-        } = this.props;
+        const { tx, address, networkId, isPending, timestamp } = this.props;
         const assetHistory = TxUtil.getAssetAggregationFromTransactionDoc(
             address,
             tx
         );
-        const confirmNumber = bestBlockNumber - tx.data.blockNumber;
         return _.map(assetHistory, (history, index) => (
             <div
                 key={`${history.assetType}-${index}`}
@@ -82,23 +72,11 @@ export default class TxItem extends React.Component<Props, any> {
                 </div>
                 <div className="status-container">
                     {isPending ? (
-                        <span className="pending">pending...</span>
-                    ) : confirmNumber > 5 ? (
-                        <span className="confirmed">confirmed</span>
+                        <span className="pending">Pending</span>
+                    ) : tx.data.invoice ? (
+                        <span className="confirmed">Sent</span>
                     ) : (
-                        <div className="text-center confirming">
-                            <p className="mb-0">confirming</p>
-                            {_.map(_.range(6), num => {
-                                return (
-                                    <FontAwesomeIcon
-                                        key={num}
-                                        className={`${num <= confirmNumber &&
-                                            "circle-confirmed"} circle-icon`}
-                                        icon="circle"
-                                    />
-                                );
-                            })}
-                        </div>
+                        <span className="failed">Failed</span>
                     )}
                 </div>
             </div>

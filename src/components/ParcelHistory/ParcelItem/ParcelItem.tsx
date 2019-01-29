@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ParcelDoc } from "codechain-indexer-types/lib/types";
 import { U256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
@@ -16,21 +15,12 @@ interface Props {
     isPending: boolean;
     timestamp: number;
     address: string;
-    bestBlockNumber: number;
     networkId: NetworkId;
 }
 export default class ParcelItem extends React.Component<Props, any> {
     public render() {
-        const {
-            parcel,
-            address,
-            bestBlockNumber,
-            networkId,
-            isPending,
-            timestamp
-        } = this.props;
+        const { parcel, address, networkId, isPending, timestamp } = this.props;
         const aggrParcel = getAggsParcel(address, [parcel]);
-        const confirmNumber = bestBlockNumber - (parcel.blockNumber || 0);
         return (
             <div className="d-flex Parcel-item align-items-center">
                 <div className="date-container number">
@@ -70,23 +60,12 @@ export default class ParcelItem extends React.Component<Props, any> {
                 </div>
                 <div className="status-container">
                     {isPending ? (
-                        <span className="pending">pending...</span>
-                    ) : confirmNumber > 5 ? (
-                        <span className="confirmed">confirmed</span>
+                        <span className="pending">Pending</span>
+                    ) : parcel.action.action === "assetTransactionGroup" ||
+                    parcel.action.invoice ? (
+                        <span className="confirmed">Sent</span>
                     ) : (
-                        <div className="text-center confirming">
-                            <p className="mb-0">confirming</p>
-                            {_.map(_.range(6), num => {
-                                return (
-                                    <FontAwesomeIcon
-                                        key={num}
-                                        className={`${num <= confirmNumber &&
-                                            "circle-confirmed"} circle-icon`}
-                                        icon="circle"
-                                    />
-                                );
-                            })}
-                        </div>
+                        <span className="failed">Failed</span>
                     )}
                 </div>
             </div>

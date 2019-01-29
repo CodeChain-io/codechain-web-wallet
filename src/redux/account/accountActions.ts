@@ -92,7 +92,7 @@ const fetchAvailableQuark = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        dispatch(chainActions.fetchUnconfirmedParcelListIfNeed(address));
+        dispatch(chainActions.fetchParcelListIfNeed(address));
         dispatch(chainActions.fetchPendingParcelListIfNeed(address));
         dispatch(fetchAccountIfNeed(address));
     };
@@ -110,43 +110,32 @@ const calculateAvailableQuark = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const unconfirmedParcelListObj = getState().chainReducer
-            .unconfirmedParcelList[address];
+        const parcelListObj = getState().chainReducer.parcelList[address];
         const accountObj = getState().accountReducer.accounts[address];
         const pendingParcelListObj = getState().chainReducer.pendingParcelList[
             address
         ];
-        const unconfirmedParcelList =
-            unconfirmedParcelListObj && unconfirmedParcelListObj.data;
+        const parcelList = parcelListObj && parcelListObj.data;
         const account = accountObj && accountObj.data;
         const pendingParcelList =
             pendingParcelListObj && pendingParcelListObj.data;
-        if (!unconfirmedParcelList || !account || !pendingParcelList) {
+        if (!parcelList || !account || !pendingParcelList) {
             return;
         }
-        const aggrUnconfirmedParcel = getAggsParcel(
-            address,
-            unconfirmedParcelList
-        );
-        const unconfirmedParcelHashList = _.map(
-            unconfirmedParcelList,
-            parcel => parcel.hash
-        );
+
+        const parcelHashList = _.map(parcelList, parcel => parcel.hash);
         const validPendingParcelList = _.filter(
             pendingParcelList,
             pendingParcel =>
-                !_.includes(
-                    unconfirmedParcelHashList,
-                    pendingParcel.parcel.hash
-                )
+                !_.includes(parcelHashList, pendingParcel.parcel.hash)
         );
         const aggrPendingParcel = getAggsParcel(
             address,
             _.map(validPendingParcelList, p => p.parcel)
         );
-        const availableQuark = new BigNumber(account.balance)
-            .minus(aggrUnconfirmedParcel.output)
-            .minus(aggrPendingParcel.input);
+        const availableQuark = new BigNumber(account.balance).minus(
+            aggrPendingParcel.input
+        );
         dispatch({
             type: ActionType.UpdateAvailableQuark,
             data: {

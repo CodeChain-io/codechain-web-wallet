@@ -1,7 +1,6 @@
 import {
     AggsUTXO,
-    PendingTransactionDoc,
-    TransactionDoc
+    PendingTransactionDoc
 } from "codechain-indexer-types/lib/types";
 import { MetadataFormat } from "codechain-indexer-types/lib/utils";
 import * as _ from "lodash";
@@ -29,7 +28,6 @@ interface OwnProps {
 interface StateProps {
     addressUTXOList?: AggsUTXO[] | null;
     pendingTxList?: PendingTransactionDoc[] | null;
-    unconfirmedTxList?: TransactionDoc[] | null;
     availableAssets?:
         | {
               assetType: string;
@@ -44,7 +42,6 @@ interface StateProps {
 interface DispatchProps {
     fetchAggsUTXOListIfNeed: (address: string) => void;
     fetchPendingTxListIfNeed: (address: string) => void;
-    fetchUnconfirmedTxListIfNeed: (address: string) => void;
     fetchAvailableAssets: (address: string) => void;
     fetchWalletFromStorageIfNeed: () => void;
 }
@@ -92,18 +89,12 @@ class AssetList extends React.Component<Props, State> {
         const {
             addressUTXOList,
             pendingTxList,
-            unconfirmedTxList,
             availableAssets,
             networkId,
             addressName
         } = this.props;
         const { selectedAssetType } = this.state;
-        if (
-            !addressUTXOList ||
-            !pendingTxList ||
-            !unconfirmedTxList ||
-            !availableAssets
-        ) {
+        if (!addressUTXOList || !pendingTxList || !availableAssets) {
             return null;
         }
         return (
@@ -210,7 +201,6 @@ class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        this.props.fetchUnconfirmedTxListIfNeed(address);
         this.props.fetchPendingTxListIfNeed(address);
         this.props.fetchAggsUTXOListIfNeed(address);
         this.props.fetchAvailableAssets(address);
@@ -226,7 +216,6 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     } = props;
     const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
     const pendingTxList = state.chainReducer.pendingTxList[address];
-    const unconfirmedTxList = state.chainReducer.unconfirmedTxList[address];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
     const assetAddress = _.find(
@@ -236,7 +225,6 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     return {
         addressUTXOList: aggsUTXOList && aggsUTXOList.data,
         pendingTxList: pendingTxList && pendingTxList.data,
-        unconfirmedTxList: unconfirmedTxList && unconfirmedTxList.data,
         availableAssets,
         networkId,
         addressName: assetAddress && assetAddress.name
@@ -250,9 +238,6 @@ const mapDispatchToProps = (
     },
     fetchPendingTxListIfNeed: (address: string) => {
         dispatch(chainActions.fetchPendingTxListIfNeed(address));
-    },
-    fetchUnconfirmedTxListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchUnconfirmedTxListIfNeed(address));
     },
     fetchAvailableAssets: (address: string) => {
         dispatch(assetActions.fetchAvailableAssets(address));

@@ -107,16 +107,12 @@ export async function getPendingParcels(address: string, networkId: NetworkId) {
 
 export async function getParcels(
     address: string,
-    onlyUnconfirmed: boolean,
     page: number,
     itemsPerPage: number,
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    let query = `${apiHost}/api/parcels?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
-    if (onlyUnconfirmed) {
-        query += `&onlyUnconfirmed=true&confirmThreshold=5`;
-    }
+    const query = `${apiHost}/api/parcels?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
     return await getRequest<ParcelDoc[]>(query);
 }
 
@@ -132,7 +128,6 @@ export async function getPendingTransactions(
 
 export async function getTxsByAddress(
     address: string,
-    onlyUnconfirmed: boolean,
     page: number,
     itemsPerPage: number,
     networkId: NetworkId,
@@ -140,9 +135,6 @@ export async function getTxsByAddress(
 ) {
     const apiHost = getIndexerHost(networkId);
     let query = `${apiHost}/api/txs?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
-    if (onlyUnconfirmed) {
-        query += `&onlyUnconfirmed=true&confirmThreshold=5`;
-    }
     if (assetType) {
         query += `&assetType=${assetType.value}`;
     }

@@ -24,14 +24,12 @@ interface OwnProps {
 interface StateProps {
     pendingTxList?: PendingTransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
-    bestBlockNumber?: number | null;
     networkId: NetworkId;
 }
 
 interface DispatchProps {
     fetchPendingTxListIfNeed: (address: string) => void;
     fetchTxListIfNeed: (address: string) => void;
-    fetchBestBlockNumberIfNeed: () => void;
     fetchTxListByAssetTypeIfNeed: (address: string, assetType: H256) => void;
 }
 
@@ -42,8 +40,7 @@ class TxHistory extends React.Component<Props> {
         super(props);
         this.state = {
             pendingTxList: undefined,
-            txList: undefined,
-            bestBlockNumber: undefined
+            txList: undefined
         };
     }
 
@@ -52,14 +49,8 @@ class TxHistory extends React.Component<Props> {
     }
 
     public render() {
-        const {
-            pendingTxList,
-            txList,
-            bestBlockNumber,
-            address,
-            networkId
-        } = this.props;
-        if (!pendingTxList || !txList || !bestBlockNumber) {
+        const { pendingTxList, txList, address, networkId } = this.props;
+        if (!pendingTxList || !txList) {
             return <div>Loading...</div>;
         }
         const txHashList = _.map(txList, tx => tx.data.hash);
@@ -86,7 +77,6 @@ class TxHistory extends React.Component<Props> {
                     <TxItem
                         key={pendingTx.transaction.data.hash}
                         tx={pendingTx.transaction}
-                        bestBlockNumber={bestBlockNumber}
                         address={address}
                         networkId={networkId}
                         isPending={true}
@@ -98,7 +88,6 @@ class TxHistory extends React.Component<Props> {
                         key={tx.data.hash}
                         tx={tx}
                         address={address}
-                        bestBlockNumber={bestBlockNumber}
                         networkId={networkId}
                         isPending={false}
                         timestamp={tx.data.timestamp}
@@ -115,13 +104,11 @@ class TxHistory extends React.Component<Props> {
     private fetchAll = () => {
         const {
             address,
-            fetchBestBlockNumberIfNeed,
             fetchPendingTxListIfNeed,
             fetchTxListIfNeed,
             assetType,
             fetchTxListByAssetTypeIfNeed
         } = this.props;
-        fetchBestBlockNumberIfNeed();
         fetchPendingTxListIfNeed(address);
 
         if (assetType) {
@@ -140,12 +127,10 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
               getIdByAddressAssetType(address, assetType)
           ]
         : state.chainReducer.txList[address];
-    const bestBlockNumber = state.chainReducer.bestBlockNumber;
     const networkId = state.globalReducer.networkId;
     return {
         pendingTxList: pendingTxList && pendingTxList.data,
         txList: txList && txList.data,
-        bestBlockNumber: bestBlockNumber && bestBlockNumber.data,
         networkId
     };
 };
@@ -157,9 +142,6 @@ const mapDispatchToProps = (
     },
     fetchTxListIfNeed: (address: string) => {
         dispatch(chainActions.fetchTxListIfNeed(address));
-    },
-    fetchBestBlockNumberIfNeed: () => {
-        dispatch(chainActions.fetchBestBlockNumberIfNeed());
     },
     fetchTxListByAssetTypeIfNeed: (address: string, assetType: H256) => {
         dispatch(chainActions.fetchTxListByAssetTypeIfNeed(address, assetType));

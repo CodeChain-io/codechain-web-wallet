@@ -19,13 +19,6 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
-    unconfirmedTxList: {
-        [address: string]: {
-            data?: TransactionDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
     txList: {
         [address: string]: {
             data?: TransactionDoc[] | null;
@@ -65,13 +58,6 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
-    unconfirmedParcelList: {
-        [address: string]: {
-            data?: ParcelDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
     pendingParcelList: {
         [address: string]: {
             data?: PendingParcelDoc[] | null;
@@ -83,7 +69,6 @@ export interface ChainState {
 
 export const chainInitState: ChainState = {
     pendingTxList: {},
-    unconfirmedTxList: {},
     txList: {},
     sendingTx: {},
     sendingSignedParcel: {},
@@ -91,7 +76,6 @@ export const chainInitState: ChainState = {
     txListById: {},
     pendingTxListById: {},
     parcelList: {},
-    unconfirmedParcelList: {},
     pendingParcelList: {}
 };
 
@@ -133,37 +117,6 @@ export const chainReducer = (
             return {
                 ...state,
                 pendingTxList
-            };
-        }
-        case ActionType.CacheUnconfirmedTxList: {
-            const address = action.data.address;
-            const currentUnconfirmedTxList = {
-                data: action.data.unconfirmedTxList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const unconfirmedTxList = {
-                ...state.unconfirmedTxList,
-                [address]: currentUnconfirmedTxList
-            };
-            return {
-                ...state,
-                unconfirmedTxList
-            };
-        }
-        case ActionType.SetFetchingUnconfirmedTxList: {
-            const address = action.data.address;
-            const currentUnconfirmedTxList = {
-                ...state.unconfirmedTxList[address],
-                isFetching: true
-            };
-            const unconfirmedTxList = {
-                ...state.unconfirmedTxList,
-                [address]: currentUnconfirmedTxList
-            };
-            return {
-                ...state,
-                unconfirmedTxList
             };
         }
         case ActionType.SetSendingTx: {
@@ -305,22 +258,6 @@ export const chainReducer = (
                 pendingParcelList
             };
         }
-        case ActionType.CacheUnconfirmedParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                data: action.data.parcelList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const unconfirmedParcelList = {
-                ...state.unconfirmedParcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                unconfirmedParcelList
-            };
-        }
         case ActionType.SetFetchingParcelList: {
             const address = action.data.address;
             const currentParcelList = {
@@ -349,21 +286,6 @@ export const chainReducer = (
             return {
                 ...state,
                 pendingParcelList
-            };
-        }
-        case ActionType.SetFetchingUnconfirmedParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                ...state.unconfirmedParcelList[address],
-                isFetching: true
-            };
-            const unconfirmedParcelList = {
-                ...state.unconfirmedParcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                unconfirmedParcelList
             };
         }
     }
