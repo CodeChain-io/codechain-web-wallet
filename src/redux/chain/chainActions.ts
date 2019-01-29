@@ -352,6 +352,8 @@ const sendTransactionByParcel = (
                             )))
                 ) {
                     dispatch(setSendingTx(address, null));
+                    dispatch(accountActions.fetchAccountIfNeed(address));
+                    dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
                     clearInterval(checkingIndexingFuncForSendingTx);
                     dispatch(hideLoading() as any);
                 }
@@ -382,7 +384,7 @@ const sendTransactionByGateway = (
             await sendTxToGateway(transferTx, gatewayURL);
             checkingIndexingFuncForSendingTx = setInterval(() => {
                 dispatch(fetchPendingTxListIfNeed(address));
-                dispatch(fetchParcelListIfNeed(address));
+                dispatch(fetchTxListIfNeed(address));
                 const pendingTxList = getState().chainReducer.pendingTxList[
                     address
                 ];
@@ -404,6 +406,7 @@ const sendTransactionByGateway = (
                         ))
                 ) {
                     dispatch(setSendingTx(address, null));
+                    dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
                     clearInterval(checkingIndexingFuncForSendingTx);
                     dispatch(hideLoading() as any);
                 }
