@@ -20,6 +20,7 @@ interface Props {
     quantityError?: string;
     index: number;
     onRemove: (index: number) => void;
+    hideCancel?: boolean;
 }
 
 export default class ReceiverItem extends React.Component<Props, any> {
@@ -30,7 +31,8 @@ export default class ReceiverItem extends React.Component<Props, any> {
             isAddressValid,
             isQuantityValid,
             addressError,
-            quantityError
+            quantityError,
+            hideCancel
         } = this.props;
         return (
             <div className="Receiver-item animated fadeIn">
@@ -38,18 +40,20 @@ export default class ReceiverItem extends React.Component<Props, any> {
                     <span className="mr-auto receiver-item-index">
                         {index + 1}
                     </span>
-                    <span
-                        className="receiver-item-cancel"
-                        onClick={this.handleRemove}
-                    >
-                        cancel <FontAwesomeIcon icon="times" />
-                    </span>
+                    {!hideCancel && (
+                        <span
+                            className="receiver-item-cancel"
+                            onClick={this.handleRemove}
+                        >
+                            cancel <FontAwesomeIcon icon="times" />
+                        </span>
+                    )}
                 </div>
                 <ValidationInput
                     value={receiver.address}
                     onChange={this.handleChangeAddressInput}
-                    labelText="RECEIVER ADDRESS"
-                    placeholder="receiver address"
+                    labelText="RECIPIENT ADDRESS"
+                    placeholder="recipient address"
                     showValidation={true}
                     isValid={isAddressValid}
                     onBlur={this.handleBlurAddressInput}

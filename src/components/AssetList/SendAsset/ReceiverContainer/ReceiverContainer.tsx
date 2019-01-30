@@ -111,6 +111,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                     <div className="receivers">
                         {_.map(receivers, (receiver, index) => (
                             <ReceiverItem
+                                hideCancel={receivers.length === 1}
                                 key={`receiver-${index}`}
                                 receiver={receiver}
                                 onAddressChange={this.handleAddressChange}
@@ -151,88 +152,86 @@ class ReceiverContainer extends React.Component<Props, State> {
                             className="btn btn-primary add-receiver-btn"
                             onClick={this.handleAddReceiver}
                         >
-                            add receiver
+                            Add a new recipient
                         </button>
                     </div>
-                    <div className="d-flex mt-5">
-                        <div className="fee-input-container">
-                            <ValidationInput
-                                value={feeString}
-                                onChange={this.handleChangeFee}
-                                showValidation={true}
-                                labelText="FEE"
-                                placeholder={
-                                    gatewayURL != null || !feePayer
-                                        ? "select payer"
-                                        : !availableQuarkList[feePayer]
-                                            ? "loading..."
-                                            : "0.0000001 (CCC)"
-                                }
-                                disable={
-                                    gatewayURL != null ||
-                                    feePayer == null ||
-                                    (feePayer != null &&
-                                        availableQuarkList[feePayer] == null)
-                                }
-                                onBlur={this.checkFeeValidation}
-                                isValid={isFeeValid}
-                                error={feeError}
-                            />
-                        </div>
-                        <div className="fee-payer-container">
-                            <div className="payer-label">FEE PAYER</div>
-                            {gatewayURL != null ? (
-                                <select
-                                    className="form-control"
-                                    disabled={true}
-                                >
-                                    <option>Gateway</option>
-                                </select>
-                            ) : platformAddresses.length === 0 ? (
-                                <select
-                                    className="form-control"
-                                    disabled={true}
-                                >
-                                    <option>Empty address</option>
-                                </select>
-                            ) : (
-                                <div>
+                    {gatewayURL == null && (
+                        <div className="d-flex fee-container">
+                            <div className="fee-input-container">
+                                <ValidationInput
+                                    value={feeString}
+                                    onChange={this.handleChangeFee}
+                                    showValidation={true}
+                                    labelText="FEE"
+                                    placeholder={
+                                        !feePayer
+                                            ? "select payer"
+                                            : !availableQuarkList[feePayer]
+                                                ? "loading..."
+                                                : "0.0000001 (CCC)"
+                                    }
+                                    disable={
+                                        feePayer == null ||
+                                        (feePayer != null &&
+                                            availableQuarkList[feePayer] ==
+                                                null)
+                                    }
+                                    onBlur={this.checkFeeValidation}
+                                    isValid={isFeeValid}
+                                    error={feeError}
+                                />
+                            </div>
+                            <div className="fee-payer-container">
+                                <div className="payer-label">FEE PAYER</div>
+                                {platformAddresses.length === 0 ? (
                                     <select
                                         className="form-control"
-                                        value={feePayer}
-                                        defaultValue={"default"}
-                                        onChange={this.handleChangeFeePayer}
+                                        disabled={true}
                                     >
-                                        <option value="default" disabled={true}>
-                                            select address
-                                        </option>
-                                        {_.map(platformAddresses, pa => (
-                                            <option
-                                                value={pa.address}
-                                                key={pa.address}
-                                            >
-                                                {pa.name}
-                                            </option>
-                                        ))}
+                                        <option>Empty address</option>
                                     </select>
-                                    {feePayer &&
-                                        availableQuarkList[feePayer] && (
-                                            <span className="available-ccc-text number pl-2 pr-2">
-                                                {changeQuarkToCCCString(
-                                                    new U256(
-                                                        availableQuarkList[
-                                                            feePayer
-                                                        ]!
-                                                    )
-                                                )}
-                                                CCC
-                                            </span>
-                                        )}
-                                </div>
-                            )}
+                                ) : (
+                                    <div>
+                                        <select
+                                            className="form-control"
+                                            value={feePayer}
+                                            defaultValue={"default"}
+                                            onChange={this.handleChangeFeePayer}
+                                        >
+                                            <option
+                                                value="default"
+                                                disabled={true}
+                                            >
+                                                select address
+                                            </option>
+                                            {_.map(platformAddresses, pa => (
+                                                <option
+                                                    value={pa.address}
+                                                    key={pa.address}
+                                                >
+                                                    {pa.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {feePayer &&
+                                            availableQuarkList[feePayer] && (
+                                                <span className="available-ccc-text number pl-2 pr-2">
+                                                    {changeQuarkToCCCString(
+                                                        new U256(
+                                                            availableQuarkList[
+                                                                feePayer
+                                                            ]!
+                                                        )
+                                                    )}
+                                                    CCC
+                                                </span>
+                                            )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    <div className="mt-2">
+                    )}
+                    <div className="submit-btn-container">
                         <button
                             type="submit"
                             className="btn btn-primary square w-100 send-btn"
