@@ -126,9 +126,6 @@ class SendAsset extends React.Component<Props, State> {
             availableAssets,
             a => a.assetType === assetType
         );
-        if (!availableAsset) {
-            return <div />;
-        }
         const metadata = Type.getMetadata(assetScheme.metadata);
         return (
             <div className="Send-asset animated fadeIn">
@@ -165,13 +162,17 @@ class SendAsset extends React.Component<Props, State> {
                                     )}`}
                             </span>
                             <span className="quantity number">
-                                {availableAsset.quantities.toLocaleString()}
+                                {availableAsset
+                                    ? availableAsset.quantities.toLocaleString()
+                                    : 0}
                             </span>
                         </div>
                         <ReceiverContainer
                             address={address}
                             onSubmit={this.handleSubmit}
-                            totalQuantity={availableAsset.quantities}
+                            totalQuantity={
+                                availableAsset ? availableAsset.quantities : 0
+                            }
                             gatewayURL={
                                 metadata.gateway && metadata.gateway.url
                             }
