@@ -63,7 +63,7 @@ export default class ParcelItem extends React.Component<Props, any> {
                         <span className="pending">Pending</span>
                     ) : parcel.action.action === "assetTransactionGroup" ||
                     parcel.action.invoice ? (
-                        <span className="confirmed">Sent</span>
+                        <span className="confirmed">Confirmed</span>
                     ) : (
                         <span className="failed">Failed</span>
                     )}

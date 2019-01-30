@@ -74,7 +74,7 @@ export default class TxItem extends React.Component<Props, any> {
                     {isPending ? (
                         <span className="pending">Pending</span>
                     ) : tx.data.invoice ? (
-                        <span className="confirmed">Sent</span>
+                        <span className="confirmed">Confirmed</span>
                     ) : (
                         <span className="failed">Failed</span>
                     )}
