@@ -47,7 +47,6 @@ interface OwnProps {
 
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
-    isSendingTx: boolean;
     UTXOList: UTXO[] | null;
     availableAssets?:
         | {
@@ -63,7 +62,8 @@ interface StateProps {
 }
 
 interface State {
-    isSendBtnClicked?: boolean;
+    isSendingTx: boolean;
+    isSentTx: boolean;
 }
 
 interface DispatchProps {
@@ -74,14 +74,14 @@ interface DispatchProps {
         address: string,
         transferTx: AssetTransferTransaction,
         getewayURL: string
-    ) => void;
+    ) => Promise<{}>;
     fetchWalletFromStorageIfNeed: () => void;
     sendTransactionByParcel: (
         address: string,
         signedParcel: SignedParcel,
         transferTx: AssetTransferTransaction,
         feePayer: string
-    ) => void;
+    ) => Promise<{}>;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -90,12 +90,13 @@ class SendAsset extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isSendBtnClicked: undefined
+            isSendingTx: false,
+            isSentTx: false
         };
     }
     public render() {
         const { onClose } = this.props;
-        const { isSendBtnClicked } = this.state;
+        const { isSendingTx, isSentTx } = this.state;
         const {
             assetScheme,
             selectedAssetType: assetType,
@@ -104,7 +105,6 @@ class SendAsset extends React.Component<Props, State> {
         } = this.props;
         const {
             availableAssets,
-            isSendingTx,
             UTXOList,
             platformAddresses,
             assetAddresses
@@ -127,11 +127,7 @@ class SendAsset extends React.Component<Props, State> {
             a => a.assetType === assetType
         );
         if (!availableAsset) {
-            return (
-                <div>
-                    <div className="mt-5">Invalid assetType</div>
-                </div>
-            );
+            return <div />;
         }
         const metadata = Type.getMetadata(assetScheme.metadata);
         return (
@@ -140,7 +136,7 @@ class SendAsset extends React.Component<Props, State> {
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
                 <h2 className="title">Send asset</h2>
-                {isSendBtnClicked && !isSendingTx ? (
+                {isSentTx ? (
                     <div className="d-flex align-items-center justify-content-center text-center complete-container">
                         <div className="text-center">
                             <div>
@@ -302,11 +298,15 @@ class SendAsset extends React.Component<Props, State> {
                 assetType
             };
         });
-        outputData.push({
-            recipient: address,
-            amount: currentSum - sumOfSendingAsset,
-            assetType
-        });
+
+        const refundAmount = currentSum - sumOfSendingAsset;
+        if (refundAmount > 0) {
+            outputData.push({
+                recipient: address,
+                amount: currentSum - sumOfSendingAsset,
+                assetType
+            });
+        }
         const outputs = _.map(
             outputData,
             o =>
@@ -342,12 +342,28 @@ class SendAsset extends React.Component<Props, State> {
             return;
         }
         const metadata = Type.getMetadata(assetScheme.metadata);
+
+        this.setState({ isSendingTx: true });
         if (metadata.gateway) {
-            this.props.sendTransactionByGateway(
-                address,
-                transferTx,
-                metadata.gateway.url
-            );
+            try {
+                await this.props.sendTransactionByGateway(
+                    address,
+                    transferTx,
+                    metadata.gateway.url
+                );
+                this.setState({ isSentTx: true });
+            } catch (e) {
+                toast.error(
+                    "The transaction was not authorized. Please contact the asset issuer for additional assistance.",
+                    {
+                        position: toast.POSITION.BOTTOM_CENTER,
+                        autoClose: 3000,
+                        closeButton: false,
+                        hideProgressBar: true
+                    }
+                );
+                console.error(e);
+            }
         } else {
             const parcel = sdk.core.createAssetTransactionGroupParcel({
                 transactions: [transferTx]
@@ -361,14 +377,25 @@ class SendAsset extends React.Component<Props, State> {
                 nonce,
                 passphrase
             });
-            this.props.sendTransactionByParcel(
-                address,
-                signedParcel,
-                transferTx,
-                feePayer
-            );
+            try {
+                await this.props.sendTransactionByParcel(
+                    address,
+                    signedParcel,
+                    transferTx,
+                    feePayer
+                );
+                this.setState({ isSentTx: true });
+            } catch (e) {
+                toast.error("Server is not responding.", {
+                    position: toast.POSITION.BOTTOM_CENTER,
+                    autoClose: 3000,
+                    closeButton: false,
+                    hideProgressBar: true
+                });
+                console.error(e);
+            }
         }
-        this.setState({ isSendBtnClicked: true });
+        this.setState({ isSendingTx: false });
     };
 }
 
@@ -376,7 +403,6 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const { selectedAssetType, address } = ownProps;
     const assetScheme =
         state.assetReducer.assetScheme[new H256(selectedAssetType).value];
-    const sendingTx = state.chainReducer.sendingTx[address];
     const id = getIdForCacheUTXO(address, new H256(selectedAssetType));
     const UTXOList = state.assetReducer.UTXOList[id];
     const availableAssets = state.assetReducer.availableAssets[address];
@@ -386,7 +412,6 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const platformAddresses = state.walletReducer.platformAddresses;
     return {
         assetScheme: assetScheme && assetScheme.data,
-        isSendingTx: sendingTx != null,
         UTXOList: UTXOList && UTXOList.data,
         availableAssets,
         networkId,
@@ -410,7 +435,7 @@ const mapDispatchToProps = (
         transferTx: AssetTransferTransaction,
         gatewayURL: string
     ) => {
-        dispatch(
+        return dispatch(
             chainActions.sendTransactionByGateway(
                 address,
                 transferTx,
@@ -424,7 +449,7 @@ const mapDispatchToProps = (
         transferTx: AssetTransferTransaction,
         feePayer: string
     ) => {
-        dispatch(
+        return dispatch(
             chainActions.sendTransactionByParcel(
                 address,
                 signedParcel,

@@ -12,7 +12,6 @@ import {
 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
-import { toast } from "react-toastify";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import {
@@ -33,7 +32,6 @@ export type Action =
     | CacheTxList
     | SetFetchingPendingTxList
     | SetFetchingTxList
-    | SetSendingTx
     | UpdateBestBlockNumber
     | SetFetchingBestBlockNumber
     | SetFetchingTxListById
@@ -41,14 +39,12 @@ export type Action =
     | CachePendingParcelList
     | CachePayamentParcelList
     | SetFetchingParcelList
-    | SetFetchingPendingParcelList
-    | SetSendingSignedParcel;
+    | SetFetchingPendingParcelList;
 
 export enum ActionType {
     CachePendingTxList = "CachePendingTxList",
     CacheTxList = "CacheTxList",
     SetFetchingPendingTxList = "SetFetchingPendingTxList",
-    SetSendingTx = "SetSendingTx",
     UpdateBestBlockNumber = "UpdateBestBlockNumber",
     SetFetchingBestBlockNumber = "SetFetchingBestBlockNumber",
     SetFetchingTxList = "SetFetchingTxList",
@@ -57,8 +53,7 @@ export enum ActionType {
     CachePendingParcelList = "CachePendingParcelList",
     CacheParcelList = "CacheParcelList",
     SetFetchingParcelList = "SetFetchingParcelList",
-    SetFetchingPendingParcelList = "SetFetchingPendingParcelList",
-    SetSendingSignedParcel = "SetSendingSignedParcel"
+    SetFetchingPendingParcelList = "SetFetchingPendingParcelList"
 }
 
 export interface CachePendingParcelList {
@@ -135,22 +130,6 @@ export interface SetFetchingTxList {
     type: ActionType.SetFetchingTxList;
     data: {
         address: string;
-    };
-}
-
-export interface SetSendingTx {
-    type: ActionType.SetSendingTx;
-    data: {
-        address: string;
-        tx: AssetTransferTransaction | null;
-    };
-}
-
-export interface SetSendingSignedParcel {
-    type: ActionType.SetSendingSignedParcel;
-    data: {
-        address: string;
-        signedParcel: SignedParcel | null;
     };
 }
 
@@ -265,28 +244,6 @@ const fetchTxListIfNeed = (address: string) => {
     };
 };
 
-const setSendingTx = (
-    address: string,
-    transferTx: AssetTransferTransaction | null
-): SetSendingTx => ({
-    type: ActionType.SetSendingTx,
-    data: {
-        address,
-        tx: transferTx
-    }
-});
-
-const setSendingSignedParcel = (
-    address: string,
-    signedParcel: SignedParcel | null
-): SetSendingSignedParcel => ({
-    type: ActionType.SetSendingSignedParcel,
-    data: {
-        address,
-        signedParcel
-    }
-});
-
 const sendTransactionByParcel = (
     address: string,
     signedParcel: SignedParcel,
@@ -297,70 +254,70 @@ const sendTransactionByParcel = (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const sendingTx = getState().chainReducer.sendingTx[address];
-        if (sendingTx) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch(setSendingTx(address, transferTx));
-            const networkId = getState().globalReducer.networkId;
-            const sdk = new SDK({
-                server: getCodeChainHost(networkId),
-                networkId
-            });
-            await sdk.rpc.chain.sendSignedParcel(signedParcel);
-            checkingIndexingFuncForSendingTx = setInterval(() => {
-                dispatch(fetchPendingTxListIfNeed(address));
-                dispatch(fetchParcelListIfNeed(feePayer));
-                dispatch(fetchPendingParcelListIfNeed(feePayer));
-                const pendingTxList = getState().chainReducer.pendingTxList[
-                    address
-                ];
-                const txList = getState().chainReducer.txList[address];
-                const parcelList = getState().chainReducer.parcelList[feePayer];
-                const pendingParcelList = getState().chainReducer
-                    .pendingParcelList[feePayer];
-                if (
-                    ((pendingTxList &&
-                        pendingTxList.data &&
-                        _.find(
-                            pendingTxList.data,
-                            tx =>
-                                tx.transaction.data.hash ===
-                                transferTx.hash().value
-                        )) ||
-                        (txList &&
-                            txList.data &&
+        return new Promise(async (resolve, reject) => {
+            try {
+                const networkId = getState().globalReducer.networkId;
+                const sdk = new SDK({
+                    server: getCodeChainHost(networkId),
+                    networkId
+                });
+                await sdk.rpc.chain.sendSignedParcel(signedParcel);
+                checkingIndexingFuncForSendingTx = setInterval(() => {
+                    dispatch(fetchPendingTxListIfNeed(address));
+                    dispatch(fetchParcelListIfNeed(feePayer));
+                    dispatch(fetchPendingParcelListIfNeed(feePayer));
+                    const pendingTxList = getState().chainReducer.pendingTxList[
+                        address
+                    ];
+                    const txList = getState().chainReducer.txList[address];
+                    const parcelList = getState().chainReducer.parcelList[
+                        feePayer
+                    ];
+                    const pendingParcelList = getState().chainReducer
+                        .pendingParcelList[feePayer];
+                    if (
+                        ((pendingTxList &&
+                            pendingTxList.data &&
                             _.find(
-                                txList.data,
-                                tx => tx.data.hash === transferTx.hash().value
-                            ))) &&
-                    ((parcelList &&
-                        parcelList.data &&
-                        _.find(
-                            parcelList.data,
-                            parcel => parcel.hash === signedParcel.hash().value
-                        )) ||
-                        (pendingParcelList &&
-                            pendingParcelList.data &&
+                                pendingTxList.data,
+                                tx =>
+                                    tx.transaction.data.hash ===
+                                    transferTx.hash().value
+                            )) ||
+                            (txList &&
+                                txList.data &&
+                                _.find(
+                                    txList.data,
+                                    tx =>
+                                        tx.data.hash === transferTx.hash().value
+                                ))) &&
+                        ((parcelList &&
+                            parcelList.data &&
                             _.find(
-                                pendingParcelList.data,
-                                pendingParcel =>
-                                    pendingParcel.parcel.hash ===
-                                    signedParcel.hash().value
-                            )))
-                ) {
-                    dispatch(setSendingTx(address, null));
-                    dispatch(accountActions.fetchAccountIfNeed(address));
-                    dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
-                    clearInterval(checkingIndexingFuncForSendingTx);
-                    dispatch(hideLoading() as any);
-                }
-            }, 1000);
-        } catch (e) {
-            console.log(e);
-        }
+                                parcelList.data,
+                                parcel =>
+                                    parcel.hash === signedParcel.hash().value
+                            )) ||
+                            (pendingParcelList &&
+                                pendingParcelList.data &&
+                                _.find(
+                                    pendingParcelList.data,
+                                    pendingParcel =>
+                                        pendingParcel.parcel.hash ===
+                                        signedParcel.hash().value
+                                )))
+                    ) {
+                        dispatch(accountActions.fetchAccountIfNeed(address));
+                        dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
+                        clearInterval(checkingIndexingFuncForSendingTx);
+                        resolve();
+                    }
+                }, 1000);
+            } catch (e) {
+                reject(e);
+                console.error(e);
+            }
+        });
     };
 };
 
@@ -374,55 +331,42 @@ const sendTransactionByGateway = (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const sendingTx = getState().chainReducer.sendingTx[address];
-        if (sendingTx) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch(setSendingTx(address, transferTx));
-            await sendTxToGateway(transferTx, gatewayURL);
-            checkingIndexingFuncForSendingTx = setInterval(() => {
-                dispatch(fetchPendingTxListIfNeed(address));
-                dispatch(fetchTxListIfNeed(address));
-                const pendingTxList = getState().chainReducer.pendingTxList[
-                    address
-                ];
-                const txList = getState().chainReducer.txList[address];
-                if (
-                    (pendingTxList &&
-                        pendingTxList.data &&
-                        _.find(
-                            pendingTxList.data,
-                            tx =>
-                                tx.transaction.data.hash ===
-                                transferTx.hash().value
-                        )) ||
-                    (txList &&
-                        txList.data &&
-                        _.find(
-                            txList.data,
-                            tx => tx.data.hash === transferTx.hash().value
-                        ))
-                ) {
-                    dispatch(setSendingTx(address, null));
-                    dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
-                    clearInterval(checkingIndexingFuncForSendingTx);
-                    dispatch(hideLoading() as any);
-                }
-            }, 1000);
-        } catch (e) {
-            dispatch(setSendingTx(address, null));
-            dispatch(hideLoading() as any);
-
-            console.log(e);
-            toast.error("Gateway is not responding.", {
-                position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 3000,
-                closeButton: false,
-                hideProgressBar: true
-            });
-        }
+        return new Promise(async (resolve, reject) => {
+            try {
+                await sendTxToGateway(transferTx, gatewayURL);
+                checkingIndexingFuncForSendingTx = setInterval(() => {
+                    dispatch(fetchPendingTxListIfNeed(address));
+                    dispatch(fetchTxListIfNeed(address));
+                    const pendingTxList = getState().chainReducer.pendingTxList[
+                        address
+                    ];
+                    const txList = getState().chainReducer.txList[address];
+                    if (
+                        (pendingTxList &&
+                            pendingTxList.data &&
+                            _.find(
+                                pendingTxList.data,
+                                tx =>
+                                    tx.transaction.data.hash ===
+                                    transferTx.hash().value
+                            )) ||
+                        (txList &&
+                            txList.data &&
+                            _.find(
+                                txList.data,
+                                tx => tx.data.hash === transferTx.hash().value
+                            ))
+                    ) {
+                        dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
+                        clearInterval(checkingIndexingFuncForSendingTx);
+                        resolve();
+                    }
+                }, 1000);
+            } catch (e) {
+                reject(e);
+                console.error(e);
+            }
+        });
     };
 };
 
@@ -432,49 +376,47 @@ const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const sendingSignedParcel = getState().chainReducer.sendingSignedParcel[
-            address
-        ];
-        if (sendingSignedParcel) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch(setSendingSignedParcel(address, signedParcel));
-            const networkId = getState().globalReducer.networkId;
-            const sdk = new SDK({
-                server: getCodeChainHost(networkId),
-                networkId
-            });
-            await sdk.rpc.chain.sendSignedParcel(signedParcel);
-            checkingIndexingFuncForSendingParcel = setInterval(() => {
-                dispatch(fetchPendingParcelListIfNeed(address));
-                dispatch(fetchParcelListIfNeed(address));
-                const pendingParcelList = getState().chainReducer
-                    .pendingParcelList[address];
-                const parcelList = getState().chainReducer.parcelList[address];
-                if (
-                    (pendingParcelList &&
-                        pendingParcelList.data &&
-                        _.find(
-                            pendingParcelList.data,
-                            ppp => ppp.parcel.hash === signedParcel.hash().value
-                        )) ||
-                    (parcelList &&
-                        parcelList.data &&
-                        _.find(
-                            parcelList.data,
-                            upp => upp.hash === signedParcel.hash().value
-                        ))
-                ) {
-                    dispatch(setSendingSignedParcel(address, null));
-                    clearInterval(checkingIndexingFuncForSendingParcel);
-                    dispatch(hideLoading() as any);
-                }
-            }, 1000);
-        } catch (e) {
-            console.log(e);
-        }
+        return new Promise(async (resolve, reject) => {
+            try {
+                const networkId = getState().globalReducer.networkId;
+                const sdk = new SDK({
+                    server: getCodeChainHost(networkId),
+                    networkId
+                });
+                await sdk.rpc.chain.sendSignedParcel(signedParcel);
+                checkingIndexingFuncForSendingParcel = setInterval(() => {
+                    dispatch(fetchPendingParcelListIfNeed(address));
+                    dispatch(fetchParcelListIfNeed(address));
+                    const pendingParcelList = getState().chainReducer
+                        .pendingParcelList[address];
+                    const parcelList = getState().chainReducer.parcelList[
+                        address
+                    ];
+                    if (
+                        (pendingParcelList &&
+                            pendingParcelList.data &&
+                            _.find(
+                                pendingParcelList.data,
+                                ppp =>
+                                    ppp.parcel.hash ===
+                                    signedParcel.hash().value
+                            )) ||
+                        (parcelList &&
+                            parcelList.data &&
+                            _.find(
+                                parcelList.data,
+                                upp => upp.hash === signedParcel.hash().value
+                            ))
+                    ) {
+                        clearInterval(checkingIndexingFuncForSendingParcel);
+                        resolve();
+                    }
+                }, 1000);
+            } catch (e) {
+                console.log(e);
+                reject(e);
+            }
+        });
     };
 };
 

@@ -88,12 +88,11 @@ export async function getUTXOListByAssetType(
     );
 }
 
-export async function sendTxToGateway(
+export function sendTxToGateway(
     tx: AssetTransferTransaction,
     gatewayURl: string
 ) {
-    console.log(gatewayURl);
-    return await postRequest<void>(`${gatewayURl}`, {
+    return postRequest<void>(`${gatewayURl}`, {
         tx
     });
 }

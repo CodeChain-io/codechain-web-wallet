@@ -4,11 +4,7 @@ import {
     PendingTransactionDoc,
     TransactionDoc
 } from "codechain-indexer-types/lib/types";
-import {
-    AssetTransferTransaction,
-    H256,
-    SignedParcel
-} from "codechain-sdk/lib/core/classes";
+import { H256 } from "codechain-sdk/lib/core/classes";
 import { Action, ActionType } from "./chainActions";
 
 export interface ChainState {
@@ -40,12 +36,6 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
-    sendingTx: {
-        [address: string]: AssetTransferTransaction | null;
-    };
-    sendingSignedParcel: {
-        [address: string]: SignedParcel | null;
-    };
     bestBlockNumber?: {
         data?: number | null;
         isFetching: boolean;
@@ -70,8 +60,6 @@ export interface ChainState {
 export const chainInitState: ChainState = {
     pendingTxList: {},
     txList: {},
-    sendingTx: {},
-    sendingSignedParcel: {},
     bestBlockNumber: undefined,
     txListById: {},
     pendingTxListById: {},
@@ -117,28 +105,6 @@ export const chainReducer = (
             return {
                 ...state,
                 pendingTxList
-            };
-        }
-        case ActionType.SetSendingTx: {
-            const address = action.data.address;
-            const sendingTx = {
-                ...state.sendingTx,
-                [address]: action.data.tx
-            };
-            return {
-                ...state,
-                sendingTx
-            };
-        }
-        case ActionType.SetSendingSignedParcel: {
-            const address = action.data.address;
-            const sendingSignedParcel = {
-                ...state.sendingSignedParcel,
-                [address]: action.data.signedParcel
-            };
-            return {
-                ...state,
-                sendingSignedParcel
             };
         }
         case ActionType.UpdateBestBlockNumber: {

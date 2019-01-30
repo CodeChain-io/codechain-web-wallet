@@ -7,6 +7,7 @@ import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
 import { connect } from "react-redux";
 import * as Spinner from "react-spinkit";
+import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../../model/address";
@@ -36,16 +37,19 @@ interface StateProps {
     availableQuark?: U256 | null;
     networkId: NetworkId;
     passphrase: string;
-    isSendingParcel: boolean;
 }
 
 interface DispatchProps {
     fetchAvailableQuark: (address: string) => void;
-    sendSignedParcel: (address: string, signedParcel: SignedParcel) => void;
+    sendSignedParcel: (
+        address: string,
+        signedParcel: SignedParcel
+    ) => Promise<{}>;
 }
 
 interface State {
-    isSendBtnClicked?: boolean;
+    isSending: boolean;
+    isSent: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -54,17 +58,13 @@ class SendCCC extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isSendBtnClicked: undefined
+            isSending: false,
+            isSent: false
         };
     }
     public render() {
-        const {
-            onClose,
-            availableQuark,
-            isSendingParcel,
-            address
-        } = this.props;
-        const { isSendBtnClicked } = this.state;
+        const { onClose, availableQuark, address } = this.props;
+        const { isSending, isSent } = this.state;
         if (!availableQuark) {
             return (
                 <div>
@@ -78,7 +78,7 @@ class SendCCC extends React.Component<Props, State> {
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
                 <h2 className="title">Send CCC</h2>
-                {isSendBtnClicked && !isSendingParcel ? (
+                {isSent ? (
                     <div className="d-flex align-items-center justify-content-center text-center complete-container">
                         <div className="text-center">
                             <div>
@@ -105,7 +105,7 @@ class SendCCC extends React.Component<Props, State> {
                         />
                     </div>
                 )}
-                {isSendingParcel && (
+                {isSending && (
                     <div className="sending-panel d-flex align-items-center justify-content-center">
                         <Spinner name="line-scale" color="white" />
                     </div>
@@ -189,8 +189,20 @@ class SendCCC extends React.Component<Props, State> {
             nonce,
             passphrase
         });
-        this.props.sendSignedParcel(address, signedParcel);
-        this.setState({ isSendBtnClicked: true });
+        this.setState({ isSending: true });
+        try {
+            await this.props.sendSignedParcel(address, signedParcel);
+            this.setState({ isSent: true });
+        } catch (e) {
+            toast.error("Server is not responding.", {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 3000,
+                closeButton: false,
+                hideProgressBar: true
+            });
+            console.error(e);
+        }
+        this.setState({ isSending: false });
     };
 }
 
@@ -199,12 +211,10 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const availableQuark = state.accountReducer.availableQuark[address];
     const networkId = state.globalReducer.networkId;
     const passphrase = state.globalReducer.passphrase!;
-    const sendingSignedParcel = state.chainReducer.sendingSignedParcel[address];
     return {
         availableQuark: availableQuark && new U256(availableQuark),
         networkId,
-        passphrase,
-        isSendingParcel: sendingSignedParcel != null
+        passphrase
     };
 };
 
@@ -215,7 +225,7 @@ const mapDispatchToProps = (
         dispatch(accountActions.fetchAvailableQuark(address));
     },
     sendSignedParcel: (address: string, signedParcel: SignedParcel) => {
-        dispatch(chainActions.sendSignedParcel(address, signedParcel));
+        return dispatch(chainActions.sendSignedParcel(address, signedParcel));
     }
 });
 
