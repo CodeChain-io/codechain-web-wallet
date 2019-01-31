@@ -161,7 +161,7 @@ class AssetList extends React.Component<Props, State> {
                                 )}
                             </div>
                             <div className="element-container mb-3">
-                                <h4 className="mb-3">Recent transaction</h4>
+                                <h4 className="mb-3">Recent transactions</h4>
                                 <TxHistory address={address} />
                             </div>
                         </div>
