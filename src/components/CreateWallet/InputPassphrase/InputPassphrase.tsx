@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { Form } from "reactstrap";
 import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./InputPassphrase.css";
 
@@ -41,7 +42,10 @@ class InputPassphrase extends React.Component<Props, State> {
             isSubmitted
         } = this.state;
         return (
-            <div className="Input-passphrase animated fadeIn">
+            <Form
+                className="Input-passphrase animated fadeIn"
+                onSubmit={this.handleOnFormSubmit}
+            >
                 <div className="title-container">
                     <h4 className="title">
                         Create
@@ -78,15 +82,20 @@ class InputPassphrase extends React.Component<Props, State> {
                 <div className="mt-5">
                     <button
                         className="btn btn-primary reverse square main-btn"
-                        onClick={this.handleSubmit}
                         disabled={isSubmitted}
+                        type="submit"
                     >
                         {isSubmitted ? "CREATING..." : "OK"}
                     </button>
                 </div>
-            </div>
+            </Form>
         );
     }
+
+    private handleOnFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        this.handleSubmit();
+    };
 
     private handleSubmit = () => {
         const { onSubmit } = this.props;

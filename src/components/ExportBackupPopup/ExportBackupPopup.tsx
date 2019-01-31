@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import Form from "reactstrap/lib/Form";
 import { checkPassphrase, exportMnemonic } from "../../model/keystore";
 import ValidationInput from "../ValidationInput/ValidationInput";
 import "./ExportBackupPopup.css";
@@ -50,57 +51,62 @@ class ExportBackupPopup extends React.Component<Props, State> {
             >
                 <ModalHeader toggle={toggle}>Backup phrase</ModalHeader>
                 <ModalBody>
-                    <div className="passphrase-container">
-                        <div className="d-flex align-items-center justify-content-center passphrase-panel">
-                            {backupPhraseString && (
-                                <CopyToClipboard
-                                    text={backupPhraseString}
-                                    onCopy={this.handleCopyPhrase}
-                                >
-                                    <span>{backupPhraseString}</span>
-                                </CopyToClipboard>
+                    <Form onSubmit={this.handleOnFormSubmit}>
+                        <div className="passphrase-container">
+                            <div className="d-flex align-items-center justify-content-center passphrase-panel">
+                                {backupPhraseString && (
+                                    <CopyToClipboard
+                                        text={backupPhraseString}
+                                        onCopy={this.handleCopyPhrase}
+                                    >
+                                        <span>{backupPhraseString}</span>
+                                    </CopyToClipboard>
+                                )}
+                            </div>
+                            {!revealBackupPhrase && (
+                                <div className="d-flex align-items-center justify-content-center disable-panel">
+                                    <span>
+                                        Enter your passphrase to reveal backup
+                                        phrase.
+                                    </span>
+                                </div>
                             )}
                         </div>
-                        {!revealBackupPhrase && (
-                            <div className="d-flex align-items-center justify-content-center disable-panel">
-                                <span>
-                                    Enter your passphrase to reveal backup
-                                    phrase.
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                    <div className="mt-3">
-                        <ValidationInput
-                            onChange={this.handlePassphrase}
-                            value={passphrase}
-                            showValidation={true}
-                            labelText="PASSPHRASE"
-                            placeholder="passphrase"
-                            type="password"
-                            isValid={isValidPassphrase}
-                            error={passphraseError}
-                            onBlur={this.checkPhrase}
-                            disable={revealBackupPhrase}
-                        />
-                    </div>
+                        <div className="mt-3">
+                            <ValidationInput
+                                onChange={this.handlePassphrase}
+                                value={passphrase}
+                                showValidation={true}
+                                labelText="PASSPHRASE"
+                                placeholder="passphrase"
+                                type="password"
+                                isValid={isValidPassphrase}
+                                error={passphraseError}
+                                onBlur={this.checkPhrase}
+                                disable={revealBackupPhrase}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <Button
+                                color="primary square reverse w-100"
+                                disabled={
+                                    !passphrase ||
+                                    isValidPassphrase === false ||
+                                    revealBackupPhrase
+                                }
+                            >
+                                SEE BACKUP PHRASE
+                            </Button>
+                        </div>
+                    </Form>
                 </ModalBody>
-                <ModalFooter>
-                    <Button
-                        color="primary square reverse w-100"
-                        onClick={this.handleButtonClick}
-                        disabled={
-                            !passphrase ||
-                            isValidPassphrase === false ||
-                            revealBackupPhrase
-                        }
-                    >
-                        SEE BACKUP PHRASE
-                    </Button>
-                </ModalFooter>
             </Modal>
         );
     }
+    private handleOnFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        this.handleButtonClick();
+    };
     private handlePassphrase = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
             passphrase: event.target.value,

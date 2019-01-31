@@ -13,7 +13,7 @@ class ShowBackupPhrase extends React.Component<Props, any> {
         window.scrollTo(0, 0);
     }
     public render() {
-        const { onSubmit, mnemonic } = this.props;
+        const { mnemonic } = this.props;
         return (
             <div className="Show-backup-phrase animated fadeIn">
                 <div className="title-container">
@@ -54,7 +54,7 @@ class ShowBackupPhrase extends React.Component<Props, any> {
                 <div>
                     <button
                         className="btn btn-primary reverse square main-btn"
-                        onClick={onSubmit}
+                        type="submit"
                     >
                         I MEMORIZED MY BACKUP PHRASE
                     </button>

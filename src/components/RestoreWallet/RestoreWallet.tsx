@@ -2,7 +2,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Container } from "reactstrap";
+import Form from "reactstrap/lib/Form";
 import { ThunkDispatch } from "redux-thunk";
 import { clearKeystore, importMnemonic } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
@@ -64,7 +66,10 @@ class RestoreWallet extends React.Component<Props, State> {
                         <FontAwesomeIcon icon="times" className="icon" />
                     </Link>
                 </div>
-                <div className="restore-content">
+                <Form
+                    className="restore-content"
+                    onSubmit={this.handleOnFormSubmit}
+                >
                     <div className="title-container">
                         <h4 className="title">
                             Restore your wallet
@@ -112,15 +117,20 @@ class RestoreWallet extends React.Component<Props, State> {
                     <div className="main-btn-container">
                         <button
                             className="btn btn-primary reverse square main-btn"
-                            onClick={this.handleSubmit}
+                            type="submit"
                         >
                             OK
                         </button>
                     </div>
-                </div>
+                </Form>
             </Container>
         );
     }
+
+    private handleOnFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        this.handleSubmit();
+    };
 
     private handleSubmit = async () => {
         const { passphrase, secretPhrase } = this.state;
@@ -136,16 +146,30 @@ class RestoreWallet extends React.Component<Props, State> {
         const splitPassphrases = secretPhrase.match(/\S+/g);
 
         if (!splitPassphrases || splitPassphrases.length !== 12) {
+            toast.error("Invalid passphrases", {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 3000,
+                closeButton: false,
+                hideProgressBar: true
+            });
             return;
         }
-
-        await importMnemonic(splitPassphrases.join(" "), passphrase);
-        login(passphrase!);
-        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-        // This code is temporary for solving this problem.
-        setTimeout(() => {
-            history.push(`/`);
-        }, 300);
+        try {
+            await importMnemonic(splitPassphrases.join(" "), passphrase);
+            login(passphrase!);
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                history.push(`/`);
+            }, 300);
+        } catch (e) {
+            toast.error("Invalid passphrases", {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 3000,
+                closeButton: false,
+                hideProgressBar: true
+            });
+        }
     };
 
     private handleChangeSecretPhraseInput = (

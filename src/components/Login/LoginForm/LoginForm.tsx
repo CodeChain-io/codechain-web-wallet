@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Form } from "reactstrap";
 import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./LoginForm.css";
 
@@ -11,9 +12,9 @@ interface Props {
 
 export default class LoginForm extends React.Component<Props, any> {
     public render() {
-        const { passphrase, onSignIn, isValid } = this.props;
+        const { passphrase, isValid } = this.props;
         return (
-            <div className="login-form">
+            <Form className="login-form" onSubmit={this.handleOnFormSubmit}>
                 <h4 className="welcome-text">Welcome back!</h4>
                 <div className="passphrase-input-container">
                     <ValidationInput
@@ -32,14 +33,19 @@ export default class LoginForm extends React.Component<Props, any> {
                 <div>
                     <button
                         className="btn btn-primary square sign-in-btn"
-                        onClick={onSignIn}
+                        type="submit"
                     >
                         SIGN IN
                     </button>
                 </div>
-            </div>
+            </Form>
         );
     }
+
+    private handleOnFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        this.props.onSignIn();
+    };
 
     private handleOnChagne = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { onChange } = this.props;
