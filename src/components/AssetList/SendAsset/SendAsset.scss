@@ -4,6 +4,10 @@
   padding: 50px;
   position: relative;
 
+  .loading-container {
+    height: 420px;
+  }
+
   @media screen and (max-width: 872px) {
     & {
       padding: 30px;

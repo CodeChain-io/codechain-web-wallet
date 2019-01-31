@@ -118,7 +118,9 @@ class SendAsset extends React.Component<Props, State> {
         ) {
             return (
                 <div>
-                    <div className="mt-5">Loading...</div>
+                    <div className="Send-asset">
+                        <div className="loading-container" />
+                    </div>
                 </div>
             );
         }

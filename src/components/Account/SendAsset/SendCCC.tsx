@@ -68,7 +68,9 @@ class SendCCC extends React.Component<Props, State> {
         if (!availableQuark) {
             return (
                 <div>
-                    <div className="mt-5">Loading...</div>
+                    <div className="Send-CCC">
+                        <div className="loading-container" />
+                    </div>
                 </div>
             );
         }
