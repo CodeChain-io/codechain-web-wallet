@@ -391,7 +391,7 @@ class ReceiverContainer extends React.Component<Props, State> {
             receivers,
             receiver => receiver.quantity || 0
         );
-        if (this.state.receivers[index].quantity === 0) {
+        if (this.state.receivers[index].quantity <= 0) {
             this.setState({
                 quantityValidations: {
                     ...this.state.quantityValidations,
