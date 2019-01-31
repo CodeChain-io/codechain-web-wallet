@@ -358,9 +358,9 @@ class SendAsset extends React.Component<Props, State> {
                     "The transaction was not authorized. Please contact the asset issuer for additional assistance.",
                     {
                         position: toast.POSITION.BOTTOM_CENTER,
-                        autoClose: 3000,
                         closeButton: false,
-                        hideProgressBar: true
+                        hideProgressBar: true,
+                        autoClose: false
                     }
                 );
                 console.error(e);
