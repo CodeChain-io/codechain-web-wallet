@@ -63,7 +63,7 @@ class App extends React.Component<Props, any> {
     public render() {
         const { passphrase } = this.props;
         return (
-            <Router basename={process.env.PUBLIC_URL}>
+            <Router basename={process.env.PUBLIC_URL || "/"}>
                 <div id="app" className="app" ref={this.appRef}>
                     <ToastContainer className="custom-toast" />
                     {passphrase && <Header />}
