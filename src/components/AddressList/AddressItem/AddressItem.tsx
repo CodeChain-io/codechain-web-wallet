@@ -10,7 +10,7 @@ import { ReducerConfigure } from "../../../redux";
 import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./AddressItem.css";
 
-import { U256 } from "codechain-sdk/lib/core/classes";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import accountActions from "../../../redux/account/accountActions";
 import * as copyBtnHover from "./img/copy-hover.svg";
 import * as copyBtn from "./img/copy.svg";
@@ -23,7 +23,7 @@ interface DispatchProps {
     fetchAvailableQuark: (address: string) => void;
 }
 interface StateProps {
-    availableQuark?: U256 | null;
+    availableQuark?: U64 | null;
 }
 interface State {
     isCopyHovering: boolean;
@@ -131,7 +131,7 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const availableQuark =
         state.accountReducer.availableQuark[walletAddress.address];
     return {
-        availableQuark: availableQuark && new U256(availableQuark)
+        availableQuark
     };
 };
 const mapDispatchToProps = (

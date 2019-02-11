@@ -5,16 +5,16 @@ import "./CCCReceiverItem.css";
 interface Props {
     receiver: {
         address: string;
-        amount: string;
+        quantity: string;
     };
     remainingAmount: string;
     fee: string;
     onAddressChange: (address: string) => void;
-    onAmountChange: (amount: string) => void;
+    onAmountChange: (quantity: string) => void;
     onAddressValidationCheck: () => void;
     onAmountValidationCheck: () => void;
     onFeeValidationCheck: () => void;
-    onFeeChange: (amound: string) => void;
+    onFeeChange: (quantity: string) => void;
     isAddressValid?: boolean;
     isAmountValid?: boolean;
     addressError?: string;
@@ -49,7 +49,7 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                 />
                 <div className="d-flex align-items-end">
                     <ValidationInput
-                        value={receiver.amount}
+                        value={receiver.quantity}
                         onChange={this.handleChangedAmountInput}
                         labelText="AMOUNT"
                         placeholder="amount"

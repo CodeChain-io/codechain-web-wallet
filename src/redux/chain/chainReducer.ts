@@ -1,16 +1,11 @@
-import {
-    ParcelDoc,
-    PendingParcelDoc,
-    PendingTransactionDoc,
-    TransactionDoc
-} from "codechain-indexer-types/lib/types";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import { TransactionDoc } from "codechain-indexer-types";
+import { H160 } from "codechain-sdk/lib/core/classes";
 import { Action, ActionType } from "./chainActions";
 
 export interface ChainState {
     pendingTxList: {
         [address: string]: {
-            data?: PendingTransactionDoc[] | null;
+            data?: TransactionDoc[] | null;
             isFetching: boolean;
             updatedAt?: number | null;
         } | null;
@@ -24,7 +19,7 @@ export interface ChainState {
     };
     pendingTxListById: {
         [id: string]: {
-            data?: PendingTransactionDoc[] | null;
+            data?: TransactionDoc[] | null;
             isFetching: boolean;
             updatedAt?: number | null;
         } | null;
@@ -41,20 +36,6 @@ export interface ChainState {
         isFetching: boolean;
         updatedAt?: number | null;
     } | null;
-    parcelList: {
-        [address: string]: {
-            data?: ParcelDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
-    pendingParcelList: {
-        [address: string]: {
-            data?: PendingParcelDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
 }
 
 export const chainInitState: ChainState = {
@@ -62,12 +43,10 @@ export const chainInitState: ChainState = {
     txList: {},
     bestBlockNumber: undefined,
     txListById: {},
-    pendingTxListById: {},
-    parcelList: {},
-    pendingParcelList: {}
+    pendingTxListById: {}
 };
 
-export const getIdByAddressAssetType = (address: string, assetType: H256) => {
+export const getIdByAddressAssetType = (address: string, assetType: H160) => {
     return `${address}-${assetType.value}`;
 };
 
@@ -190,68 +169,6 @@ export const chainReducer = (
             return {
                 ...state,
                 txListById
-            };
-        }
-        case ActionType.CacheParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                data: action.data.parcelList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const parcelList = {
-                ...state.parcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                parcelList
-            };
-        }
-        case ActionType.CachePendingParcelList: {
-            const address = action.data.address;
-            const currentPendingParcelList = {
-                data: action.data.pendingParcelList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const pendingParcelList = {
-                ...state.pendingParcelList,
-                [address]: currentPendingParcelList
-            };
-            return {
-                ...state,
-                pendingParcelList
-            };
-        }
-        case ActionType.SetFetchingParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                ...state.parcelList[address],
-                isFetching: true
-            };
-            const parcelList = {
-                ...state.parcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                parcelList
-            };
-        }
-        case ActionType.SetFetchingPendingParcelList: {
-            const address = action.data.address;
-            const currentPendingParcelList = {
-                ...state.pendingParcelList[address],
-                isFetching: true
-            };
-            const pendingParcelList = {
-                ...state.pendingParcelList,
-                [address]: currentPendingParcelList
-            };
-            return {
-                ...state,
-                pendingParcelList
             };
         }
     }

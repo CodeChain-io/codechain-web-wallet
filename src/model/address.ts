@@ -1,3 +1,5 @@
+import { U64 } from "codechain-sdk/lib/core/classes";
+
 export type NetworkId = "cc" | "tc" | "sc" | "wc";
 
 export interface WalletAddress {
@@ -12,6 +14,14 @@ export enum AddressType {
 }
 
 export interface PlatformAccount {
-    balance: string;
-    nonce: string;
+    balance: U64;
+    nonce: U64;
+}
+
+export function isAssetAddress(address: string) {
+    return address[2] === "a";
+}
+
+export function isPlatformAddress(address: string) {
+    return address[2] === "c";
 }

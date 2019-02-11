@@ -1,59 +1,87 @@
-import {
-    AssetMintTransactionDoc,
-    AssetTransferTransactionDoc,
-    TransactionDoc
-} from "codechain-indexer-types/lib/types";
-import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
+import { TransactionDoc } from "codechain-indexer-types";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
+import * as Metadata from "./metadata";
 
-function getAssetAggregationFromTransactionDoc(
+function getAggsQuark(address: string, parcelList: TransactionDoc[]) {
+    return _.reduce(
+        parcelList,
+        (memo, tx: TransactionDoc) => {
+            let output = new U64(0);
+            let input = new U64(0);
+            if (tx.type === "pay") {
+                const quantity = tx.pay.quantity;
+                if (tx.pay.receiver === address) {
+                    output = U64.plus(output, quantity);
+                }
+                if (tx.signer === address) {
+                    input = U64.plus(input, quantity);
+                }
+            }
+            if (tx.signer === address) {
+                const fee = tx.fee;
+                input = U64.plus(input, fee);
+            }
+            return {
+                input: U64.plus(memo.input, input),
+                output: U64.plus(memo.output, output)
+            };
+        },
+        {
+            input: new U64(0),
+            output: new U64(0)
+        }
+    );
+}
+
+function getAggsAsset(
     address: string,
     transaction: TransactionDoc
 ): {
     assetType: string;
-    inputQuantities: number;
-    outputQuantities: number;
-    burnQuantities: number;
-    metadata: MetadataFormat;
+    inputQuantities: U64;
+    outputQuantities: U64;
+    burnQuantities: U64;
+    metadata: Metadata.Metadata;
 }[] {
-    if (Type.isAssetMintTransactionDoc(transaction)) {
-        const mintTx = transaction as AssetMintTransactionDoc;
-        if (mintTx.data.output.owner === address) {
+    if (transaction.type === "mintAsset") {
+        if (transaction.mintAsset.recipient === address) {
             return [
                 {
-                    assetType: mintTx.data.output.assetType,
-                    inputQuantities: 0,
-                    outputQuantities: mintTx.data.output.amount || 0,
-                    burnQuantities: 0,
-                    metadata: Type.getMetadata(mintTx.data.metadata)
+                    assetType: transaction.mintAsset.assetType,
+                    inputQuantities: new U64(0),
+                    outputQuantities: new U64(transaction.mintAsset.supply),
+                    burnQuantities: new U64(0),
+                    metadata: Metadata.parseMetadata(
+                        transaction.mintAsset.metadata
+                    )
                 }
             ];
         } else {
             return [];
         }
-    } else if (Type.isAssetTransferTransactionDoc(transaction)) {
-        const transferTx = transaction as AssetTransferTransactionDoc;
+    } else if (transaction.type === "transferAsset") {
         const filteredInputs = _.filter(
-            transferTx.data.inputs,
+            transaction.transferAsset.inputs,
             input => input.prevOut.owner === address
         );
 
         const filteredBurns = _.filter(
-            transferTx.data.burns,
+            transaction.transferAsset.burns,
             burn => burn.prevOut.owner === address
         );
 
         const filteredOutputs = _.filter(
-            transferTx.data.outputs,
+            transaction.transferAsset.outputs,
             output => output.owner === address
         );
         const results: {
             [assetType: string]: {
                 assetType: string;
-                inputQuantities: number;
-                outputQuantities: number;
-                burnQuantities: number;
-                metadata: MetadataFormat;
+                inputQuantities: U64;
+                outputQuantities: U64;
+                burnQuantities: U64;
+                metadata: Metadata.Metadata;
             };
         } = {};
         _.each(filteredInputs, filteredInput => {
@@ -61,17 +89,19 @@ function getAssetAggregationFromTransactionDoc(
                 const before = results[filteredInput.prevOut.assetType];
                 const newObject = {
                     ...before,
-                    inputQuantities:
-                        before.inputQuantities + filteredInput.prevOut.amount
+                    inputQuantities: U64.plus(
+                        before.inputQuantities,
+                        filteredInput.prevOut.quantity
+                    )
                 };
                 results[filteredInput.prevOut.assetType] = newObject;
             } else {
                 results[filteredInput.prevOut.assetType] = {
                     assetType: filteredInput.prevOut.assetType,
-                    inputQuantities: filteredInput.prevOut.amount,
-                    outputQuantities: 0,
-                    burnQuantities: 0,
-                    metadata: Type.getMetadata(
+                    inputQuantities: new U64(filteredInput.prevOut.quantity),
+                    outputQuantities: new U64(0),
+                    burnQuantities: new U64(0),
+                    metadata: Metadata.parseMetadata(
                         filteredInput.prevOut.assetScheme.metadata
                     )
                 };
@@ -82,17 +112,19 @@ function getAssetAggregationFromTransactionDoc(
                 const before = results[filteredBurn.prevOut.assetType];
                 const newObject = {
                     ...before,
-                    burnQuantities:
-                        before.burnQuantities + filteredBurn.prevOut.amount
+                    burnQuantities: U64.plus(
+                        before.burnQuantities,
+                        filteredBurn.prevOut.quantity
+                    )
                 };
                 results[filteredBurn.prevOut.assetType] = newObject;
             } else {
                 results[filteredBurn.prevOut.assetType] = {
                     assetType: filteredBurn.prevOut.assetType,
-                    inputQuantities: 0,
-                    outputQuantities: 0,
-                    burnQuantities: filteredBurn.prevOut.amount,
-                    metadata: Type.getMetadata(
+                    inputQuantities: new U64(0),
+                    outputQuantities: new U64(0),
+                    burnQuantities: new U64(filteredBurn.prevOut.quantity),
+                    metadata: Metadata.parseMetadata(
                         filteredBurn.prevOut.assetScheme.metadata
                     )
                 };
@@ -103,17 +135,19 @@ function getAssetAggregationFromTransactionDoc(
                 const before = results[filteredOutput.assetType];
                 const newObject = {
                     ...before,
-                    outputQuantities:
-                        before.outputQuantities + filteredOutput.amount
+                    outputQuantities: U64.plus(
+                        before.outputQuantities,
+                        filteredOutput.quantity
+                    )
                 };
                 results[filteredOutput.assetType] = newObject;
             } else {
                 results[filteredOutput.assetType] = {
                     assetType: filteredOutput.assetType,
-                    inputQuantities: 0,
-                    outputQuantities: filteredOutput.amount,
-                    burnQuantities: 0,
-                    metadata: Type.getMetadata(
+                    inputQuantities: new U64(0),
+                    outputQuantities: new U64(filteredOutput.quantity),
+                    burnQuantities: new U64(0),
+                    metadata: Metadata.parseMetadata(
                         filteredOutput.assetScheme.metadata
                     )
                 };
@@ -124,4 +158,4 @@ function getAssetAggregationFromTransactionDoc(
     throw new Error("invalid transaction type");
 }
 
-export const TxUtil = { getAssetAggregationFromTransactionDoc };
+export const TxUtil = { getAggsAsset, getAggsQuark };

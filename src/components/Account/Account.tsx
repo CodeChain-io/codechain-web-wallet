@@ -1,4 +1,4 @@
-import { U256 } from "codechain-sdk/lib/core/classes";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -10,7 +10,7 @@ import accountActions from "../../redux/account/accountActions";
 import walletActions from "../../redux/wallet/walletActions";
 import { changeQuarkToCCCString } from "../../utils/unit";
 import AddressContainer from "../AddressContainer/AddressContainer";
-import ParcelHistory from "../ParcelHistory/ParcelHistory";
+import TxHistory from "../TxHistory/TxHistory";
 import "./Account.css";
 import SendCCC from "./SendAsset/SendCCC";
 
@@ -19,7 +19,7 @@ interface OwnProps {
 }
 
 interface StateProps {
-    availableQuark?: U256 | null;
+    availableQuark?: U64 | null;
     addressName?: string | null;
 }
 
@@ -108,7 +108,7 @@ class Account extends React.Component<Props, State> {
                             </div>
                             <div className="element-container">
                                 <h4 className="mb-3">Transaction history</h4>
-                                <ParcelHistory address={address} />
+                                <TxHistory address={address} />
                             </div>
                         </div>
                     </div>
@@ -173,7 +173,7 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
         aa => aa.address === address
     );
     return {
-        availableQuark: availableQuark && new U256(availableQuark),
+        availableQuark,
         addressName: assetAddress && assetAddress.name
     };
 };

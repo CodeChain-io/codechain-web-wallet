@@ -1,10 +1,5 @@
-import {
-    AggsUTXO,
-    AssetSchemeDoc,
-    UTXO
-} from "codechain-indexer-types/lib/types";
-import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import { AggsUTXODoc, AssetSchemeDoc, UTXODoc } from "codechain-indexer-types";
+import { H160, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
@@ -14,6 +9,7 @@ import {
     getAssetByAssetType,
     getUTXOListByAssetType
 } from "../../networks/Api";
+import * as Metadata from "../../utils/metadata";
 import { TxUtil } from "../../utils/transaction";
 import chainActions from "../chain/chainActions";
 import { getIdForCacheUTXO } from "./assetReducer";
@@ -49,7 +45,7 @@ export interface CacheAggsUTXOList {
     type: ActionType.CacheAggsUTXOList;
     data: {
         address: string;
-        aggsUTXOList: AggsUTXO[];
+        aggsUTXOList: AggsUTXODoc[];
     };
 }
 
@@ -71,7 +67,7 @@ export interface SetFetchingUTXOList {
     type: ActionType.SetFetchingUTXOList;
     data: {
         address: string;
-        assetType: H256;
+        assetType: H160;
     };
 }
 
@@ -79,8 +75,8 @@ export interface CacheUTXOList {
     type: ActionType.CacheUTXOList;
     data: {
         address: string;
-        assetType: H256;
-        UTXOList: UTXO[];
+        assetType: H160;
+        UTXOList: UTXODoc[];
     };
 }
 
@@ -90,14 +86,14 @@ export interface CacheAvailableAssets {
         address: string;
         availableAssets: {
             assetType: string;
-            quantities: number;
-            metadata: MetadataFormat;
+            quantities: U64;
+            metadata: Metadata.Metadata;
         }[];
     };
 }
 
 const cacheAssetScheme = (
-    assetType: H256,
+    assetType: H160,
     assetScheme: AssetSchemeDoc
 ): CacheAssetScheme => ({
     type: ActionType.CacheAssetScheme,
@@ -109,7 +105,7 @@ const cacheAssetScheme = (
 
 const cacheAggsUTXOList = (
     address: string,
-    aggsUTXOList: AggsUTXO[]
+    aggsUTXOList: AggsUTXODoc[]
 ): CacheAggsUTXOList => ({
     type: ActionType.CacheAggsUTXOList,
     data: {
@@ -120,8 +116,8 @@ const cacheAggsUTXOList = (
 
 const cacheUTXOList = (
     address: string,
-    assetType: H256,
-    UTXOList: UTXO[]
+    assetType: H160,
+    UTXOList: UTXODoc[]
 ): CacheUTXOList => ({
     type: ActionType.CacheUTXOList,
     data: {
@@ -135,8 +131,8 @@ const cacheAvailableAssets = (
     address: string,
     availableAssets: {
         assetType: string;
-        quantities: number;
-        metadata: MetadataFormat;
+        quantities: U64;
+        metadata: Metadata.Metadata;
     }[]
 ): CacheAvailableAssets => ({
     type: ActionType.CacheAvailableAssets,
@@ -146,7 +142,7 @@ const cacheAvailableAssets = (
     }
 });
 
-const setFetchingAssetScheme = (assetType: H256): SetFetchingAssetScheme => ({
+const setFetchingAssetScheme = (assetType: H160): SetFetchingAssetScheme => ({
     type: ActionType.SetFetchingAssetScheme,
     data: {
         assetType: assetType.value
@@ -162,7 +158,7 @@ const setFetchingAggsUTXOList = (address: string): SetFetchingAggsUTXOList => ({
 
 const setFetchingUTXOList = (
     address: string,
-    assetType: H256
+    assetType: H160
 ): SetFetchingUTXOList => ({
     type: ActionType.SetFetchingUTXOList,
     data: {
@@ -171,7 +167,7 @@ const setFetchingUTXOList = (
     }
 });
 
-const fetchAssetSchemeIfNeed = (assetType: H256) => {
+const fetchAssetSchemeIfNeed = (assetType: H160) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
@@ -190,7 +186,6 @@ const fetchAssetSchemeIfNeed = (assetType: H256) => {
                 assetType,
                 networkId
             );
-
             dispatch(cacheAssetScheme(assetType, responseAssetScheme));
             dispatch(hideLoading() as any);
         } catch (e) {
@@ -223,9 +218,10 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
             const networkId = getState().globalReducer.networkId;
             const UTXOResponse = await getAggsUTXOList(address, networkId);
             dispatch(cacheAggsUTXOList(address, UTXOResponse));
-            _.each(UTXOResponse, u => {
+
+            _.each(UTXOResponse, (u: any) => {
                 dispatch(
-                    cacheAssetScheme(new H256(u.assetType), u.assetScheme)
+                    cacheAssetScheme(new H160(u.assetType), u.assetScheme)
                 );
             });
             // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
@@ -240,7 +236,7 @@ const fetchAggsUTXOListIfNeed = (address: string) => {
     };
 };
 
-const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
+const fetchUTXOListIfNeed = (address: string, assetType: H160) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
@@ -276,10 +272,7 @@ const fetchUTXOListIfNeed = (address: string, assetType: H256) => {
 };
 
 const fetchAvailableAssets = (address: string) => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
+    return async (dispatch: ThunkDispatch<ReducerConfigure, void, Action>) => {
         dispatch(chainActions.fetchPendingTxListIfNeed(address));
         dispatch(chainActions.fetchTxListIfNeed(address));
         dispatch(fetchAggsUTXOListIfNeed(address));
@@ -305,61 +298,61 @@ const calculateAvailableAssets = (address: string) => {
             return;
         }
 
-        const txHashList = _.map(txList, tx => tx.data.hash);
+        const txHashList = _.map(txList, tx => tx.hash);
         const validPendingTxList = _.filter(
             pendingTxList,
-            pendingTx =>
-                !_.includes(txHashList, pendingTx.transaction.data.hash)
+            pendingTx => !_.includes(txHashList, pendingTx.hash)
         );
         const aggregatedPendingAsset = _.flatMap(
             validPendingTxList,
             pendingTx => {
-                return TxUtil.getAssetAggregationFromTransactionDoc(
-                    address,
-                    pendingTx.transaction
-                );
+                return TxUtil.getAggsAsset(address, pendingTx);
             }
         );
 
         const availableAssets: {
             [assetType: string]: {
                 assetType: string;
-                quantities: number;
-                metadata: MetadataFormat;
+                quantities: U64;
+                metadata: Metadata.Metadata;
             };
         } = {};
-        _.each(addressUTXOList, addressConfirmedUTXO => {
+
+        _.each(addressUTXOList, (addressConfirmedUTXO: any) => {
             availableAssets[addressConfirmedUTXO.assetType] = {
                 assetType: addressConfirmedUTXO.assetType,
-                quantities: addressConfirmedUTXO.totalAssetQuantity,
-                metadata: Type.getMetadata(
+                quantities: new U64(addressConfirmedUTXO.totalAssetQuantity),
+                metadata: Metadata.parseMetadata(
                     addressConfirmedUTXO.assetScheme.metadata
                 )
             };
         });
         _.each(aggregatedPendingAsset, asset => {
-            const quantities =
-                asset.outputQuantities -
-                (asset.inputQuantities + asset.burnQuantities);
+            const quantities = U64.minus(
+                asset.outputQuantities,
+                U64.plus(asset.inputQuantities, asset.burnQuantities)
+            );
 
-            if (quantities < 0) {
+            if (quantities.lt(0)) {
                 if (!availableAssets[asset.assetType]) {
                     availableAssets[asset.assetType] = {
                         assetType: asset.assetType,
-                        quantities: 0,
+                        quantities: new U64(0),
                         metadata: asset.metadata
                     };
                 }
                 availableAssets[asset.assetType] = {
                     ...availableAssets[asset.assetType],
-                    quantities:
-                        availableAssets[asset.assetType].quantities + quantities
+                    quantities: U64.plus(
+                        availableAssets[asset.assetType].quantities,
+                        quantities
+                    )
                 };
             }
         });
         const availableAssetsValue = _.filter(
             _.values(availableAssets),
-            asset => asset.quantities !== 0
+            asset => !asset.quantities.eq(0)
         );
         dispatch(cacheAvailableAssets(address, availableAssetsValue));
     };

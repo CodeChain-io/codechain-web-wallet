@@ -1,9 +1,10 @@
+import { U64 } from "codechain-sdk/lib/core/classes";
 import { PlatformAccount } from "../../model/address";
 import { Action, ActionType } from "./accountActions";
 
 export interface AccountState {
     availableQuark: {
-        [address: string]: string | null | undefined;
+        [address: string]: U64 | null | undefined;
     };
     accounts: {
         [address: string]: {

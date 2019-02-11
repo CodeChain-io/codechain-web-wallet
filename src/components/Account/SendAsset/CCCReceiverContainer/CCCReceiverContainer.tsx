@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { PlatformAddress, U256 } from "codechain-sdk/lib/core/classes";
+import { PlatformAddress, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
 import { changeQuarkToCCCString } from "../../../../utils/unit";
@@ -9,7 +9,7 @@ import CCCReceiverItem from "./CCCReceiverItem/CCCReceiverItem";
 interface State {
     receiver: {
         address: string;
-        amount: string;
+        quantity: string;
     };
     fee: string;
     isAddressValid?: boolean;
@@ -22,8 +22,8 @@ interface State {
 
 interface Props {
     address: string;
-    totalAmount: U256;
-    onSubmit: (receiver: { address: string; amount: U256 }, fee: U256) => void;
+    totalAmount: U64;
+    onSubmit: (receiver: { address: string; quantity: U64 }, fee: U64) => void;
 }
 
 export default class CCCReceiverContainer extends React.Component<
@@ -35,9 +35,9 @@ export default class CCCReceiverContainer extends React.Component<
         this.state = {
             receiver: {
                 address: "",
-                amount: ""
+                quantity: ""
             },
-            fee: "0.0000001",
+            fee: "",
             isFeeValid: undefined,
             feeError: undefined,
             isAddressValid: undefined,
@@ -102,7 +102,7 @@ export default class CCCReceiverContainer extends React.Component<
         const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
         const remainingQuark = totalAmount.value.minus(feeQuark);
         try {
-            return changeQuarkToCCCString(new U256(remainingQuark));
+            return changeQuarkToCCCString(new U64(remainingQuark));
         } catch (e) {
             console.log(e);
             return "0";
@@ -142,7 +142,7 @@ export default class CCCReceiverContainer extends React.Component<
     private handleAmountValidationCheck = () => {
         const { receiver, fee } = this.state;
         const { totalAmount } = this.props;
-        const amountQuark = new BigNumber(receiver.amount).multipliedBy(
+        const amountQuark = new BigNumber(receiver.quantity).multipliedBy(
             Math.pow(10, 9)
         );
         if (amountQuark.isNaN()) {
@@ -192,7 +192,7 @@ export default class CCCReceiverContainer extends React.Component<
             });
             return false;
         }
-        const amountQuark = new BigNumber(receiver.amount).multipliedBy(
+        const amountQuark = new BigNumber(receiver.quantity).multipliedBy(
             Math.pow(10, 9)
         );
         if (amountQuark.plus(feeQuark).gt(totalAmount.value)) {
@@ -214,19 +214,19 @@ export default class CCCReceiverContainer extends React.Component<
         this.setState({
             receiver: {
                 address,
-                amount: receiver.amount
+                quantity: receiver.quantity
             },
             addressError: undefined,
             isAddressValid: undefined
         });
     };
 
-    private handleAmountChange = (amount: string) => {
+    private handleAmountChange = (quantity: string) => {
         const { receiver } = this.state;
         this.setState({
             receiver: {
                 address: receiver.address,
-                amount
+                quantity
             },
             amountError: undefined,
             isAmountValid: undefined
@@ -257,16 +257,16 @@ export default class CCCReceiverContainer extends React.Component<
             return;
         }
 
-        const amountQuark = new BigNumber(receiver.amount).multipliedBy(
+        const amountQuark = new BigNumber(receiver.quantity).multipliedBy(
             Math.pow(10, 9)
         );
         const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
         this.props.onSubmit(
             {
                 address: receiver.address,
-                amount: new U256(amountQuark)
+                quantity: new U64(amountQuark)
             },
-            new U256(feeQuark)
+            new U64(feeQuark)
         );
     };
 }

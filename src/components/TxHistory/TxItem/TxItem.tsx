@@ -1,13 +1,15 @@
-import { TransactionDoc } from "codechain-indexer-types/lib/types";
+import { TransactionDoc } from "codechain-indexer-types";
 import * as _ from "lodash";
 import * as moment from "moment";
 import * as React from "react";
 import MediaQuery from "react-responsive";
 import { NetworkId } from "../../../model/address";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
+import * as Metadata from "../../../utils/metadata";
 import { getExplorerHost } from "../../../utils/network";
 import { TxUtil } from "../../../utils/transaction";
 
+import { U64 } from "codechain-sdk/lib/core/classes";
 import "./TxItem.css";
 
 interface Props {
@@ -20,10 +22,7 @@ interface Props {
 export default class TxItem extends React.Component<Props, any> {
     public render() {
         const { tx, address, networkId, isPending, timestamp } = this.props;
-        const assetHistory = TxUtil.getAssetAggregationFromTransactionDoc(
-            address,
-            tx
-        );
+        const assetHistory = TxUtil.getAggsAsset(address, tx);
         return _.map(assetHistory, (history, index) => (
             <div
                 key={`${history.assetType}-${index}`}
@@ -53,27 +52,19 @@ export default class TxItem extends React.Component<Props, any> {
                     <a
                         className="mono transaction-hash"
                         target="_blank"
-                        href={`${getExplorerHost(networkId)}/tx/${
-                            tx.data.hash
-                        }`}
+                        href={`${getExplorerHost(networkId)}/tx/${tx.hash}`}
                     >
                         0x
-                        {tx.data.hash}
+                        {tx.hash}
                     </a>
                 </div>
                 <div className="balance-container number">
-                    {history.outputQuantities -
-                        history.inputQuantities -
-                        history.burnQuantities >
-                        0 && "+"}
-                    {history.outputQuantities -
-                        history.inputQuantities -
-                        history.burnQuantities}
+                    {this.renderQuantity(history)}
                 </div>
                 <div className="status-container">
                     {isPending ? (
                         <span className="pending">Pending</span>
-                    ) : tx.data.invoice ? (
+                    ) : tx.invoice ? (
                         <span className="confirmed">Confirmed</span>
                     ) : (
                         <span className="failed">Failed</span>
@@ -82,4 +73,18 @@ export default class TxItem extends React.Component<Props, any> {
             </div>
         ));
     }
+
+    private renderQuantity = (history: {
+        assetType: string;
+        inputQuantities: U64;
+        outputQuantities: U64;
+        burnQuantities: U64;
+        metadata: Metadata.Metadata;
+    }) => {
+        const quantity = U64.minus(
+            history.outputQuantities,
+            U64.minus(history.inputQuantities, history.burnQuantities)
+        );
+        return `${quantity.gt(0) && "+"}${quantity.toString(10)}`;
+    };
 }

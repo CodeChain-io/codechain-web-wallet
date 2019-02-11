@@ -112,7 +112,7 @@ export async function restorePlatformAddresses(
             networkId
         }).value;
         const account = await getPlatformAccount(address, networkId);
-        if (account.nonce !== "0" || account.balance !== "0") {
+        if (!account.nonce.eq(0) || !account.balance.eq(0)) {
             lastValidPlatfromPathIndex = currentPath;
         }
         platformAddresses.push({

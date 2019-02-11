@@ -1,17 +1,16 @@
 import * as React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AssetSchemeDoc, UTXO } from "codechain-indexer-types/lib/types";
-import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
+import { AssetSchemeDoc, UTXODoc } from "codechain-indexer-types";
 import { SDK } from "codechain-sdk";
 import {
     Asset,
     AssetTransferAddress,
     AssetTransferOutput,
-    AssetTransferTransaction,
-    H256,
-    SignedParcel,
-    U256
+    H160,
+    SignedTransaction,
+    Transaction,
+    U64
 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
@@ -33,6 +32,7 @@ import { getIdForCacheUTXO } from "../../../redux/asset/assetReducer";
 import chainActions from "../../../redux/chain/chainActions";
 import walletActions from "../../../redux/wallet/walletActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
+import * as Metadata from "../../../utils/metadata";
 import { getCodeChainHost } from "../../../utils/network";
 import { getAssetKeys, getPlatformKeys } from "../../../utils/storage";
 import * as CheckIcon from "./img/check_icon.svg";
@@ -47,12 +47,12 @@ interface OwnProps {
 
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
-    UTXOList: UTXO[] | null;
+    UTXOList: UTXODoc[] | null;
     availableAssets?:
         | {
               assetType: string;
-              quantities: number;
-              metadata: MetadataFormat;
+              quantities: U64;
+              metadata: Metadata.Metadata;
           }[]
         | null;
     networkId: NetworkId;
@@ -67,19 +67,18 @@ interface State {
 }
 
 interface DispatchProps {
-    fetchAssetSchemeIfNeed: (assetType: H256) => void;
+    fetchAssetSchemeIfNeed: (assetType: H160) => void;
     fetchAvailableAssets: (address: string) => void;
-    fetchUTXOListIfNeed: (address: string, assetType: H256) => void;
+    fetchUTXOListIfNeed: (address: string, assetType: H160) => void;
     sendTransactionByGateway: (
         address: string,
-        transferTx: AssetTransferTransaction,
-        getewayURL: string
+        transferTx: Transaction,
+        gatewayURL: string
     ) => Promise<{}>;
     fetchWalletFromStorageIfNeed: () => void;
-    sendTransactionByParcel: (
+    sendSignedTransaction: (
         address: string,
-        signedParcel: SignedParcel,
-        transferTx: AssetTransferTransaction,
+        signedTransaction: SignedTransaction,
         feePayer: string
     ) => Promise<{}>;
 }
@@ -128,7 +127,7 @@ class SendAsset extends React.Component<Props, State> {
             availableAssets,
             a => a.assetType === assetType
         );
-        const metadata = Type.getMetadata(assetScheme.metadata);
+        const metadata = Metadata.parseMetadata(assetScheme.metadata);
         return (
             <div className="Send-asset animated fadeIn">
                 <div className="cancel-icon-container" onClick={onClose}>
@@ -173,7 +172,9 @@ class SendAsset extends React.Component<Props, State> {
                             address={address}
                             onSubmit={this.handleSubmit}
                             totalQuantity={
-                                availableAsset ? availableAsset.quantities : 0
+                                availableAsset
+                                    ? availableAsset.quantities
+                                    : new U64(0)
                             }
                             gatewayURL={
                                 metadata.gateway && metadata.gateway.url
@@ -196,17 +197,17 @@ class SendAsset extends React.Component<Props, State> {
 
     private init = () => {
         const { selectedAssetType, address } = this.props;
-        this.props.fetchAssetSchemeIfNeed(new H256(selectedAssetType));
-        this.props.fetchUTXOListIfNeed(address, new H256(selectedAssetType));
+        this.props.fetchAssetSchemeIfNeed(new H160(selectedAssetType));
+        this.props.fetchUTXOListIfNeed(address, new H160(selectedAssetType));
         this.props.fetchAvailableAssets(address);
         this.props.fetchWalletFromStorageIfNeed();
     };
 
     private handleSubmit = async (
-        receivers: { address: string; quantity: number }[],
+        receivers: { address: string; quantity: U64 }[],
         fee?: {
             payer: string;
-            amount: U256;
+            quantity: U64;
         } | null
     ) => {
         const { UTXOList } = this.props;
@@ -224,17 +225,18 @@ class SendAsset extends React.Component<Props, State> {
             return;
         }
 
-        const sumOfSendingAsset = _.sumBy(
+        const sumOfSendingAsset = _.reduce(
             receivers,
-            receiver => receiver.quantity
+            (memo, receiver) => U64.plus(memo, receiver.quantity),
+            new U64(0)
         );
 
         const inputUTXO = [];
-        let currentSum = 0;
+        let currentSum = new U64(0);
         for (const utxo of UTXOList!) {
             inputUTXO.push(utxo);
-            currentSum += utxo.asset.amount;
-            if (currentSum > sumOfSendingAsset) {
+            currentSum = U64.plus(currentSum, utxo.quantity);
+            if (currentSum.lte(sumOfSendingAsset)) {
                 break;
             }
         }
@@ -286,28 +288,32 @@ class SendAsset extends React.Component<Props, State> {
 
         const inputAssets = _.map(inputUTXO, utxo => {
             return Asset.fromJSON({
-                asset_type: utxo.asset.assetType,
-                lock_script_hash: utxo.asset.lockScriptHash,
-                parameters: utxo.asset.parameters,
-                amount: utxo.asset.amount,
-                transactionHash: utxo.asset.transactionHash,
-                transactionOutputIndex: utxo.asset.transactionOutputIndex
+                assetType: utxo.assetType,
+                lockScriptHash: utxo.lockScriptHash,
+                parameters: utxo.parameters,
+                quantity: utxo.quantity,
+                tracker: utxo.transactionHash,
+                transactionOutputIndex: utxo.transactionOutputIndex,
+                orderHash: "", // FIXME: Add a valid data
+                shardId: 0 // FIXME: Add a valid data
             }).createTransferInput();
         });
         const outputData = _.map(receivers, receiver => {
             return {
                 recipient: receiver.address,
-                amount: receiver.quantity,
+                quantity: receiver.quantity,
+                shardId: 0, // FIXME: Add a valid data
                 assetType
             };
         });
 
-        const refundAmount = currentSum - sumOfSendingAsset;
-        if (refundAmount > 0) {
+        const refundAmount = U64.minus(currentSum, sumOfSendingAsset);
+        if (refundAmount.gt(0)) {
             outputData.push({
                 recipient: address,
-                amount: currentSum - sumOfSendingAsset,
-                assetType
+                quantity: refundAmount,
+                assetType,
+                shardId: 0
             });
         }
         const outputs = _.map(
@@ -315,11 +321,12 @@ class SendAsset extends React.Component<Props, State> {
             o =>
                 new AssetTransferOutput({
                     recipient: AssetTransferAddress.fromString(o.recipient),
-                    amount: o.amount,
-                    assetType: new H256(o.assetType)
+                    quantity: o.quantity,
+                    shardId: 0, // FIXME: Add a valid data
+                    assetType: new H160(o.assetType)
                 })
         );
-        const transferTx = sdk.core.createAssetTransferTransaction({
+        const transferTx = sdk.core.createTransferAssetTransaction({
             inputs: inputAssets,
             outputs
         });
@@ -344,10 +351,10 @@ class SendAsset extends React.Component<Props, State> {
             console.log(e);
             return;
         }
-        const metadata = Type.getMetadata(assetScheme.metadata);
+        const metadata = Metadata.parseMetadata(assetScheme.metadata);
 
         this.setState({ isSendingTx: true });
-        if (metadata.gateway) {
+        if (metadata.gateway && metadata.gateway.url) {
             try {
                 await this.props.sendTransactionByGateway(
                     address,
@@ -368,23 +375,22 @@ class SendAsset extends React.Component<Props, State> {
                 console.error(e);
             }
         } else {
-            const parcel = sdk.core.createAssetTransactionGroupParcel({
-                transactions: [transferTx]
-            });
             const feePayer = fee!.payer;
-            const nonce = await sdk.rpc.chain.getNonce(feePayer);
-            const signedParcel = await sdk.key.signParcel(parcel, {
-                account: feePayer,
-                keyStore,
-                fee: fee!.amount,
-                nonce,
-                passphrase
-            });
+            const seq = await sdk.rpc.chain.getSeq(feePayer);
+            const signedTransaction = await sdk.key.signTransaction(
+                transferTx,
+                {
+                    account: feePayer,
+                    keyStore,
+                    fee: fee!.quantity,
+                    seq,
+                    passphrase
+                }
+            );
             try {
-                await this.props.sendTransactionByParcel(
+                await this.props.sendSignedTransaction(
                     address,
-                    signedParcel,
-                    transferTx,
+                    signedTransaction,
                     feePayer
                 );
                 this.setState({ isSentTx: true });
@@ -405,8 +411,8 @@ class SendAsset extends React.Component<Props, State> {
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const { selectedAssetType, address } = ownProps;
     const assetScheme =
-        state.assetReducer.assetScheme[new H256(selectedAssetType).value];
-    const id = getIdForCacheUTXO(address, new H256(selectedAssetType));
+        state.assetReducer.assetScheme[new H160(selectedAssetType).value];
+    const id = getIdForCacheUTXO(address, new H160(selectedAssetType));
     const UTXOList = state.assetReducer.UTXOList[id];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
@@ -427,7 +433,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAssetSchemeIfNeed: (assetType: H256) => {
+    fetchAssetSchemeIfNeed: (assetType: H160) => {
         dispatch(assetActions.fetchAssetSchemeIfNeed(assetType));
     },
     fetchAvailableAssets: (address: string) => {
@@ -435,7 +441,7 @@ const mapDispatchToProps = (
     },
     sendTransactionByGateway: (
         address: string,
-        transferTx: AssetTransferTransaction,
+        transferTx: Transaction,
         gatewayURL: string
     ) => {
         return dispatch(
@@ -446,22 +452,20 @@ const mapDispatchToProps = (
             )
         );
     },
-    sendTransactionByParcel: (
+    sendSignedTransaction: (
         address: string,
-        signedParcel: SignedParcel,
-        transferTx: AssetTransferTransaction,
+        signedTransaction: SignedTransaction,
         feePayer: string
     ) => {
         return dispatch(
-            chainActions.sendTransactionByParcel(
+            chainActions.sendSignedTransaction(
                 address,
-                signedParcel,
-                transferTx,
+                signedTransaction,
                 feePayer
             )
         );
     },
-    fetchUTXOListIfNeed: (address: string, assetType: H256) => {
+    fetchUTXOListIfNeed: (address: string, assetType: H160) => {
         dispatch(assetActions.fetchUTXOListIfNeed(address, assetType));
     },
     fetchWalletFromStorageIfNeed: () => {

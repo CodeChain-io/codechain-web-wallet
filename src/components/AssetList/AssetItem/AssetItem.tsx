@@ -1,15 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { MetadataFormat } from "codechain-indexer-types/lib/utils";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { NetworkId } from "../../../model/address";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
+import * as Metadata from "../../../utils/metadata";
 import "./AssetItem.css";
 
 interface OwnProps {
     assetType: string;
-    quantities: number;
-    metadata: MetadataFormat;
+    quantities: U64;
+    metadata: Metadata.Metadata;
     networkId: NetworkId;
     address: string;
 

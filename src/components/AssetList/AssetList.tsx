@@ -1,8 +1,5 @@
-import {
-    AggsUTXO,
-    PendingTransactionDoc
-} from "codechain-indexer-types/lib/types";
-import { MetadataFormat } from "codechain-indexer-types/lib/utils";
+import { AggsUTXODoc, TransactionDoc } from "codechain-indexer-types";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -14,6 +11,7 @@ import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import chainActions from "../../redux/chain/chainActions";
 import walletActions from "../../redux/wallet/walletActions";
+import * as Metadata from "../../utils/metadata";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import TxHistory from "../TxHistory/TxHistory";
 import AssetItem from "./AssetItem/AssetItem";
@@ -26,13 +24,13 @@ interface OwnProps {
 }
 
 interface StateProps {
-    addressUTXOList?: AggsUTXO[] | null;
-    pendingTxList?: PendingTransactionDoc[] | null;
+    addressUTXOList?: AggsUTXODoc[] | null;
+    pendingTxList?: TransactionDoc[] | null;
     availableAssets?:
         | {
               assetType: string;
-              quantities: number;
-              metadata: MetadataFormat;
+              quantities: U64;
+              metadata: Metadata.Metadata;
           }[]
         | null;
     networkId: NetworkId;

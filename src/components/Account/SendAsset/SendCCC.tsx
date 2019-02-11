@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SDK } from "codechain-sdk";
-import { SignedParcel, U256 } from "codechain-sdk/lib/core/classes";
+import { SignedTransaction, U64 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
 import { connect } from "react-redux";
@@ -34,16 +34,16 @@ interface OwnProps {
 }
 
 interface StateProps {
-    availableQuark?: U256 | null;
+    availableQuark?: U64 | null;
     networkId: NetworkId;
     passphrase: string;
 }
 
 interface DispatchProps {
     fetchAvailableQuark: (address: string) => void;
-    sendSignedParcel: (
+    sendSignedTransaction: (
         address: string,
-        signedParcel: SignedParcel
+        signedTransaction: SignedTransaction
     ) => Promise<{}>;
 }
 
@@ -128,9 +128,9 @@ class SendCCC extends React.Component<Props, State> {
     private handleSubmit = async (
         receiver: {
             address: string;
-            amount: U256;
+            quantity: U64;
         },
-        fee: U256
+        fee: U64
     ) => {
         const { networkId, address, passphrase } = this.props;
         const sdk = new SDK({
@@ -138,9 +138,9 @@ class SendCCC extends React.Component<Props, State> {
             networkId
         });
 
-        const parcel = sdk.core.createPaymentParcel({
+        const tx = sdk.core.createPayTransaction({
             recipient: receiver.address,
-            amount: receiver.amount
+            quantity: receiver.quantity
         });
 
         const ccKey = await getCCKey();
@@ -183,17 +183,17 @@ class SendCCC extends React.Component<Props, State> {
             platform: platformKeyMapping,
             asset: assetKeyMapping
         });
-        const nonce = await sdk.rpc.chain.getNonce(address);
-        const signedParcel = await sdk.key.signParcel(parcel, {
+        const seq = await sdk.rpc.chain.getSeq(address);
+        const signedTx = await sdk.key.signTransaction(tx, {
             account: address,
             keyStore,
             fee,
-            nonce,
+            seq,
             passphrase
         });
         this.setState({ isSending: true });
         try {
-            await this.props.sendSignedParcel(address, signedParcel);
+            await this.props.sendSignedTransaction(address, signedTx);
             this.setState({ isSent: true });
         } catch (e) {
             toast.error("Server is not responding.", {
@@ -214,7 +214,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const networkId = state.globalReducer.networkId;
     const passphrase = state.globalReducer.passphrase!;
     return {
-        availableQuark: availableQuark && new U256(availableQuark),
+        availableQuark,
         networkId,
         passphrase
     };
@@ -226,8 +226,13 @@ const mapDispatchToProps = (
     fetchAvailableQuark: (address: string) => {
         dispatch(accountActions.fetchAvailableQuark(address));
     },
-    sendSignedParcel: (address: string, signedParcel: SignedParcel) => {
-        return dispatch(chainActions.sendSignedParcel(address, signedParcel));
+    sendSignedTransaction: (
+        address: string,
+        signedTransaction: SignedTransaction
+    ) => {
+        return dispatch(
+            chainActions.sendSignedTransaction(address, signedTransaction)
+        );
     }
 });
 

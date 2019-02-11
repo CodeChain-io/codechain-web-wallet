@@ -1,23 +1,16 @@
-import {
-    ParcelDoc,
-    PendingParcelDoc,
-    PendingTransactionDoc,
-    TransactionDoc
-} from "codechain-indexer-types/lib/types";
+import { TransactionDoc } from "codechain-indexer-types";
 import { SDK } from "codechain-sdk";
 import {
-    AssetTransferTransaction,
-    H256,
-    SignedParcel
+    H160,
+    SignedTransaction,
+    Transaction
 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
+import { isAssetAddress, isPlatformAddress } from "../../model/address";
 import {
-    getBestBlockNumber,
-    getParcels,
-    getPendingParcels,
     getPendingTransactions,
     getTxsByAddress,
     sendTxToGateway
@@ -35,11 +28,7 @@ export type Action =
     | UpdateBestBlockNumber
     | SetFetchingBestBlockNumber
     | SetFetchingTxListById
-    | CacheTxListById
-    | CachePendingParcelList
-    | CachePayamentParcelList
-    | SetFetchingParcelList
-    | SetFetchingPendingParcelList;
+    | CacheTxListById;
 
 export enum ActionType {
     CachePendingTxList = "CachePendingTxList",
@@ -49,48 +38,14 @@ export enum ActionType {
     SetFetchingBestBlockNumber = "SetFetchingBestBlockNumber",
     SetFetchingTxList = "SetFetchingTxList",
     SetFetchingTxListById = "SetFetchingTxListById",
-    CacheTxListById = "CacheTxListById",
-    CachePendingParcelList = "CachePendingParcelList",
-    CacheParcelList = "CacheParcelList",
-    SetFetchingParcelList = "SetFetchingParcelList",
-    SetFetchingPendingParcelList = "SetFetchingPendingParcelList"
-}
-
-export interface CachePendingParcelList {
-    type: ActionType.CachePendingParcelList;
-    data: {
-        address: string;
-        pendingParcelList: PendingParcelDoc[];
-    };
-}
-
-export interface CachePayamentParcelList {
-    type: ActionType.CacheParcelList;
-    data: {
-        address: string;
-        parcelList: ParcelDoc[];
-    };
-}
-
-export interface SetFetchingParcelList {
-    type: ActionType.SetFetchingParcelList;
-    data: {
-        address: string;
-    };
-}
-
-export interface SetFetchingPendingParcelList {
-    type: ActionType.SetFetchingPendingParcelList;
-    data: {
-        address: string;
-    };
+    CacheTxListById = "CacheTxListById"
 }
 
 export interface SetFetchingTxListById {
     type: ActionType.SetFetchingTxListById;
     data: {
         address: string;
-        assetType: H256;
+        assetType: H160;
     };
 }
 
@@ -98,7 +53,7 @@ export interface CacheTxListById {
     type: ActionType.CacheTxListById;
     data: {
         address: string;
-        assetType: H256;
+        assetType: H160;
         txList: TransactionDoc[];
     };
 }
@@ -107,7 +62,7 @@ export interface CachePendingTxList {
     type: ActionType.CachePendingTxList;
     data: {
         address: string;
-        pendingTxList: PendingTransactionDoc[];
+        pendingTxList: TransactionDoc[];
     };
 }
 
@@ -146,7 +101,7 @@ export interface SetFetchingBestBlockNumber {
 
 const cachePendingTxList = (
     address: string,
-    pendingTxList: PendingTransactionDoc[]
+    pendingTxList: TransactionDoc[]
 ): CachePendingTxList => ({
     type: ActionType.CachePendingTxList,
     data: {
@@ -194,7 +149,11 @@ const fetchPendingTxListIfNeed = (address: string) => {
             // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
             // This code is temporary for solving this problem.
             setTimeout(() => {
-                dispatch(assetActions.calculateAvailableAssets(address));
+                if (isAssetAddress(address)) {
+                    dispatch(assetActions.calculateAvailableAssets(address));
+                } else if (isPlatformAddress(address)) {
+                    dispatch(accountActions.calculateAvailableQuark(address));
+                }
             }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
@@ -237,6 +196,15 @@ const fetchTxListIfNeed = (address: string) => {
                     txList
                 }
             });
+            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
+            // This code is temporary for solving this problem.
+            setTimeout(() => {
+                if (isAssetAddress(address)) {
+                    dispatch(assetActions.calculateAvailableAssets(address));
+                } else if (isPlatformAddress(address)) {
+                    dispatch(accountActions.calculateAvailableQuark(address));
+                }
+            }, 300);
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -244,11 +212,10 @@ const fetchTxListIfNeed = (address: string) => {
     };
 };
 
-const sendTransactionByParcel = (
+const sendSignedTransaction = (
     address: string,
-    signedParcel: SignedParcel,
-    transferTx: AssetTransferTransaction,
-    feePayer: string
+    signedTransaction: SignedTransaction,
+    observePlatformAddress?: string | null
 ) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
@@ -261,54 +228,44 @@ const sendTransactionByParcel = (
                     server: getCodeChainHost(networkId),
                     networkId
                 });
-                await sdk.rpc.chain.sendSignedParcel(signedParcel);
+                await sdk.rpc.chain.sendSignedTransaction(signedTransaction);
                 checkingIndexingFuncForSendingTx = setInterval(() => {
                     dispatch(fetchPendingTxListIfNeed(address));
-                    dispatch(fetchParcelListIfNeed(feePayer));
-                    dispatch(fetchPendingParcelListIfNeed(feePayer));
+                    dispatch(fetchTxListIfNeed(address));
                     const pendingTxList = getState().chainReducer.pendingTxList[
                         address
                     ];
                     const txList = getState().chainReducer.txList[address];
-                    const parcelList = getState().chainReducer.parcelList[
-                        feePayer
-                    ];
-                    const pendingParcelList = getState().chainReducer
-                        .pendingParcelList[feePayer];
                     if (
-                        ((pendingTxList &&
+                        (pendingTxList &&
                             pendingTxList.data &&
                             _.find(
                                 pendingTxList.data,
-                                tx =>
-                                    tx.transaction.data.hash ===
-                                    transferTx.hash().value
+                                tx => tx.hash === signedTransaction.hash().value
                             )) ||
-                            (txList &&
-                                txList.data &&
-                                _.find(
-                                    txList.data,
-                                    tx =>
-                                        tx.data.hash === transferTx.hash().value
-                                ))) &&
-                        ((parcelList &&
-                            parcelList.data &&
+                        (txList &&
+                            txList.data &&
                             _.find(
-                                parcelList.data,
-                                parcel =>
-                                    parcel.hash === signedParcel.hash().value
-                            )) ||
-                            (pendingParcelList &&
-                                pendingParcelList.data &&
-                                _.find(
-                                    pendingParcelList.data,
-                                    pendingParcel =>
-                                        pendingParcel.parcel.hash ===
-                                        signedParcel.hash().value
-                                )))
+                                txList.data,
+                                tx => tx.hash === signedTransaction.hash().value
+                            ))
                     ) {
-                        dispatch(accountActions.fetchAccountIfNeed(address));
-                        dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
+                        if (isAssetAddress(address)) {
+                            dispatch(
+                                assetActions.fetchAvailableAssets(address)
+                            );
+                        } else if (isPlatformAddress(address)) {
+                            dispatch(
+                                accountActions.fetchAvailableQuark(address)
+                            );
+                        }
+                        if (observePlatformAddress) {
+                            dispatch(
+                                accountActions.fetchAvailableQuark(
+                                    observePlatformAddress
+                                )
+                            );
+                        }
                         clearInterval(checkingIndexingFuncForSendingTx);
                         resolve();
                     }
@@ -323,8 +280,8 @@ const sendTransactionByParcel = (
 
 let checkingIndexingFuncForSendingTx: NodeJS.Timer;
 const sendTransactionByGateway = (
-    address: string,
-    transferTx: AssetTransferTransaction,
+    assetAddress: string,
+    transaction: Transaction,
     gatewayURL: string
 ) => {
     return async (
@@ -333,31 +290,31 @@ const sendTransactionByGateway = (
     ) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await sendTxToGateway(transferTx, gatewayURL);
+                await sendTxToGateway(transaction, gatewayURL);
                 checkingIndexingFuncForSendingTx = setInterval(() => {
-                    dispatch(fetchPendingTxListIfNeed(address));
-                    dispatch(fetchTxListIfNeed(address));
+                    dispatch(fetchPendingTxListIfNeed(assetAddress));
+                    dispatch(fetchTxListIfNeed(assetAddress));
                     const pendingTxList = getState().chainReducer.pendingTxList[
-                        address
+                        assetAddress
                     ];
-                    const txList = getState().chainReducer.txList[address];
+                    const txList = getState().chainReducer.txList[assetAddress];
                     if (
                         (pendingTxList &&
                             pendingTxList.data &&
                             _.find(
                                 pendingTxList.data,
-                                tx =>
-                                    tx.transaction.data.hash ===
-                                    transferTx.hash().value
+                                tx => tx.hash === transaction.hash().value
                             )) ||
                         (txList &&
                             txList.data &&
                             _.find(
                                 txList.data,
-                                tx => tx.data.hash === transferTx.hash().value
+                                tx => tx.hash === transaction.hash().value
                             ))
                     ) {
-                        dispatch(assetActions.fetchAggsUTXOListIfNeed(address));
+                        dispatch(
+                            assetActions.fetchAvailableAssets(assetAddress)
+                        );
                         clearInterval(checkingIndexingFuncForSendingTx);
                         resolve();
                     }
@@ -370,89 +327,7 @@ const sendTransactionByGateway = (
     };
 };
 
-let checkingIndexingFuncForSendingParcel: NodeJS.Timer;
-const sendSignedParcel = (address: string, signedParcel: SignedParcel) => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const networkId = getState().globalReducer.networkId;
-                const sdk = new SDK({
-                    server: getCodeChainHost(networkId),
-                    networkId
-                });
-                await sdk.rpc.chain.sendSignedParcel(signedParcel);
-                checkingIndexingFuncForSendingParcel = setInterval(() => {
-                    dispatch(fetchPendingParcelListIfNeed(address));
-                    dispatch(fetchParcelListIfNeed(address));
-                    const pendingParcelList = getState().chainReducer
-                        .pendingParcelList[address];
-                    const parcelList = getState().chainReducer.parcelList[
-                        address
-                    ];
-                    if (
-                        (pendingParcelList &&
-                            pendingParcelList.data &&
-                            _.find(
-                                pendingParcelList.data,
-                                ppp =>
-                                    ppp.parcel.hash ===
-                                    signedParcel.hash().value
-                            )) ||
-                        (parcelList &&
-                            parcelList.data &&
-                            _.find(
-                                parcelList.data,
-                                upp => upp.hash === signedParcel.hash().value
-                            ))
-                    ) {
-                        clearInterval(checkingIndexingFuncForSendingParcel);
-                        resolve();
-                    }
-                }, 1000);
-            } catch (e) {
-                console.log(e);
-                reject(e);
-            }
-        });
-    };
-};
-
-const fetchBestBlockNumberIfNeed = () => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        const bestBlockNumber = getState().chainReducer.bestBlockNumber;
-        if (bestBlockNumber && bestBlockNumber.isFetching) {
-            return;
-        }
-        if (
-            bestBlockNumber &&
-            bestBlockNumber.updatedAt &&
-            +new Date() - bestBlockNumber.updatedAt < 3000
-        ) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch({ type: ActionType.SetFetchingBestBlockNumber });
-            const networkId = getState().globalReducer.networkId;
-            const updatedBestBlockNumber = await getBestBlockNumber(networkId);
-            dispatch({
-                type: ActionType.UpdateBestBlockNumber,
-                data: { bestBlockNumber: updatedBestBlockNumber }
-            });
-            dispatch(hideLoading() as any);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-};
-
-const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H256) => {
+const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H160) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
@@ -502,102 +377,10 @@ const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H256) => {
     };
 };
 
-const fetchParcelListIfNeed = (address: string) => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        const parcelList = getState().chainReducer.parcelList[address];
-        if (parcelList && parcelList.isFetching) {
-            return;
-        }
-        if (
-            parcelList &&
-            parcelList.updatedAt &&
-            +new Date() - parcelList.updatedAt < 3000
-        ) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch({
-                type: ActionType.SetFetchingParcelList,
-                data: {
-                    address
-                }
-            });
-            const networkId = getState().globalReducer.networkId;
-            // FIXME: Add pagination
-            const parcelResponse = await getParcels(address, 1, 10, networkId);
-            dispatch({
-                type: ActionType.CacheParcelList,
-                data: {
-                    address,
-                    parcelList: parcelResponse
-                }
-            });
-            dispatch(hideLoading() as any);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-};
-
-const fetchPendingParcelListIfNeed = (address: string) => {
-    return async (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        const cachedPendingParcelList = getState().chainReducer
-            .pendingParcelList[address];
-        if (cachedPendingParcelList && cachedPendingParcelList.isFetching) {
-            return;
-        }
-        if (
-            cachedPendingParcelList &&
-            cachedPendingParcelList.updatedAt &&
-            +new Date() - cachedPendingParcelList.updatedAt < 3000
-        ) {
-            return;
-        }
-        try {
-            dispatch(showLoading() as any);
-            dispatch({
-                type: ActionType.SetFetchingPendingParcelList,
-                data: { address }
-            });
-            const networkId = getState().globalReducer.networkId;
-            const pendingParcelList = await getPendingParcels(
-                address,
-                networkId
-            );
-            dispatch({
-                type: ActionType.CachePendingParcelList,
-                data: {
-                    address,
-                    pendingParcelList
-                }
-            });
-            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-            // This code is temporary for solving this problem.
-            setTimeout(() => {
-                dispatch(accountActions.calculateAvailableQuark(address));
-            }, 300);
-            dispatch(hideLoading() as any);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-};
-
 export default {
     fetchPendingTxListIfNeed,
-    sendTransactionByGateway,
-    fetchBestBlockNumberIfNeed,
     fetchTxListIfNeed,
     fetchTxListByAssetTypeIfNeed,
-    fetchParcelListIfNeed,
-    fetchPendingParcelListIfNeed,
-    sendSignedParcel,
-    sendTransactionByParcel
+    sendSignedTransaction,
+    sendTransactionByGateway
 };

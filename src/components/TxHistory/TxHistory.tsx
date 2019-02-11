@@ -1,8 +1,5 @@
-import {
-    PendingTransactionDoc,
-    TransactionDoc
-} from "codechain-indexer-types/lib/types";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import { TransactionDoc } from "codechain-indexer-types";
+import { H160, H256 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -22,7 +19,7 @@ interface OwnProps {
 }
 
 interface StateProps {
-    pendingTxList?: PendingTransactionDoc[] | null;
+    pendingTxList?: TransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
     networkId: NetworkId;
 }
@@ -30,7 +27,7 @@ interface StateProps {
 interface DispatchProps {
     fetchPendingTxListIfNeed: (address: string) => void;
     fetchTxListIfNeed: (address: string) => void;
-    fetchTxListByAssetTypeIfNeed: (address: string, assetType: H256) => void;
+    fetchTxListByAssetTypeIfNeed: (address: string, assetType: H160) => void;
 }
 
 type Props = StateProps & OwnProps & DispatchProps;
@@ -58,11 +55,10 @@ class TxHistory extends React.Component<Props> {
         if (!pendingTxList || !txList) {
             return <div>Loading...</div>;
         }
-        const txHashList = _.map(txList, tx => tx.data.hash);
+        const txHashList = _.map(txList, tx => tx.hash);
         const validPendingTxList = _.filter(
             pendingTxList,
-            pendingTx =>
-                !_.includes(txHashList, pendingTx.transaction.data.hash)
+            pendingTx => !_.includes(txHashList, pendingTx.hash)
         );
         return (
             <div className="Tx-history">
@@ -80,22 +76,22 @@ class TxHistory extends React.Component<Props> {
                 )}
                 {_.map(validPendingTxList, pendingTx => (
                     <TxItem
-                        key={pendingTx.transaction.data.hash}
-                        tx={pendingTx.transaction}
+                        key={pendingTx.hash}
+                        tx={pendingTx}
                         address={address}
                         networkId={networkId}
                         isPending={true}
-                        timestamp={pendingTx.timestamp}
+                        timestamp={pendingTx.pendingTimestamp!}
                     />
                 ))}
                 {_.map(txList, tx => (
                     <TxItem
-                        key={tx.data.hash}
+                        key={tx.hash}
                         tx={tx}
                         address={address}
                         networkId={networkId}
                         isPending={false}
-                        timestamp={tx.data.timestamp}
+                        timestamp={tx.timestamp!}
                     />
                 ))}
             </div>
@@ -158,7 +154,7 @@ const mapDispatchToProps = (
     fetchTxListIfNeed: (address: string) => {
         dispatch(chainActions.fetchTxListIfNeed(address));
     },
-    fetchTxListByAssetTypeIfNeed: (address: string, assetType: H256) => {
+    fetchTxListByAssetTypeIfNeed: (address: string, assetType: H160) => {
         dispatch(chainActions.fetchTxListByAssetTypeIfNeed(address, assetType));
     }
 });

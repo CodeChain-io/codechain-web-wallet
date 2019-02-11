@@ -24,7 +24,7 @@ enum Actions {
   getPlatformAddresses = "getPlatformAddresses",
   getAssetAddresses = "getAssetAddresses",
   signTxInput = "signTxInput",
-  signParcel = "signParcel"
+  signTx = "signTx"
 }
 
 const needAuthActions = [
@@ -32,7 +32,7 @@ const needAuthActions = [
   Actions.getAvailableAssets,
   Actions.getAssetAddresses,
   Actions.getPlatformAddresses,
-  Actions.signParcel,
+  Actions.signTx,
   Actions.signTxInput
 ];
 export default class APIHandler {
@@ -100,11 +100,11 @@ export default class APIHandler {
         sendResponse(this.createMessage(platformAddresses));
         return;
       }
-      case Actions.signParcel: {
-        const parcel = request.data.parcel;
+      case Actions.signTx: {
+        const transaction = request.data.transaction;
         const feePayer = request.data.options && request.data.options.feePayer;
         const fee = request.data.options && request.data.options.fee;
-        if (!parcel || !feePayer || !fee) {
+        if (!transaction || !feePayer || !fee) {
           sendResponse(this.createFailMessage("invalid params"));
           return;
         }
@@ -117,16 +117,16 @@ export default class APIHandler {
         });
         const keyStore = await this.getKeystore();
         const passphrase = state.globalReducer.passphrase;
-        const nonce = await sdk.rpc.chain.getNonce(feePayer);
-        const signedParcel = await sdk.key.signParcel(parcel, {
+        const seq = await sdk.rpc.chain.getSeq(feePayer);
+        const signedTransaction = await sdk.key.signTransaction(transaction, {
           account: feePayer,
           keyStore,
           fee: fee!.amount,
-          nonce,
+          seq,
           passphrase
         });
 
-        sendResponse(this.createMessage(signedParcel));
+        sendResponse(this.createMessage(signedTransaction));
         return;
       }
       case Actions.signTxInput: {
@@ -148,7 +148,7 @@ export default class APIHandler {
 
         const keyStore = await this.getKeystore();
         const passphrase = state.globalReducer.passphrase;
-        const signedTx = sdk.key.signTransactionInput(tx, index, {
+        const signedTx = await sdk.key.signTransactionInput(tx, index, {
           keyStore,
           passphrase
         });

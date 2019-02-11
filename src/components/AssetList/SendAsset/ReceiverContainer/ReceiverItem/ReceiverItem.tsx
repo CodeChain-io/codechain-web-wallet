@@ -2,16 +2,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import ValidationInput from "../../../../ValidationInput/ValidationInput";
 
+import { U64 } from "codechain-sdk/lib/core/classes";
 import "./ReceiverItem.css";
 
 interface Props {
     receiver: {
         address: string;
-        quantity: number;
+        quantity: U64;
     };
-    remainingAsset: number;
+    remainingAsset: U64;
     onAddressChange: (index: number, address: string) => void;
-    onQuantityChange: (index: number, quantity: number) => void;
+    onQuantityChange: (index: number, quantity: U64) => void;
     onAddressValidationCheck: (index: number) => void;
     onQuantityValidationCheck: (index: number) => void;
     isAddressValid?: boolean;
@@ -61,11 +62,11 @@ export default class ReceiverItem extends React.Component<Props, any> {
                 />
                 <div className="d-flex align-items-end">
                     <ValidationInput
-                        value={receiver.quantity}
+                        value={receiver.quantity.toString(10)}
                         onChange={this.handleChangeQuantitiesInput}
                         labelText="QUANTITY"
                         placeholder="quantity"
-                        type="number"
+                        type="text"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isQuantityValid}
@@ -115,7 +116,6 @@ export default class ReceiverItem extends React.Component<Props, any> {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         const { index, onQuantityChange } = this.props;
-        const quantity = parseInt(event.target.value, 10);
-        onQuantityChange(index, quantity);
+        onQuantityChange(index, new U64(event.target.value));
     };
 }
