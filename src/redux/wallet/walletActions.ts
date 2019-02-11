@@ -81,20 +81,6 @@ const updateWalletAssetAddresses = (
     }
 });
 
-// FIXME: This is temporary code for the demo
-const walletNames = [
-    "Fabrice Grinda",
-    "Paul Buchheit",
-    "Wei Guo",
-    "Alexis Ohanian",
-    "Scott Banister",
-    "Naval Ravikant",
-    "Daniel Curran",
-    "Marc Benioff",
-    "Mark Cuban",
-    "Simon Murdoch"
-];
-
 const fetchWalletFromStorageIfNeed = () => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
@@ -116,7 +102,7 @@ const fetchWalletFromStorageIfNeed = () => {
                         }
                     ).value;
                     return {
-                        name: `${walletNames[key.pathIndex]}`,
+                        name: `A-address ${key.pathIndex}`,
                         address,
                         type: AddressType.Asset
                     };

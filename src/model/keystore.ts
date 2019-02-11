@@ -64,20 +64,6 @@ export async function isKeystoreExisted() {
     return CCKey.exist({ dbType });
 }
 
-// FIXME: This is temporary code for the demo
-const walletNames = [
-    "Fabrice Grinda",
-    "Paul Buchheit",
-    "Wei Guo",
-    "Alexis Ohanian",
-    "Scott Banister",
-    "Naval Ravikant",
-    "Daniel Curran",
-    "Marc Benioff",
-    "Mark Cuban",
-    "Simon Murdoch"
-];
-
 // m / purpose' / coin_type' / account' / change / address_index
 const platformAddressPath = "m/44'/3276/0'/0/";
 const assetAddressPath = "m/44'/3276/1'/0/";
@@ -240,7 +226,7 @@ export async function createAssetAddress(
         networkId
     }).value;
     return {
-        name: `${walletNames[newPathIndex]}`,
+        name: `A-address ${newPathIndex}`,
         address,
         type: AddressType.Asset
     };
@@ -284,7 +270,7 @@ export async function restoreAssetAddresses(
             lastValidAssetPathIndex = currentPath;
         }
         assetAddresses.push({
-            name: `${walletNames[currentPath]}`,
+            name: `A-address ${currentPath}`,
             address,
             type: AddressType.Asset
         });
