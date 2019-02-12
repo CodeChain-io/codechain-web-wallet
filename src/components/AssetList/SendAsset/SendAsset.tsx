@@ -294,7 +294,7 @@ class SendAsset extends React.Component<Props, State> {
                 quantity: utxo.quantity,
                 tracker: utxo.transactionHash,
                 transactionOutputIndex: utxo.transactionOutputIndex,
-                orderHash: "", // FIXME: Add a valid data
+                orderHash: null, // FIXME: Add a valid data
                 shardId: 0 // FIXME: Add a valid data
             }).createTransferInput();
         });

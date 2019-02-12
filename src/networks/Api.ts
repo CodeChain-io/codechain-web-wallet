@@ -92,9 +92,9 @@ export async function getUTXOListByAssetType(
 ) {
     const apiHost = getIndexerHost(networkId);
     return await getRequest<UTXODoc[]>(
-        `${apiHost}/api/utxo/${
+        `${apiHost}/api/utxo?assetType=${
             assetType.value
-        }?address=${address}&itemsPerPage=10000&page=1`
+        }&address=${address}&itemsPerPage=10000&page=1`
     );
 }
 
@@ -109,9 +109,26 @@ export async function getPendingTransactions(
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    return await getRequest<TransactionDoc[]>(
+    const transactions = await getRequest<TransactionDoc[]>(
         `${apiHost}/api/pending-tx?page=1&itemsPerPage=10000&address=${address}`
     );
+
+    // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
+    await Promise.all(
+        transactions.map(async transaction => {
+            if (transaction.type === "transferAsset") {
+                await Promise.all(
+                    transaction.transferAsset.outputs.map(async output => {
+                        const assetScheme: any = await getRequest<
+                            AssetSchemeDoc
+                        >(`${apiHost}/api/asset-scheme/${output.assetType}`);
+                        output.assetScheme = assetScheme;
+                    })
+                );
+            }
+        })
+    );
+    return transactions;
 }
 
 export async function getTxsByAddress(
@@ -126,5 +143,22 @@ export async function getTxsByAddress(
     if (assetType) {
         query += `&assetType=${assetType.value}`;
     }
-    return await getRequest<TransactionDoc[]>(query);
+    const transactions = await getRequest<TransactionDoc[]>(query);
+
+    // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
+    await Promise.all(
+        transactions.map(async transaction => {
+            if (transaction.type === "transferAsset") {
+                await Promise.all(
+                    transaction.transferAsset.outputs.map(async output => {
+                        const assetScheme: any = await getRequest<
+                            AssetSchemeDoc
+                        >(`${apiHost}/api/asset-scheme/${output.assetType}`);
+                        output.assetScheme = assetScheme;
+                    })
+                );
+            }
+        })
+    );
+    return transactions;
 }
