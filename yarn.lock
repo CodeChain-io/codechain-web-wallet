@@ -1929,6 +1929,13 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
+"codechain-indexer-types@https://github.com/CodeChain-io/codechain-indexer-types-js.git#corgi":
+  version "0.4.0-alpha.2"
+  resolved "https://github.com/CodeChain-io/codechain-indexer-types-js.git#6e7177e47c71a1cf65af7b50bc43f89733047919"
+  dependencies:
+    buffer "^5.2.1"
+    lodash "^4.17.10"
+
 "codechain-indexer-types@https://github.com/majecty/codechain-indexer-types-js#c906e6abc5662cb475bc314497d8dee0de551d91":
   version "0.4.0-alpha.1"
   resolved "https://github.com/majecty/codechain-indexer-types-js#c906e6abc5662cb475bc314497d8dee0de551d91"
@@ -1980,7 +1987,7 @@ codechain-primitives@^0.4.4:
 
 "codechain-sdk@https://github.com/joojis/codechain-sdk-js.git#corgi":
   version "0.5.1"
-  resolved "https://github.com/joojis/codechain-sdk-js.git#33a70b78694074b4b22be37f56ab1bc96ee17d88"
+  resolved "https://github.com/joojis/codechain-sdk-js.git#df3349a3dddd0d989c3eb37fd642555ec7b265f4"
   dependencies:
     buffer "5.1.0"
     codechain-keystore "^0.6.0"

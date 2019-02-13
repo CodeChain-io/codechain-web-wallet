@@ -37,6 +37,6 @@ const server = {
         cc: "https://husky.codechain.io/explorer",
         tc: "http://52.79.108.1:8080",
         sc: "http://52.78.210.78:8080",
-        wc: "http://52.78.215.10:8080"
+        wc: "http://13.124.96.177:8080"
     }
 };

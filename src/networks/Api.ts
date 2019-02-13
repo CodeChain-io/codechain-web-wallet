@@ -68,19 +68,19 @@ export async function getPlatformAccount(
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    const response = await getRequest<{ balance: string; nonce: string }>(
+    const response = await getRequest<{ balance: string; seq: string }>(
         `${apiHost}/api/account/${address}`
     );
 
     if (response) {
         return {
             balance: new U64(response.balance),
-            nonce: new U64(response.nonce)
+            seq: new U64(response.seq)
         } as PlatformAccount;
     } else {
         return {
             balance: new U64(0),
-            nonce: new U64(0)
+            seq: new U64(0)
         } as PlatformAccount;
     }
 }

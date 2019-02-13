@@ -155,7 +155,7 @@ function getAggsAsset(
         });
         return _.values(results);
     }
-    throw new Error("invalid transaction type");
+    return [];
 }
 
 export const TxUtil = { getAggsAsset, getAggsQuark };

@@ -15,7 +15,7 @@ export enum AddressType {
 
 export interface PlatformAccount {
     balance: U64;
-    nonce: U64;
+    seq: U64;
 }
 
 export function isAssetAddress(address: string) {
