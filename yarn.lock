@@ -1929,16 +1929,17 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-"codechain-indexer-types@https://github.com/CodeChain-io/codechain-indexer-types-js.git#corgi":
+"codechain-indexer-types@https://github.com/CodeChain-io/codechain-indexer-types-js#corgi":
   version "0.4.0-alpha.2"
-  resolved "https://github.com/CodeChain-io/codechain-indexer-types-js.git#6e7177e47c71a1cf65af7b50bc43f89733047919"
+  uid "6e7177e47c71a1cf65af7b50bc43f89733047919"
+  resolved "https://github.com/CodeChain-io/codechain-indexer-types-js#6e7177e47c71a1cf65af7b50bc43f89733047919"
   dependencies:
     buffer "^5.2.1"
     lodash "^4.17.10"
 
-"codechain-indexer-types@https://github.com/majecty/codechain-indexer-types-js#c906e6abc5662cb475bc314497d8dee0de551d91":
-  version "0.4.0-alpha.1"
-  resolved "https://github.com/majecty/codechain-indexer-types-js#c906e6abc5662cb475bc314497d8dee0de551d91"
+"codechain-indexer-types@https://github.com/CodeChain-io/codechain-indexer-types-js.git#corgi":
+  version "0.4.0-alpha.2"
+  resolved "https://github.com/CodeChain-io/codechain-indexer-types-js.git#6e7177e47c71a1cf65af7b50bc43f89733047919"
   dependencies:
     buffer "^5.2.1"
     lodash "^4.17.10"

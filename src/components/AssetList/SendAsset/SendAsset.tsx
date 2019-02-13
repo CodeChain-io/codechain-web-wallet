@@ -292,7 +292,7 @@ class SendAsset extends React.Component<Props, State> {
                 lockScriptHash: utxo.lockScriptHash,
                 parameters: utxo.parameters,
                 quantity: utxo.quantity,
-                tracker: utxo.transactionHash,
+                tracker: utxo.transactionTracker,
                 transactionOutputIndex: utxo.transactionOutputIndex,
                 orderHash: utxo.orderHash,
                 shardId: utxo.shardId
