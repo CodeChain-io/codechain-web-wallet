@@ -14,7 +14,7 @@ import walletActions from "../../redux/wallet/walletActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
 import * as Metadata from "../../utils/metadata";
 import AddressContainer from "../AddressContainer/AddressContainer";
-import TxHistory from "../TxHistory/TxHistory";
+import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import "./AssetDetail.css";
 
 interface OwnProps {
@@ -116,7 +116,7 @@ class AssetDetail extends React.Component<Props, any> {
                             </Row>
                         </div>
                         <h4 className="mb-3">Transaction history</h4>
-                        <TxHistory
+                        <AssetTxHistory
                             address={address}
                             assetType={new H160(assetType)}
                         />

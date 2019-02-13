@@ -3,9 +3,9 @@ import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as Metadata from "./metadata";
 
-function getAggsQuark(address: string, parcelList: TransactionDoc[]) {
+function getAggsQuark(address: string, txList: TransactionDoc[]) {
     return _.reduce(
-        parcelList,
+        txList,
         (memo, tx: TransactionDoc) => {
             let output = new U64(0);
             let input = new U64(0);

@@ -10,7 +10,7 @@ import accountActions from "../../redux/account/accountActions";
 import walletActions from "../../redux/wallet/walletActions";
 import { changeQuarkToCCCString } from "../../utils/unit";
 import AddressContainer from "../AddressContainer/AddressContainer";
-import TxHistory from "../TxHistory/TxHistory";
+import PayTxHistory from "../PayTxHistory/PayTxHistory";
 import "./Account.css";
 import SendCCC from "./SendAsset/SendCCC";
 
@@ -108,7 +108,7 @@ class Account extends React.Component<Props, State> {
                             </div>
                             <div className="element-container">
                                 <h4 className="mb-3">Transaction history</h4>
-                                <TxHistory address={address} />
+                                <PayTxHistory address={address} />
                             </div>
                         </div>
                     </div>

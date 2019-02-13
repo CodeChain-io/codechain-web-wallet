@@ -5,7 +5,7 @@ import {
     TransactionDoc,
     UTXODoc
 } from "codechain-indexer-types";
-import { H160, H256, Transaction, U64 } from "codechain-sdk/lib/core/classes";
+import { H160, Transaction, U64 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
@@ -136,7 +136,7 @@ export async function getTxsByAddress(
     page: number,
     itemsPerPage: number,
     networkId: NetworkId,
-    assetType?: H256
+    assetType?: H160
 ) {
     const apiHost = getIndexerHost(networkId);
     let query = `${apiHost}/api/tx?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;

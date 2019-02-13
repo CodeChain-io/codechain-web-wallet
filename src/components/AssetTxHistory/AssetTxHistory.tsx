@@ -1,5 +1,5 @@
 import { TransactionDoc } from "codechain-indexer-types";
-import { H160, H256 } from "codechain-sdk/lib/core/classes";
+import { H160 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -9,13 +9,13 @@ import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import chainActions from "../../redux/chain/chainActions";
 import { getIdByAddressAssetType } from "../../redux/chain/chainReducer";
+import "./AssetTxHistory.css";
+import AssetTxItem from "./AssetTxItem/AssetTxItem";
 import * as Empty from "./img/cautiondisabled.svg";
-import "./TxHistory.css";
-import TxItem from "./TxItem/TxItem";
 
 interface OwnProps {
     address: string;
-    assetType?: H256;
+    assetType?: H160;
 }
 
 interface StateProps {
@@ -32,7 +32,7 @@ interface DispatchProps {
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-class TxHistory extends React.Component<Props> {
+class AssetTxHistory extends React.Component<Props> {
     private refresher: any;
     public constructor(props: Props) {
         super(props);
@@ -61,7 +61,7 @@ class TxHistory extends React.Component<Props> {
             pendingTx => !_.includes(txHashList, pendingTx.hash)
         );
         return (
-            <div className="Tx-history">
+            <div className="Asset-tx-history">
                 {validPendingTxList.length + txList.length === 0 && (
                     <div className="d-flex align-items-center justify-content-center">
                         <div>
@@ -75,7 +75,7 @@ class TxHistory extends React.Component<Props> {
                     </div>
                 )}
                 {_.map(validPendingTxList, pendingTx => (
-                    <TxItem
+                    <AssetTxItem
                         key={pendingTx.hash}
                         tx={pendingTx}
                         address={address}
@@ -85,7 +85,7 @@ class TxHistory extends React.Component<Props> {
                     />
                 ))}
                 {_.map(txList, tx => (
-                    <TxItem
+                    <AssetTxItem
                         key={tx.hash}
                         tx={tx}
                         address={address}
@@ -161,4 +161,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(TxHistory);
+)(AssetTxHistory);

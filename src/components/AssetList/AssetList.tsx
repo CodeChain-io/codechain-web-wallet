@@ -13,7 +13,7 @@ import chainActions from "../../redux/chain/chainActions";
 import walletActions from "../../redux/wallet/walletActions";
 import * as Metadata from "../../utils/metadata";
 import AddressContainer from "../AddressContainer/AddressContainer";
-import TxHistory from "../TxHistory/TxHistory";
+import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 import "./AssetList.css";
 import * as Empty from "./img/cautiondisabled.svg";
@@ -160,7 +160,7 @@ class AssetList extends React.Component<Props, State> {
                             </div>
                             <div className="element-container mb-3">
                                 <h4 className="mb-3">Recent transactions</h4>
-                                <TxHistory address={address} />
+                                <AssetTxHistory address={address} />
                             </div>
                         </div>
                     </div>

@@ -10,7 +10,7 @@ import { getExplorerHost } from "../../../utils/network";
 import { TxUtil } from "../../../utils/transaction";
 
 import { U64 } from "codechain-sdk/lib/core/classes";
-import "./TxItem.css";
+import "./AssetTxItem.css";
 
 interface Props {
     tx: TransactionDoc;
@@ -19,14 +19,14 @@ interface Props {
     address: string;
     networkId: NetworkId;
 }
-export default class TxItem extends React.Component<Props, any> {
+export default class AssetTxItem extends React.Component<Props, any> {
     public render() {
         const { tx, address, networkId, isPending, timestamp } = this.props;
         const assetHistory = TxUtil.getAggsAsset(address, tx);
         return _.map(assetHistory, (history, index) => (
             <div
                 key={`${history.assetType}-${index}`}
-                className="d-flex Tx-item align-items-center"
+                className="d-flex Asset-tx-item align-items-center"
             >
                 <div className="date-container number">
                     <MediaQuery query="(max-width: 768px)">
