@@ -264,23 +264,23 @@ class ReceiverContainer extends React.Component<Props, State> {
         if (!availableQuark) {
             throw Error("invalid balacne");
         }
-        const feeStringToQuark = fee.value.multipliedBy(Math.pow(10, 9));
-        if (feeStringToQuark.isNaN()) {
+        const amountFee = fee.value;
+        if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
                 feeError: "invalid number"
             });
             return false;
         }
-        if (feeStringToQuark.lt(10)) {
+        if (amountFee.lt(20)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "minimum 0.00000001"
+                feeError: "minimum 20"
             });
             return false;
         }
 
-        if (availableQuark.value.lt(feeStringToQuark)) {
+        if (availableQuark.value.lt(amountFee)) {
             this.setState({
                 isFeeValid: false,
                 feeError: "not enough CCC"
@@ -495,10 +495,10 @@ class ReceiverContainer extends React.Component<Props, State> {
             if (!this.checkFeeValidation()) {
                 return;
             }
-            const feeStringToQuark = fee.value.multipliedBy(Math.pow(10, 9));
+            const amountFee = fee.value;
             this.props.onSubmit(receivers, {
                 payer: feePayer!,
-                quantity: new U64(feeStringToQuark)
+                quantity: new U64(amountFee)
             });
         } else {
             this.props.onSubmit(receivers);

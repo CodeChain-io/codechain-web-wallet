@@ -98,10 +98,9 @@ export default class CCCReceiverContainer extends React.Component<
     private calculateRemainingCCCString = () => {
         const { totalAmount } = this.props;
         const { fee } = this.state;
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
-        const remainingQuark = totalAmount.value.minus(feeQuark);
+        const remainingCCC = totalAmount.value.minus(fee);
         try {
-            return new U64(remainingQuark).toLocaleString();
+            return new U64(remainingCCC).toLocaleString();
         } catch (e) {
             console.log(e);
             return "0";
@@ -141,25 +140,23 @@ export default class CCCReceiverContainer extends React.Component<
     private handleAmountValidationCheck = () => {
         const { receiver, fee } = this.state;
         const { totalAmount } = this.props;
-        const amountQuark = new BigNumber(receiver.quantity).multipliedBy(
-            Math.pow(10, 9)
-        );
-        if (amountQuark.isNaN()) {
+        const amountCCC = new BigNumber(receiver.quantity);
+        if (amountCCC.isNaN()) {
             this.setState({
                 isAmountValid: false,
                 amountError: "invalid number"
             });
             return false;
         }
-        if (amountQuark.lt(1)) {
+        if (amountCCC.lt(1)) {
             this.setState({
                 isAmountValid: false,
-                amountError: "minimum value is 0.000000001"
+                amountError: "minimum value is 1"
             });
             return false;
         }
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
-        if (amountQuark.plus(feeQuark).gt(totalAmount.value)) {
+        const amountFee = new BigNumber(fee);
+        if (amountCCC.plus(amountFee).gt(totalAmount.value)) {
             this.setState({
                 isAmountValid: false,
                 amountError: "not enough CCC"
@@ -176,25 +173,23 @@ export default class CCCReceiverContainer extends React.Component<
     private handleFeeValidationCheck = () => {
         const { receiver, fee } = this.state;
         const { totalAmount } = this.props;
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
-        if (feeQuark.isNaN()) {
+        const amountFee = new BigNumber(fee);
+        if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
                 feeError: "invalid number"
             });
             return false;
         }
-        if (feeQuark.lt(10)) {
+        if (amountFee.lt(500)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "minimum value is 0.00000001"
+                feeError: "minimum value is 500"
             });
             return false;
         }
-        const amountQuark = new BigNumber(receiver.quantity).multipliedBy(
-            Math.pow(10, 9)
-        );
-        if (amountQuark.plus(feeQuark).gt(totalAmount.value)) {
+        const amountCCC = new BigNumber(receiver.quantity);
+        if (amountCCC.plus(amountFee).gt(totalAmount.value)) {
             this.setState({
                 isFeeValid: false,
                 feeError: "not enough CCC"
@@ -256,16 +251,14 @@ export default class CCCReceiverContainer extends React.Component<
             return;
         }
 
-        const amountQuark = new BigNumber(receiver.quantity).multipliedBy(
-            Math.pow(10, 9)
-        );
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
+        const amountCCC = new BigNumber(receiver.quantity);
+        const amountFee = new BigNumber(fee);
         this.props.onSubmit(
             {
                 address: receiver.address,
-                quantity: new U64(amountQuark)
+                quantity: new U64(amountCCC)
             },
-            new U64(feeQuark)
+            new U64(amountFee)
         );
     };
 }
