@@ -22,7 +22,6 @@ import accountActions from "../../../redux/account/accountActions";
 import chainActions from "../../../redux/chain/chainActions";
 import { getCodeChainHost } from "../../../utils/network";
 import { getAssetKeys, getPlatformKeys } from "../../../utils/storage";
-import { changeQuarkToCCCString } from "../../../utils/unit";
 import CCCReceiverContainer from "./CCCReceiverContainer/CCCReceiverContainer";
 import * as CheckIcon from "./img/check_icon.svg";
 import "./SendCCC.css";
@@ -96,7 +95,7 @@ class SendCCC extends React.Component<Props, State> {
                         <div className="d-flex align-items-center balance-container mb-4">
                             <div className="mr-auto balance-text">Balance</div>
                             <span className="amount number">
-                                {changeQuarkToCCCString(availableQuark)}
+                                {availableQuark.toLocaleString()}
                                 CCC
                             </span>
                         </div>

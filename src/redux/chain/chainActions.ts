@@ -303,13 +303,15 @@ const sendTransactionByGateway = (
                             pendingTxList.data &&
                             _.find(
                                 pendingTxList.data,
-                                tx => tx.hash === transaction.hash().value
+                                tx =>
+                                    tx.hash === transaction.unsignedHash().value
                             )) ||
                         (txList &&
                             txList.data &&
                             _.find(
                                 txList.data,
-                                tx => tx.hash === transaction.hash().value
+                                tx =>
+                                    tx.hash === transaction.unsignedHash().value
                             ))
                     ) {
                         dispatch(

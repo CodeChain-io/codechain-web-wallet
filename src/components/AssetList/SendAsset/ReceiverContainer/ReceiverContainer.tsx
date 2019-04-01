@@ -8,7 +8,6 @@ import { WalletAddress } from "../../../../model/address";
 import { ReducerConfigure } from "../../../../redux";
 import accountActions from "../../../../redux/account/accountActions";
 import walletActions from "../../../../redux/wallet/walletActions";
-import { changeQuarkToCCCString } from "../../../../utils/unit";
 import ValidationInput from "../../../ValidationInput/ValidationInput";
 import "./ReceiverContainer.css";
 import ReceiverItem from "./ReceiverItem/ReceiverItem";
@@ -215,11 +214,9 @@ class ReceiverContainer extends React.Component<Props, State> {
                                         {feePayer &&
                                             availableQuarkList[feePayer] && (
                                                 <span className="available-ccc-text number pl-2 pr-2">
-                                                    {changeQuarkToCCCString(
-                                                        availableQuarkList[
-                                                            feePayer
-                                                        ]!
-                                                    )}
+                                                    {availableQuarkList[
+                                                        feePayer
+                                                    ]!.toLocaleString()}
                                                     CCC
                                                 </span>
                                             )}

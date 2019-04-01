@@ -7,7 +7,6 @@ import MediaQuery from "react-responsive";
 import { NetworkId } from "../../../model/address";
 import { getExplorerHost } from "../../../utils/network";
 import { TxUtil } from "../../../utils/transaction";
-import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./PayTxItem.css";
 
 interface Props {
@@ -44,12 +43,14 @@ export default class PayTxItem extends React.Component<Props, any> {
                 <div className="balance-container number">
                     <span>
                         {aggrTx.output.gte(aggrTx.input)
-                            ? `+${changeQuarkToCCCString(
-                                  U64.minus(aggrTx.output, aggrTx.input)
-                              )}`
-                            : `-${changeQuarkToCCCString(
-                                  U64.minus(aggrTx.input, aggrTx.output)
-                              )}`}{" "}
+                            ? `+${U64.minus(
+                                  aggrTx.output,
+                                  aggrTx.input
+                              ).toLocaleString()}`
+                            : `-${U64.minus(
+                                  aggrTx.input,
+                                  aggrTx.output
+                              ).toLocaleString()}`}{" "}
                         CCC
                     </span>
                 </div>

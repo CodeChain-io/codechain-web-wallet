@@ -7,7 +7,6 @@ import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { AddressType, WalletAddress } from "../../../model/address";
 import { ReducerConfigure } from "../../../redux";
-import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./AddressItem.css";
 
 import { U64 } from "codechain-sdk/lib/core/classes";
@@ -88,7 +87,7 @@ class AddressItem extends React.Component<Props, State> {
                     <div className="platform-account">
                         {availableQuark ? (
                             <span className="number balance">
-                                {changeQuarkToCCCString(availableQuark)} CCC
+                                {availableQuark.toLocaleString()} CCC
                             </span>
                         ) : (
                             <span className="number balance">Loading...</span>

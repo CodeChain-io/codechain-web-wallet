@@ -8,7 +8,6 @@ import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "../../redux";
 import accountActions from "../../redux/account/accountActions";
 import walletActions from "../../redux/wallet/walletActions";
-import { changeQuarkToCCCString } from "../../utils/unit";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import PayTxHistory from "../PayTxHistory/PayTxHistory";
 import "./Account.css";
@@ -92,7 +91,7 @@ class Account extends React.Component<Props, State> {
                                 <h5 className="element-title">Balance</h5>
                                 <div className="ccc-text number">
                                     <span className="mr-2">
-                                        {changeQuarkToCCCString(availableQuark)}
+                                        {availableQuark.toLocaleString()}
                                     </span>
                                     <span>CCC</span>
                                 </div>

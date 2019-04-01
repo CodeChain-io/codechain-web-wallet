@@ -1963,10 +1963,10 @@ codechain-primitives@^0.3.0:
     ripemd160 "^2.0.2"
     rlp "^2.1.0"
 
-codechain-primitives@^0.4.4:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/codechain-primitives/-/codechain-primitives-0.4.5.tgz#b4ee1a86238d4a5197a12f65d2b990ee9c590c03"
-  integrity sha512-FZD+dxXwTCli87HOlXatQvUcl0fgdQfg6T9tE9J4QptWDTkl5ZEJoOx1R0NMHkVxquIfuvTaiCJIsyJJCC7xPQ==
+codechain-primitives@^0.4.7:
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/codechain-primitives/-/codechain-primitives-0.4.8.tgz#5206ebcf92c0d225924931493b05c384d48fc63e"
+  integrity sha512-yEPinaK3y0pdMgmp7EjYkru2FL0XjXZ6sjdT4KmlGchqEuLUJsZ3V+MOyGlumdW7TSR7gpHl5+szyRPxUndMrQ==
   dependencies:
     bignumber.js "^7.2.1"
     blakejs "^1.1.0"
@@ -1979,16 +1979,18 @@ codechain-primitives@^0.4.4:
     ripemd160 "^2.0.2"
     rlp "^2.1.0"
 
-"codechain-sdk@https://github.com/joojis/codechain-sdk-js.git#corgi":
-  version "0.5.1"
-  resolved "https://github.com/joojis/codechain-sdk-js.git#df3349a3dddd0d989c3eb37fd642555ec7b265f4"
+codechain-sdk@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/codechain-sdk/-/codechain-sdk-0.7.0.tgz#4d8e958d9ae56e08007517bbaa5117321afc0a17"
+  integrity sha512-C6OdGmlZk5x332bT8wOgQ7XKdsNc9adNRWbKn1YE1hrI0mcnUmbATE+6xKKqmwMfQMwcpuonAz7H6w618as+dQ==
   dependencies:
     buffer "5.1.0"
     codechain-keystore "^0.6.0"
-    codechain-primitives "^0.4.4"
+    codechain-primitives "^0.4.7"
     jayson "^2.0.6"
     lodash "^4.17.10"
     node-fetch "^2.1.2"
+    request "^2.88.0"
     request-promise "^4.2.2"
     rlp "^2.0.0"
 
@@ -7359,7 +7361,7 @@ request@2.87.0:
     tunnel-agent "^0.6.0"
     uuid "^3.1.0"
 
-request@^2.79.0, request@^2.87.0:
+request@^2.79.0, request@^2.87.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   dependencies:

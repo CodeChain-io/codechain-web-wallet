@@ -2,7 +2,6 @@ import BigNumber from "bignumber.js";
 import { PlatformAddress, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
-import { changeQuarkToCCCString } from "../../../../utils/unit";
 import "./CCCReceiverContainer.css";
 import CCCReceiverItem from "./CCCReceiverItem/CCCReceiverItem";
 
@@ -102,7 +101,7 @@ export default class CCCReceiverContainer extends React.Component<
         const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
         const remainingQuark = totalAmount.value.minus(feeQuark);
         try {
-            return changeQuarkToCCCString(new U64(remainingQuark));
+            return new U64(remainingQuark).toLocaleString();
         } catch (e) {
             console.log(e);
             return "0";
