@@ -1929,17 +1929,10 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-"codechain-indexer-types@https://github.com/CodeChain-io/codechain-indexer-types-js#corgi":
-  version "0.4.0-alpha.2"
-  uid "6e7177e47c71a1cf65af7b50bc43f89733047919"
-  resolved "https://github.com/CodeChain-io/codechain-indexer-types-js#6e7177e47c71a1cf65af7b50bc43f89733047919"
-  dependencies:
-    buffer "^5.2.1"
-    lodash "^4.17.10"
-
-"codechain-indexer-types@https://github.com/CodeChain-io/codechain-indexer-types-js.git#corgi":
-  version "0.4.0-alpha.2"
-  resolved "https://github.com/CodeChain-io/codechain-indexer-types-js.git#6e7177e47c71a1cf65af7b50bc43f89733047919"
+codechain-indexer-types@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/codechain-indexer-types/-/codechain-indexer-types-0.10.0.tgz#265220e002556716d443af34601dc38c4da5e1d7"
+  integrity sha512-pbremRPRKEE73Eb8A4J5LCUzIZZMhA4FGM6NnM8QHDRWcAq/bXKAkQbgJJ6kT0qMP2dE132eGnM85rVnsXML7Q==
   dependencies:
     buffer "^5.2.1"
     lodash "^4.17.10"

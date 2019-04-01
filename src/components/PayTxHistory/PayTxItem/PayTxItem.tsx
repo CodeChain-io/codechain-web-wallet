@@ -56,10 +56,8 @@ export default class PayTxItem extends React.Component<Props, any> {
                 <div className="status-container">
                     {isPending ? (
                         <span className="pending">Pending</span>
-                    ) : tx.invoice ? (
-                        <span className="confirmed">Confirmed</span>
                     ) : (
-                        <span className="failed">Failed</span>
+                        <span className="confirmed">Confirmed</span>
                     )}
                 </div>
             </div>

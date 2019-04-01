@@ -55,6 +55,7 @@ class ShowBackupPhrase extends React.Component<Props, any> {
                     <button
                         className="btn btn-primary reverse square main-btn"
                         type="submit"
+                        onClick={this.props.onSubmit}
                     >
                         I MEMORIZED MY BACKUP PHRASE
                     </button>

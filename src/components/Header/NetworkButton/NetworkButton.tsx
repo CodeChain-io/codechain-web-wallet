@@ -58,14 +58,13 @@ class NetworkButton extends React.Component<Props, State> {
                 >
                     <PopoverBody className="popover-select-list">
                         <ul className="list-unstyled mb-0">
-                            {/*
                             <li onClick={_.partial(this.chagneNetworkId, "cc")}>
                                 <div className="d-flex align-items-center justify-content-end">
                                     <span className="mr-1">MAINNET</span>
                                     <img src={MainNet} />
                                 </div>
                             </li>
-                            */}
+                            {/*
                             <li onClick={_.partial(this.chagneNetworkId, "tc")}>
                                 <div className="d-flex align-items-center justify-content-end">
                                     <span className="mr-1">HUSKY</span>
@@ -78,6 +77,7 @@ class NetworkButton extends React.Component<Props, State> {
                                     <img src={TestNet} />
                                 </div>
                             </li>
+                            */}
                             <li onClick={_.partial(this.chagneNetworkId, "wc")}>
                                 <div className="d-flex align-items-center justify-content-end">
                                     <span className="mr-1">CORGI</span>

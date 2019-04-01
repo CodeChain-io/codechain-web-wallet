@@ -28,13 +28,13 @@ export function getCodeChainHost(networkId: NetworkId) {
 
 const server = {
     indexer: {
-        cc: "https://husky.codechain.io/explorer",
+        cc: "https://explorer.codechain.io",
         tc: "https://husky.codechain.io/explorer",
         sc: "https://saluki.codechain.io/explorer",
         wc: "https://corgi.codechain.io/explorer"
     },
     chain: {
-        cc: "https://husky.codechain.io/explorer",
+        cc: "https://explorer.codechain.io/rpc",
         tc: "http://52.79.108.1:8080",
         sc: "http://52.78.210.78:8080",
         wc: "http://13.124.96.177:8080"

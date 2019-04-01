@@ -101,9 +101,8 @@ function getAggsAsset(
                     inputQuantities: new U64(filteredInput.prevOut.quantity),
                     outputQuantities: new U64(0),
                     burnQuantities: new U64(0),
-                    metadata: Metadata.parseMetadata(
-                        filteredInput.prevOut.assetScheme.metadata
-                    )
+                    // FIXME: Get assset scheme from the server
+                    metadata: Metadata.parseMetadata("")
                 };
             }
         });
@@ -124,9 +123,8 @@ function getAggsAsset(
                     inputQuantities: new U64(0),
                     outputQuantities: new U64(0),
                     burnQuantities: new U64(filteredBurn.prevOut.quantity),
-                    metadata: Metadata.parseMetadata(
-                        filteredBurn.prevOut.assetScheme.metadata
-                    )
+                    // FIXME: Get assset scheme from the server
+                    metadata: Metadata.parseMetadata("")
                 };
             }
         });
@@ -147,9 +145,8 @@ function getAggsAsset(
                     inputQuantities: new U64(0),
                     outputQuantities: new U64(filteredOutput.quantity),
                     burnQuantities: new U64(0),
-                    metadata: Metadata.parseMetadata(
-                        filteredOutput.assetScheme.metadata
-                    )
+                    // FIXME: Get assset scheme from the server
+                    metadata: Metadata.parseMetadata("")
                 };
             }
         });
