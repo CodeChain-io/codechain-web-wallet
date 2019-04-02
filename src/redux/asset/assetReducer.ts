@@ -1,6 +1,5 @@
 import { AggsUTXODoc, AssetSchemeDoc, UTXODoc } from "codechain-indexer-types";
 import { H160, U64 } from "codechain-sdk/lib/core/classes";
-import * as Metadata from "../../utils/metadata";
 import { Action, ActionType } from "./assetActions";
 
 export interface AssetState {
@@ -29,7 +28,6 @@ export interface AssetState {
             | {
                   assetType: string;
                   quantities: U64;
-                  metadata: Metadata.Metadata;
               }[]
             | null;
     };

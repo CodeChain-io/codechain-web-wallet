@@ -33,8 +33,8 @@ interface State {
 }
 
 interface DispatchProps {
-    login: (passpharase: string) => void;
-    clearData: () => void;
+    login: (passpharase: string) => Promise<void>;
+    clearData: () => Promise<void>;
 }
 
 type Props = RouteComponentProps & DispatchProps;
@@ -113,15 +113,11 @@ class CreateWallet extends React.Component<Props, State> {
         this.setState({ currentPage: PageState.confirmSecretPhrase });
     };
 
-    private handleConfirmPhrase = () => {
+    private handleConfirmPhrase = async () => {
         const { login, history } = this.props;
         const { passphrase } = this.state;
-        login(passphrase!);
-        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-        // This code is temporary for solving this problem.
-        setTimeout(() => {
-            history.push(`/`);
-        }, 300);
+        await login(passphrase!);
+        history.push(`/`);
     };
 }
 
@@ -129,10 +125,10 @@ const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     login: (passphrase: string) => {
-        dispatch(globalActions.login(passphrase));
+        return dispatch(globalActions.login(passphrase));
     },
     clearData: () => {
-        dispatch(globalActions.clearData());
+        return dispatch(globalActions.clearData());
     }
 });
 

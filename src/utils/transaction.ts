@@ -1,7 +1,6 @@
 import { TransactionDoc } from "codechain-indexer-types";
 import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
-import * as Metadata from "./metadata";
 
 function getAggsQuark(address: string, txList: TransactionDoc[]) {
     return _.reduce(
@@ -42,7 +41,6 @@ function getAggsAsset(
     inputQuantities: U64;
     outputQuantities: U64;
     burnQuantities: U64;
-    metadata: Metadata.Metadata;
 }[] {
     if (transaction.type === "mintAsset") {
         if (transaction.mintAsset.recipient === address) {
@@ -51,10 +49,7 @@ function getAggsAsset(
                     assetType: transaction.mintAsset.assetType,
                     inputQuantities: new U64(0),
                     outputQuantities: new U64(transaction.mintAsset.supply),
-                    burnQuantities: new U64(0),
-                    metadata: Metadata.parseMetadata(
-                        transaction.mintAsset.metadata
-                    )
+                    burnQuantities: new U64(0)
                 }
             ];
         } else {
@@ -81,7 +76,6 @@ function getAggsAsset(
                 inputQuantities: U64;
                 outputQuantities: U64;
                 burnQuantities: U64;
-                metadata: Metadata.Metadata;
             };
         } = {};
         _.each(filteredInputs, filteredInput => {
@@ -100,9 +94,7 @@ function getAggsAsset(
                     assetType: filteredInput.prevOut.assetType,
                     inputQuantities: new U64(filteredInput.prevOut.quantity),
                     outputQuantities: new U64(0),
-                    burnQuantities: new U64(0),
-                    // FIXME: Get assset scheme from the server
-                    metadata: Metadata.parseMetadata("")
+                    burnQuantities: new U64(0)
                 };
             }
         });
@@ -122,9 +114,7 @@ function getAggsAsset(
                     assetType: filteredBurn.prevOut.assetType,
                     inputQuantities: new U64(0),
                     outputQuantities: new U64(0),
-                    burnQuantities: new U64(filteredBurn.prevOut.quantity),
-                    // FIXME: Get assset scheme from the server
-                    metadata: Metadata.parseMetadata("")
+                    burnQuantities: new U64(filteredBurn.prevOut.quantity)
                 };
             }
         });
@@ -144,9 +134,7 @@ function getAggsAsset(
                     assetType: filteredOutput.assetType,
                     inputQuantities: new U64(0),
                     outputQuantities: new U64(filteredOutput.quantity),
-                    burnQuantities: new U64(0),
-                    // FIXME: Get assset scheme from the server
-                    metadata: Metadata.parseMetadata("")
+                    burnQuantities: new U64(0)
                 };
             }
         });

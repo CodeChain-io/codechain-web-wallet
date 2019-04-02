@@ -12,7 +12,7 @@ import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import walletActions from "../../redux/wallet/walletActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
-import * as Metadata from "../../utils/metadata";
+import { parseMetadata } from "../../utils/metadata";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import "./AssetDetail.css";
@@ -27,7 +27,6 @@ interface StateProps {
     availableAsset?: {
         assetType: string;
         quantities: U64;
-        metadata: Metadata.Metadata;
     } | null;
     addressName?: string | null;
 }
@@ -59,7 +58,7 @@ class AssetDetail extends React.Component<Props, any> {
             return null;
         }
 
-        const metadata = Metadata.parseMetadata(assetScheme.metadata);
+        const metadata = parseMetadata(assetScheme.metadata);
         return (
             <div className="Asset-detail d-flex animated fadeIn">
                 <div className="panel mx-auto">

@@ -20,9 +20,9 @@ import * as Logo from "./img/logo-vertical.svg";
 import LoginForm from "./LoginForm/LoginForm";
 
 interface DispatchProps {
-    login: (passphrase: string) => void;
-    clearData: () => void;
-    updateNetworkId: (networkId: NetworkId) => void;
+    login: (passphrase: string) => Promise<void>;
+    clearData: () => Promise<void>;
+    updateNetworkId: (networkId: NetworkId) => Promise<void>;
 }
 
 interface OwnProps {
@@ -111,12 +111,8 @@ class Login extends React.Component<Props, State> {
             return;
         }
 
-        login(passphrase);
-        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-        // This code is temporary for solving this problem.
-        setTimeout(() => {
-            history.push(`/`);
-        }, 300);
+        await login(passphrase);
+        history.push(`/`);
     };
 }
 
@@ -124,13 +120,13 @@ const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     login: (passphrase: string) => {
-        dispatch(actions.login(passphrase));
+        return dispatch(actions.login(passphrase));
     },
     clearData: () => {
-        dispatch(actions.clearData());
+        return dispatch(actions.clearData());
     },
     updateNetworkId: (netowrkId: NetworkId) => {
-        dispatch(actions.updateNetworkId(netowrkId));
+        return dispatch(actions.updateNetworkId(netowrkId));
     }
 });
 

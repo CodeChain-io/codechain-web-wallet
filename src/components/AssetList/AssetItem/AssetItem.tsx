@@ -1,16 +1,21 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { U64 } from "codechain-sdk/lib/core/classes";
+import { AssetSchemeDoc } from "codechain-indexer-types";
+import { H160, U64 } from "codechain-sdk/lib/core/classes";
 import * as React from "react";
+import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { Action } from "redux";
+import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../../model/address";
+import { ReducerConfigure } from "../../../redux";
+import assetActions from "../../../redux/asset/assetActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
-import * as Metadata from "../../../utils/metadata";
+import { parseMetadata } from "../../../utils/metadata";
 import "./AssetItem.css";
 
 interface OwnProps {
     assetType: string;
     quantities: U64;
-    metadata: Metadata.Metadata;
     networkId: NetworkId;
     address: string;
 
@@ -18,20 +23,35 @@ interface OwnProps {
     onSelect: (assetType: string) => void;
 }
 
-type Props = RouteComponentProps & OwnProps;
+interface StateProps {
+    assetScheme?: AssetSchemeDoc | null;
+}
+
+interface DispatchProps {
+    fetchAssetSchemeIfNeed: (assetType: H160) => void;
+}
+
+type Props = RouteComponentProps & OwnProps & StateProps & DispatchProps;
 
 class AssetItem extends React.Component<Props, any> {
     public constructor(props: Props) {
         super(props);
     }
+    public componentDidMount() {
+        this.props.fetchAssetSchemeIfNeed(new H160(this.props.assetType));
+    }
     public render() {
         const {
-            metadata,
             assetType,
             quantities,
             networkId,
-            isSelected
+            isSelected,
+            assetScheme
         } = this.props;
+        let metadata;
+        if (assetScheme) {
+            metadata = parseMetadata(assetScheme.metadata);
+        }
         return (
             <div
                 onClick={this.handleClick}
@@ -49,7 +69,7 @@ class AssetItem extends React.Component<Props, any> {
                     </div>
                     <div className="name-container">
                         <span className="mb-0 asset-name">
-                            {metadata.name ||
+                            {(metadata && metadata.name) ||
                                 `...${assetType.slice(
                                     assetType.length - 8,
                                     assetType.length
@@ -77,4 +97,21 @@ class AssetItem extends React.Component<Props, any> {
         this.props.history.push(`/${address}/${assetType}`);
     };
 }
-export default withRouter(AssetItem);
+
+const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
+    const assetScheme = state.assetReducer.assetScheme[ownProps.assetType];
+    return {
+        assetScheme: assetScheme && assetScheme.data
+    };
+};
+const mapDispatchToProps = (
+    dispatch: ThunkDispatch<ReducerConfigure, void, Action>
+) => ({
+    fetchAssetSchemeIfNeed: (assetType: H160) => {
+        dispatch(assetActions.fetchAssetSchemeIfNeed(assetType));
+    }
+});
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withRouter(AssetItem));

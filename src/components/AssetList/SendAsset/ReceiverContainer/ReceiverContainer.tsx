@@ -272,10 +272,10 @@ class ReceiverContainer extends React.Component<Props, State> {
             });
             return false;
         }
-        if (amountFee.lt(20)) {
+        if (amountFee.lt(100)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "minimum 20"
+                feeError: "minimum 100"
             });
             return false;
         }
@@ -296,7 +296,11 @@ class ReceiverContainer extends React.Component<Props, State> {
     };
 
     private handleChangeFee = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ fee: new U64(event.target.value) });
+        this.setState({
+            fee: U64.check(event.target.value)
+                ? new U64(event.target.value)
+                : new U64(0)
+        });
     };
 
     private handleRemoveReceiver = (myIndex: number) => {

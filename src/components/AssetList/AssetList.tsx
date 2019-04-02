@@ -11,7 +11,6 @@ import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import chainActions from "../../redux/chain/chainActions";
 import walletActions from "../../redux/wallet/walletActions";
-import * as Metadata from "../../utils/metadata";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import AssetItem from "./AssetItem/AssetItem";
@@ -30,7 +29,6 @@ interface StateProps {
         | {
               assetType: string;
               quantities: U64;
-              metadata: Metadata.Metadata;
           }[]
         | null;
     networkId: NetworkId;
@@ -126,9 +124,6 @@ class AssetList extends React.Component<Props, State> {
                                                     }
                                                     quantities={
                                                         availableAsset.quantities
-                                                    }
-                                                    metadata={
-                                                        availableAsset.metadata
                                                     }
                                                     networkId={networkId}
                                                     address={address}

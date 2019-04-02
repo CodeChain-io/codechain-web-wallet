@@ -24,8 +24,8 @@ interface State {
 }
 
 interface DispatchProps {
-    login: (passpharase: string) => void;
-    clearData: () => void;
+    login: (passpharase: string) => Promise<void>;
+    clearData: () => Promise<void>;
 }
 
 type Props = RouteComponentProps & DispatchProps;
@@ -156,12 +156,8 @@ class RestoreWallet extends React.Component<Props, State> {
         }
         try {
             await importMnemonic(splitPassphrases.join(" "), passphrase);
-            login(passphrase!);
-            // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-            // This code is temporary for solving this problem.
-            setTimeout(() => {
-                history.push(`/`);
-            }, 300);
+            await login(passphrase!);
+            history.push(`/`);
         } catch (e) {
             toast.error("Invalid passphrases", {
                 position: toast.POSITION.BOTTOM_CENTER,
@@ -237,10 +233,10 @@ const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     login: (passphrase: string) => {
-        dispatch(globalActions.login(passphrase));
+        return dispatch(globalActions.login(passphrase));
     },
     clearData: () => {
-        dispatch(globalActions.clearData());
+        return dispatch(globalActions.clearData());
     }
 });
 export default connect(

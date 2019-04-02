@@ -9,7 +9,6 @@ import {
     getAssetByAssetType,
     getUTXOListByAssetType
 } from "../../networks/Api";
-import * as Metadata from "../../utils/metadata";
 import { TxUtil } from "../../utils/transaction";
 import chainActions from "../chain/chainActions";
 import { getIdForCacheUTXO } from "./assetReducer";
@@ -87,7 +86,6 @@ export interface CacheAvailableAssets {
         availableAssets: {
             assetType: string;
             quantities: U64;
-            metadata: Metadata.Metadata;
         }[];
     };
 }
@@ -132,7 +130,6 @@ const cacheAvailableAssets = (
     availableAssets: {
         assetType: string;
         quantities: U64;
-        metadata: Metadata.Metadata;
     }[]
 ): CacheAvailableAssets => ({
     type: ActionType.CacheAvailableAssets,
@@ -314,38 +311,36 @@ const calculateAvailableAssets = (address: string) => {
             [assetType: string]: {
                 assetType: string;
                 quantities: U64;
-                metadata: Metadata.Metadata;
             };
         } = {};
 
-        _.each(addressUTXOList, (addressConfirmedUTXO: any) => {
+        _.each(addressUTXOList, addressConfirmedUTXO => {
             availableAssets[addressConfirmedUTXO.assetType] = {
                 assetType: addressConfirmedUTXO.assetType,
-                quantities: new U64(addressConfirmedUTXO.totalAssetQuantity),
-                metadata: Metadata.parseMetadata(
-                    addressConfirmedUTXO.assetScheme.metadata
-                )
+                quantities: new U64(addressConfirmedUTXO.totalAssetQuantity)
             };
         });
         _.each(aggregatedPendingAsset, asset => {
-            const quantities = U64.minus(
-                asset.outputQuantities,
-                U64.plus(asset.inputQuantities, asset.burnQuantities)
-            );
-
-            if (quantities.lt(0)) {
+            if (
+                asset.outputQuantities.lt(
+                    U64.plus(asset.inputQuantities, asset.burnQuantities)
+                )
+            ) {
+                const quantity = U64.minus(
+                    U64.plus(asset.inputQuantities, asset.burnQuantities),
+                    asset.outputQuantities
+                );
                 if (!availableAssets[asset.assetType]) {
                     availableAssets[asset.assetType] = {
                         assetType: asset.assetType,
-                        quantities: new U64(0),
-                        metadata: asset.metadata
+                        quantities: new U64(0)
                     };
                 }
                 availableAssets[asset.assetType] = {
                     ...availableAssets[asset.assetType],
-                    quantities: U64.plus(
+                    quantities: U64.minus(
                         availableAssets[asset.assetType].quantities,
-                        quantities
+                        quantity
                     )
                 };
             }

@@ -116,6 +116,11 @@ export default class ReceiverItem extends React.Component<Props, any> {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         const { index, onQuantityChange } = this.props;
-        onQuantityChange(index, new U64(event.target.value));
+        onQuantityChange(
+            index,
+            U64.check(event.target.value)
+                ? new U64(event.target.value)
+                : new U64(0)
+        );
     };
 }
