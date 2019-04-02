@@ -1,0 +1,20 @@
+{
+  "main.css": "static/css/main.e6ed43b7.css",
+  "main.css.map": "static/css/main.e6ed43b7.css.map",
+  "main.js": "static/js/main.7d4116e3.js",
+  "main.js.map": "static/js/main.7d4116e3.js.map",
+  "static/media/cautiondisabled.svg": "static/media/cautiondisabled.5f741cde.svg",
+  "static/media/check_icon.svg": "static/media/check_icon.b6365a20.svg",
+  "static/media/copy-hover.svg": "static/media/copy-hover.790a3790.svg",
+  "static/media/copy.svg": "static/media/copy.f3de9253.svg",
+  "static/media/icons-check.svg": "static/media/icons-check.ab7566d8.svg",
+  "static/media/icons-error.svg": "static/media/icons-error.84ba3bbf.svg",
+  "static/media/logo-vertical.svg": "static/media/logo-vertical.8fe1be51.svg",
+  "static/media/logo.svg": "static/media/logo.31e76966.svg",
+  "static/media/mainnet.svg": "static/media/mainnet.ef91ce98.svg",
+  "static/media/plus-hover.svg": "static/media/plus-hover.37f5ad9d.svg",
+  "static/media/plus-standard.svg": "static/media/plus-standard.e3e35367.svg",
+  "static/media/restore-hover.svg": "static/media/restore-hover.61f75205.svg",
+  "static/media/restore-standard.svg": "static/media/restore-standard.5ed52c2c.svg",
+  "static/media/testnet.svg": "static/media/testnet.afbd2264.svg"
+}
