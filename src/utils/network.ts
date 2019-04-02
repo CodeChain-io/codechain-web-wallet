@@ -34,7 +34,7 @@ const server = {
         wc: "https://corgi.codechain.io/explorer"
     },
     chain: {
-        cc: "https://explorer.codechain.io/rpc",
+        cc: "http://13.209.251.3:8080",
         tc: "http://52.79.108.1:8080",
         sc: "http://52.78.210.78:8080",
         wc: "http://13.124.96.177:8080"
