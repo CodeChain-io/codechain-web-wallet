@@ -1,4 +1,4 @@
-# CodeChain Wallet [![Build Status](https://travis-ci.org/CodeChain-io/codechain-wallet.svg?branch=master)](https://travis-ci.org/CodeChain-io/codechain-wallet)
+# CodeChain Wallet [![Build Status](https://travis-ci.org/CodeChain-io/codechain-wallet-local.svg?branch=master)](https://travis-ci.org/CodeChain-io/codechain-wallet-local)
 
 CodeChain wallet is a simple, easy to use, an open-source tool for managing assets on the CodeChain system.
 
