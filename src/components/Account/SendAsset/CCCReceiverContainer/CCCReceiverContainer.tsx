@@ -25,6 +25,8 @@ interface Props {
     onSubmit: (receiver: { address: string; quantity: U64 }, fee: U64) => void;
 }
 
+const MinimumFee = 100;
+
 export default class CCCReceiverContainer extends React.Component<
     Props,
     State
@@ -181,10 +183,10 @@ export default class CCCReceiverContainer extends React.Component<
             });
             return false;
         }
-        if (amountFee.lt(500)) {
+        if (amountFee.lt(MinimumFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "minimum value is 500"
+                feeError: `minimum value is ${MinimumFee}`
             });
             return false;
         }

@@ -64,6 +64,7 @@ interface DispatchProps {
 
 type Props = OwnProps & DispatchProps & StateProps;
 
+const MinimumFee = 100;
 class ReceiverContainer extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
@@ -272,10 +273,10 @@ class ReceiverContainer extends React.Component<Props, State> {
             });
             return false;
         }
-        if (amountFee.lt(100)) {
+        if (amountFee.lt(MinimumFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "minimum 100"
+                feeError: `minimum value is ${MinimumFee}`
             });
             return false;
         }
