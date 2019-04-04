@@ -38,9 +38,11 @@ export default class ReceiverItem extends React.Component<Props, any> {
         return (
             <div className="Receiver-item animated fadeIn">
                 <div className="d-flex align-items-end">
-                    <span className="mr-auto receiver-item-index">
-                        {index + 1}
-                    </span>
+                    {!hideCancel && (
+                        <span className="mr-auto receiver-item-index">
+                            {index + 1}
+                        </span>
+                    )}
                     {!hideCancel && (
                         <span
                             className="receiver-item-cancel"
