@@ -114,7 +114,7 @@ class AssetDetail extends React.Component<Props, any> {
                                 <Col md={10}>{assetScheme.supply}</Col>
                             </Row>
                         </div>
-                        <h4 className="mb-3">Transaction history</h4>
+                        <h4 className="mb-3">Recent transactions</h4>
                         <AssetTxHistory
                             address={address}
                             assetType={new H160(assetType)}

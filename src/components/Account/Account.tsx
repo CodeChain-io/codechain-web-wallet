@@ -106,7 +106,7 @@ class Account extends React.Component<Props, State> {
                                 </div>
                             </div>
                             <div className="element-container">
-                                <h4 className="mb-3">Transaction history</h4>
+                                <h4 className="mb-3">Recent transactions</h4>
                                 <PayTxHistory address={address} />
                             </div>
                         </div>
