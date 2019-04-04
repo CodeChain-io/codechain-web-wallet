@@ -34,7 +34,6 @@ export class ImageLoader extends React.Component<Props, State> {
         const { className, size } = this.props;
         const { requestUrl } = this.state;
 
-        console.log(requestUrl);
         return (
             <img
                 className={className}
