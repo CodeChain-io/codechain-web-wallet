@@ -15,7 +15,7 @@ import AddressContainer from "../AddressContainer/AddressContainer";
 import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 import "./AssetList.css";
-import * as Empty from "./img/cautiondisabled.svg";
+import MintAssetButton from "./MintAssetButton";
 import SendAsset from "./SendAsset/SendAsset";
 
 interface OwnProps {
@@ -110,48 +110,27 @@ class AssetList extends React.Component<Props, State> {
                         <div>
                             <div className="element-container mb-3">
                                 <h4 className="mb-3">Asset list</h4>
-                                {availableAssets.length > 0 ? (
-                                    <div className="asset-item-container">
-                                        {_.map(
-                                            availableAssets,
-                                            availableAsset => (
-                                                <AssetItem
-                                                    key={
-                                                        availableAsset.assetType
-                                                    }
-                                                    assetType={
-                                                        availableAsset.assetType
-                                                    }
-                                                    quantities={
-                                                        availableAsset.quantities
-                                                    }
-                                                    networkId={networkId}
-                                                    address={address}
-                                                    onSelect={
-                                                        this.handleSelectAsset
-                                                    }
-                                                    isSelected={
-                                                        selectedAssetType !==
-                                                            undefined &&
-                                                        selectedAssetType ===
-                                                            availableAsset.assetType
-                                                    }
-                                                />
-                                            )
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="d-flex align-items-center justify-content-center">
-                                        <div>
-                                            <div className="text-center mt-3">
-                                                <img src={Empty} />
-                                            </div>
-                                            <div className="mt-3 empty">
-                                                There is no asset
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                <div className="asset-item-container">
+                                    {_.map(availableAssets, availableAsset => (
+                                        <AssetItem
+                                            key={availableAsset.assetType}
+                                            assetType={availableAsset.assetType}
+                                            quantities={
+                                                availableAsset.quantities
+                                            }
+                                            networkId={networkId}
+                                            address={address}
+                                            onSelect={this.handleSelectAsset}
+                                            isSelected={
+                                                selectedAssetType !==
+                                                    undefined &&
+                                                selectedAssetType ===
+                                                    availableAsset.assetType
+                                            }
+                                        />
+                                    ))}
+                                    <MintAssetButton />
+                                </div>
                             </div>
                             <div className="element-container mb-3">
                                 <h4 className="mb-3">Recent transactions</h4>

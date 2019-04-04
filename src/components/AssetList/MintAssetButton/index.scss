@@ -1,0 +1,21 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
+.Mint-asset-button {
+  width: 306px;
+  height: 72px;
+  padding: 11px 20px 11px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+  border: 1px solid $disabledbg-grey;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 8px 8px 8px;
+  color: $wallet-blue;
+  cursor: pointer;
+
+  @include respond_below(sm) {
+    width: calc(100% - 16px);
+  }
+}
