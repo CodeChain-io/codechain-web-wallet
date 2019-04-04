@@ -15,6 +15,7 @@ import AddressContainer from "../AddressContainer/AddressContainer";
 import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 import "./AssetList.css";
+import MintAsset from "./MintAsset";
 import MintAssetButton from "./MintAssetButton";
 import SendAsset from "./SendAsset/SendAsset";
 
@@ -44,6 +45,7 @@ interface DispatchProps {
 
 interface State {
     selectedAssetType?: string | null;
+    mintingAsset: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -53,7 +55,8 @@ class AssetList extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            selectedAssetType: undefined
+            selectedAssetType: undefined,
+            mintingAsset: false
         };
     }
     public componentWillReceiveProps(props: Props) {
@@ -94,7 +97,7 @@ class AssetList extends React.Component<Props, State> {
             networkId,
             addressName
         } = this.props;
-        const { selectedAssetType } = this.state;
+        const { selectedAssetType, mintingAsset } = this.state;
         if (!addressUTXOList || !pendingTxList || !availableAssets) {
             return null;
         }
@@ -129,7 +132,10 @@ class AssetList extends React.Component<Props, State> {
                                             }
                                         />
                                     ))}
-                                    <MintAssetButton />
+                                    <MintAssetButton
+                                        isSelected={mintingAsset}
+                                        onSelect={this.handleMintAssetClicked}
+                                    />
                                 </div>
                             </div>
                             <div className="element-container mb-3">
@@ -139,12 +145,22 @@ class AssetList extends React.Component<Props, State> {
                         </div>
                     </div>
                     {selectedAssetType && (
-                        <div className="send-asset-container">
-                            <div className="send-asset-panel">
+                        <div className="right-container">
+                            <div className="right-panel">
                                 <SendAsset
                                     address={address}
                                     selectedAssetType={selectedAssetType}
                                     onClose={this.handleSendAssetClose}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {mintingAsset && (
+                        <div className="right-container">
+                            <div className="right-panel">
+                                <MintAsset
+                                    onClose={this.handleMintAssetClose}
+                                    address={address}
                                 />
                             </div>
                         </div>
@@ -156,14 +172,32 @@ class AssetList extends React.Component<Props, State> {
     private handleSendAssetClose = () => {
         this.setState({ selectedAssetType: undefined });
     };
+    private handleMintAssetClose = () => {
+        this.setState({ mintingAsset: false });
+    };
+    private handleMintAssetClicked = () => {
+        this.setState({
+            mintingAsset: !this.state.mintingAsset,
+            selectedAssetType: undefined
+        });
+    };
     private handleSelectAsset = (assetType: string) => {
         const selectedAssetType = this.state.selectedAssetType;
         if (!selectedAssetType) {
-            this.setState({ selectedAssetType: assetType });
+            this.setState({
+                selectedAssetType: assetType,
+                mintingAsset: false
+            });
         } else if (selectedAssetType === assetType) {
-            this.setState({ selectedAssetType: undefined });
+            this.setState({
+                selectedAssetType: undefined,
+                mintingAsset: false
+            });
         } else {
-            this.setState({ selectedAssetType: undefined });
+            this.setState({
+                selectedAssetType: undefined,
+                mintingAsset: false
+            });
             setTimeout(() => {
                 this.setState({ selectedAssetType: assetType });
             }, 100);

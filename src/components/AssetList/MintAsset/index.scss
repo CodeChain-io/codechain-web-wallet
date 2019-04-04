@@ -1,0 +1,69 @@
+@import "styles/variables.scss";
+
+.Mint-asset {
+  padding: 50px;
+  position: relative;
+
+  @media screen and (max-width: 872px) {
+    & {
+      padding: 30px;
+    }
+  }
+
+  .title {
+    color: $wallet-blue;
+  }
+
+  .asset-info-container {
+    margin-top: 30px;
+  }
+
+  .description-area {
+    border: 1px solid $wallet-blue;
+  }
+
+  .fee-container {
+    .fee-input-container {
+      width: 150px;
+      margin-right: 10px;
+    }
+    .fee-payer-container {
+      flex: 1;
+      .available-ccc-text {
+        font-size: 0.8rem;
+        color: $standard-grey;
+      }
+    }
+  }
+
+  .input-label {
+    font-weight: bold;
+    color: $standard-grey;
+  }
+
+  .cancel-icon-container {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    cursor: pointer;
+    .cancel-icon {
+      font-size: 2rem;
+      color: $wallet-blue;
+    }
+  }
+  .complete-container {
+    height: 400px;
+    font-size: 1.7rem;
+    color: $wallet-blue;
+    font-weight: bold;
+  }
+  .minting-panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(44, 44, 44, 0.3);
+  }
+}

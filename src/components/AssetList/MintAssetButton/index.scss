@@ -15,6 +15,11 @@
   color: $wallet-blue;
   cursor: pointer;
 
+  &.selected {
+    background-color: #93a7ea52;
+    color: white;
+  }
+
   @include respond_below(sm) {
     width: calc(100% - 16px);
   }

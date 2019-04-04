@@ -1,6 +1,17 @@
 import { TransactionDoc } from "codechain-indexer-types";
+import { SDK } from "codechain-sdk";
 import { U64 } from "codechain-sdk/lib/core/classes";
+import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
+import { NetworkId } from "../model/address";
+import {
+    getAssetAddressPath,
+    getCCKey,
+    getFirstSeedHash,
+    getPlatformAddressPath
+} from "../model/keystore";
+import { getCodeChainHost } from "./network";
+import { getAssetKeys, getPlatformKeys } from "./storage";
 
 function getAggsQuark(address: string, txList: TransactionDoc[]) {
     return _.reduce(
@@ -143,4 +154,78 @@ function getAggsAsset(
     return [];
 }
 
-export const TxUtil = { getAggsAsset, getAggsQuark };
+async function createMintAssetTx(data: {
+    name: string;
+    supply: U64;
+    iconURL?: string;
+    description?: string;
+    recipient: string;
+    networkId: NetworkId;
+    feePayer: string;
+    fee: U64;
+    passphrase: string;
+}) {
+    const ccKey = await getCCKey();
+    const storedPlatformKeys = getPlatformKeys(data.networkId);
+    const storedAssetKeys = getAssetKeys(data.networkId);
+    const seedHash = await getFirstSeedHash();
+    const platformKeyMapping = _.reduce(
+        storedPlatformKeys,
+        (memo, storedPlatformKey) => {
+            return {
+                ...memo,
+                [storedPlatformKey.key]: {
+                    seedHash,
+                    path: getPlatformAddressPath(storedPlatformKey.pathIndex)
+                }
+            };
+        },
+        {}
+    );
+    const assetKeyMapping = _.reduce(
+        storedAssetKeys,
+        (memo, storedAssetKey) => {
+            return {
+                ...memo,
+                [storedAssetKey.key]: {
+                    seedHash,
+                    path: getAssetAddressPath(storedAssetKey.pathIndex)
+                }
+            };
+        },
+        {}
+    );
+    const keyStore = new LocalKeyStore(ccKey, {
+        platform: platformKeyMapping,
+        asset: assetKeyMapping
+    });
+
+    const sdk = new SDK({
+        server: getCodeChainHost(data.networkId),
+        networkId: data.networkId
+    });
+    const tx = sdk.core.createMintAssetTransaction({
+        scheme: {
+            shardId: 0,
+            metadata: JSON.stringify({
+                name: data.name,
+                description: data.description,
+                icon_url: data.iconURL
+            }),
+            supply: data.supply
+        },
+        recipient: data.recipient
+    });
+
+    const seq = await sdk.rpc.chain.getSeq(data.feePayer);
+    const signedTransaction = await sdk.key.signTransaction(tx, {
+        account: data.feePayer,
+        keyStore,
+        fee: data.fee,
+        seq,
+        passphrase: data.passphrase
+    });
+    return signedTransaction;
+}
+
+export const TxUtil = { getAggsAsset, getAggsQuark, createMintAssetTx };
