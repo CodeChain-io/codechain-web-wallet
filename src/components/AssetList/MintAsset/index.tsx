@@ -132,13 +132,25 @@ class MintAsset extends React.Component<Props, State> {
                                 error={supplyError}
                                 onBlur={this.checkSupplyValidation}
                             />
-                            <ValidationInput
-                                labelText="Icon URL (Optional)"
-                                placeholder="url"
-                                value={iconURL}
-                                onChange={this.handleIconURLChange}
-                                showValidation={false}
-                            />
+                            <div className="d-flex">
+                                <div className="icon-url-input-container">
+                                    <ValidationInput
+                                        labelText="Icon URL (Optional)"
+                                        placeholder="url"
+                                        value={iconURL}
+                                        onChange={this.handleIconURLChange}
+                                        showValidation={false}
+                                    />
+                                </div>
+                                {iconURL !== "" && (
+                                    <div
+                                        className="preview-container"
+                                        style={{
+                                            backgroundImage: `URL(${iconURL})`
+                                        }}
+                                    />
+                                )}
+                            </div>
                             <div className="mb-4">
                                 <span className="input-label d-block mb-2">
                                     Description (Optional)
