@@ -21,7 +21,7 @@ export class ImageLoader extends React.Component<Props, State> {
         let requestUrl;
         if (prop.isAssetImage) {
             const host = getIndexerHost(prop.networkId || "cc");
-            requestUrl = `${host}/api/asset/image/${prop.data}`;
+            requestUrl = `${host}/api/asset-image/${prop.data}`;
         } else {
             requestUrl = this.getDefaultImage();
         }
@@ -34,6 +34,7 @@ export class ImageLoader extends React.Component<Props, State> {
         const { className, size } = this.props;
         const { requestUrl } = this.state;
 
+        console.log(requestUrl);
         return (
             <img
                 className={className}
