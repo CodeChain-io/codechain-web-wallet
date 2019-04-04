@@ -188,7 +188,7 @@ const fetchTxListIfNeed = (address: string) => {
             });
             const networkId = getState().globalReducer.networkId;
             // FIXME: Add pagination
-            const txList = await getTxsByAddress(address, 1, 10, networkId);
+            const txList = await getTxsByAddress(address, 1, 100, networkId);
             dispatch({
                 type: ActionType.CacheTxList,
                 data: {
@@ -360,7 +360,7 @@ const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H160) => {
             const txList = await getTxsByAddress(
                 address,
                 1,
-                10,
+                100,
                 networkId,
                 assetType
             );
