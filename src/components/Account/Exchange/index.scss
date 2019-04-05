@@ -1,0 +1,44 @@
+@import "styles/variables.scss";
+
+.Exchange {
+  padding: 50px;
+  position: relative;
+
+  @media screen and (max-width: 872px) {
+    & {
+      padding: 30px;
+    }
+  }
+
+  .title {
+    color: $wallet-blue;
+  }
+
+  .loading-container {
+    height: 420px;
+  }
+
+  .exchange-rate-container {
+    margin-top: 40px;
+  }
+
+  .btc-address-container {
+    margin-top: 15px;
+  }
+
+  .exchange-history-container {
+    margin-top: 15px;
+  }
+
+  .cancel-icon-container {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    cursor: pointer;
+    .cancel-icon {
+      font-size: 2rem;
+      color: $wallet-blue;
+    }
+  }
+}

@@ -11,6 +11,7 @@ import walletActions from "../../redux/wallet/walletActions";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import PayTxHistory from "../PayTxHistory/PayTxHistory";
 import "./Account.css";
+import Exchange from "./Exchange";
 import SendCCC from "./SendAsset/SendCCC";
 
 interface OwnProps {
@@ -29,6 +30,7 @@ interface DispatchProps {
 
 interface State {
     sendingCCC: boolean;
+    exchanging: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -38,7 +40,8 @@ class Account extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            sendingCCC: false
+            sendingCCC: false,
+            exchanging: false
         };
     }
     public componentWillReceiveProps(props: Props) {
@@ -73,7 +76,7 @@ class Account extends React.Component<Props, State> {
             },
             addressName
         } = this.props;
-        const { sendingCCC } = this.state;
+        const { sendingCCC, exchanging } = this.state;
         if (!availableQuark) {
             return null;
         }
@@ -97,11 +100,18 @@ class Account extends React.Component<Props, State> {
                                 </div>
                                 <div className="mt-4">
                                     <button
-                                        className="btn btn-primary square reverse send-btn"
+                                        className="btn btn-primary square reverse send-btn mr-3 mb-3"
                                         onClick={this.openSendingCCC}
                                         disabled={sendingCCC}
                                     >
                                         SEND
+                                    </button>
+                                    <button
+                                        className="btn btn-primary square send-btn mb-3"
+                                        onClick={this.openExchanging}
+                                        disabled={exchanging}
+                                    >
+                                        EXCHANGE
                                     </button>
                                 </div>
                             </div>
@@ -112,12 +122,21 @@ class Account extends React.Component<Props, State> {
                         </div>
                     </div>
                     {sendingCCC && (
-                        <div className="send-ccc-container">
-                            <div className="send-ccc-panel">
+                        <div className="right-container">
+                            <div className="right-panel">
                                 <SendCCC
                                     address={address}
                                     isSendingCCC={sendingCCC}
                                     onClose={this.handleCloseSendingCCC}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {exchanging && (
+                        <div className="right-container">
+                            <div className="right-panel">
+                                <Exchange
+                                    onClose={this.handleCloseExchanging}
                                 />
                             </div>
                         </div>
@@ -128,7 +147,17 @@ class Account extends React.Component<Props, State> {
     }
 
     private openSendingCCC = () => {
-        this.setState({ sendingCCC: true });
+        this.setState({ sendingCCC: true, exchanging: false });
+    };
+
+    private openExchanging = () => {
+        this.setState({ exchanging: true, sendingCCC: false });
+    };
+
+    private handleCloseExchanging = () => {
+        this.setState({
+            exchanging: false
+        });
     };
 
     private handleCloseSendingCCC = () => {

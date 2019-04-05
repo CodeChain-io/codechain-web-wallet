@@ -8,7 +8,7 @@ interface Props {
     placeholder?: string;
     className?: string;
     error?: string | null;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     value: string | number;
     type?: string;
     labelText?: string;

@@ -7,7 +7,9 @@ import {
     faBars,
     faChevronLeft,
     faCircle,
+    faCopy,
     faEllipsisH,
+    faExchangeAlt,
     faFileDownload,
     faInfoCircle,
     faPlus,
@@ -47,7 +49,9 @@ library.add(
     faCircle,
     faEllipsisH,
     faArrowCircleRight,
-    faArrowCircleDown
+    faArrowCircleDown,
+    faExchangeAlt,
+    faCopy
 );
 
 interface StateProps {

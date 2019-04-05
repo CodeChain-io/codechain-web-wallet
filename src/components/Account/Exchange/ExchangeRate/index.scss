@@ -1,0 +1,17 @@
+@import "styles/variables.scss";
+
+.Exchange-rate {
+  .exchange-rate-title {
+    color: $dark-grey;
+  }
+  .input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .exchange-icon {
+      margin: 8px;
+      color: $dark-grey;
+    }
+  }
+}
