@@ -13,7 +13,7 @@ import logger from "redux-logger";
 import thunk from "redux-thunk";
 import App from "./components/App/App";
 import rootReducer from "./redux";
-import registerServiceWorker from "./registerServiceWorker";
+import { unregister } from "./registerServiceWorker";
 import "./styles/index.css";
 
 if (process.env.REACT_APP_BUILD_TARGET === "chrome-extension") {
@@ -47,4 +47,4 @@ if (process.env.REACT_APP_BUILD_TARGET === "chrome-extension") {
     );
 }
 
-registerServiceWorker();
+unregister();
