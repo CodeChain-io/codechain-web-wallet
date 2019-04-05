@@ -111,7 +111,7 @@ class Account extends React.Component<Props, State> {
                                         onClick={this.openExchanging}
                                         disabled={exchanging}
                                     >
-                                        EXCHANGE
+                                        BUY
                                     </button>
                                 </div>
                             </div>

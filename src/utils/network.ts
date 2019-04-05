@@ -26,6 +26,10 @@ export function getCodeChainHost(networkId: NetworkId) {
     return server.chain[networkId];
 }
 
+export function getExchangeHost() {
+    return server.exchange;
+}
+
 const server = {
     indexer: {
         cc: "https://explorer.codechain.io",
@@ -38,5 +42,6 @@ const server = {
         tc: "http://52.79.108.1:8080",
         sc: "http://52.78.210.78:8080",
         wc: "https://corgi-rpc.codechain.io"
-    }
+    },
+    exchange: "192.168.1.18:1300"
 };

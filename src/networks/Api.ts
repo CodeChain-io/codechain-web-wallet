@@ -9,7 +9,7 @@ import { H160, Transaction, U64 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-import { getIndexerHost } from "../utils/network";
+import { getExchangeHost, getIndexerHost } from "../utils/network";
 
 async function getRequest<T>(url: string) {
     const response = await axios.get<T>(url);
@@ -25,11 +25,6 @@ async function postRequest<T>(url: string, body: any) {
         return response.data;
     }
     throw new Error(response.statusText);
-}
-
-export function getGatewayHost(networkId: NetworkId) {
-    // return server.gateway[networkId];
-    return "http://localhost:9000";
 }
 
 export async function getAggsUTXOList(
@@ -161,4 +156,40 @@ export async function getTxsByAddress(
         })
     );
     return transactions;
+}
+
+export async function createBTCAddress(address: string) {
+    const apiHost = getExchangeHost();
+    const query = `${apiHost}/receivers/${address}`;
+    const btcAddress = await postRequest<{
+        type: string;
+        address: string;
+        createdAt: Date;
+    }>(query, { type: "btc" });
+    return btcAddress;
+}
+
+export async function getBTCtoCCCRate() {
+    const apiHost = getExchangeHost();
+    const query = `${apiHost}/rate/btc`;
+    return await getRequest<{ toCCC: number }>(query);
+}
+
+export async function getExchangeHistory(address: string) {
+    const apiHost = getExchangeHost();
+    const query = `${apiHost}/tx/${address}/btc`;
+    return await getRequest<
+        {
+            received: {
+                hash: string;
+                quantity: string;
+                status: "success" | "pending" | "reverted";
+            };
+            sent?: {
+                hash: string;
+                quantity: string;
+                status: "success" | "pending";
+            };
+        }[]
+    >(query);
 }

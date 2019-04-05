@@ -17,7 +17,7 @@ export default class Exchange extends React.Component<Props> {
                 <div className="cancel-icon-container" onClick={onClose}>
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
-                <h2 className="title">Exchange</h2>
+                <h2 className="title">Buy CCC</h2>
                 <div className="exchange-rate-container">
                     <ExchangeRate />
                 </div>
