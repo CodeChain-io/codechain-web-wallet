@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { AssetTransferAddress, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
@@ -15,7 +16,7 @@ import ReceiverItem from "./ReceiverItem/ReceiverItem";
 interface State {
     receivers: {
         address: string;
-        quantity: U64;
+        quantity: string;
     }[];
     addressValidations: {
         [index: number]:
@@ -33,7 +34,7 @@ interface State {
               }
             | undefined;
     };
-    fee: U64;
+    fee: string;
     feePayer?: string;
     isFeeValid?: boolean;
     feeError?: string;
@@ -72,12 +73,12 @@ class ReceiverContainer extends React.Component<Props, State> {
             receivers: [
                 {
                     address: "",
-                    quantity: new U64("0")
+                    quantity: ""
                 }
             ],
             addressValidations: {},
             quantityValidations: {},
-            fee: new U64("0"),
+            fee: "",
             feePayer: undefined,
             isFeeValid: undefined,
             feeError: undefined
@@ -158,7 +159,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                         <div className="d-flex fee-container">
                             <div className="fee-input-container">
                                 <ValidationInput
-                                    value={fee.toString(10)}
+                                    value={fee}
                                     onChange={this.handleChangeFee}
                                     showValidation={true}
                                     labelText="FEE"
@@ -245,7 +246,7 @@ class ReceiverContainer extends React.Component<Props, State> {
     ) => {
         this.setState({
             feePayer: event.target.value,
-            fee: new U64("0")
+            fee: `${MinimumFee}`
         });
         this.props.fetchAvailableQuark(event.target.value);
     };
@@ -265,7 +266,7 @@ class ReceiverContainer extends React.Component<Props, State> {
         if (!availableQuark) {
             throw Error("invalid balacne");
         }
-        const amountFee = fee.value;
+        const amountFee = new BigNumber(fee);
         if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
@@ -298,9 +299,7 @@ class ReceiverContainer extends React.Component<Props, State> {
 
     private handleChangeFee = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
-            fee: U64.check(event.target.value)
-                ? new U64(event.target.value)
-                : new U64(0)
+            fee: event.target.value
         });
     };
 
@@ -315,10 +314,7 @@ class ReceiverContainer extends React.Component<Props, State> {
 
     private handleAddReceiver = () => {
         this.setState({
-            receivers: [
-                ...this.state.receivers,
-                { address: "", quantity: new U64(0) }
-            ]
+            receivers: [...this.state.receivers, { address: "", quantity: "" }]
         });
     };
 
@@ -329,7 +325,11 @@ class ReceiverContainer extends React.Component<Props, State> {
         _.pullAt(receiversExceptIndex, myIndex);
         const currentTotal = _.reduce(
             receiversExceptIndex,
-            (memo, receiver) => U64.plus(memo, receiver.quantity),
+            (memo, receiver) =>
+                U64.plus(
+                    memo,
+                    receiver.quantity === "" ? 0 : receiver.quantity
+                ),
             new U64(0)
         );
 
@@ -391,12 +391,21 @@ class ReceiverContainer extends React.Component<Props, State> {
     private handleQuantityValidationCheck = (index: number) => {
         const { receivers } = this.state;
         const { totalQuantity } = this.props;
-        const currentTotal = _.reduce(
-            receivers,
-            (memo, receiver) => U64.plus(memo, receiver.quantity),
-            new U64(0)
-        );
-        if (this.state.receivers[index].quantity.lte(0)) {
+        const quantity = new BigNumber(this.state.receivers[index].quantity);
+        if (quantity.isNaN()) {
+            this.setState({
+                quantityValidations: {
+                    ...this.state.quantityValidations,
+                    [index]: {
+                        ...this.state.quantityValidations[index],
+                        isQuantityValid: false,
+                        quantityError: "invalid number"
+                    }
+                }
+            });
+            return false;
+        }
+        if (quantity.lte(0)) {
             this.setState({
                 quantityValidations: {
                     ...this.state.quantityValidations,
@@ -409,6 +418,15 @@ class ReceiverContainer extends React.Component<Props, State> {
             });
             return false;
         }
+        const currentTotal = _.reduce(
+            receivers,
+            (memo, receiver) =>
+                U64.plus(
+                    memo,
+                    receiver.quantity === "" ? 0 : receiver.quantity
+                ),
+            new U64(0)
+        );
         if (currentTotal.gt(totalQuantity)) {
             this.setState({
                 quantityValidations: {
@@ -459,7 +477,7 @@ class ReceiverContainer extends React.Component<Props, State> {
         });
     };
 
-    private handleQuantityChange = (newIndex: number, quantity: U64) => {
+    private handleQuantityChange = (newIndex: number, quantity: string) => {
         const { receivers } = this.state;
         const newReceivers = _.map(receivers, (receiver, index) => {
             if (index === newIndex) {
@@ -496,17 +514,21 @@ class ReceiverContainer extends React.Component<Props, State> {
                 return;
             }
         }
+
+        const returnValue = receivers.map(r => ({
+            address: r.address,
+            quantity: new U64(r.quantity)
+        }));
         if (gatewayURL == null) {
             if (!this.checkFeeValidation()) {
                 return;
             }
-            const amountFee = fee.value;
-            this.props.onSubmit(receivers, {
+            this.props.onSubmit(returnValue, {
                 payer: feePayer!,
-                quantity: new U64(amountFee)
+                quantity: new U64(fee)
             });
         } else {
-            this.props.onSubmit(receivers);
+            this.props.onSubmit(returnValue);
         }
     };
 }

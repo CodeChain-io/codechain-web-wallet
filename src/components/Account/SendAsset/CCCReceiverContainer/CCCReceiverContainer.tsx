@@ -38,7 +38,7 @@ export default class CCCReceiverContainer extends React.Component<
                 address: "",
                 quantity: ""
             },
-            fee: "",
+            fee: `${MinimumFee}`,
             isFeeValid: undefined,
             feeError: undefined,
             isAddressValid: undefined,
@@ -104,7 +104,6 @@ export default class CCCReceiverContainer extends React.Component<
         try {
             return new U64(remainingCCC).toLocaleString();
         } catch (e) {
-            console.log(e);
             return "0";
         }
     };
@@ -190,7 +189,9 @@ export default class CCCReceiverContainer extends React.Component<
             });
             return false;
         }
-        const amountCCC = new BigNumber(receiver.quantity);
+        const amountCCC = new BigNumber(
+            receiver.quantity === "" ? "0" : receiver.quantity
+        );
         if (amountCCC.plus(amountFee).gt(totalAmount.value)) {
             this.setState({
                 isFeeValid: false,

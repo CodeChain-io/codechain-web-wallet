@@ -8,11 +8,11 @@ import "./ReceiverItem.css";
 interface Props {
     receiver: {
         address: string;
-        quantity: U64;
+        quantity: string;
     };
     remainingAsset: U64;
     onAddressChange: (index: number, address: string) => void;
-    onQuantityChange: (index: number, quantity: U64) => void;
+    onQuantityChange: (index: number, quantity: string) => void;
     onAddressValidationCheck: (index: number) => void;
     onQuantityValidationCheck: (index: number) => void;
     isAddressValid?: boolean;
@@ -64,7 +64,7 @@ export default class ReceiverItem extends React.Component<Props, any> {
                 />
                 <div className="d-flex align-items-end">
                     <ValidationInput
-                        value={receiver.quantity.toString(10)}
+                        value={receiver.quantity}
                         onChange={this.handleChangeQuantitiesInput}
                         labelText="QUANTITY"
                         placeholder="quantity"
@@ -104,7 +104,7 @@ export default class ReceiverItem extends React.Component<Props, any> {
 
     private handleMaxValueClick = () => {
         const { index, onQuantityChange, remainingAsset } = this.props;
-        onQuantityChange(index, remainingAsset);
+        onQuantityChange(index, remainingAsset.toString(10));
     };
 
     private handleChangeAddressInput = (
@@ -118,11 +118,6 @@ export default class ReceiverItem extends React.Component<Props, any> {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         const { index, onQuantityChange } = this.props;
-        onQuantityChange(
-            index,
-            U64.check(event.target.value)
-                ? new U64(event.target.value)
-                : new U64(0)
-        );
+        onQuantityChange(index, event.target.value);
     };
 }

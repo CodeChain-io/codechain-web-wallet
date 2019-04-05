@@ -56,6 +56,8 @@ interface DispatchProps {
     ) => Promise<{}>;
 }
 
+const MinimumFee = 100000;
+
 type Props = OwnProps & StateProps & DispatchProps;
 class MintAsset extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -341,10 +343,10 @@ class MintAsset extends React.Component<Props, State> {
             });
             return false;
         }
-        if (amountFee.lt(100000)) {
+        if (amountFee.lt(MinimumFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: `minimum value is 100000`
+                feeError: `minimum value is ${MinimumFee}`
             });
             return false;
         }
@@ -405,7 +407,7 @@ class MintAsset extends React.Component<Props, State> {
     ) => {
         this.setState({
             feePayer: event.target.value,
-            fee: ""
+            fee: `${MinimumFee}`
         });
         this.props.fetchAvailableQuark(event.target.value);
     };
