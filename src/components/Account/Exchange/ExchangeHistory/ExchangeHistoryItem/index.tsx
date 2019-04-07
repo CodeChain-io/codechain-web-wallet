@@ -36,7 +36,7 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
                     <div className="tx-hash">
                         View:{" "}
                         <a
-                            href={`https://tbtc.bitaps.com/${
+                            href={`https://testnet.blockexplorer.com/tx/${
                                 history.received.hash
                             }`}
                             target="_blank"
