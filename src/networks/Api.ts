@@ -185,8 +185,8 @@ export async function getExchangeHistory(address: string) {
                 quantity: string;
                 status: "success" | "pending" | "reverted";
             };
-            sent?: {
-                hash: string;
+            sent: {
+                hash?: string;
                 quantity: string;
                 status: "success" | "pending";
             };

@@ -10,8 +10,8 @@ export interface ExchangeState {
                           quantity: string;
                           status: "success" | "pending" | "reverted";
                       };
-                      sent?: {
-                          hash: string;
+                      sent: {
+                          hash?: string;
                           quantity: string;
                           status: "success" | "pending";
                       };

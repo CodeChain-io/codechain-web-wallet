@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
@@ -19,13 +20,11 @@ interface StateProps {
             quantity: string;
             status: "success" | "pending" | "reverted";
         };
-        sent?:
-            | {
-                  hash: string;
-                  quantity: string;
-                  status: "success" | "pending";
-              }
-            | undefined;
+        sent: {
+            hash?: string;
+            quantity: string;
+            status: "success" | "pending";
+        };
     }[];
 }
 
@@ -42,7 +41,12 @@ class ExchangeHistory extends React.Component<Props, any> {
         const { exchangeHistory } = this.props;
         return (
             <div className="Exchange-history">
-                <h5 className="exchange-address-title">Exchange status</h5>
+                <h5 className="exchange-address-title">
+                    Exchange status{" "}
+                    <span onClick={this.refresh} className="refresh-btn">
+                        <FontAwesomeIcon icon="redo-alt" className="ml-1" />
+                    </span>
+                </h5>
                 <div className="exchange-content-container">
                     {exchangeHistory ? (
                         exchangeHistory.length > 0 ? (
@@ -70,6 +74,10 @@ class ExchangeHistory extends React.Component<Props, any> {
             </div>
         );
     }
+
+    private refresh = () => {
+        this.props.fetchExchangeHistoryIfNeed(this.props.address);
+    };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {

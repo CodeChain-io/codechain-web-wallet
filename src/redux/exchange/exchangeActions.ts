@@ -43,8 +43,8 @@ export interface CacheExchangeHistory {
                 quantity: string;
                 status: "success" | "pending" | "reverted";
             };
-            sent?: {
-                hash: string;
+            sent: {
+                hash?: string;
                 quantity: string;
                 status: "success" | "pending";
             };
@@ -123,8 +123,8 @@ const cacheExchangeHistory = (
             quantity: string;
             status: "success" | "pending" | "reverted";
         };
-        sent?: {
-            hash: string;
+        sent: {
+            hash?: string;
             quantity: string;
             status: "success" | "pending";
         };

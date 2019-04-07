@@ -15,6 +15,7 @@ import {
     faInfoCircle,
     faPlus,
     faPlusCircle,
+    faRedoAlt,
     faTimes,
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
@@ -53,7 +54,8 @@ library.add(
     faArrowCircleDown,
     faExchangeAlt,
     faCopy,
-    faArrowRight
+    faArrowRight,
+    faRedoAlt
 );
 
 interface StateProps {

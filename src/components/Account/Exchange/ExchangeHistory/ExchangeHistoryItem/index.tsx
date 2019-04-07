@@ -9,13 +9,11 @@ interface Props {
             quantity: string;
             status: "success" | "pending" | "reverted";
         };
-        sent?:
-            | {
-                  hash: string;
-                  quantity: string;
-                  status: "success" | "pending";
-              }
-            | undefined;
+        sent: {
+            hash?: string;
+            quantity: string;
+            status: "success" | "pending";
+        };
     };
 }
 
@@ -49,21 +47,18 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
                     <div>
                         <span className="title-label">CCC</span>
                     </div>
-                    {history.sent ? (
+                    <div>
                         <div>
-                            <div>
-                                {new BigNumber(
-                                    history.sent.quantity
-                                ).toFormat()}{" "}
-                                CCC
+                            {new BigNumber(history.sent.quantity).toFormat()}{" "}
+                            CCC
+                        </div>
+                        <div>{this.renderStatus(history.sent.status)}</div>
+                        {!history.sent.hash && (
+                            <div className="tx-hash">
+                                <span>...Waiting for deposit</span>
                             </div>
-                            <div>{this.renderStatus(history.sent.status)}</div>
-                        </div>
-                    ) : (
-                        <div>
-                            <span>...Waiting for deposit</span>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
         );
