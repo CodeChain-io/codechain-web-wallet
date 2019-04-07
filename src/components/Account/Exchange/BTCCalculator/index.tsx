@@ -2,18 +2,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import ValidationInput from "../../../ValidationInput/ValidationInput";
 import "./index.css";
-
+interface Props {
+    btcToCCCRate?: number;
+}
 interface State {
     btc: string;
     ccc: string;
 }
-export default class BTCCalculator extends React.Component<any, State> {
-    constructor(props: any) {
+export default class BTCCalculator extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = { btc: "", ccc: "" };
     }
     public render() {
         const { btc, ccc } = this.state;
+        const { btcToCCCRate } = this.props;
         return (
             <div className="BTC-calculator">
                 <div className="input-container">
@@ -23,6 +26,7 @@ export default class BTCCalculator extends React.Component<any, State> {
                         showValidation={false}
                         labelText={"BTC"}
                         placeholder={"1 BTC"}
+                        disable={!btcToCCCRate}
                     />
                     <FontAwesomeIcon
                         className="exchange-icon"
@@ -33,16 +37,27 @@ export default class BTCCalculator extends React.Component<any, State> {
                         onChange={this.handleCCCChange}
                         showValidation={false}
                         labelText={"CCC"}
-                        placeholder={"1000 CCC"}
+                        placeholder={`${
+                            btcToCCCRate
+                                ? btcToCCCRate.toLocaleString()
+                                : "Loading"
+                        } CCC`}
+                        disable={!btcToCCCRate}
                     />
                 </div>
             </div>
         );
     }
     private handleBTCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ btc: event.target.value });
+        const { btcToCCCRate } = this.props;
+        const btc = event.target.value;
+        const ccc = btcToCCCRate! * Number(btc);
+        this.setState({ btc, ccc: ccc.toString() });
     };
     private handleCCCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ ccc: event.target.value });
+        const { btcToCCCRate } = this.props;
+        const ccc = event.target.value;
+        const btc = Number(ccc) / btcToCCCRate!;
+        this.setState({ btc: btc.toString(), ccc });
     };
 }

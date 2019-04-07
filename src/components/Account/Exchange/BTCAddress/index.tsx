@@ -14,7 +14,7 @@ interface OwnProps {
     address: string;
 }
 
-interface StatePorps {
+interface StateProps {
     btcAddress?: string;
 }
 
@@ -22,7 +22,7 @@ interface DispatchProps {
     fetchBTCAddressIfNeed: (address: string) => Promise<void>;
 }
 
-type Props = OwnProps & StatePorps & DispatchProps;
+type Props = OwnProps & StateProps & DispatchProps;
 class BTCAddress extends React.Component<Props> {
     public componentDidMount() {
         const { address } = this.props;
@@ -39,7 +39,7 @@ class BTCAddress extends React.Component<Props> {
                         showValidation={false}
                         disable={true}
                         labelText="BTC Address"
-                    />{" "}
+                    />
                     <CopyToClipboard
                         text={btcAddress || ""}
                         onCopy={this.handleCopyPhrase}

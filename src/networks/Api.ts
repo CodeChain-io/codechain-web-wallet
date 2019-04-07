@@ -160,25 +160,24 @@ export async function getTxsByAddress(
 
 export async function createBTCAddress(address: string) {
     const apiHost = getExchangeHost();
-    const query = `${apiHost}/receivers/${address}`;
-    console.log(query);
-    const btcAddress = await postRequest<{
+    const query = `${apiHost}/receivers/${address}/btc`;
+    const btcAddress = await getRequest<{
         type: string;
         address: string;
         createdAt: Date;
-    }>(query, { type: "btc" });
+    }>(query);
     return btcAddress;
 }
 
 export async function getBTCtoCCCRate() {
     const apiHost = getExchangeHost();
-    const query = `${apiHost}/rate/btc`;
+    const query = `${apiHost}/rates/btc`;
     return await getRequest<{ toCCC: number }>(query);
 }
 
 export async function getExchangeHistory(address: string) {
     const apiHost = getExchangeHost();
-    const query = `${apiHost}/tx/${address}/btc`;
+    const query = `${apiHost}/histories/${address}/btc`;
     return await getRequest<
         {
             received: {

@@ -95,8 +95,7 @@ class SendCCC extends React.Component<Props, State> {
                         <div className="d-flex align-items-center balance-container mb-4">
                             <div className="mr-auto balance-text">Balance</div>
                             <span className="amount number">
-                                {availableQuark.toLocaleString()}
-                                CCC
+                                {availableQuark.toLocaleString()} CCC
                             </span>
                         </div>
                         <CCCReceiverContainer
