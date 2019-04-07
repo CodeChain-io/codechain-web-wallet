@@ -1,54 +1,52 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
-import ValidationInput from "../../../ValidationInput/ValidationInput";
+import BTCCalculator from "../BTCCalculator";
 import "./index.css";
 
 interface State {
-    btc: string;
-    ccc: string;
     showCalculator: boolean;
 }
 
 export default class ExchangeRate extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
-        this.state = { btc: "", ccc: "", showCalculator: false };
+        this.state = {
+            showCalculator: false
+        };
     }
     public render() {
-        const { btc, ccc } = this.state;
+        const { showCalculator } = this.state;
         return (
             <div className="Exchange-rate">
-                <h5 className="exchange-rate-title">Exchange rate</h5>
-                <span>1 BTC</span>
-                <span> => </span>
-                <span>1000 CCC</span>
-                <div className="input-container">
-                    <ValidationInput
-                        value={btc}
-                        onChange={this.handleBTCChange}
-                        showValidation={false}
-                        labelText={"BTC"}
-                        placeholder={"1 BTC"}
-                    />
-                    <FontAwesomeIcon
-                        className="exchange-icon"
-                        icon="exchange-alt"
-                    />
-                    <ValidationInput
-                        value={ccc}
-                        onChange={this.handleCCCChange}
-                        showValidation={false}
-                        labelText={"CCC"}
-                        placeholder={"1000 CCC"}
-                    />
+                <div className="exchange-rate-item-container text-right">
+                    <div className="exchange-rate-item">
+                        <span className="mr-3">1 BTC</span>
+                        <FontAwesomeIcon
+                            className="exchange-icon"
+                            icon="arrow-right"
+                        />
+                        <span className="ml-3">1000 CCC</span>
+                    </div>
+                    <div>
+                        <span
+                            className="simulator-label"
+                            onClick={this.toggleCalculator}
+                        >
+                            CCC simulators
+                        </span>
+                    </div>
                 </div>
+                {showCalculator && (
+                    <div className="BTC-calculator-container">
+                        <BTCCalculator />
+                    </div>
+                )}
             </div>
         );
     }
-    private handleBTCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ btc: event.target.value });
-    };
-    private handleCCCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ ccc: event.target.value });
+    private toggleCalculator = () => {
+        this.setState({
+            showCalculator: !this.state.showCalculator
+        });
     };
 }

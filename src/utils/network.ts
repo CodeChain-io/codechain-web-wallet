@@ -43,5 +43,5 @@ const server = {
         sc: "http://52.78.210.78:8080",
         wc: "https://corgi-rpc.codechain.io"
     },
-    exchange: "192.168.1.18:1300"
+    exchange: "http://13.209.150.29:1300"
 };

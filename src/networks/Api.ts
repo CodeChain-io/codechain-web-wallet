@@ -161,6 +161,7 @@ export async function getTxsByAddress(
 export async function createBTCAddress(address: string) {
     const apiHost = getExchangeHost();
     const query = `${apiHost}/receivers/${address}`;
+    console.log(query);
     const btcAddress = await postRequest<{
         type: string;
         address: string;

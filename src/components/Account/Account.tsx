@@ -137,6 +137,7 @@ class Account extends React.Component<Props, State> {
                             <div className="right-panel">
                                 <Exchange
                                     onClose={this.handleCloseExchanging}
+                                    address={address}
                                 />
                             </div>
                         </div>

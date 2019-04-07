@@ -2,7 +2,11 @@ import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { Action as ReduxAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
-import { createBTCAddress } from "../../networks/Api";
+import {
+    createBTCAddress,
+    getBTCtoCCCRate,
+    getExchangeHistory
+} from "../../networks/Api";
 
 export type Action =
     | CacheBTCAddress
@@ -80,7 +84,6 @@ const setFetchingBTCAddress = (address: string): SetFetchingBTCAddress => ({
     }
 });
 
-/*
 const setFetchingBTCToCCCRate = (): SetFetchingBTCToCCCRate => ({
     type: ActionType.SetFetchingBTCToCCCRate
 });
@@ -92,7 +95,7 @@ const setFetchingExchangeHistory = (
     data: {
         address
     }
-});*/
+});
 
 const cacheBTCAddress = (
     address: string,
@@ -102,6 +105,35 @@ const cacheBTCAddress = (
     data: {
         address,
         btcAddress
+    }
+});
+
+const cacheBTCToCCCRate = (cccRate: number): CacheBTCToCCCRate => ({
+    type: ActionType.CacheBTCToCCCRate,
+    data: {
+        rate: cccRate
+    }
+});
+
+const cacheExchangeHistory = (
+    address: string,
+    history: {
+        received: {
+            hash: string;
+            quantity: string;
+            status: "success" | "pending" | "reverted";
+        };
+        sent?: {
+            hash: string;
+            quantity: string;
+            status: "success" | "pending";
+        };
+    }[]
+): CacheExchangeHistory => ({
+    type: ActionType.CacheExchangeHistory,
+    data: {
+        address,
+        history
     }
 });
 
@@ -126,6 +158,64 @@ export const fetchBTCAddressIfNeed = (address: string) => {
             dispatch(setFetchingBTCAddress(address));
             const btcAddress = await createBTCAddress(address);
             dispatch(cacheBTCAddress(address, btcAddress.address));
+            dispatch(hideLoading());
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+export const fetchBTCToCCCRateIfNeed = () => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, ReduxAction>,
+        getState: () => ReducerConfigure
+    ) => {
+        const btcToCCCRate = getState().exchangeReducer.btcToCCCRate;
+        if (btcToCCCRate && btcToCCCRate.isFetching) {
+            return;
+        }
+        if (
+            btcToCCCRate &&
+            btcToCCCRate.updatedAt &&
+            +new Date() - btcToCCCRate.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch(showLoading());
+            dispatch(setFetchingBTCToCCCRate());
+            const response = await getBTCtoCCCRate();
+            dispatch(cacheBTCToCCCRate(response.toCCC));
+            dispatch(hideLoading());
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+export const fetchExchangeHistoryIfNeed = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, ReduxAction>,
+        getState: () => ReducerConfigure
+    ) => {
+        const exchangeHistory = getState().exchangeReducer.exchangeHistory[
+            address
+        ];
+        if (exchangeHistory && exchangeHistory.isFetching) {
+            return;
+        }
+        if (
+            exchangeHistory &&
+            exchangeHistory.updatedAt &&
+            +new Date() - exchangeHistory.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch(showLoading());
+            dispatch(setFetchingExchangeHistory(address));
+            const response = await getExchangeHistory(address);
+            dispatch(cacheExchangeHistory(address, response));
             dispatch(hideLoading());
         } catch (e) {
             console.log(e);

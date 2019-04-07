@@ -18,16 +18,27 @@
     height: 420px;
   }
 
+  .description-container {
+    margin-top: 30px;
+    .description {
+      color: $dark-grey;
+    }
+  }
+
   .exchange-rate-container {
-    margin-top: 40px;
+    margin-top: -15px;
   }
 
   .btc-address-container {
+    margin-top: 25px;
+  }
+
+  .btc-calculator {
     margin-top: 15px;
   }
 
   .exchange-history-container {
-    margin-top: 15px;
+    margin-top: 55px;
   }
 
   .cancel-icon-container {

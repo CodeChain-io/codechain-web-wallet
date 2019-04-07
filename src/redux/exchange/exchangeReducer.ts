@@ -1,4 +1,4 @@
-import { Action } from "./exchangeActions";
+import { Action, ActionType } from "./exchangeActions";
 
 export interface ExchangeState {
     exchangeHistory: {
@@ -19,20 +19,14 @@ export interface ExchangeState {
                 | null;
             isFetching: boolean;
             updatedAt?: number | null;
-        } | null;
+        };
     };
     btcAddress: {
         [address: string]: {
-            data?:
-                | {
-                      type: string;
-                      address: string;
-                      createdAt: Date;
-                  }[]
-                | null;
+            data?: string | null;
             isFetching: boolean;
             updatedAt?: number | null;
-        } | null;
+        };
     };
     btcToCCCRate?: {
         data?: number | null;
@@ -49,6 +43,71 @@ export const exchangeInitState: ExchangeState = {
 
 export const exchangeReducer = (state = exchangeInitState, action: Action) => {
     switch (action.type) {
+        case ActionType.CacheBTCAddress: {
+            return {
+                ...state,
+                btcAddress: {
+                    [action.data.address]: {
+                        isFetching: false,
+                        data: action.data.btcAddress,
+                        updatedAt: +new Date()
+                    }
+                }
+            };
+        }
+        case ActionType.CacheBTCToCCCRate: {
+            return {
+                ...state,
+                btcToCCCRate: {
+                    isFetching: false,
+                    data: action.data.rate,
+                    updatedAt: +new Date()
+                }
+            };
+        }
+        case ActionType.CacheExchangeHistory: {
+            return {
+                ...state,
+                exchangeHistory: {
+                    [action.data.address]: {
+                        isFetching: false,
+                        data: action.data.history,
+                        updatedAt: +new Date()
+                    }
+                }
+            };
+        }
+        case ActionType.SetFetchingBTCAddress: {
+            return {
+                ...state,
+                btcAddress: {
+                    [action.data.address]: {
+                        ...state.btcAddress[action.data.address],
+                        isFetching: true
+                    }
+                }
+            };
+        }
+        case ActionType.SetFetchingBTCToCCCRate: {
+            return {
+                ...state,
+                btcToCCCRate: {
+                    ...state.btcToCCCRate,
+                    isFetching: true
+                }
+            };
+        }
+        case ActionType.SetFetchingExchangeHistory: {
+            return {
+                ...state,
+                exchangeHistory: {
+                    [action.data.address]: {
+                        ...state.exchangeHistory[action.data.address],
+                        isFetching: true
+                    }
+                }
+            };
+        }
     }
     return state;
 };

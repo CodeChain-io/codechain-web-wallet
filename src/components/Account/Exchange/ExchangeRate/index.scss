@@ -1,17 +1,19 @@
 @import "styles/variables.scss";
 
 .Exchange-rate {
-  .exchange-rate-title {
+  .exchange-rate-item-container {
     color: $dark-grey;
-  }
-  .input-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
-    .exchange-icon {
-      margin: 8px;
-      color: $dark-grey;
+    .exchange-rate-item {
+      font-weight: bold;
     }
+
+    .simulator-label {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+  .BTC-calculator-container {
+    margin-top: 12px;
   }
 }
