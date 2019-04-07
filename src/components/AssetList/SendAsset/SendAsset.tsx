@@ -205,6 +205,7 @@ class SendAsset extends React.Component<Props, State> {
 
     private handleSubmit = async (
         receivers: { address: string; quantity: U64 }[],
+        memo: string,
         fee?: {
             payer: string;
             quantity: U64;
@@ -227,7 +228,7 @@ class SendAsset extends React.Component<Props, State> {
 
         const sumOfSendingAsset = _.reduce(
             receivers,
-            (memo, receiver) => U64.plus(memo, receiver.quantity),
+            (m, receiver) => U64.plus(m, receiver.quantity),
             new U64(0)
         );
 
@@ -253,9 +254,9 @@ class SendAsset extends React.Component<Props, State> {
 
         const platformKeyMapping = _.reduce(
             storedPlatformKeys,
-            (memo, storedPlatformKey) => {
+            (m, storedPlatformKey) => {
                 return {
-                    ...memo,
+                    ...m,
                     [storedPlatformKey.key]: {
                         seedHash,
                         path: getPlatformAddressPath(
@@ -269,9 +270,9 @@ class SendAsset extends React.Component<Props, State> {
 
         const assetKeyMapping = _.reduce(
             storedAssetKeys,
-            (memo, storedAssetKey) => {
+            (m, storedAssetKey) => {
                 return {
-                    ...memo,
+                    ...m,
                     [storedAssetKey.key]: {
                         seedHash,
                         path: getAssetAddressPath(storedAssetKey.pathIndex)
@@ -328,7 +329,8 @@ class SendAsset extends React.Component<Props, State> {
         );
         const transferTx = sdk.core.createTransferAssetTransaction({
             inputs: inputAssets,
-            outputs
+            outputs,
+            metadata: memo
         });
         try {
             await Promise.all(

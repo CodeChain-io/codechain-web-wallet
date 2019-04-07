@@ -38,6 +38,9 @@ interface State {
     feePayer?: string;
     isFeeValid?: boolean;
     feeError?: string;
+    memo: string;
+    memoError?: string;
+    isMemoValid?: boolean;
 }
 
 interface OwnProps {
@@ -45,6 +48,7 @@ interface OwnProps {
     totalQuantity: U64;
     onSubmit: (
         receivers: { address: string; quantity: U64 }[],
+        memo: string,
         fee?: {
             payer: string;
             quantity: U64;
@@ -81,7 +85,10 @@ class ReceiverContainer extends React.Component<Props, State> {
             fee: "",
             feePayer: undefined,
             isFeeValid: undefined,
-            feeError: undefined
+            feeError: undefined,
+            memo: "",
+            memoError: undefined,
+            isMemoValid: undefined
         };
     }
     public componentDidMount() {
@@ -95,7 +102,10 @@ class ReceiverContainer extends React.Component<Props, State> {
             fee,
             feePayer,
             isFeeValid,
-            feeError
+            feeError,
+            memo,
+            memoError,
+            isMemoValid
         } = this.state;
         const {
             platformAddresses,
@@ -154,6 +164,18 @@ class ReceiverContainer extends React.Component<Props, State> {
                         >
                             Add a new recipient
                         </button>
+                    </div>
+                    <div className="memo-container">
+                        <ValidationInput
+                            labelText="Memo (Optional)"
+                            value={memo}
+                            isValid={isMemoValid}
+                            error={memoError}
+                            showValidation={true}
+                            placeholder="memo (Maximum 25 characters)"
+                            onBlur={this.checkMemo}
+                            onChange={this.handleChangeMemo}
+                        />
                     </div>
                     {gatewayURL == null && (
                         <div className="d-flex fee-container">
@@ -249,6 +271,28 @@ class ReceiverContainer extends React.Component<Props, State> {
             fee: `${MinimumFee}`
         });
         this.props.fetchAvailableQuark(event.target.value);
+    };
+
+    private handleChangeMemo = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            memo: event.target.value
+        });
+    };
+
+    private checkMemo = () => {
+        const { memo } = this.state;
+        if (memo.length > 25) {
+            this.setState({
+                isMemoValid: false,
+                memoError: "Maximum 25 characters limit"
+            });
+            return false;
+        }
+        this.setState({
+            isMemoValid: true,
+            memoError: undefined
+        });
+        return true;
     };
 
     private checkFeeValidation = () => {
@@ -504,7 +548,7 @@ class ReceiverContainer extends React.Component<Props, State> {
     private handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { gatewayURL } = this.props;
-        const { receivers, fee, feePayer } = this.state;
+        const { receivers, fee, feePayer, memo } = this.state;
 
         for (let i = 0; i < receivers.length; i++) {
             if (!this.handleAddressValidationCheck(i)) {
@@ -515,6 +559,10 @@ class ReceiverContainer extends React.Component<Props, State> {
             }
         }
 
+        if (!this.checkMemo()) {
+            return;
+        }
+
         const returnValue = receivers.map(r => ({
             address: r.address,
             quantity: new U64(r.quantity)
@@ -523,12 +571,12 @@ class ReceiverContainer extends React.Component<Props, State> {
             if (!this.checkFeeValidation()) {
                 return;
             }
-            this.props.onSubmit(returnValue, {
+            this.props.onSubmit(returnValue, memo, {
                 payer: feePayer!,
                 quantity: new U64(fee)
             });
         } else {
-            this.props.onSubmit(returnValue);
+            this.props.onSubmit(returnValue, memo);
         }
     };
 }
