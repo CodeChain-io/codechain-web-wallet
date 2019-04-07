@@ -62,7 +62,9 @@ class ExchangeHistory extends React.Component<Props, any> {
                             </div>
                         )
                     ) : (
-                        <div className="exchange-history-loading">loading...</div>
+                        <div className="exchange-history-loading">
+                            loading...
+                        </div>
                     )}
                 </div>
             </div>
