@@ -32,7 +32,7 @@ export default class Exchange extends React.Component<Props> {
                     <ExchangeRate />
                 </div>
                 <div className="exchange-history-container">
-                    <ExchangeHistory />
+                    <ExchangeHistory address={address} />
                 </div>
             </div>
         );

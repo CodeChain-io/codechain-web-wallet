@@ -1,0 +1,42 @@
+@import "styles/variables.scss";
+
+.Exchange-history-item {
+  border-bottom: 1px solid $dark-grey;
+  display: flex;
+  padding: 12px;
+  overflow: hidden;
+
+  .item-container {
+    width: 50%;
+
+    .title-label {
+      font-weight: bold;
+      color: $disabled-grey;
+    }
+
+    .tx-status {
+      &.success {
+        color: $varified-green;
+      }
+
+      &.pending {
+        color: $off-yellow;
+      }
+
+      &.reverted {
+        color: $error-red;
+      }
+    }
+
+    .tx-hash {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      a {
+        text-decoration: underline;
+      }
+    }
+  }
+}
