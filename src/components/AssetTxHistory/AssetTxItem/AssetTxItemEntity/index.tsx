@@ -89,6 +89,15 @@ class AssetTxItemEntity extends React.Component<Props, any> {
                         0x
                         {tx.hash}
                     </a>
+                    {tx.type === "transferAsset" &&
+                        tx.transferAsset.metadata &&
+                        tx.transferAsset.metadata !== "" && (
+                            <div className="memo-container">
+                                <span className="memo-text">
+                                    Memo: {tx.transferAsset.metadata}
+                                </span>
+                            </div>
+                        )}
                 </div>
                 <div className="balance-container number">
                     {this.renderQuantity(history)}

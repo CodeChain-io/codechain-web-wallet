@@ -52,6 +52,13 @@
       }
     }
   }
+  .memo-container {
+    margin-top: 8px;
+    .memo-text {
+      color: $dark-grey;
+      font-size: 0.9rem;
+    }
+  }
   .balance-container {
     color: $dark-grey;
     font-size: 1.3rem;
