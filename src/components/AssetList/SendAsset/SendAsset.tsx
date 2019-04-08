@@ -346,7 +346,7 @@ class SendAsset extends React.Component<Props, State> {
             if (e.message === "DecryptionFailed") {
                 toast.error("Wrong password. Try again.", {
                     position: toast.POSITION.BOTTOM_CENTER,
-                    autoClose: 1000,
+                    autoClose: 5000,
                     closeButton: false,
                     hideProgressBar: true
                 });
@@ -400,7 +400,7 @@ class SendAsset extends React.Component<Props, State> {
             } catch (e) {
                 toast.error("Server is not responding.", {
                     position: toast.POSITION.BOTTOM_CENTER,
-                    autoClose: 3000,
+                    autoClose: 5000,
                     closeButton: false,
                     hideProgressBar: true
                 });

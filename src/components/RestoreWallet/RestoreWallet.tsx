@@ -148,7 +148,7 @@ class RestoreWallet extends React.Component<Props, State> {
         if (!splitPassphrases || splitPassphrases.length !== 12) {
             toast.error("Wrong password. Try again.", {
                 position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 3000,
+                autoClose: 5000,
                 closeButton: false,
                 hideProgressBar: true
             });
@@ -161,7 +161,7 @@ class RestoreWallet extends React.Component<Props, State> {
         } catch (e) {
             toast.error("Wrong password. Try again.", {
                 position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 3000,
+                autoClose: 5000,
                 closeButton: false,
                 hideProgressBar: true
             });

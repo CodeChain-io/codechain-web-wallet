@@ -28,6 +28,7 @@ export default class BTCCalculator extends React.Component<Props, State> {
                         labelText={"BTC"}
                         placeholder={"1 BTC"}
                         disable={!btcToCCCRate}
+                        type="number"
                     />
                     <FontAwesomeIcon
                         className="exchange-icon"
@@ -43,6 +44,7 @@ export default class BTCCalculator extends React.Component<Props, State> {
                                 ? btcToCCCRate.toLocaleString()
                                 : "Loading"
                         } CCC`}
+                        type="number"
                         disable={!btcToCCCRate}
                     />
                 </div>

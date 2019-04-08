@@ -196,7 +196,7 @@ class SendCCC extends React.Component<Props, State> {
         } catch (e) {
             toast.error("Server is not responding.", {
                 position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 3000,
+                autoClose: 5000,
                 closeButton: false,
                 hideProgressBar: true
             });

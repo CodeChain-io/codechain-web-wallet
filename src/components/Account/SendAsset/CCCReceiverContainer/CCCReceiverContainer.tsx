@@ -159,6 +159,7 @@ export default class CCCReceiverContainer extends React.Component<
             });
             return false;
         }
+        console.log(cccString);
         const amountCCC = new BigNumber(cccString);
         if (amountCCC.isNaN()) {
             this.setState({

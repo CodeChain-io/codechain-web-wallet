@@ -1,4 +1,5 @@
 import * as React from "react";
+import NumberFormat from "react-number-format";
 import { Label } from "reactstrap";
 import * as IconCheck from "./img/icons-check.svg";
 import * as IconError from "./img/icons-error.svg";
@@ -45,18 +46,40 @@ export default class ValidationInput extends React.Component<Props, any> {
                         {labelText}
                     </Label>
                 )}
-                <input
-                    autoComplete="off"
-                    type={`${type || "text"}`}
-                    className={`form-control ${reverse &&
-                        "reverse"} ${showValidation && "validation-form"}`}
-                    id={`id-${guid}`}
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    disabled={disable}
-                />
+                {type === "number" ? (
+                    <NumberFormat
+                        value={value}
+                        autoComplete="off"
+                        className={`form-control ${reverse &&
+                            "reverse"} ${showValidation && "validation-form"}`}
+                        id={`id-${guid}`}
+                        placeholder={placeholder}
+                        // onChange={onChange}
+                        onBlur={onBlur}
+                        disabled={disable}
+                        thousandSeparator={true}
+                        // tslint:disable-next-line:jsx-no-lambda
+                        onValueChange={values => {
+                            const { value: v } = values;
+                            if (onChange) {
+                                onChange({ target: { value: v } } as any);
+                            }
+                        }}
+                    />
+                ) : (
+                    <input
+                        autoComplete="off"
+                        type={`${type || "text"}`}
+                        className={`form-control ${reverse &&
+                            "reverse"} ${showValidation && "validation-form"}`}
+                        id={`id-${guid}`}
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        disabled={disable}
+                    />
+                )}
                 {isValid && (
                     <img
                         className="valid-icon animated fadeIn"

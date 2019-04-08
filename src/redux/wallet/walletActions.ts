@@ -175,7 +175,7 @@ const createWalletPlatformAddress = () => {
         if (platformAddresses && platformAddresses.length >= 10) {
             toast.error("You can make up to 10 addresses.", {
                 position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 1000,
+                autoClose: 5000,
                 closeButton: false,
                 hideProgressBar: true
             });
@@ -206,7 +206,7 @@ const createWalletAssetAddress = () => {
         if (assetAddresses && assetAddresses.length >= 10) {
             toast.error("You can make up to 10 addresses.", {
                 position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 1000,
+                autoClose: 5000,
                 closeButton: false,
                 hideProgressBar: true
             });

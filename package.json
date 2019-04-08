@@ -28,6 +28,7 @@
     "react-chrome-redux": "^2.0.0-alpha.4",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.5.2",
+    "react-number-format": "^4.0.7",
     "react-redux": "^5.0.7",
     "react-redux-loading-bar": "^4.1.0",
     "react-responsive": "^6.0.1",

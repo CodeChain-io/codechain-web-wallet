@@ -68,7 +68,7 @@ export default class ReceiverItem extends React.Component<Props, any> {
                         onChange={this.handleChangeQuantitiesInput}
                         labelText="QUANTITY"
                         placeholder="quantity"
-                        type="text"
+                        type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isQuantityValid}

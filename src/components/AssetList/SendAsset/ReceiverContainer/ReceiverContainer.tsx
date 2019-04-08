@@ -187,6 +187,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                     onChange={this.handleChangeFee}
                                     showValidation={true}
                                     labelText="FEE"
+                                    type="number"
                                     placeholder={
                                         !feePayer
                                             ? "select payer"

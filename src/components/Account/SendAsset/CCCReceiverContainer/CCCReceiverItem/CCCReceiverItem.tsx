@@ -53,7 +53,7 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                         onChange={this.handleChangedAmountInput}
                         labelText="AMOUNT"
                         placeholder="amount"
-                        type="text"
+                        type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isAmountValid}
@@ -74,7 +74,7 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                         onChange={this.handleChangeFeeInput}
                         labelText="FEE"
                         placeholder={`100 (CCC)`}
-                        type="text"
+                        type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isFeeValid}
