@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 import * as React from "react";
-import ValidationInput from "../../../ValidationInput/ValidationInput";
+import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./index.css";
 interface Props {
     btcToCCCRate?: number;

@@ -11,7 +11,6 @@ import walletActions from "../../redux/wallet/walletActions";
 import AddressContainer from "../AddressContainer/AddressContainer";
 import PayTxHistory from "../PayTxHistory/PayTxHistory";
 import "./Account.css";
-import Exchange from "./Exchange";
 import SendCCC from "./SendAsset/SendCCC";
 
 interface OwnProps {
@@ -30,7 +29,6 @@ interface DispatchProps {
 
 interface State {
     sendingCCC: boolean;
-    exchanging: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -40,8 +38,7 @@ class Account extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            sendingCCC: false,
-            exchanging: false
+            sendingCCC: false
         };
     }
     public componentWillReceiveProps(props: Props) {
@@ -76,7 +73,7 @@ class Account extends React.Component<Props, State> {
             },
             addressName
         } = this.props;
-        const { sendingCCC, exchanging } = this.state;
+        const { sendingCCC } = this.state;
         if (!availableQuark) {
             return null;
         }
@@ -106,13 +103,6 @@ class Account extends React.Component<Props, State> {
                                     >
                                         SEND
                                     </button>
-                                    <button
-                                        className="btn btn-primary square send-btn mb-3"
-                                        onClick={this.openExchanging}
-                                        disabled={exchanging}
-                                    >
-                                        BUY
-                                    </button>
                                 </div>
                             </div>
                             <div className="element-container">
@@ -131,33 +121,13 @@ class Account extends React.Component<Props, State> {
                             </div>
                         </div>
                     )}
-                    {exchanging && (
-                        <div className="right-container">
-                            <div className="right-panel">
-                                <Exchange
-                                    onClose={this.handleCloseExchanging}
-                                    address={address}
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         );
     }
 
     private openSendingCCC = () => {
-        this.setState({ sendingCCC: true, exchanging: false });
-    };
-
-    private openExchanging = () => {
-        this.setState({ exchanging: true, sendingCCC: false });
-    };
-
-    private handleCloseExchanging = () => {
-        this.setState({
-            exchanging: false
-        });
+        this.setState({ sendingCCC: true });
     };
 
     private handleCloseSendingCCC = () => {

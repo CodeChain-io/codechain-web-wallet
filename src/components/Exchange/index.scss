@@ -6,8 +6,18 @@
 
   @media screen and (max-width: 872px) {
     & {
-      padding: 30px;
+      padding: 0px;
     }
+  }
+
+  .exchange-container {
+    width: 100%;
+    max-width: 450px;
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    border-radius: 5px;
+    min-height: 645px;
   }
 
   .title {
@@ -41,13 +51,25 @@
     margin-top: 55px;
   }
 
-  .cancel-icon-container {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 20px;
+  .select-address-container {
+    margin-top: 30px;
+    .select-address-label {
+      color: $dark-grey;
+    }
+    select {
+      margin-top: 8px;
+    }
+  }
+  .loading-text,
+  .no-address-label {
+    line-height: 60px;
+    font-weight: bold;
+    color: $dark-grey;
+  }
+
+  .back-icon-container {
     cursor: pointer;
-    .cancel-icon {
+    .back-icon {
       font-size: 2rem;
       color: $wallet-blue;
     }

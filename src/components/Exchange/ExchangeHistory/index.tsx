@@ -3,9 +3,9 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { NetworkId } from "../../../../model/address";
-import { ReducerConfigure } from "../../../../redux";
-import { fetchExchangeHistoryIfNeed } from "../../../../redux/exchange/exchangeActions";
+import { NetworkId } from "../../../model/address";
+import { ReducerConfigure } from "../../../redux";
+import { fetchExchangeHistoryIfNeed } from "../../../redux/exchange/exchangeActions";
 import ExchangeHistoryItem from "./ExchangeHistoryItem";
 import * as Empty from "./img/cautiondisabled.svg";
 import "./index.css";
@@ -39,6 +39,11 @@ type Props = OwnProps & StateProps & DispatchProps;
 class ExchangeHistory extends React.Component<Props, any> {
     public componentDidMount() {
         this.props.fetchExchangeHistoryIfNeed(this.props.address);
+    }
+    public componentWillUpdate(nextProps: Props) {
+        if (nextProps.address !== this.props.address) {
+            this.props.fetchExchangeHistoryIfNeed(nextProps.address);
+        }
     }
     public render() {
         const { exchangeHistory, networkId } = this.props;

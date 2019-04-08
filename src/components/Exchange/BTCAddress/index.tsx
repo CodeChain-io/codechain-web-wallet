@@ -5,9 +5,9 @@ import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { ReducerConfigure } from "../../../../redux";
-import { fetchBTCAddressIfNeed } from "../../../../redux/exchange/exchangeActions";
-import ValidationInput from "../../../ValidationInput/ValidationInput";
+import { ReducerConfigure } from "../../../redux";
+import { fetchBTCAddressIfNeed } from "../../../redux/exchange/exchangeActions";
+import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./index.css";
 
 interface OwnProps {
@@ -27,6 +27,11 @@ class BTCAddress extends React.Component<Props> {
     public componentDidMount() {
         const { address } = this.props;
         this.props.fetchBTCAddressIfNeed(address);
+    }
+    public componentWillUpdate(nextProps: Props) {
+        if (nextProps.address !== this.props.address) {
+            this.props.fetchBTCAddressIfNeed(nextProps.address);
+        }
     }
     public render() {
         const { btcAddress } = this.props;

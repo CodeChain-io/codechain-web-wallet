@@ -3,8 +3,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { ReducerConfigure } from "../../../../redux";
-import { fetchBTCToCCCRateIfNeed } from "../../../../redux/exchange/exchangeActions";
+import { ReducerConfigure } from "../../../redux";
+import { fetchBTCToCCCRateIfNeed } from "../../../redux/exchange/exchangeActions";
 import BTCCalculator from "../BTCCalculator";
 import "./index.css";
 

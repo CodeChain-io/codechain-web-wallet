@@ -29,8 +29,10 @@ import AddressList from "../AddressList/AddressList";
 import AssetDetail from "../AssetDetail/AssetDetail";
 import AssetList from "../AssetList/AssetList";
 import CreateWallet from "../CreateWallet/CreateWallet";
+import Exchange from "../Exchange";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
+import MintAsset from "../MintAsset";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import RestoreWallet from "../RestoreWallet/RestoreWallet";
@@ -95,6 +97,16 @@ class App extends React.Component<Props, any> {
                             exact={true}
                             path="/index.html"
                             component={AddressList}
+                        />
+                        <PrivateRoute
+                            exact={true}
+                            path="/mint"
+                            component={MintAsset}
+                        />
+                        <PrivateRoute
+                            exact={true}
+                            path="/buyCCC"
+                            component={Exchange}
                         />
                         <PrivateRoute
                             path="/:address/assets"

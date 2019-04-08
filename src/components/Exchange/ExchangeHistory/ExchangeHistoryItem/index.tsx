@@ -1,7 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import * as React from "react";
-import { NetworkId } from "../../../../../model/address";
-import { getExplorerHost } from "../../../../../utils/network";
+import { NetworkId } from "../../../../model/address";
+import { getExplorerHost } from "../../../../utils/network";
 import "./index.css";
 
 interface Props {

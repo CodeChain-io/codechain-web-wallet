@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -12,8 +13,8 @@ import AddressItem from "./AddressItem/AddressItem";
 import "./AddressList.css";
 
 interface StateProps {
-    platformAddresses: WalletAddress[];
-    assetAddresses: WalletAddress[];
+    platformAddresses?: WalletAddress[];
+    assetAddresses?: WalletAddress[];
     networkId: NetworkId;
     isLoadingAssetAddresses?: boolean | null;
     isLoadingPlatformAddresses?: boolean | null;
@@ -38,12 +39,7 @@ class AddressList extends React.Component<Props, any> {
         }
     }
     public render() {
-        const {
-            platformAddresses,
-            assetAddresses,
-            isLoadingAssetAddresses,
-            isLoadingPlatformAddresses
-        } = this.props;
+        const { platformAddresses, assetAddresses } = this.props;
         return (
             <div className="Address-list animated fadeIn">
                 <Container>
@@ -57,7 +53,7 @@ class AddressList extends React.Component<Props, any> {
                                 </Col>
                             ))}
                             <Col md={6} lg={4} xl={3}>
-                                {isLoadingAssetAddresses ? (
+                                {!assetAddresses ? (
                                     <div className="restoring">
                                         Restoring asset address ...
                                     </div>
@@ -73,9 +69,13 @@ class AddressList extends React.Component<Props, any> {
                                                 icon="plus-circle"
                                             />
                                         </div>
-                                        <div className="mint-asset-btn d-flex align-items-center justify-content-center">
-                                            Mint a new asset
-                                        </div>
+                                        {assetAddresses.length > 0 && (
+                                            <Link to="/mint">
+                                                <div className="mint-asset-btn d-flex align-items-center justify-content-center">
+                                                    Mint a new asset
+                                                </div>
+                                            </Link>
+                                        )}
                                     </div>
                                 )}
                             </Col>
@@ -95,7 +95,7 @@ class AddressList extends React.Component<Props, any> {
                                 )
                             )}
                             <Col md={6} lg={4} xl={3}>
-                                {isLoadingPlatformAddresses ? (
+                                {!platformAddresses ? (
                                     <div className="restoring">
                                         Restoring platform address ...
                                     </div>
@@ -111,9 +111,13 @@ class AddressList extends React.Component<Props, any> {
                                                 icon="plus-circle"
                                             />
                                         </div>
-                                        <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
-                                            Buy CCC
-                                        </div>
+                                        {platformAddresses.length > 0 && (
+                                            <Link to="/buyCCC">
+                                                <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
+                                                    Buy CCC
+                                                </div>
+                                            </Link>
+                                        )}
                                     </div>
                                 )}
                             </Col>
