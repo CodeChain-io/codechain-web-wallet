@@ -49,7 +49,7 @@ class AddressList extends React.Component<Props, any> {
                 <Container>
                     <div className="asset-address-container mb-5">
                         <div className="deco asset-title-deco" />
-                        <h5 className="mb-4">Asset Addresses</h5>
+                        <h5 className="mb-4">Asset Address</h5>
                         <Row className="address-item-container">
                             {_.map(assetAddresses, (address, index: number) => (
                                 <Col md={6} lg={4} xl={3} key={index}>
@@ -79,7 +79,7 @@ class AddressList extends React.Component<Props, any> {
                     <hr />
                     <div className="platform-address-container">
                         <div className="deco platform-title-deco" />
-                        <h5 className="mb-4">Platform Addresses</h5>
+                        <h5 className="mb-4">Platform Address</h5>
                         <Row className="address-item-container">
                             {_.map(
                                 platformAddresses,
