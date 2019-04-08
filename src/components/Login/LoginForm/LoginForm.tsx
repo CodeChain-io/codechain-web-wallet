@@ -21,8 +21,8 @@ export default class LoginForm extends React.Component<Props, any> {
                         onChange={this.handleOnChagne}
                         value={passphrase}
                         showValidation={true}
-                        labelText="PASSPHRASE"
-                        placeholder="passphrase"
+                        labelText="PASSWORD"
+                        placeholder="password"
                         type="password"
                         isValid={isValid}
                         error={

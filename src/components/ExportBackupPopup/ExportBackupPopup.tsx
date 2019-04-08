@@ -77,8 +77,8 @@ class ExportBackupPopup extends React.Component<Props, State> {
                                 onChange={this.handlePassphrase}
                                 value={passphrase}
                                 showValidation={true}
-                                labelText="PASSPHRASE"
-                                placeholder="passphrase"
+                                labelText="PASSWORD"
+                                placeholder="password"
                                 type="password"
                                 isValid={isValidPassphrase}
                                 error={passphraseError}

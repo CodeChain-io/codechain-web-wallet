@@ -90,11 +90,11 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="passphrase-input-container">
                         <ValidationInput
-                            labelText="PASSPHRASE"
+                            labelText="NEW PASSWORD"
                             onChange={this.handlePassphraseInput}
                             value={passphrase}
                             showValidation={true}
-                            placeholder="passphrase"
+                            placeholder="password"
                             type="password"
                             isValid={isPassphraseValid}
                             error={passphraseError}
@@ -103,11 +103,11 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="passphrase-confirm-container">
                         <ValidationInput
-                            labelText="PASSPHRASE CONFIRM"
+                            labelText="PASSWORD CONFIRM"
                             onChange={this.handlePassphraseConfirmInput}
                             value={passphraseConfirm}
                             showValidation={true}
-                            placeholder="passphrase confirm"
+                            placeholder="password confirm"
                             type="password"
                             isValid={isPassphraseConfirmValid}
                             error={passphraseConfirmError}
@@ -146,7 +146,7 @@ class RestoreWallet extends React.Component<Props, State> {
         const splitPassphrases = secretPhrase.match(/\S+/g);
 
         if (!splitPassphrases || splitPassphrases.length !== 12) {
-            toast.error("Invalid passphrases", {
+            toast.error("Invalid password", {
                 position: toast.POSITION.BOTTOM_CENTER,
                 autoClose: 3000,
                 closeButton: false,
@@ -159,7 +159,7 @@ class RestoreWallet extends React.Component<Props, State> {
             await login(passphrase!);
             history.push(`/`);
         } catch (e) {
-            toast.error("Invalid passphrases", {
+            toast.error("Invalid password", {
                 position: toast.POSITION.BOTTOM_CENTER,
                 autoClose: 3000,
                 closeButton: false,

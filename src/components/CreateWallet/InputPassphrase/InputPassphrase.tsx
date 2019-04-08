@@ -55,11 +55,11 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="PASSPHRASE"
+                        labelText="PASSWORD"
                         onChange={this.handlePassphraseInput}
                         value={passphrase}
                         showValidation={true}
-                        placeholder="passphrase"
+                        placeholder="password"
                         type="password"
                         isValid={isPassphraseValid}
                         error={passphraseError}
@@ -68,11 +68,11 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="PASSPHRASE CONFIRM"
+                        labelText="PASSWORD CONFIRM"
                         onChange={this.handlePassphraseConfirmInput}
                         value={passphraseConfirm}
                         showValidation={true}
-                        placeholder="passphrase confirm"
+                        placeholder="password confirm"
                         type="password"
                         isValid={isPassphraseConfirmValid}
                         error={passphraseConfirmError}
