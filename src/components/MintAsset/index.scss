@@ -6,8 +6,17 @@
 
   @media screen and (max-width: 872px) {
     & {
-      padding: 30px;
+      padding: 0px;
     }
+  }
+
+  .mint-container {
+    width: 100%;
+    max-width: 450px;
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    border-radius: 5px;
   }
 
   .title {
@@ -24,6 +33,26 @@
 
   .icon-url-input-container {
     flex: 1;
+  }
+
+  .select-address-container {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    .select-address-label {
+      color: $standard-grey;
+      font-weight: bold;
+    }
+    select {
+      border: 1px solid $wallet-blue;
+      margin-top: 8px;
+    }
+  }
+
+  .loading-text,
+  .no-address-label {
+    line-height: 60px;
+    font-weight: bold;
+    color: $dark-grey;
   }
 
   .preview-container {
@@ -57,17 +86,6 @@
     color: $standard-grey;
   }
 
-  .cancel-icon-container {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 20px;
-    cursor: pointer;
-    .cancel-icon {
-      font-size: 2rem;
-      color: $wallet-blue;
-    }
-  }
   .complete-container {
     height: 400px;
     font-size: 1.7rem;
@@ -81,5 +99,13 @@
     top: 0;
     left: 0;
     background: rgba(44, 44, 44, 0.3);
+  }
+
+  .back-icon-container {
+    cursor: pointer;
+    .back-icon {
+      font-size: 2rem;
+      color: $wallet-blue;
+    }
   }
 }

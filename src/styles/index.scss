@@ -64,6 +64,9 @@ body {
   }
 }
 
+select.form-control {
+  border: 1px solid $wallet-blue;
+}
 input.form-control[type="text"],
 input.form-control[type="password"],
 input.form-control[type="number"] {

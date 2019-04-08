@@ -15,8 +15,7 @@ import AddressContainer from "../AddressContainer/AddressContainer";
 import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 import "./AssetList.css";
-import MintAsset from "./MintAsset";
-import MintAssetButton from "./MintAssetButton";
+import * as Empty from "./img/cautiondisabled.svg";
 import SendAsset from "./SendAsset/SendAsset";
 
 interface OwnProps {
@@ -45,7 +44,6 @@ interface DispatchProps {
 
 interface State {
     selectedAssetType?: string | null;
-    mintingAsset: boolean;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -55,8 +53,7 @@ class AssetList extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
-            selectedAssetType: undefined,
-            mintingAsset: false
+            selectedAssetType: undefined
         };
     }
     public componentWillReceiveProps(props: Props) {
@@ -97,7 +94,7 @@ class AssetList extends React.Component<Props, State> {
             networkId,
             addressName
         } = this.props;
-        const { selectedAssetType, mintingAsset } = this.state;
+        const { selectedAssetType } = this.state;
         if (!addressUTXOList || !pendingTxList || !availableAssets) {
             return null;
         }
@@ -114,28 +111,46 @@ class AssetList extends React.Component<Props, State> {
                             <div className="element-container mb-3">
                                 <h4 className="mb-3">Asset list</h4>
                                 <div className="asset-item-container">
-                                    {_.map(availableAssets, availableAsset => (
-                                        <AssetItem
-                                            key={availableAsset.assetType}
-                                            assetType={availableAsset.assetType}
-                                            quantities={
-                                                availableAsset.quantities
-                                            }
-                                            networkId={networkId}
-                                            address={address}
-                                            onSelect={this.handleSelectAsset}
-                                            isSelected={
-                                                selectedAssetType !==
-                                                    undefined &&
-                                                selectedAssetType ===
-                                                    availableAsset.assetType
-                                            }
-                                        />
-                                    ))}
-                                    <MintAssetButton
-                                        isSelected={mintingAsset}
-                                        onSelect={this.handleMintAssetClicked}
-                                    />
+                                    {availableAssets.length > 0 ? (
+                                        _.map(
+                                            availableAssets,
+                                            availableAsset => (
+                                                <AssetItem
+                                                    key={
+                                                        availableAsset.assetType
+                                                    }
+                                                    assetType={
+                                                        availableAsset.assetType
+                                                    }
+                                                    quantities={
+                                                        availableAsset.quantities
+                                                    }
+                                                    networkId={networkId}
+                                                    address={address}
+                                                    onSelect={
+                                                        this.handleSelectAsset
+                                                    }
+                                                    isSelected={
+                                                        selectedAssetType !==
+                                                            undefined &&
+                                                        selectedAssetType ===
+                                                            availableAsset.assetType
+                                                    }
+                                                />
+                                            )
+                                        )
+                                    ) : (
+                                        <div className="d-flex align-items-center justify-content-center">
+                                            <div>
+                                                <div className="text-center mt-3">
+                                                    <img src={Empty} />
+                                                </div>
+                                                <div className="mt-3 empty">
+                                                    There is no asset
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="element-container mb-3">
@@ -155,16 +170,6 @@ class AssetList extends React.Component<Props, State> {
                             </div>
                         </div>
                     )}
-                    {mintingAsset && (
-                        <div className="right-container">
-                            <div className="right-panel">
-                                <MintAsset
-                                    onClose={this.handleMintAssetClose}
-                                    address={address}
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         );
@@ -172,31 +177,19 @@ class AssetList extends React.Component<Props, State> {
     private handleSendAssetClose = () => {
         this.setState({ selectedAssetType: undefined });
     };
-    private handleMintAssetClose = () => {
-        this.setState({ mintingAsset: false });
-    };
-    private handleMintAssetClicked = () => {
-        this.setState({
-            mintingAsset: !this.state.mintingAsset,
-            selectedAssetType: undefined
-        });
-    };
     private handleSelectAsset = (assetType: string) => {
         const selectedAssetType = this.state.selectedAssetType;
         if (!selectedAssetType) {
             this.setState({
-                selectedAssetType: assetType,
-                mintingAsset: false
+                selectedAssetType: assetType
             });
         } else if (selectedAssetType === assetType) {
             this.setState({
-                selectedAssetType: undefined,
-                mintingAsset: false
+                selectedAssetType: undefined
             });
         } else {
             this.setState({
-                selectedAssetType: undefined,
-                mintingAsset: false
+                selectedAssetType: undefined
             });
             setTimeout(() => {
                 this.setState({ selectedAssetType: assetType });
