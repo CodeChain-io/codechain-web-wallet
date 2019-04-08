@@ -50,7 +50,7 @@ class ExchangeHistory extends React.Component<Props, any> {
         return (
             <div className="Exchange-history">
                 <h5 className="exchange-address-title">
-                    Exchange status{" "}
+                    Purchase status{" "}
                     <span onClick={this.refresh} className="refresh-btn">
                         <FontAwesomeIcon icon="redo-alt" className="ml-1" />
                     </span>
@@ -72,7 +72,7 @@ class ExchangeHistory extends React.Component<Props, any> {
                                         <img src={Empty} />
                                     </div>
                                     <div className="mt-3 empty">
-                                        There is no exchange
+                                        There is no purchase
                                     </div>
                                 </div>
                             </div>
