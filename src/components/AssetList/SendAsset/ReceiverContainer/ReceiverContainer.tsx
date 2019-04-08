@@ -94,6 +94,20 @@ class ReceiverContainer extends React.Component<Props, State> {
     }
     public componentDidMount() {
         this.props.fetchWalletFromStorageIfNeed();
+        if (this.props.platformAddresses) {
+            if (this.props.platformAddresses.length > 0) {
+                this.selectFeePayer(this.props.platformAddresses[0].address);
+            }
+        }
+    }
+    public componentWillUpdate(nextProps: Props) {
+        if (!this.props.platformAddresses && nextProps.platformAddresses) {
+            if (nextProps.platformAddresses) {
+                if (nextProps.platformAddresses.length > 0) {
+                    this.selectFeePayer(nextProps.platformAddresses[0].address);
+                }
+            }
+        }
     }
     public render() {
         const {
@@ -213,7 +227,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                         className="form-control"
                                         disabled={true}
                                     >
-                                        <option>Empty address</option>
+                                        <option>no address</option>
                                     </select>
                                 ) : (
                                     <div>
@@ -269,13 +283,17 @@ class ReceiverContainer extends React.Component<Props, State> {
     private handleChangeFeePayer = (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
+        this.selectFeePayer(event.target.value);
+    };
+
+    private selectFeePayer = (address: string) => {
         this.setState({
-            feePayer: event.target.value,
+            feePayer: address,
             fee: `${MinimumFee}`,
             feeError: undefined,
             isFeeValid: undefined
         });
-        this.props.fetchAvailableQuark(event.target.value);
+        this.props.fetchAvailableQuark(address);
     };
 
     private handleChangeMemo = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -81,6 +81,11 @@ class MintAsset extends React.Component<Props, State> {
                 });
             }
         }
+        if (this.props.platformAddresses) {
+            if (this.props.platformAddresses.length > 0) {
+                this.selectFeePayer(this.props.platformAddresses[0].address);
+            }
+        }
     }
     public componentWillUpdate(nextProps: Props) {
         if (!this.props.assetAddresses && nextProps.assetAddresses) {
@@ -88,6 +93,13 @@ class MintAsset extends React.Component<Props, State> {
                 this.setState({
                     selectedAddress: nextProps.assetAddresses[0].address
                 });
+            }
+        }
+        if (!this.props.platformAddresses && nextProps.platformAddresses) {
+            if (nextProps.platformAddresses) {
+                if (nextProps.platformAddresses.length > 0) {
+                    this.selectFeePayer(nextProps.platformAddresses[0].address);
+                }
             }
         }
     }
@@ -277,8 +289,7 @@ class MintAsset extends React.Component<Props, State> {
                                                                 disabled={true}
                                                             >
                                                                 <option>
-                                                                    Empty
-                                                                    address
+                                                                    no address
                                                                 </option>
                                                             </select>
                                                         ) : (
@@ -511,13 +522,17 @@ class MintAsset extends React.Component<Props, State> {
     private handleChangeFeePayer = (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
+        this.selectFeePayer(event.target.value);
+    };
+
+    private selectFeePayer = (address: string) => {
         this.setState({
-            feePayer: event.target.value,
+            feePayer: address,
             fee: `${MinimumFee}`,
             feeError: undefined,
             isFeeValid: undefined
         });
-        this.props.fetchAvailableQuark(event.target.value);
+        this.props.fetchAvailableQuark(address);
     };
 
     private mintAsset = async () => {
