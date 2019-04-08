@@ -9,6 +9,7 @@ export interface ExchangeState {
                           hash: string;
                           quantity: string;
                           status: "success" | "pending" | "reverted";
+                          confirm: number;
                       };
                       sent: {
                           hash?: string;

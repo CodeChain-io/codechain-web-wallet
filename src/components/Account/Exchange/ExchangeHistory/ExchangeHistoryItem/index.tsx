@@ -1,5 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import * as React from "react";
+import { NetworkId } from "../../../../../model/address";
+import { getExplorerHost } from "../../../../../utils/network";
 import "./index.css";
 
 interface Props {
@@ -8,6 +10,7 @@ interface Props {
             hash: string;
             quantity: string;
             status: "success" | "pending" | "reverted";
+            confirm: number;
         };
         sent: {
             hash?: string;
@@ -15,11 +18,12 @@ interface Props {
             status: "success" | "pending";
         };
     };
+    networkId: NetworkId;
 }
 
 export default class ExchangeHistoryItem extends React.Component<Props, any> {
     public render() {
-        const { history } = this.props;
+        const { history, networkId } = this.props;
         return (
             <div className="Exchange-history-item">
                 <div className="item-container received-container">
@@ -30,16 +34,26 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
                         {new BigNumber(history.received.quantity).toFormat()}{" "}
                         BTC
                     </div>
-                    <div>{this.renderStatus(history.received.status)}</div>
-                    <div className="tx-hash">
-                        View:{" "}
+                    <div className="status-container">
                         <a
                             href={`https://testnet.blockexplorer.com/tx/${
                                 history.received.hash
                             }`}
                             target="_blank"
                         >
-                            {history.received.hash}
+                            <span
+                                className={`tx-status ${
+                                    history.received.status
+                                }`}
+                            >
+                                {history.received.status === "pending"
+                                    ? `${2 - history.received.confirm} confirm${
+                                          2 - history.received.confirm >= 2
+                                              ? "s"
+                                              : ""
+                                      } left`
+                                    : history.received.status}
+                            </span>
                         </a>
                     </div>
                 </div>
@@ -52,10 +66,22 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
                             {new BigNumber(history.sent.quantity).toFormat()}{" "}
                             CCC
                         </div>
-                        <div>{this.renderStatus(history.sent.status)}</div>
-                        {!history.sent.hash && (
-                            <div className="tx-hash">
-                                <span>...Waiting for deposit</span>
+                        {history.sent.hash && (
+                            <div className="status-container">
+                                <a
+                                    href={`${getExplorerHost(networkId)}/tx/${
+                                        history.sent.hash
+                                    }`}
+                                    target="_blank"
+                                >
+                                    <span
+                                        className={`tx-status ${
+                                            history.sent.status
+                                        }`}
+                                    >
+                                        {history.sent.status}
+                                    </span>
+                                </a>
                             </div>
                         )}
                     </div>
@@ -63,8 +89,4 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
             </div>
         );
     }
-
-    private renderStatus = (status: "success" | "pending" | "reverted") => {
-        return <span className={`tx-status ${status}`}>{status}</span>;
-    };
 }

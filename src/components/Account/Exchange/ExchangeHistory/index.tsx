@@ -3,6 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
+import { NetworkId } from "../../../../model/address";
 import { ReducerConfigure } from "../../../../redux";
 import { fetchExchangeHistoryIfNeed } from "../../../../redux/exchange/exchangeActions";
 import ExchangeHistoryItem from "./ExchangeHistoryItem";
@@ -14,11 +15,13 @@ interface OwnProps {
 }
 
 interface StateProps {
+    networkId: NetworkId;
     exchangeHistory?: {
         received: {
             hash: string;
             quantity: string;
             status: "success" | "pending" | "reverted";
+            confirm: number;
         };
         sent: {
             hash?: string;
@@ -38,7 +41,7 @@ class ExchangeHistory extends React.Component<Props, any> {
         this.props.fetchExchangeHistoryIfNeed(this.props.address);
     }
     public render() {
-        const { exchangeHistory } = this.props;
+        const { exchangeHistory, networkId } = this.props;
         return (
             <div className="Exchange-history">
                 <h5 className="exchange-address-title">
@@ -51,7 +54,11 @@ class ExchangeHistory extends React.Component<Props, any> {
                     {exchangeHistory ? (
                         exchangeHistory.length > 0 ? (
                             exchangeHistory.map((h, index) => (
-                                <ExchangeHistoryItem key={index} history={h} />
+                                <ExchangeHistoryItem
+                                    key={index}
+                                    history={h}
+                                    networkId={networkId}
+                                />
                             ))
                         ) : (
                             <div className="d-flex align-items-center justify-content-center">
@@ -85,7 +92,8 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     return {
         exchangeHistory:
             state.exchangeReducer.exchangeHistory[address] &&
-            state.exchangeReducer.exchangeHistory[address].data
+            state.exchangeReducer.exchangeHistory[address].data,
+        networkId: state.globalReducer.networkId
     };
 };
 
