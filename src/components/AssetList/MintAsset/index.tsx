@@ -407,7 +407,9 @@ class MintAsset extends React.Component<Props, State> {
     ) => {
         this.setState({
             feePayer: event.target.value,
-            fee: `${MinimumFee}`
+            fee: `${MinimumFee}`,
+            feeError: undefined,
+            isFeeValid: undefined
         });
         this.props.fetchAvailableQuark(event.target.value);
     };

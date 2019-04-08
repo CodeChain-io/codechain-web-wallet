@@ -112,6 +112,13 @@ export default class CCCReceiverContainer extends React.Component<
         const { receiver } = this.state;
         const { address: myAddress } = this.props;
         const address = receiver.address;
+        if (address === "") {
+            this.setState({
+                isAddressValid: false,
+                addressError: "recipient address is required"
+            });
+            return false;
+        }
         if (address === myAddress) {
             this.setState({
                 isAddressValid: false,
@@ -141,7 +148,15 @@ export default class CCCReceiverContainer extends React.Component<
     private handleAmountValidationCheck = () => {
         const { receiver, fee } = this.state;
         const { totalAmount } = this.props;
-        const amountCCC = new BigNumber(receiver.quantity);
+        const cccString = receiver.quantity;
+        if (cccString === "") {
+            this.setState({
+                isAmountValid: false,
+                amountError: "amount is required"
+            });
+            return false;
+        }
+        const amountCCC = new BigNumber(cccString);
         if (amountCCC.isNaN()) {
             this.setState({
                 isAmountValid: false,
@@ -174,7 +189,15 @@ export default class CCCReceiverContainer extends React.Component<
     private handleFeeValidationCheck = () => {
         const { receiver, fee } = this.state;
         const { totalAmount } = this.props;
-        const amountFee = new BigNumber(fee);
+        const feeString = fee;
+        if (feeString === "") {
+            this.setState({
+                isFeeValid: false,
+                feeError: "fee is required"
+            });
+            return false;
+        }
+        const amountFee = new BigNumber(feeString);
         if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,

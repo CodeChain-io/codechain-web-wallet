@@ -190,7 +190,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                             ? "select payer"
                                             : !availableQuarkList[feePayer]
                                                 ? "loading..."
-                                                : "0.0000001 (CCC)"
+                                                : "100 (CCC)"
                                     }
                                     disable={
                                         feePayer == null ||
@@ -268,7 +268,9 @@ class ReceiverContainer extends React.Component<Props, State> {
     ) => {
         this.setState({
             feePayer: event.target.value,
-            fee: `${MinimumFee}`
+            fee: `${MinimumFee}`,
+            feeError: undefined,
+            isFeeValid: undefined
         });
         this.props.fetchAvailableQuark(event.target.value);
     };
@@ -309,6 +311,13 @@ class ReceiverContainer extends React.Component<Props, State> {
         const availableQuark = availableQuarkList[feePayer];
         if (!availableQuark) {
             throw Error("invalid balacne");
+        }
+        if (fee === "") {
+            this.setState({
+                isFeeValid: false,
+                feeError: "fee is required"
+            });
+            return false;
         }
         const amountFee = new BigNumber(fee);
         if (amountFee.isNaN()) {
@@ -388,36 +397,47 @@ class ReceiverContainer extends React.Component<Props, State> {
         const { receivers } = this.state;
         const { address: myAddress } = this.props;
         const address = receivers[index].address;
-        if (address) {
-            if (address === myAddress) {
-                this.setState({
-                    addressValidations: {
-                        ...this.state.addressValidations,
-                        [index]: {
-                            ...this.state.addressValidations[index],
-                            isAddressValid: false,
-                            addressError: "can't send asset to sender's address"
-                        }
+        if (address === "") {
+            this.setState({
+                addressValidations: {
+                    ...this.state.addressValidations,
+                    [index]: {
+                        ...this.state.addressValidations[index],
+                        isAddressValid: false,
+                        addressError: "recipient address is required"
                     }
-                });
-                return false;
-            }
-            try {
-                AssetTransferAddress.fromString(address);
-                this.setState({
-                    addressValidations: {
-                        ...this.state.addressValidations,
-                        [index]: {
-                            ...this.state.addressValidations[index],
-                            isAddressValid: true,
-                            addressError: undefined
-                        }
+                }
+            });
+            return false;
+        }
+        if (address === myAddress) {
+            this.setState({
+                addressValidations: {
+                    ...this.state.addressValidations,
+                    [index]: {
+                        ...this.state.addressValidations[index],
+                        isAddressValid: false,
+                        addressError: "can't send asset to sender's address"
                     }
-                });
-                return true;
-            } catch (e) {
-                // nothing
-            }
+                }
+            });
+            return false;
+        }
+        try {
+            AssetTransferAddress.fromString(address);
+            this.setState({
+                addressValidations: {
+                    ...this.state.addressValidations,
+                    [index]: {
+                        ...this.state.addressValidations[index],
+                        isAddressValid: true,
+                        addressError: undefined
+                    }
+                }
+            });
+            return true;
+        } catch (e) {
+            // nothing
         }
         this.setState({
             addressValidations: {
@@ -435,7 +455,21 @@ class ReceiverContainer extends React.Component<Props, State> {
     private handleQuantityValidationCheck = (index: number) => {
         const { receivers } = this.state;
         const { totalQuantity } = this.props;
-        const quantity = new BigNumber(this.state.receivers[index].quantity);
+        const quantityString = this.state.receivers[index].quantity;
+        if (quantityString === "") {
+            this.setState({
+                quantityValidations: {
+                    ...this.state.quantityValidations,
+                    [index]: {
+                        ...this.state.quantityValidations[index],
+                        isQuantityValid: false,
+                        quantityError: "quantity is required"
+                    }
+                }
+            });
+            return false;
+        }
+        const quantity = new BigNumber(quantityString);
         if (quantity.isNaN()) {
             this.setState({
                 quantityValidations: {
