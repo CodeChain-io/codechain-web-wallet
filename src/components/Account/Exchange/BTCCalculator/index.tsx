@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import BigNumber from "bignumber.js";
 import * as React from "react";
 import ValidationInput from "../../../ValidationInput/ValidationInput";
 import "./index.css";
@@ -51,13 +52,13 @@ export default class BTCCalculator extends React.Component<Props, State> {
     private handleBTCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { btcToCCCRate } = this.props;
         const btc = event.target.value;
-        const ccc = btcToCCCRate! * Number(btc);
-        this.setState({ btc, ccc: ccc.toString() });
+        const ccc = new BigNumber(btc).multipliedBy(btcToCCCRate!);
+        this.setState({ btc, ccc: ccc.isNaN() ? "" : ccc.toFixed(0) });
     };
     private handleCCCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { btcToCCCRate } = this.props;
         const ccc = event.target.value;
-        const btc = Number(ccc) / btcToCCCRate!;
-        this.setState({ btc: btc.toString(), ccc });
+        const btc = new BigNumber(ccc).div(btcToCCCRate!);
+        this.setState({ btc: btc.isNaN() ? "" : btc.toFixed(8), ccc });
     };
 }

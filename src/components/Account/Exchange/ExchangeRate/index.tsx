@@ -55,7 +55,7 @@ class ExchangeRate extends React.Component<Props, State> {
                             className="simulator-label"
                             onClick={this.toggleCalculator}
                         >
-                            CCC simulators
+                            CCC simulator
                         </span>
                     </div>
                 </div>
