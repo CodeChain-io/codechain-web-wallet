@@ -36,7 +36,7 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
                     </div>
                     <div className="status-container">
                         <a
-                            href={`https://testnet.blockexplorer.com/tx/${
+                            href={`https://blockexplorer.com/tx/${
                                 history.received.hash
                             }`}
                             target="_blank"
