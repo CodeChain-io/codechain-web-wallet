@@ -58,19 +58,24 @@ class AddressList extends React.Component<Props, any> {
                             ))}
                             <Col md={6} lg={4} xl={3}>
                                 {isLoadingAssetAddresses ? (
-                                    <div className="add-address-btn asset loading d-flex align-items-center justify-content-center">
-                                        Restoring...
+                                    <div className="restoring">
+                                        Restoring asset address ...
                                     </div>
                                 ) : (
-                                    <div
-                                        onClick={this.createAssetAddress}
-                                        className="add-address-btn asset d-flex align-items-center justify-content-center"
-                                    >
-                                        ADD ADDRESS
-                                        <FontAwesomeIcon
-                                            className="ml-2"
-                                            icon="plus-circle"
-                                        />
+                                    <div>
+                                        <div
+                                            onClick={this.createAssetAddress}
+                                            className="add-address-btn d-flex align-items-center justify-content-center"
+                                        >
+                                            ADD ADDRESS
+                                            <FontAwesomeIcon
+                                                className="ml-2"
+                                                icon="plus-circle"
+                                            />
+                                        </div>
+                                        <div className="mint-asset-btn d-flex align-items-center justify-content-center">
+                                            Mint a new asset
+                                        </div>
                                     </div>
                                 )}
                             </Col>
@@ -91,19 +96,24 @@ class AddressList extends React.Component<Props, any> {
                             )}
                             <Col md={6} lg={4} xl={3}>
                                 {isLoadingPlatformAddresses ? (
-                                    <div className="add-address-btn platform loading d-flex align-items-center justify-content-center">
-                                        Restoring...
+                                    <div className="restoring">
+                                        Restoring platform address ...
                                     </div>
                                 ) : (
-                                    <div
-                                        onClick={this.createPlatformAddress}
-                                        className="add-address-btn platform d-flex align-items-center justify-content-center"
-                                    >
-                                        ADD ADDRESS
-                                        <FontAwesomeIcon
-                                            className="ml-2"
-                                            icon="plus-circle"
-                                        />
+                                    <div>
+                                        <div
+                                            onClick={this.createPlatformAddress}
+                                            className="add-address-btn d-flex align-items-center justify-content-center"
+                                        >
+                                            ADD ADDRESS
+                                            <FontAwesomeIcon
+                                                className="ml-2"
+                                                icon="plus-circle"
+                                            />
+                                        </div>
+                                        <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
+                                            Buy CCC
+                                        </div>
                                     </div>
                                 )}
                             </Col>

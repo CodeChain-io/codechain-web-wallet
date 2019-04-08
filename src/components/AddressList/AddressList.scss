@@ -13,19 +13,29 @@
   .platform-address-container {
     margin-top: 28px;
   }
-  .add-address-btn {
+  .add-address-btn,
+  .mint-asset-btn,
+  .buy-CCC-btn {
     border-radius: 5px;
-    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.1);
     background-color: #93a7ea3f;
     color: $wallet-blue;
     font-weight: bold;
     width: 100%;
     margin-bottom: 18px;
-    height: 168px;
+    height: 108px;
     cursor: pointer;
-    &.loading {
-      cursor: default;
-    }
+  }
+  .add-address-btn {
+    height: 108px;
+  }
+  .mint-asset-btn,
+  .buy-CCC-btn {
+    height: 40px;
+  }
+  .restoring {
+    font-weight: bold;
+    color: $dark-grey;
   }
   .deco {
     width: 64px;
