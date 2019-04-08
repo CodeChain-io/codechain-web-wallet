@@ -70,7 +70,7 @@ class CreateWallet extends React.Component<Props, State> {
                     )}
                     {currentPage === PageState.showSecretPhrase && (
                         <ShowBackupPhrase
-                            onSubmit={this.handleSumitShowPhrase}
+                            onSubmit={this.handleSubmitShowPhrase}
                             mnemonic={mnemonic!}
                         />
                     )}
@@ -109,7 +109,7 @@ class CreateWallet extends React.Component<Props, State> {
         });
     };
 
-    private handleSumitShowPhrase = () => {
+    private handleSubmitShowPhrase = () => {
         this.setState({ currentPage: PageState.confirmSecretPhrase });
     };
 
