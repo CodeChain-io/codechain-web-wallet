@@ -12,10 +12,13 @@ interface State {
     isPassphraseConfirmValid?: boolean;
     passphraseConfirmError?: string;
     isSubmitted: boolean;
+    username: string;
+    isUsernameValid?: boolean;
+    usernameError?: string;
 }
 
 interface Props {
-    onSubmit: (passphrase: string) => void;
+    onSubmit: (username: string, passphrase: string) => void;
 }
 
 class InputPassphrase extends React.Component<Props, State> {
@@ -28,7 +31,10 @@ class InputPassphrase extends React.Component<Props, State> {
             passphraseError: undefined,
             isPassphraseConfirmValid: undefined,
             passphraseConfirmError: undefined,
-            isSubmitted: false
+            isSubmitted: false,
+            username: "",
+            isUsernameValid: undefined,
+            usernameError: undefined
         };
     }
     public render() {
@@ -39,7 +45,10 @@ class InputPassphrase extends React.Component<Props, State> {
             isPassphraseValid,
             passphraseConfirmError,
             passphraseError,
-            isSubmitted
+            isSubmitted,
+            username,
+            isUsernameValid,
+            usernameError
         } = this.state;
         return (
             <Form
@@ -52,6 +61,19 @@ class InputPassphrase extends React.Component<Props, State> {
                         <br />
                         New Wallet
                     </h4>
+                </div>
+                <div>
+                    <ValidationInput
+                        labelText="USERNAME"
+                        onChange={this.handleUsernameInput}
+                        value={username}
+                        showValidation={true}
+                        placeholder="username"
+                        type="text"
+                        isValid={isUsernameValid}
+                        error={usernameError}
+                        onBlur={this.checkUsernameValid}
+                    />
                 </div>
                 <div>
                     <ValidationInput
@@ -99,12 +121,13 @@ class InputPassphrase extends React.Component<Props, State> {
 
     private handleSubmit = () => {
         const { onSubmit } = this.props;
-        const { passphrase } = this.state;
-
+        const { passphrase, username } = this.state;
+        if (!this.checkUsernameValid()) {
+            return;
+        }
         if (!this.checkPassphraseValid()) {
             return;
         }
-
         if (!this.checkPassphraseConfirm()) {
             return;
         }
@@ -112,7 +135,7 @@ class InputPassphrase extends React.Component<Props, State> {
         this.setState({ isSubmitted: true });
 
         setTimeout(() => {
-            onSubmit(passphrase);
+            onSubmit(username, passphrase);
         }, 500);
     };
 
@@ -150,6 +173,29 @@ class InputPassphrase extends React.Component<Props, State> {
         return true;
     };
 
+    private checkUsernameValid = () => {
+        const { username } = this.state;
+        if (username === "") {
+            this.setState({
+                isUsernameValid: false,
+                usernameError: "username is required"
+            });
+            return false;
+        }
+        if (username.length > 20) {
+            this.setState({
+                usernameError: "Maximum length is 20 characters",
+                isUsernameValid: false
+            });
+            return false;
+        }
+        this.setState({
+            isUsernameValid: true,
+            usernameError: undefined
+        });
+        return true;
+    };
+
     private handlePassphraseInput = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
@@ -168,6 +214,16 @@ class InputPassphrase extends React.Component<Props, State> {
             isPassphraseConfirmValid: undefined
         });
         this.setState({ passphraseConfirm: event.target.value });
+    };
+
+    private handleUsernameInput = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        this.setState({
+            username: event.target.value,
+            usernameError: undefined,
+            isUsernameValid: undefined
+        });
     };
 }
 

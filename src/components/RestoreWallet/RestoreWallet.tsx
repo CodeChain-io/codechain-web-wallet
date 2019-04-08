@@ -21,6 +21,9 @@ interface State {
     passphraseError?: string;
     isPassphraseConfirmValid?: boolean;
     passphraseConfirmError?: string;
+    username: string;
+    isUsernameValid?: boolean;
+    usernameError?: string;
 }
 
 interface DispatchProps {
@@ -39,7 +42,10 @@ class RestoreWallet extends React.Component<Props, State> {
             isPassphraseValid: undefined,
             passphraseError: undefined,
             isPassphraseConfirmValid: undefined,
-            passphraseConfirmError: undefined
+            passphraseConfirmError: undefined,
+            username: "",
+            isUsernameValid: undefined,
+            usernameError: undefined
         };
     }
     public async componentDidMount() {
@@ -57,7 +63,10 @@ class RestoreWallet extends React.Component<Props, State> {
             isPassphraseValid,
             passphraseConfirmError,
             passphraseError,
-            secretPhrase
+            secretPhrase,
+            username,
+            isUsernameValid,
+            usernameError
         } = this.state;
         return (
             <Container className="Restore-wallet animated fadeIn">
@@ -86,6 +95,19 @@ class RestoreWallet extends React.Component<Props, State> {
                             className="phrase-input"
                             value={secretPhrase}
                             onChange={this.handleChangeSecretPhraseInput}
+                        />
+                    </div>
+                    <div className="username-input-container">
+                        <ValidationInput
+                            labelText="USERNAME"
+                            onChange={this.handleUsernameInput}
+                            value={username}
+                            showValidation={true}
+                            placeholder="username"
+                            type="text"
+                            isValid={isUsernameValid}
+                            error={usernameError}
+                            onBlur={this.checkUsernameValid}
                         />
                     </div>
                     <div className="passphrase-input-container">
@@ -133,8 +155,12 @@ class RestoreWallet extends React.Component<Props, State> {
     };
 
     private handleSubmit = async () => {
-        const { passphrase, secretPhrase } = this.state;
+        const { passphrase, username, secretPhrase } = this.state;
         const { login, history } = this.props;
+
+        if (!this.checkUsernameValid()) {
+            return;
+        }
 
         if (!this.checkPassphraseValid()) {
             return;
@@ -155,6 +181,7 @@ class RestoreWallet extends React.Component<Props, State> {
             return;
         }
         try {
+            localStorage.setItem("USERNAME", username!);
             await importMnemonic(splitPassphrases.join(" "), passphrase);
             await login(passphrase!);
             history.push(`/`);
@@ -189,6 +216,39 @@ class RestoreWallet extends React.Component<Props, State> {
             isPassphraseValid: true
         });
         return true;
+    };
+
+    private checkUsernameValid = () => {
+        const { username } = this.state;
+        if (username === "") {
+            this.setState({
+                isUsernameValid: false,
+                usernameError: "username is required"
+            });
+            return false;
+        }
+        if (username.length > 20) {
+            this.setState({
+                usernameError: "Maximum length is 20 characters",
+                isUsernameValid: false
+            });
+            return false;
+        }
+        this.setState({
+            isUsernameValid: true,
+            usernameError: undefined
+        });
+        return true;
+    };
+
+    private handleUsernameInput = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        this.setState({
+            username: event.target.value,
+            usernameError: undefined,
+            isUsernameValid: undefined
+        });
     };
 
     private checkPassphraseConfirm = () => {

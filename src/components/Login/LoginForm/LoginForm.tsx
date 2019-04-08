@@ -8,14 +8,18 @@ interface Props {
     onSignIn: () => void;
     passphrase: string;
     isValid?: boolean;
+    username?: string | null;
 }
 
 export default class LoginForm extends React.Component<Props, any> {
     public render() {
-        const { passphrase, isValid } = this.props;
+        const { passphrase, isValid, username } = this.props;
         return (
             <Form className="login-form" onSubmit={this.handleOnFormSubmit}>
-                <h4 className="welcome-text">Welcome back!</h4>
+                <h4 className="welcome-text">
+                    Welcome back
+                    {username ? `, ${username}!` : "!"}
+                </h4>
                 <div className="passphrase-input-container">
                     <ValidationInput
                         onChange={this.handleOnChagne}

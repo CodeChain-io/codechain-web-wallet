@@ -37,6 +37,7 @@ interface State {
     passphrase: string;
     isValid?: boolean;
     redirectToReferrer: boolean;
+    username?: string | null;
 }
 
 type Props = RouteComponentProps & DispatchProps & OwnProps;
@@ -46,7 +47,8 @@ class Login extends React.Component<Props, State> {
         this.state = {
             passphrase: "",
             isValid: undefined,
-            redirectToReferrer: false
+            redirectToReferrer: false,
+            username: undefined
         };
     }
     public componentDidMount() {
@@ -63,9 +65,17 @@ class Login extends React.Component<Props, State> {
             login(savedPassphrase);
             this.setState({ redirectToReferrer: true });
         }
+
+        const username = localStorage.getItem("USERNAME");
+        this.setState({ username });
     }
     public render() {
-        const { passphrase, isValid, redirectToReferrer } = this.state;
+        const {
+            passphrase,
+            isValid,
+            redirectToReferrer,
+            username
+        } = this.state;
         const { from } = this.props.location.state || {
             from: { pathname: "/" }
         };
@@ -85,6 +95,7 @@ class Login extends React.Component<Props, State> {
                             passphrase={passphrase}
                             onSignIn={this.handleSignIn}
                             isValid={isValid}
+                            username={username}
                         />
                     </div>
                 </div>

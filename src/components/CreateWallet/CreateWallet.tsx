@@ -30,6 +30,7 @@ interface State {
     currentPage: PageState;
     passphrase?: string | null;
     mnemonic?: string[];
+    username?: string;
 }
 
 interface DispatchProps {
@@ -43,7 +44,8 @@ class CreateWallet extends React.Component<Props, State> {
         super(props);
         this.state = {
             currentPage: PageState.inputPassPhrase,
-            passphrase: undefined
+            passphrase: undefined,
+            username: undefined
         };
     }
     public async componentDidMount() {
@@ -98,14 +100,18 @@ class CreateWallet extends React.Component<Props, State> {
         );
     }
 
-    private handleSubmitPassphraseInput = async (passphrase: string) => {
+    private handleSubmitPassphraseInput = async (
+        username: string,
+        passphrase: string
+    ) => {
         await createSeed(passphrase);
         const mnemonicString = await exportMnemonic(passphrase);
         const mnemonic = mnemonicString.split(" ");
         this.setState({
             currentPage: PageState.showSecretPhrase,
             passphrase,
-            mnemonic
+            mnemonic,
+            username
         });
     };
 
@@ -115,7 +121,8 @@ class CreateWallet extends React.Component<Props, State> {
 
     private handleConfirmPhrase = async () => {
         const { login, history } = this.props;
-        const { passphrase } = this.state;
+        const { passphrase, username } = this.state;
+        localStorage.setItem("USERNAME", username!);
         await login(passphrase!);
         history.push(`/`);
     };
