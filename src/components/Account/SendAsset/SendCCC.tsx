@@ -28,7 +28,6 @@ import "./SendCCC.css";
 
 interface OwnProps {
     address: string;
-    isSendingCCC: boolean;
     onClose: () => void;
 }
 
@@ -102,6 +101,7 @@ class SendCCC extends React.Component<Props, State> {
                             address={address}
                             onSubmit={this.handleSubmit}
                             totalAmount={availableQuark}
+                            isSending={isSending}
                         />
                     </div>
                 )}

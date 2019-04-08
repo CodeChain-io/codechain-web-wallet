@@ -55,6 +55,7 @@ interface OwnProps {
         } | null
     ) => void;
     gatewayURL?: string | null;
+    isSendingTx: boolean;
 }
 
 interface StateProps {
@@ -110,7 +111,8 @@ class ReceiverContainer extends React.Component<Props, State> {
         const {
             platformAddresses,
             gatewayURL,
-            availableQuarkList
+            availableQuarkList,
+            isSendingTx
         } = this.props;
         if (!platformAddresses) {
             return <span>Loading...</span>;
@@ -253,7 +255,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                         <button
                             type="submit"
                             className="btn btn-primary square w-100 send-btn"
-                            disabled={receivers.length === 0}
+                            disabled={isSendingTx}
                         >
                             Send
                         </button>

@@ -26,7 +26,7 @@ export default class LoginForm extends React.Component<Props, any> {
                         type="password"
                         isValid={isValid}
                         error={
-                            isValid === false ? "invalid passphrase" : undefined
+                            isValid === false ? "invalid password" : undefined
                         }
                     />
                 </div>

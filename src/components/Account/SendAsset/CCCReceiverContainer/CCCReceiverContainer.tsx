@@ -22,6 +22,7 @@ interface State {
 interface Props {
     address: string;
     totalAmount: U64;
+    isSending: boolean;
     onSubmit: (receiver: { address: string; quantity: U64 }, fee: U64) => void;
 }
 
@@ -58,6 +59,7 @@ export default class CCCReceiverContainer extends React.Component<
             feeError,
             fee
         } = this.state;
+        const { isSending } = this.props;
         return (
             <div className="CCCReceiver-container">
                 <form onSubmit={this.handleSubmit}>
@@ -86,6 +88,7 @@ export default class CCCReceiverContainer extends React.Component<
                     </div>
                     <div className="mt-5">
                         <button
+                            disabled={isSending}
                             type="submit"
                             className="btn btn-primary square w-100 send-btn"
                         >

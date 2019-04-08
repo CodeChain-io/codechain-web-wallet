@@ -176,6 +176,7 @@ class SendAsset extends React.Component<Props, State> {
                                     ? availableAsset.quantities
                                     : new U64(0)
                             }
+                            isSendingTx={isSendingTx}
                             gatewayURL={
                                 metadata.gateway && metadata.gateway.url
                             }
@@ -343,7 +344,7 @@ class SendAsset extends React.Component<Props, State> {
             );
         } catch (e) {
             if (e.message === "DecryptionFailed") {
-                toast.error("Invalid password", {
+                toast.error("Wrong password. Try again.", {
                     position: toast.POSITION.BOTTOM_CENTER,
                     autoClose: 1000,
                     closeButton: false,

@@ -126,7 +126,6 @@ class Account extends React.Component<Props, State> {
                             <div className="right-panel">
                                 <SendCCC
                                     address={address}
-                                    isSendingCCC={sendingCCC}
                                     onClose={this.handleCloseSendingCCC}
                                 />
                             </div>

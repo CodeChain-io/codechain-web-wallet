@@ -125,7 +125,7 @@ class ExportBackupPopup extends React.Component<Props, State> {
         } else {
             this.setState({
                 isValidPassphrase: false,
-                passphraseError: "invalid passphrase"
+                passphraseError: "invalid password"
             });
         }
     };
