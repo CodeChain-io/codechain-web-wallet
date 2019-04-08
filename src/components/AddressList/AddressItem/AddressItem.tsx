@@ -11,6 +11,7 @@ import "./AddressItem.css";
 
 import { U64 } from "codechain-sdk/lib/core/classes";
 import accountActions from "../../../redux/account/accountActions";
+import assetActions from "../../../redux/asset/assetActions";
 import * as copyBtnHover from "./img/copy-hover.svg";
 import * as copyBtn from "./img/copy.svg";
 
@@ -20,9 +21,16 @@ interface OwnProps {
 }
 interface DispatchProps {
     fetchAvailableQuark: (address: string) => void;
+    fetchAvailableAssets: (address: string) => void;
 }
 interface StateProps {
     availableQuark?: U64 | null;
+    availableAssets?:
+        | {
+              assetType: string;
+              quantities: U64;
+          }[]
+        | null;
 }
 interface State {
     isCopyHovering: boolean;
@@ -38,13 +46,25 @@ class AddressItem extends React.Component<Props, State> {
         };
     }
     public componentDidMount() {
-        const { walletAddress, fetchAvailableQuark } = this.props;
+        const {
+            walletAddress,
+            fetchAvailableQuark,
+            fetchAvailableAssets
+        } = this.props;
         if (walletAddress.type === AddressType.Platform) {
             fetchAvailableQuark(walletAddress.address);
         }
+        if (walletAddress.type === AddressType.Asset) {
+            fetchAvailableAssets(walletAddress.address);
+        }
     }
     public render() {
-        const { walletAddress, className, availableQuark } = this.props;
+        const {
+            walletAddress,
+            className,
+            availableQuark,
+            availableAssets
+        } = this.props;
         const { isCopyHovering } = this.state;
         return (
             <div
@@ -94,6 +114,20 @@ class AddressItem extends React.Component<Props, State> {
                         )}
                     </div>
                 )}
+                {walletAddress.type === AddressType.Asset && (
+                    <div className="platform-account">
+                        {availableAssets ? (
+                            <span className="number balance">
+                                {availableAssets.length}{" "}
+                                {availableAssets.length >= 2
+                                    ? "Assets"
+                                    : "Asset"}
+                            </span>
+                        ) : (
+                            <span className="number balance">Loading...</span>
+                        )}
+                    </div>
+                )}
             </div>
         );
     }
@@ -129,8 +163,11 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const { walletAddress } = props;
     const availableQuark =
         state.accountReducer.availableQuark[walletAddress.address];
+    const availableAssets =
+        state.assetReducer.availableAssets[walletAddress.address];
     return {
-        availableQuark
+        availableQuark,
+        availableAssets
     };
 };
 const mapDispatchToProps = (
@@ -138,6 +175,9 @@ const mapDispatchToProps = (
 ) => ({
     fetchAvailableQuark: (address: string) => {
         dispatch(accountActions.fetchAvailableQuark(address));
+    },
+    fetchAvailableAssets: (address: string) => {
+        dispatch(assetActions.fetchAvailableAssets(address));
     }
 });
 export default connect(

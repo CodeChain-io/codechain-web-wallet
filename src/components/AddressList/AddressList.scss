@@ -21,13 +21,8 @@
     font-weight: bold;
     width: 100%;
     margin-bottom: 18px;
+    height: 168px;
     cursor: pointer;
-    &.asset {
-      height: 95px;
-    }
-    &.platform {
-      height: 168px;
-    }
     &.loading {
       cursor: default;
     }
