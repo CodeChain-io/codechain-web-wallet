@@ -99,7 +99,7 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="username-input-container">
                         <ValidationInput
-                            labelText="USERNAME"
+                            labelText="NEW USERNAME"
                             onChange={this.handleUsernameInput}
                             value={username}
                             showValidation={true}
