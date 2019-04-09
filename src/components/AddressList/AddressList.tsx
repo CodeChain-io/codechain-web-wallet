@@ -39,7 +39,7 @@ class AddressList extends React.Component<Props, any> {
         }
     }
     public render() {
-        const { platformAddresses, assetAddresses } = this.props;
+        const { platformAddresses, assetAddresses, networkId } = this.props;
         return (
             <div className="Address-list animated fadeIn">
                 <Container>
@@ -111,13 +111,23 @@ class AddressList extends React.Component<Props, any> {
                                                 icon="plus-circle"
                                             />
                                         </div>
-                                        {platformAddresses.length > 0 && (
-                                            <Link to="/chargeCCC">
-                                                <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
-                                                    Charge CCC
-                                                </div>
-                                            </Link>
-                                        )}
+                                        {platformAddresses.length > 0 &&
+                                            (networkId === "cc" ? (
+                                                <Link to="/chargeCCC">
+                                                    <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
+                                                        Charge CCC
+                                                    </div>
+                                                </Link>
+                                            ) : (
+                                                <a
+                                                    href="https://corgi.codechain.io/faucet"
+                                                    target="_blank"
+                                                >
+                                                    <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
+                                                        CodeChain Faucet
+                                                    </div>
+                                                </a>
+                                            ))}
                                     </div>
                                 )}
                             </Col>
