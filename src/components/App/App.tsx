@@ -105,7 +105,7 @@ class App extends React.Component<Props, any> {
                         />
                         <PrivateRoute
                             exact={true}
-                            path="/buyCCC"
+                            path="/chargeCCC"
                             component={Exchange}
                         />
                         <PrivateRoute

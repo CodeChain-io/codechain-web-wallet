@@ -65,14 +65,14 @@ class Exchange extends React.Component<Props, State> {
                         </Link>
                     </div>
                     <div className="exchange-container">
-                        <h2 className="title">Buy CCC</h2>
+                        <h2 className="title">Charge CCC</h2>
                         {!platformAddresses ? (
                             <span className="loading-text">Loading...</span>
                         ) : selectedAddress ? (
                             <div>
                                 <div className="select-address-container">
                                     <span className="select-address-label">
-                                        Charge CCC to this address
+                                        CCC to this address
                                     </span>
                                     <select
                                         onChange={
@@ -89,7 +89,7 @@ class Exchange extends React.Component<Props, State> {
                                 </div>
                                 <div className="description-container">
                                     <span className="description">
-                                        You can buy CCC by transferring BTC to
+                                        You can get CCC by transferring BTC to
                                         the address below.
                                     </span>
                                 </div>

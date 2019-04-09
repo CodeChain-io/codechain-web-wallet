@@ -112,9 +112,9 @@ class AddressList extends React.Component<Props, any> {
                                             />
                                         </div>
                                         {platformAddresses.length > 0 && (
-                                            <Link to="/buyCCC">
+                                            <Link to="/chargeCCC">
                                                 <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
-                                                    Buy CCC
+                                                    Charge CCC
                                                 </div>
                                             </Link>
                                         )}
