@@ -46,7 +46,7 @@ class ExchangeRate extends React.Component<Props, State> {
                             {btcToCCCRate
                                 ? new BigNumber(1000)
                                       .div(btcToCCCRate)
-                                      .toFormat(8)
+                                      .toFixed(8)
                                 : "Loading"}{" "}
                             BTC
                         </span>
