@@ -14,6 +14,7 @@ import {
 } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import globalActions from "../../redux/global/globalActions";
+import actions from "../../redux/wallet/walletActions";
 import { clearPassphrase, clearWalletKeys } from "../../utils/storage";
 import ConfirmBackupPhrase from "./ConfirmBackupPhrase/ConfirmBackupPhrase";
 import "./CreateWallet.css";
@@ -36,6 +37,8 @@ interface State {
 interface DispatchProps {
     login: (passpharase: string) => Promise<void>;
     clearData: () => Promise<void>;
+    createWalletAssetAddress: () => Promise<void>;
+    createWalletPlatformAddress: () => Promise<void>;
 }
 
 type Props = RouteComponentProps & DispatchProps;
@@ -124,6 +127,8 @@ class CreateWallet extends React.Component<Props, State> {
         const { passphrase, username } = this.state;
         localStorage.setItem("USERNAME", username!);
         await login(passphrase!);
+        await this.props.createWalletAssetAddress();
+        await this.props.createWalletPlatformAddress();
         history.push(`/`);
     };
 }
@@ -136,6 +141,12 @@ const mapDispatchToProps = (
     },
     clearData: () => {
         return dispatch(globalActions.clearData());
+    },
+    createWalletPlatformAddress: () => {
+        return dispatch(actions.createWalletPlatformAddress());
+    },
+    createWalletAssetAddress: () => {
+        return dispatch(actions.createWalletAssetAddress());
     }
 });
 
