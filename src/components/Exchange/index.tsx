@@ -56,15 +56,15 @@ class Exchange extends React.Component<Props, State> {
         return (
             <div className="Exchange">
                 <Container>
-                    <div className="mb-4 back-icon-container">
-                        <Link to="/">
+                    <div className="page-container d-flex back-icon-container">
+                        <Link to="/" className="ml-auto">
                             <FontAwesomeIcon
                                 className="back-icon"
                                 icon="arrow-left"
                             />
                         </Link>
                     </div>
-                    <div className="exchange-container">
+                    <div className="page-container exchange-container">
                         <h2 className="title">Charge CCC</h2>
                         {!platformAddresses ? (
                             <span className="loading-text">Loading...</span>

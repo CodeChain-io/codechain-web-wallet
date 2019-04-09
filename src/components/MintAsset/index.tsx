@@ -129,15 +129,15 @@ class MintAsset extends React.Component<Props, State> {
         return (
             <div className="Mint-asset">
                 <Container>
-                    <div className="mb-4 back-icon-container">
-                        <Link to="/">
+                    <div className="page-container d-flex mb-4 back-icon-container">
+                        <Link to="/" className="ml-auto">
                             <FontAwesomeIcon
                                 className="back-icon"
                                 icon="arrow-left"
                             />
                         </Link>
                     </div>
-                    <div className="mint-container">
+                    <div className="page-container mint-container">
                         <h2 className="title">Mint asset</h2>
                         {!assetAddresses ? (
                             <span className="loading-text">Loading...</span>
