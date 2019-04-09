@@ -43,11 +43,14 @@ class ShowBackupPhrase extends React.Component<Props, any> {
                 </div>
                 <div className="backup-phrase-container">
                     <div className="backup-phrase-panel d-flex align-items-center justify-content-center">
+                        <span>{mnemonic.join(" ")}</span>
                         <CopyToClipboard
                             text={mnemonic.join(" ")}
                             onCopy={this.handleCopyPhrase}
                         >
-                            <span>{mnemonic.join(" ")}</span>
+                            <div className="copy-btn">
+                                <span>COPY</span>
+                            </div>
                         </CopyToClipboard>
                     </div>
                 </div>

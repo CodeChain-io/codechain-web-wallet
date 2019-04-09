@@ -54,14 +54,20 @@ class ExportBackupPopup extends React.Component<Props, State> {
                     <Form onSubmit={this.handleOnFormSubmit}>
                         <div className="passphrase-container">
                             <div className="d-flex align-items-center justify-content-center passphrase-panel">
-                                {backupPhraseString && (
+                                {backupPhraseString && [
+                                    <span key="backup-phrase">
+                                        {backupPhraseString}
+                                    </span>,
                                     <CopyToClipboard
+                                        key="copy"
                                         text={backupPhraseString}
                                         onCopy={this.handleCopyPhrase}
                                     >
-                                        <span>{backupPhraseString}</span>
+                                        <div className="copy-btn">
+                                            <span>COPY</span>
+                                        </div>
                                     </CopyToClipboard>
-                                )}
+                                ]}
                             </div>
                             {!revealBackupPhrase && (
                                 <div className="d-flex align-items-center justify-content-center disable-panel">
