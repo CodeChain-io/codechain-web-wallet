@@ -90,7 +90,10 @@ class Exchange extends React.Component<Props, State> {
                                 <div className="description-container">
                                     <span className="description">
                                         You can get CCC by transferring BTC to
-                                        the address below.
+                                        the address below. Maximum charging
+                                        amount is 30 million CCC. If you want to
+                                        charge in larger bulks, contact
+                                        support@kodebox.io.
                                     </span>
                                 </div>
                                 <div className="btc-address-container">
