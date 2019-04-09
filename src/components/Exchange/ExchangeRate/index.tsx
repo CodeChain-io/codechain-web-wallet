@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import BigNumber from "bignumber.js";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
@@ -38,16 +38,17 @@ class ExchangeRate extends React.Component<Props, State> {
             <div className="Exchange-rate">
                 <div className="exchange-rate-item-container text-right">
                     <div className="exchange-rate-item">
-                        <span className="mr-3">1 BTC</span>
-                        <FontAwesomeIcon
-                            className="exchange-icon"
-                            icon="arrow-right"
-                        />
-                        <span className="ml-3">
+                        <span>1 USD</span>
+                        <span> = </span>
+                        <span>1,000 CCC</span>
+                        <span> = </span>
+                        <span>
                             {btcToCCCRate
-                                ? btcToCCCRate.toLocaleString()
+                                ? new BigNumber(1000)
+                                      .div(btcToCCCRate)
+                                      .toFormat(8)
                                 : "Loading"}{" "}
-                            CCC
+                            BTC
                         </span>
                     </div>
                     <div>

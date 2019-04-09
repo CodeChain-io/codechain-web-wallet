@@ -72,7 +72,7 @@ class Exchange extends React.Component<Props, State> {
                             <div>
                                 <div className="select-address-container">
                                     <span className="select-address-label">
-                                        CCC to this address
+                                        Top up your CCC address
                                     </span>
                                     <select
                                         onChange={

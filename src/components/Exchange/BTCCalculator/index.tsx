@@ -28,6 +28,7 @@ export default class BTCCalculator extends React.Component<Props, State> {
                         labelText={"BTC"}
                         placeholder={"1 BTC"}
                         disable={!btcToCCCRate}
+                        decimalScale={8}
                         type="number"
                     />
                     <FontAwesomeIcon
@@ -39,6 +40,7 @@ export default class BTCCalculator extends React.Component<Props, State> {
                         onChange={this.handleCCCChange}
                         showValidation={false}
                         labelText={"CCC"}
+                        decimalScale={0}
                         placeholder={`${
                             btcToCCCRate
                                 ? btcToCCCRate.toLocaleString()
@@ -55,12 +57,12 @@ export default class BTCCalculator extends React.Component<Props, State> {
         const { btcToCCCRate } = this.props;
         const btc = event.target.value;
         const ccc = new BigNumber(btc).multipliedBy(btcToCCCRate!);
-        this.setState({ btc, ccc: ccc.isNaN() ? "" : ccc.toFixed(0) });
+        this.setState({ btc, ccc: ccc.isNaN() ? "" : ccc.toString(10) });
     };
     private handleCCCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { btcToCCCRate } = this.props;
         const ccc = event.target.value;
         const btc = new BigNumber(ccc).div(btcToCCCRate!);
-        this.setState({ btc: btc.isNaN() ? "" : btc.toFixed(8), ccc });
+        this.setState({ btc: btc.isNaN() ? "" : btc.toString(10), ccc });
     };
 }

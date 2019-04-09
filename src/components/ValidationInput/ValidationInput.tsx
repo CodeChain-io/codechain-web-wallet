@@ -18,8 +18,16 @@ interface Props {
     showValidation: boolean;
     reverse?: boolean;
     disable?: boolean;
+    decimalScale?: number;
 }
-export default class ValidationInput extends React.Component<Props, any> {
+interface State {
+    isFocus: boolean;
+}
+export default class ValidationInput extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = { isFocus: false };
+    }
     public render() {
         const {
             onChange,
@@ -33,9 +41,11 @@ export default class ValidationInput extends React.Component<Props, any> {
             isValid,
             reverse,
             showValidation,
-            disable
+            disable,
+            decimalScale
         } = this.props;
         const guid = this.guid();
+        const { isFocus } = this.state;
         return (
             <div className={`Validation-input ${className} mb-4`}>
                 {labelText && (
@@ -49,6 +59,7 @@ export default class ValidationInput extends React.Component<Props, any> {
                 {type === "number" ? (
                     <NumberFormat
                         value={value}
+                        decimalScale={decimalScale}
                         autoComplete="off"
                         className={`form-control ${reverse &&
                             "reverse"} ${showValidation && "validation-form"}`}
@@ -59,9 +70,17 @@ export default class ValidationInput extends React.Component<Props, any> {
                         disabled={disable}
                         thousandSeparator={true}
                         // tslint:disable-next-line:jsx-no-lambda
+                        onFocus={() => {
+                            this.setState({ isFocus: true });
+                        }}
+                        // tslint:disable-next-line:jsx-no-lambda
+                        onBlurCapture={() => {
+                            this.setState({ isFocus: false });
+                        }}
+                        // tslint:disable-next-line:jsx-no-lambda
                         onValueChange={values => {
                             const { value: v } = values;
-                            if (onChange) {
+                            if (onChange && isFocus) {
                                 onChange({ target: { value: v } } as any);
                             }
                         }}
