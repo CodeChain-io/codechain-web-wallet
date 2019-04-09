@@ -84,7 +84,7 @@ class AddressList extends React.Component<Props, any> {
                     <hr />
                     <div className="platform-address-container">
                         <div className="deco platform-title-deco" />
-                        <h5 className="mb-4">Platform Address</h5>
+                        <h5 className="mb-4">CCC Address</h5>
                         <Row className="address-item-container">
                             {_.map(
                                 platformAddresses,
@@ -97,7 +97,7 @@ class AddressList extends React.Component<Props, any> {
                             <Col md={6} lg={4} xl={3}>
                                 {!platformAddresses ? (
                                     <div className="restoring">
-                                        Restoring platform address ...
+                                        Restoring CCC address ...
                                     </div>
                                 ) : (
                                     <div>

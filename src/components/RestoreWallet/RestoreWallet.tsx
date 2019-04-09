@@ -172,7 +172,7 @@ class RestoreWallet extends React.Component<Props, State> {
         const splitPassphrases = secretPhrase.match(/\S+/g);
 
         if (!splitPassphrases || splitPassphrases.length !== 12) {
-            toast.error("Wrong password. Try again.", {
+            toast.error("Your backup phrase is invalid. Please check.", {
                 position: toast.POSITION.BOTTOM_CENTER,
                 autoClose: 5000,
                 closeButton: false,
@@ -186,7 +186,7 @@ class RestoreWallet extends React.Component<Props, State> {
             await login(passphrase!);
             history.push(`/`);
         } catch (e) {
-            toast.error("Wrong password. Try again.", {
+            toast.error("Your backup phrase is invalid. Please check.", {
                 position: toast.POSITION.BOTTOM_CENTER,
                 autoClose: 5000,
                 closeButton: false,

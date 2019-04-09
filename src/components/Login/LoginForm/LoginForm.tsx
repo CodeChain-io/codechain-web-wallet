@@ -30,7 +30,9 @@ export default class LoginForm extends React.Component<Props, any> {
                         type="password"
                         isValid={isValid}
                         error={
-                            isValid === false ? "invalid password" : undefined
+                            isValid === false
+                                ? "Wrong password. Please try again."
+                                : undefined
                         }
                     />
                 </div>

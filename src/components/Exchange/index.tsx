@@ -107,7 +107,7 @@ class Exchange extends React.Component<Props, State> {
                             </div>
                         ) : (
                             <span className="no-address-label">
-                                There is no platform address
+                                There is no CCC address
                             </span>
                         )}
                     </div>
