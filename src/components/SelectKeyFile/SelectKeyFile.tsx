@@ -53,6 +53,17 @@ class SelectKeyFile extends React.Component<Props, State> {
                     <img src={Logo} className="logo" />
                     <h1 className="mt-4 logo-title">Wallet</h1>
                 </div>
+                <div className="welcome-text-container">
+                    <h4 className="welcome-text">
+                        Welcome to CodeChain wallet
+                    </h4>
+                    <div>
+                        <span className="description-text">
+                            Securely store and transfer your asset tokens with
+                            CodeChain Wallet. First time using CodeChain Wallet?
+                        </span>
+                    </div>
+                </div>
                 <div className="button-container d-flex justify-content-center">
                     <div
                         className="button-item d-flex align-items-center justify-content-center"
@@ -74,15 +85,16 @@ class SelectKeyFile extends React.Component<Props, State> {
                                     />
                                 )}
                             </div>
-                            <div className="text">
-                                Create
-                                <br />
-                                new wallet
+                            <div className="text">Yes, Create a new wallet</div>
+                            <div className="button-description">
+                                <span>
+                                    Create a new wallet and its backup phrase.
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div
-                        className="button-item d-flex align-items-center justify-content-center"
+                        className="button-item d-flex justify-content-center"
                         onClick={this.onClickRestore}
                         onMouseEnter={this.handleImportButtonHover}
                         onMouseLeave={this.handleImportButtopOut}
@@ -98,10 +110,9 @@ class SelectKeyFile extends React.Component<Props, State> {
                                     <img src={ImportKeyIcon} className="icon" />
                                 )}
                             </div>
-                            <div className="text">
-                                Restore
-                                <br />
-                                your wallet
+                            <div className="text">No, I already have</div>
+                            <div className="button-description">
+                                <span>Sign in using backup phrase.</span>
                             </div>
                         </div>
                     </div>

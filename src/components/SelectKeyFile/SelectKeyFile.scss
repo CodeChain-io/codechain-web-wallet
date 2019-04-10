@@ -3,13 +3,24 @@
 
 .Select-key-file {
   position: relative;
+  text-align: center;
 
   .title-container {
-    padding-top: 100px;
+    padding-top: 60px;
   }
 
   .logo-title {
     font-size: 3.5rem;
+  }
+
+  .welcome-text-container {
+    margin-top: 18px;
+    max-width: 400px;
+    display: inline-block;
+
+    .welcome-text {
+      color: $dark-grey;
+    }
   }
 
   .logo {
@@ -29,10 +40,9 @@
   }
 
   .button-container {
-    margin-top: 52px;
+    margin-top: 22px;
     .button-item {
       width: 250px;
-      height: 250px;
       border-radius: 5px;
       box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2);
       background-color: #ffffff;
@@ -41,6 +51,7 @@
       color: $wallet-blue;
       margin-right: 10px;
       margin-left: 10px;
+      padding: 34px 12px 34px 12px;
       cursor: pointer;
 
       &:hover {
@@ -49,29 +60,32 @@
       }
 
       .icon {
-        width: 98px;
-        height: 98px;
+        width: 78px;
+        height: 78px;
       }
 
       .text {
         margin-top: 20px;
-        font-size: 24px;
+        font-size: 1.2rem;
         line-height: 1.25;
         @include heading-font();
+      }
+
+      .button-description {
+        margin-top: 16px;
       }
 
       @include respond-below(sm) {
         & {
           width: 150px;
-          height: 150px;
 
           .icon {
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
           }
 
           .text {
-            font-size: 14px;
+            font-size: 1rem;
           }
         }
       }

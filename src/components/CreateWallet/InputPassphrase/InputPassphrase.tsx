@@ -101,11 +101,11 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="PASSWORD CONFIRM"
+                        labelText="CONFIRM PASSWORD"
                         onChange={this.handlePassphraseConfirmInput}
                         value={passphraseConfirm}
                         showValidation={true}
-                        placeholder="password confirm"
+                        placeholder="confirm password"
                         type="password"
                         isValid={isPassphraseConfirmValid}
                         error={passphraseConfirmError}

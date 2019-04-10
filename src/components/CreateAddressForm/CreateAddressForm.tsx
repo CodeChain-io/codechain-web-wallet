@@ -121,9 +121,9 @@ export default class CreateAddressForm extends React.Component<Props, State> {
                     <div className="input-container">
                         <ValidationInput
                             type="password"
-                            labelText="PASSWORD CONFIRM"
+                            labelText="CONFIRM PASSWORD"
                             value={passwordConfirm}
-                            placeholder="password confirm"
+                            placeholder="confirm password"
                             onChange={this.handlePasswordConfirmChange}
                             error={passwordConfirmError}
                             onBlur={this.checkPasswordConfirmField}

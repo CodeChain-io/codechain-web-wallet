@@ -87,8 +87,7 @@ class RestoreWallet extends React.Component<Props, State> {
                         </h4>
                     </div>
                     <div className="description">
-                        Enter your secret twelve word phrase here to restore
-                        your wallet.
+                        Please select the 12 words in proper order to log in.
                     </div>
                     <div className="phrase-container">
                         <textarea
@@ -96,6 +95,14 @@ class RestoreWallet extends React.Component<Props, State> {
                             value={secretPhrase}
                             onChange={this.handleChangeSecretPhraseInput}
                         />
+                    </div>
+                    <div className="password-description">
+                        <span>
+                            This is the password used to log in to CodeChain
+                            Wallet through this browser. In cases you lose this
+                            password, you can regain access with your backup
+                            phrase.
+                        </span>
                     </div>
                     <div className="username-input-container">
                         <ValidationInput
@@ -125,11 +132,11 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="passphrase-confirm-container">
                         <ValidationInput
-                            labelText="PASSWORD CONFIRM"
+                            labelText="CONFIRM PASSWORD"
                             onChange={this.handlePassphraseConfirmInput}
                             value={passphraseConfirm}
                             showValidation={true}
-                            placeholder="password confirm"
+                            placeholder="confirm password"
                             type="password"
                             isValid={isPassphraseConfirmValid}
                             error={passphraseConfirmError}
