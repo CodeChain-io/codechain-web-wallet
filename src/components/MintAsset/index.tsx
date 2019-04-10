@@ -16,6 +16,7 @@ import accountActions from "../../redux/account/accountActions";
 import chainActions from "../../redux/chain/chainActions";
 import walletActions from "../../redux/wallet/walletActions";
 import { TxUtil } from "../../utils/transaction";
+import TooltipLabel from "../TooltipLabel";
 import ValidationInput from "../ValidationInput/ValidationInput";
 import * as CheckIcon from "./img/check_icon.svg";
 import "./index.css";
@@ -189,6 +190,9 @@ class MintAsset extends React.Component<Props, State> {
                                                 showValidation={false}
                                                 isValid={isSupplyValid}
                                                 error={supplyError}
+                                                tooltip={
+                                                    "The total number of tokens issued."
+                                                }
                                                 onBlur={
                                                     this.checkSupplyValidation
                                                 }
@@ -202,6 +206,9 @@ class MintAsset extends React.Component<Props, State> {
                                                         onChange={
                                                             this
                                                                 .handleIconURLChange
+                                                        }
+                                                        tooltip={
+                                                            "Upload the url of the image to be used as the token's icon. If nothing is uploaded, a random icon(identicon) will be created."
                                                         }
                                                         showValidation={false}
                                                     />
@@ -218,6 +225,7 @@ class MintAsset extends React.Component<Props, State> {
                                             <div className="mb-4">
                                                 <span className="input-label d-block mb-2">
                                                     Description (Optional)
+                                                    <TooltipLabel tooltip="Please give a description for the token." />
                                                 </span>
                                                 <textarea
                                                     className="form-control description-area"
@@ -231,6 +239,7 @@ class MintAsset extends React.Component<Props, State> {
                                             <div className="select-address-container">
                                                 <span className="select-address-label">
                                                     <Trans i18nKey="mint:address.title" />
+                                                    <TooltipLabel tooltip="Tokens are issued to the address below and can be transferred to other addresses at any time." />
                                                 </span>
                                                 <select
                                                     onChange={
@@ -263,6 +272,7 @@ class MintAsset extends React.Component<Props, State> {
                                                             labelText={t(
                                                                 "mint:fee.title"
                                                             )}
+                                                            tooltip="The minimum fee is 100,000 CCC, and the higher the fee, the faster it is processed."
                                                             placeholder={
                                                                 !feePayer
                                                                     ? "select payer"
@@ -292,6 +302,7 @@ class MintAsset extends React.Component<Props, State> {
                                                     <div className="fee-payer-container">
                                                         <div className="input-label">
                                                             <Trans i18nKey="mint:payer.title" />
+                                                            <TooltipLabel tooltip="The fee will be transferred from the address below." />
                                                         </div>
                                                         {platformAddresses.length ===
                                                         0 ? (

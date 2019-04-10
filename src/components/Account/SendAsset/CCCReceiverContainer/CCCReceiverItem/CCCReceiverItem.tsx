@@ -78,6 +78,7 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isFeeValid}
+                        tooltip="The minimum fee is 100,000 CCC, and the higher the fee, the faster it is processed."
                         onBlur={this.handleBlurFeeInput}
                         error={feeError}
                     />

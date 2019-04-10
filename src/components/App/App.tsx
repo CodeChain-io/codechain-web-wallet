@@ -11,10 +11,12 @@ import {
     faCopy,
     faEllipsisH,
     faExchangeAlt,
+    faExclamationCircle,
     faFileDownload,
     faInfoCircle,
     faPlus,
     faPlusCircle,
+    faQuestionCircle,
     faRedoAlt,
     faTimes,
     faTrashAlt
@@ -60,7 +62,9 @@ library.add(
     faExchangeAlt,
     faCopy,
     faArrowRight,
-    faRedoAlt
+    faRedoAlt,
+    faExclamationCircle,
+    faQuestionCircle
 );
 
 interface StateProps {

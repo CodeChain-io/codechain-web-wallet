@@ -9,6 +9,7 @@ import { WalletAddress } from "../../../../model/address";
 import { ReducerConfigure } from "../../../../redux";
 import accountActions from "../../../../redux/account/accountActions";
 import walletActions from "../../../../redux/wallet/walletActions";
+import TooltipLabel from "../../../TooltipLabel";
 import ValidationInput from "../../../ValidationInput/ValidationInput";
 import "./ReceiverContainer.css";
 import ReceiverItem from "./ReceiverItem/ReceiverItem";
@@ -209,6 +210,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                             ? "loading..."
                                             : "100 (CCC)"
                                     }
+                                    tooltip="The minimum fee is 100,000 CCC, and the higher the fee, the faster it is processed."
                                     disable={
                                         feePayer == null ||
                                         (feePayer != null &&
@@ -221,7 +223,10 @@ class ReceiverContainer extends React.Component<Props, State> {
                                 />
                             </div>
                             <div className="fee-payer-container">
-                                <div className="payer-label">FEE PAYER</div>
+                                <div className="payer-label">
+                                    FEE PAYER
+                                    <TooltipLabel tooltip="The fee will be transferred from the address below." />
+                                </div>
                                 {platformAddresses.length === 0 ? (
                                     <select
                                         className="form-control"
