@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,700,900");
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,600,700,900");
 @import url("//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css");
 @import url("https://fonts.googleapis.com/css?family=Inconsolata");
 @import "styles/variables.scss";
@@ -9,7 +10,7 @@ html {
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", "Noto Sans KR", sans-serif;
 }
 
 .mono {
