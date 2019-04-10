@@ -15,7 +15,14 @@ interface State {
     username: string;
     isUsernameValid?: boolean;
     usernameError?: string;
+    hasAgreeTOC: boolean;
+    hasAgreePP: boolean;
 }
+
+const TermsOfConditionLink =
+    "https://docs.google.com/document/d/1-HJep6vXMaiX4p62ijIfAc9yyX_rKAFkFLPsMod8tl0/edit?usp=sharing";
+const PPLink =
+    "https://docs.google.com/document/d/13Bonpgp2Va4dDlAIzvH2JSKFyOBlSSUrvFQ_PE2YqWI/edit?usp=sharing";
 
 interface Props {
     onSubmit: (username: string, passphrase: string) => void;
@@ -34,7 +41,9 @@ class InputPassphrase extends React.Component<Props, State> {
             isSubmitted: false,
             username: "",
             isUsernameValid: undefined,
-            usernameError: undefined
+            usernameError: undefined,
+            hasAgreeTOC: false,
+            hasAgreePP: false
         };
     }
     public render() {
@@ -48,7 +57,9 @@ class InputPassphrase extends React.Component<Props, State> {
             isSubmitted,
             username,
             isUsernameValid,
-            usernameError
+            usernameError,
+            hasAgreeTOC,
+            hasAgreePP
         } = this.state;
         return (
             <Form
@@ -101,10 +112,44 @@ class InputPassphrase extends React.Component<Props, State> {
                         onBlur={this.checkPassphraseConfirm}
                     />
                 </div>
+                <div className="form-container">
+                    <div className="form-check">
+                        <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="tocCheck"
+                            checked={hasAgreeTOC}
+                            onChange={this.handleTOCClick}
+                        />
+                        <label className="form-check-label" htmlFor="tocCheck">
+                            I have read and agree to
+                            {"  "}
+                            <a href={`${TermsOfConditionLink}`} target="_blank">
+                                Terms and Conditions
+                            </a>
+                        </label>
+                    </div>
+                    <div className="form-check">
+                        <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="ppCheck"
+                            checked={hasAgreePP}
+                            onChange={this.handlePPClick}
+                        />
+                        <label className="form-check-label" htmlFor="ppCheck">
+                            I have read and agree to
+                            {"  "}
+                            <a href={`${PPLink}`} target="_blank">
+                                Privacy Policy
+                            </a>
+                        </label>
+                    </div>
+                </div>
                 <div className="mt-5">
                     <button
                         className="btn btn-primary reverse square main-btn"
-                        disabled={isSubmitted}
+                        disabled={isSubmitted || !hasAgreePP || !hasAgreeTOC}
                         type="submit"
                     >
                         {isSubmitted ? "CREATING..." : "OK"}
@@ -113,6 +158,18 @@ class InputPassphrase extends React.Component<Props, State> {
             </Form>
         );
     }
+
+    private handleTOCClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            hasAgreeTOC: event.target.checked
+        });
+    };
+
+    private handlePPClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            hasAgreePP: event.target.checked
+        });
+    };
 
     private handleOnFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

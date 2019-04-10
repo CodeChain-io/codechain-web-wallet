@@ -1,0 +1,21 @@
+@import "styles/variables.scss";
+
+.Input-passphrase {
+  .form-container {
+    margin-top: 32px;
+    .form-check {
+      font-size: 1rem;
+      margin-bottom: 4px;
+
+      .form-check-label {
+        cursor: pointer;
+        color: $dark-grey;
+
+        a {
+          text-decoration: underline;
+          color: $wallet-blue;
+        }
+      }
+    }
+  }
+}
