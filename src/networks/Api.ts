@@ -89,7 +89,7 @@ export async function getUTXOListByAssetType(
     return await getRequest<UTXODoc[]>(
         `${apiHost}/api/utxo?assetType=${
             assetType.value
-        }&address=${address}&itemsPerPage=10000&page=1`
+        }&address=${address}&itemsPerPage=100&page=1`
     );
 }
 
@@ -105,7 +105,7 @@ export async function getPendingTransactions(
 ) {
     const apiHost = getIndexerHost(networkId);
     const transactions = await getRequest<TransactionDoc[]>(
-        `${apiHost}/api/pending-tx?page=1&itemsPerPage=10000&address=${address}`
+        `${apiHost}/api/pending-tx?page=1&itemsPerPage=100&address=${address}`
     );
 
     // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
