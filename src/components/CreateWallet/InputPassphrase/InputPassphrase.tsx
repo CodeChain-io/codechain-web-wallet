@@ -72,16 +72,16 @@ class InputPassphrase extends React.Component<Props, State> {
             >
                 <div className="title-container">
                     <h4 className="title">
-                        <Trans i18nKey="create:title" />
+                        <Trans i18nKey="create:seed.title" />
                     </h4>
                 </div>
                 <div>
                     <ValidationInput
-                        labelText={t("create:name")}
+                        labelText={t("create:seed.name")}
                         onChange={this.handleUsernameInput}
                         value={username}
                         showValidation={true}
-                        placeholder={t("create:name")}
+                        placeholder={t("create:seed.name")}
                         type="text"
                         isValid={isUsernameValid}
                         error={usernameError}
@@ -90,11 +90,11 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText={t("create:password")}
+                        labelText={t("create:seed.password")}
                         onChange={this.handlePassphraseInput}
                         value={passphrase}
                         showValidation={true}
-                        placeholder={t("create:password")}
+                        placeholder={t("create:seed.password")}
                         type="password"
                         isValid={isPassphraseValid}
                         error={passphraseError}
@@ -103,11 +103,11 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText={t("create:password_confirm")}
+                        labelText={t("create:seed.password_confirm")}
                         onChange={this.handlePassphraseConfirmInput}
                         value={passphraseConfirm}
                         showValidation={true}
-                        placeholder={t("create:password_confirm")}
+                        placeholder={t("create:seed.password_confirm")}
                         type="password"
                         isValid={isPassphraseConfirmValid}
                         error={passphraseConfirmError}
@@ -124,7 +124,7 @@ class InputPassphrase extends React.Component<Props, State> {
                             onChange={this.handleTOCClick}
                         />
                         <label className="form-check-label" htmlFor="tocCheck">
-                            <Trans i18nKey="create:terms">
+                            <Trans i18nKey="create:seed.terms">
                                 <a
                                     href={`${TermsOfConditionLink}`}
                                     target="_blank"
@@ -141,7 +141,7 @@ class InputPassphrase extends React.Component<Props, State> {
                             onChange={this.handlePPClick}
                         />
                         <label className="form-check-label" htmlFor="ppCheck">
-                            <Trans i18nKey="create:privacy">
+                            <Trans i18nKey="create:seed.privacy">
                                 <a href={`${PPLink}`} target="_blank" />
                             </Trans>
                         </label>
@@ -153,7 +153,7 @@ class InputPassphrase extends React.Component<Props, State> {
                         disabled={isSubmitted || !hasAgreePP || !hasAgreeTOC}
                         type="submit"
                     >
-                        {isSubmitted ? t("create:creating") : t("create:ok")}
+                        {isSubmitted ? t("create:seed.creating") : t("create:seed.ok")}
                     </button>
                 </div>
             </Form>
@@ -201,7 +201,7 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase } = this.state;
         if (passphrase.length < 8) {
             this.setState({
-                passphraseError: this.props.t("create:pass_minimum"),
+                passphraseError: this.props.t("create:seed.pass_minimum"),
                 isPassphraseValid: false
             });
             return false;
@@ -218,7 +218,7 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase, passphraseConfirm } = this.state;
         if (passphrase !== passphraseConfirm) {
             this.setState({
-                passphraseConfirmError: this.props.t("create:pass_mismatch"),
+                passphraseConfirmError: this.props.t("create:seed.pass_mismatch"),
                 isPassphraseConfirmValid: false
             });
             return false;
@@ -236,13 +236,13 @@ class InputPassphrase extends React.Component<Props, State> {
         if (username === "") {
             this.setState({
                 isUsernameValid: false,
-                usernameError: this.props.t("create:name_required")
+                usernameError: this.props.t("create:seed.name_required")
             });
             return false;
         }
         if (username.length > 20) {
             this.setState({
-                usernameError: this.props.t("create:name_maximum"),
+                usernameError: this.props.t("create:seed.name_maximum"),
                 isUsernameValid: false
             });
             return false;

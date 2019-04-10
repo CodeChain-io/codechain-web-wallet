@@ -33,11 +33,11 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
             <div className="Confirm-backup-phrase animated fadeIn">
                 <div className="title-container">
                     <h4 className="title">
-                        <Trans i18nKey="confirm:title" />
+                        <Trans i18nKey="create:confirm.title" />
                     </h4>
                 </div>
                 <div className="description">
-                    <Trans i18nKey="confirm:detail" />
+                    <Trans i18nKey="create:confirm.detail" />
                 </div>
                 <div>
                     <div className="backup-phrase-input d-flex align-items-center justify-content-center">
@@ -80,7 +80,7 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
                         }
                         onClick={onConfirm}
                     >
-                        <Trans i18nKey="confirm:button" />
+                        <Trans i18nKey="create:confirm.button" />
                     </button>
                 </div>
             </div>

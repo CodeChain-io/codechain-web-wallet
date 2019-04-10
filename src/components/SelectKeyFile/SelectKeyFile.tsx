@@ -87,11 +87,11 @@ class SelectKeyFile extends React.Component<Props, State> {
                                 )}
                             </div>
                             <div className="text">
-                                <Trans i18nKey="select:create.title" />
+                                <Trans i18nKey="create:select.create.title" />
                             </div>
                             <div className="button-description">
                                 <span>
-                                    <Trans i18nKey="select:create.detail" />
+                                    <Trans i18nKey="create:select.create.detail" />
                                 </span>
                             </div>
                         </div>
@@ -114,11 +114,11 @@ class SelectKeyFile extends React.Component<Props, State> {
                                 )}
                             </div>
                             <div className="text">
-                                <Trans i18nKey="select:restore.title" />
+                                <Trans i18nKey="create:select.restore.title" />
                             </div>
                             <div className="button-description">
                                 <span>
-                                    <Trans i18nKey="select:restore.detail" />
+                                    <Trans i18nKey="create:select.restore.detail" />
                                 </span>
                             </div>
                         </div>

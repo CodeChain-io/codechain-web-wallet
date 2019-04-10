@@ -20,21 +20,21 @@ class ShowBackupPhrase extends React.Component<Props> {
             <div className="Show-backup-phrase animated fadeIn">
                 <div className="title-container">
                     <h4 className="title">
-                        <Trans i18nKey="mnemonic:title" />
+                        <Trans i18nKey="create:mnemonic.title" />
                     </h4>
                 </div>
                 <div className="text-1">
-                    <Trans i18nKey="mnemonic:detail" />
+                    <Trans i18nKey="create:mnemonic.detail" />
                 </div>
                 <div className="warning-text">
-                    <Trans i18nKey="mnemonic:warning" />
+                    <Trans i18nKey="create:mnemonic.warning" />
                 </div>
                 <div className="tips-container">
                     <p className="tips-text mb-0">
-                        <Trans i18nKey="mnemonic:tip" />
+                        <Trans i18nKey="create:mnemonic.tip" />
                     </p>
                     <span className="text-2">
-                        <Trans i18nKey="mnemonic:tip_detail" />
+                        <Trans i18nKey="create:mnemonic.tip_detail" />
                     </span>
                 </div>
                 <div className="backup-phrase-container">
@@ -46,7 +46,7 @@ class ShowBackupPhrase extends React.Component<Props> {
                         >
                             <div className="copy-btn">
                                 <span>
-                                    <Trans i18nKey="mnemonic:copy" />
+                                    <Trans i18nKey="create:mnemonic.copy" />
                                 </span>
                             </div>
                         </CopyToClipboard>
@@ -58,7 +58,7 @@ class ShowBackupPhrase extends React.Component<Props> {
                         type="submit"
                         onClick={this.props.onSubmit}
                     >
-                        <Trans i18nKey="mnemonic:button" />
+                        <Trans i18nKey="create:mnemonic.button" />
                     </button>
                 </div>
             </div>
@@ -66,7 +66,7 @@ class ShowBackupPhrase extends React.Component<Props> {
     }
 
     private handleCopyPhrase = () => {
-        toast.info(this.props.t("mnemonic:copied"), {
+        toast.info(this.props.t("create:mnemonic.copied"), {
             position: toast.POSITION.BOTTOM_CENTER,
             autoClose: 1000,
             closeButton: false,
