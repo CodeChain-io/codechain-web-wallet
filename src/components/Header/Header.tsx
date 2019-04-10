@@ -6,7 +6,7 @@ import * as Logo from "./img/logo.svg";
 import MenuButton from "./MenuButton/MenuButton";
 import NetworkButton from "./NetworkButton/NetworkButton";
 
-class Header extends React.Component {
+export default class Header extends React.Component {
     public render() {
         return (
             <div className="Header" key="header">
@@ -22,4 +22,3 @@ class Header extends React.Component {
         );
     }
 }
-export default Header;
