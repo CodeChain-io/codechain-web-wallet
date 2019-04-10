@@ -80,7 +80,7 @@ class NetworkButton extends React.Component<Props, State> {
                             */}
                             <li onClick={_.partial(this.chagneNetworkId, "wc")}>
                                 <div className="d-flex align-items-center justify-content-end">
-                                    <span className="mr-1">CORGI</span>
+                                    <span className="mr-1">TESTNET</span>
                                     <img src={TestNet} />
                                 </div>
                             </li>

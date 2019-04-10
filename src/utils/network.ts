@@ -9,7 +9,7 @@ export function getNetworkNameById(networkId: NetworkId) {
         case "sc":
             return "SALUKI";
         case "wc":
-            return "CORGI";
+            return "TESTNET";
     }
     throw new Error("Unknown networkId");
 }
