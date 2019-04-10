@@ -263,8 +263,8 @@ class MintAsset extends React.Component<Props, State> {
                                                                     : !availableQuarkList[
                                                                           feePayer
                                                                       ]
-                                                                        ? "loading..."
-                                                                        : "100,000 (CCC)"
+                                                                    ? "loading..."
+                                                                    : "100,000 (CCC)"
                                                             }
                                                             disable={
                                                                 feePayer ==

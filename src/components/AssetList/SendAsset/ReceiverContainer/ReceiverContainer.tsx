@@ -206,8 +206,8 @@ class ReceiverContainer extends React.Component<Props, State> {
                                         !feePayer
                                             ? "select payer"
                                             : !availableQuarkList[feePayer]
-                                                ? "loading..."
-                                                : "100 (CCC)"
+                                            ? "loading..."
+                                            : "100 (CCC)"
                                     }
                                     disable={
                                         feePayer == null ||
