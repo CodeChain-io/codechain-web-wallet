@@ -1,0 +1,10 @@
+{
+    "create": {
+        "title": "Yes, Create a new wallet",
+        "detail": "Create a new wallet and its backup phrase."
+    },
+    "restore": {
+        "title": "No, I already have",
+        "detail": "Sign in using backup phrase."
+    }
+}

@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 import { SignedTransaction, U64 } from "codechain-sdk/lib/core/classes";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import * as Spinner from "react-spinkit";
@@ -57,7 +58,7 @@ interface DispatchProps {
 
 const MinimumFee = 100000;
 
-type Props = RouteComponentProps & StateProps & DispatchProps;
+type Props = WithTranslation & RouteComponentProps & StateProps & DispatchProps;
 class MintAsset extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -105,6 +106,7 @@ class MintAsset extends React.Component<Props, State> {
     }
     public render() {
         const {
+            t,
             platformAddresses,
             availableQuarkList,
             assetAddresses
@@ -140,12 +142,12 @@ class MintAsset extends React.Component<Props, State> {
                     <div className="page-container mint-container">
                         <h2 className="title">Mint asset</h2>
                         <span className="mint-description">
-                            Please enter the information of the new token to be
-                            issued. All tokens are recorded on CodeChain and
-                            anyone has access to the information below.
+                            <Trans i18nKey="mint:detail" />
                         </span>
                         {!assetAddresses ? (
-                            <span className="loading-text">Loading...</span>
+                            <span className="loading-text">
+                                <Trans i18nKey="mint:loading" />
+                            </span>
                         ) : selectedAddress ? (
                             <div>
                                 {isSentTx ? (
@@ -155,7 +157,9 @@ class MintAsset extends React.Component<Props, State> {
                                                 <img src={CheckIcon} />
                                             </div>
                                             <div className="mt-3">
-                                                <span>COMPLETE!</span>
+                                                <span>
+                                                    <Trans i18nKey="mint:complete" />
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -226,7 +230,7 @@ class MintAsset extends React.Component<Props, State> {
                                             </div>
                                             <div className="select-address-container">
                                                 <span className="select-address-label">
-                                                    Mint asset in this address
+                                                    <Trans i18nKey="mint:address.title" />
                                                 </span>
                                                 <select
                                                     onChange={
@@ -256,7 +260,9 @@ class MintAsset extends React.Component<Props, State> {
                                                             showValidation={
                                                                 true
                                                             }
-                                                            labelText="FEE"
+                                                            labelText={t(
+                                                                "mint:fee.title"
+                                                            )}
                                                             placeholder={
                                                                 !feePayer
                                                                     ? "select payer"
@@ -285,7 +291,7 @@ class MintAsset extends React.Component<Props, State> {
                                                     </div>
                                                     <div className="fee-payer-container">
                                                         <div className="input-label">
-                                                            FEE PAYER
+                                                            <Trans i18nKey="mint:payer.title" />
                                                         </div>
                                                         {platformAddresses.length ===
                                                         0 ? (
@@ -378,7 +384,7 @@ class MintAsset extends React.Component<Props, State> {
                             </div>
                         ) : (
                             <span className="no-address-label">
-                                There is no asset address
+                                <Trans i18nKey="mint:error.asset.required" />
                             </span>
                         )}
                     </div>
@@ -398,7 +404,7 @@ class MintAsset extends React.Component<Props, State> {
         if (name.trim() === "") {
             this.setState({
                 isNameValid: false,
-                nameError: "name is required"
+                nameError: this.props.t("mint:name.required")
             });
             return false;
         }
@@ -414,7 +420,7 @@ class MintAsset extends React.Component<Props, State> {
         if (supply.trim() === "") {
             this.setState({
                 isSupplyValid: false,
-                supplyError: "supply is required"
+                supplyError: this.props.t("mint:supply.required")
             });
             return false;
         }
@@ -423,7 +429,7 @@ class MintAsset extends React.Component<Props, State> {
         if (amountSupply.isNaN() || amountSupply.lt(0)) {
             this.setState({
                 isSupplyValid: false,
-                supplyError: "invalid number"
+                supplyError: this.props.t("mint:supply.invalid")
             });
             return false;
         }
@@ -442,18 +448,18 @@ class MintAsset extends React.Component<Props, State> {
         if (!feePayer) {
             this.setState({
                 isFeeValid: false,
-                feeError: "select fee payer"
+                feeError: this.props.t("mint:supply.not_selected")
             });
             return false;
         }
         const availableQuark = availableQuarkList[feePayer];
         if (!availableQuark) {
-            throw Error("invalid balacne");
+            throw Error(this.props.t("mint:supply.invalid_balance"));
         }
         if (fee.trim() === "") {
             this.setState({
                 isFeeValid: false,
-                feeError: "fee is required"
+                feeError: this.props.t("mint:supply.required")
             });
             return false;
         }
@@ -461,14 +467,16 @@ class MintAsset extends React.Component<Props, State> {
         if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
-                feeError: "invalid number"
+                feeError: this.props.t("mint:supply.invalid")
             });
             return false;
         }
         if (amountFee.lt(MinimumFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: `minimum value is ${MinimumFee}`
+                feeError: this.props.t("mint:supply.minimum", {
+                    fee: MinimumFee
+                })
             });
             return false;
         }
@@ -476,7 +484,7 @@ class MintAsset extends React.Component<Props, State> {
         if (availableQuark.value.lt(amountFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "not enough CCC"
+                feeError: this.props.t("mint:supply.minimum_balance")
             });
             return false;
         }
@@ -634,4 +642,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(MintAsset);
+)(withTranslation()(MintAsset));

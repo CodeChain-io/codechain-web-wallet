@@ -1,0 +1,16 @@
+{
+    "title": "새 지갑과<br />백업 구문을 생성",
+    "name": "이름",
+    "password": "비밀번호",
+    "password_confirm": "비밀번호 확인",
+    "terms": "<0>이용약관</0>을 읽고 동의합니다",
+    "privacy": "I have read and agree to <0>Privacy Policy</0>",
+    "ok": "OK",
+    "creating": "CREATING...",
+    "error": {
+        "pass_minimum": "Minimum length is 8 characters",
+        "pass_mismatch": "Password does not match!",
+        "name_required": "username is required",
+        "name_maximum": "Maximum length is 20 characters"
+    }
+}

@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
@@ -25,9 +26,9 @@ interface DispatchProps {
     createWalletAssetAddress: () => void;
     createWalletPlatformAddress: () => void;
 }
-type Props = StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 
-class AddressList extends React.Component<Props, any> {
+class AddressList extends React.Component<Props> {
     public componentDidMount() {
         this.props.fetchWalletFromStorageIfNeed();
     }
@@ -48,8 +49,7 @@ class AddressList extends React.Component<Props, any> {
                         <h5 className="mb-1">Asset Address</h5>
                         <div className="mb-4 address-description">
                             <span>
-                                This is an address that can be used to mint or
-                                trade new tokens.
+                                <Trans i18nKey="main:asset.detail" />
                             </span>
                         </div>
                         <Row className="address-item-container">
@@ -61,7 +61,7 @@ class AddressList extends React.Component<Props, any> {
                             <Col md={6} lg={4} xl={3}>
                                 {!assetAddresses ? (
                                     <div className="restoring">
-                                        Restoring asset address ...
+                                        <Trans i18nKey="main:asset.restore" />
                                     </div>
                                 ) : (
                                     <div>
@@ -69,7 +69,7 @@ class AddressList extends React.Component<Props, any> {
                                             onClick={this.createAssetAddress}
                                             className="add-address-btn d-flex align-items-center justify-content-center"
                                         >
-                                            ADD ADDRESS
+                                            <Trans i18nKey="main:asset.add" />
                                             <FontAwesomeIcon
                                                 className="ml-2"
                                                 icon="plus-circle"
@@ -78,7 +78,7 @@ class AddressList extends React.Component<Props, any> {
                                         {assetAddresses.length > 0 && (
                                             <Link to="/mint">
                                                 <div className="mint-asset-btn d-flex align-items-center justify-content-center">
-                                                    Mint a new asset
+                                                    <Trans i18nKey="main:asset.mint" />
                                                 </div>
                                             </Link>
                                         )}
@@ -93,9 +93,7 @@ class AddressList extends React.Component<Props, any> {
                         <h5 className="mb-1">CCC Address</h5>
                         <div className="mb-4 address-description">
                             <span>
-                                This is an address that can be used to store
-                                CCC, which is used to transfer tokens or as
-                                transaction fees.
+                                <Trans i18nKey="main:ccc.detail" />
                             </span>
                         </div>
                         <Row className="address-item-container">
@@ -110,7 +108,7 @@ class AddressList extends React.Component<Props, any> {
                             <Col md={6} lg={4} xl={3}>
                                 {!platformAddresses ? (
                                     <div className="restoring">
-                                        Restoring CCC address ...
+                                        <Trans i18nKey="main:ccc.restore" />
                                     </div>
                                 ) : (
                                     <div>
@@ -118,7 +116,7 @@ class AddressList extends React.Component<Props, any> {
                                             onClick={this.createPlatformAddress}
                                             className="add-address-btn d-flex align-items-center justify-content-center"
                                         >
-                                            ADD ADDRESS
+                                            <Trans i18nKey="main:ccc.add" />
                                             <FontAwesomeIcon
                                                 className="ml-2"
                                                 icon="plus-circle"
@@ -128,7 +126,7 @@ class AddressList extends React.Component<Props, any> {
                                             (networkId === "cc" ? (
                                                 <Link to="/chargeCCC">
                                                     <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
-                                                        Charge CCC
+                                                        <Trans i18nKey="main:ccc.charge" />
                                                     </div>
                                                 </Link>
                                             ) : (
@@ -137,7 +135,7 @@ class AddressList extends React.Component<Props, any> {
                                                     target="_blank"
                                                 >
                                                     <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
-                                                        CodeChain Faucet
+                                                        <Trans i18nKey="main:ccc.faucet" />
                                                     </div>
                                                 </a>
                                             ))}
@@ -183,4 +181,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AddressList);
+)(withTranslation()(AddressList));

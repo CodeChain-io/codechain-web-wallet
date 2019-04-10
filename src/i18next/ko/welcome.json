@@ -1,0 +1,8 @@
+{
+    "title": "Welcome back {{name}}!",
+    "password": "비밀번호",
+    "password_placeholder": "비밀번호",
+    "password_invalid": "Wrong password. Please try again.",
+    "signin": "로그인",
+    "different": "OPEN A DIFFERENT WALLET"
+}

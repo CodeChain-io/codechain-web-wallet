@@ -1,0 +1,16 @@
+{
+    "title": "Create<br />New Wallet",
+    "name": "USERNAME",
+    "password": "PASSWORD",
+    "password_confirm": "CONFIRM PASSWORD",
+    "terms": "I have read and agree to <0>Terms and Conditions</0>",
+    "privacy": "I have read and agree to <0>Privacy Policy</0>",
+    "ok": "OK",
+    "creating": "CREATING...",
+    "error": {
+        "pass_minimum": "Minimum length is 8 characters",
+        "pass_mismatch": "Password does not match!",
+        "name_required": "username is required",
+        "name_maximum": "Maximum length is 20 characters"
+    }
+}

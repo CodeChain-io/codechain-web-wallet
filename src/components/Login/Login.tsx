@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Container } from "reactstrap";
 import { Action } from "redux";
@@ -40,7 +41,7 @@ interface State {
     username?: string | null;
 }
 
-type Props = RouteComponentProps & DispatchProps & OwnProps;
+type Props = WithTranslation & RouteComponentProps & DispatchProps & OwnProps;
 class Login extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
@@ -101,7 +102,7 @@ class Login extends React.Component<Props, State> {
                 </div>
                 <div className="text-center open-different-btn-container">
                     <Link className="open-different-btn" to="/selectKeyfile">
-                        OPEN A DIFFERENT WALLET
+                        <Trans i18nKey="welcome:different" />
                     </Link>
                 </div>
             </Container>
@@ -144,4 +145,4 @@ const mapDispatchToProps = (
 export default connect(
     () => ({}),
     mapDispatchToProps
-)(withRouter(Login));
+)(withTranslation()(withRouter(Login)));

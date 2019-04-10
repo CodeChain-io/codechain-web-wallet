@@ -1,9 +1,10 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { Form } from "reactstrap";
 import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./LoginForm.css";
 
-interface Props {
+interface OwnProps {
     onChange: (passphrase: string) => void;
     onSignIn: () => void;
     passphrase: string;
@@ -11,27 +12,31 @@ interface Props {
     username?: string | null;
 }
 
-export default class LoginForm extends React.Component<Props, any> {
+type Props = WithTranslation & OwnProps;
+
+class LoginForm extends React.Component<Props> {
     public render() {
-        const { passphrase, isValid, username } = this.props;
+        const { t, passphrase, isValid, username } = this.props;
         return (
             <Form className="login-form" onSubmit={this.handleOnFormSubmit}>
                 <h4 className="welcome-text">
-                    Welcome back
-                    {username ? `, ${username}!` : "!"}
+                    <Trans
+                        i18nKey="welcome:title"
+                        values={{ name: username ? username : "" }}
+                    />
                 </h4>
                 <div className="passphrase-input-container">
                     <ValidationInput
                         onChange={this.handleOnChagne}
                         value={passphrase}
                         showValidation={true}
-                        labelText="PASSWORD"
-                        placeholder="password"
+                        labelText={t("welcome:password")}
+                        placeholder={t("welcome:password_placeholder")}
                         type="password"
                         isValid={isValid}
                         error={
                             isValid === false
-                                ? "Wrong password. Please try again."
+                                ? (t("welcome:password_invalid") as string)
                                 : undefined
                         }
                     />
@@ -41,7 +46,7 @@ export default class LoginForm extends React.Component<Props, any> {
                         className="btn btn-primary square sign-in-btn"
                         type="submit"
                     >
-                        SIGN IN
+                        <Trans i18nKey="welcome:signin" />
                     </button>
                 </div>
             </Form>
@@ -58,3 +63,5 @@ export default class LoginForm extends React.Component<Props, any> {
         onChange(event.target.value);
     };
 }
+
+export default withTranslation()(LoginForm);

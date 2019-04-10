@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Container } from "reactstrap";
@@ -30,7 +31,7 @@ interface State {
     isCreateBtnHover: boolean;
 }
 
-type Props = RouteComponentProps & DispatchProps & StateProps;
+type Props = WithTranslation & RouteComponentProps & DispatchProps & StateProps;
 class SelectKeyFile extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
@@ -85,10 +86,12 @@ class SelectKeyFile extends React.Component<Props, State> {
                                     />
                                 )}
                             </div>
-                            <div className="text">Yes, Create a new wallet</div>
+                            <div className="text">
+                                <Trans i18nKey="select:create.title" />
+                            </div>
                             <div className="button-description">
                                 <span>
-                                    Create a new wallet and its backup phrase.
+                                    <Trans i18nKey="select:create.detail" />
                                 </span>
                             </div>
                         </div>
@@ -110,9 +113,13 @@ class SelectKeyFile extends React.Component<Props, State> {
                                     <img src={ImportKeyIcon} className="icon" />
                                 )}
                             </div>
-                            <div className="text">No, I already have</div>
+                            <div className="text">
+                                <Trans i18nKey="select:restore.title" />
+                            </div>
                             <div className="button-description">
-                                <span>Sign in using backup phrase.</span>
+                                <span>
+                                    <Trans i18nKey="select:restore.detail" />
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -152,4 +159,4 @@ const mapDispatchToProps = (
 export default connect(
     () => ({}),
     mapDispatchToProps
-)(withRouter(SelectKeyFile));
+)(withTranslation("select")(withRouter(SelectKeyFile)));

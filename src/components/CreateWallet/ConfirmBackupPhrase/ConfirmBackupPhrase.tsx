@@ -1,8 +1,9 @@
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import "./ConfirmBackupPhrase.css";
 
-interface Props {
+interface OwnProps {
     phrases: string[];
     onConfirm: () => void;
 }
@@ -11,6 +12,8 @@ interface State {
     selectedPhrasesIndex?: number[] | null;
     suffledPhrases: string[];
 }
+
+type Props = WithTranslation & OwnProps;
 
 class ConfirmBackupPhrase extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -30,14 +33,11 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
             <div className="Confirm-backup-phrase animated fadeIn">
                 <div className="title-container">
                     <h4 className="title">
-                        Confirm your
-                        <br />
-                        backup phrase
+                        <Trans i18nKey="confirm:title" />
                     </h4>
                 </div>
                 <div className="description">
-                    Please select each phrase in order to make sure it is
-                    correct.
+                    <Trans i18nKey="confirm:detail" />
                 </div>
                 <div>
                     <div className="backup-phrase-input d-flex align-items-center justify-content-center">
@@ -80,7 +80,7 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
                         }
                         onClick={onConfirm}
                     >
-                        CONFIRM
+                        <Trans i18nKey="confirm:button" />
                     </button>
                 </div>
             </div>
@@ -110,4 +110,4 @@ class ConfirmBackupPhrase extends React.Component<Props, State> {
         }
     };
 }
-export default ConfirmBackupPhrase;
+export default withTranslation()(ConfirmBackupPhrase);

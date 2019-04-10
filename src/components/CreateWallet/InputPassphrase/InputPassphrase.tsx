@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 
 import { Form } from "reactstrap";
 import ValidationInput from "../../ValidationInput/ValidationInput";
@@ -24,9 +25,11 @@ const TermsOfConditionLink =
 const PPLink =
     "https://docs.google.com/document/d/13Bonpgp2Va4dDlAIzvH2JSKFyOBlSSUrvFQ_PE2YqWI/edit?usp=sharing";
 
-interface Props {
+interface OwnProps {
     onSubmit: (username: string, passphrase: string) => void;
 }
+
+type Props = WithTranslation & OwnProps;
 
 class InputPassphrase extends React.Component<Props, State> {
     public constructor(props: Props) {
@@ -47,6 +50,7 @@ class InputPassphrase extends React.Component<Props, State> {
         };
     }
     public render() {
+        const { t } = this.props;
         const {
             passphrase,
             passphraseConfirm,
@@ -68,18 +72,16 @@ class InputPassphrase extends React.Component<Props, State> {
             >
                 <div className="title-container">
                     <h4 className="title">
-                        Create
-                        <br />
-                        New Wallet
+                        <Trans i18nKey="create:title" />
                     </h4>
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="USERNAME"
+                        labelText={t("create:name")}
                         onChange={this.handleUsernameInput}
                         value={username}
                         showValidation={true}
-                        placeholder="username"
+                        placeholder={t("create:name")}
                         type="text"
                         isValid={isUsernameValid}
                         error={usernameError}
@@ -88,11 +90,11 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="PASSWORD"
+                        labelText={t("create:password")}
                         onChange={this.handlePassphraseInput}
                         value={passphrase}
                         showValidation={true}
-                        placeholder="password"
+                        placeholder={t("create:password")}
                         type="password"
                         isValid={isPassphraseValid}
                         error={passphraseError}
@@ -101,11 +103,11 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="CONFIRM PASSWORD"
+                        labelText={t("create:password_confirm")}
                         onChange={this.handlePassphraseConfirmInput}
                         value={passphraseConfirm}
                         showValidation={true}
-                        placeholder="confirm password"
+                        placeholder={t("create:password_confirm")}
                         type="password"
                         isValid={isPassphraseConfirmValid}
                         error={passphraseConfirmError}
@@ -122,11 +124,12 @@ class InputPassphrase extends React.Component<Props, State> {
                             onChange={this.handleTOCClick}
                         />
                         <label className="form-check-label" htmlFor="tocCheck">
-                            I have read and agree to
-                            {"  "}
-                            <a href={`${TermsOfConditionLink}`} target="_blank">
-                                Terms and Conditions
-                            </a>
+                            <Trans i18nKey="create:terms">
+                                <a
+                                    href={`${TermsOfConditionLink}`}
+                                    target="_blank"
+                                />
+                            </Trans>
                         </label>
                     </div>
                     <div className="form-check">
@@ -138,11 +141,9 @@ class InputPassphrase extends React.Component<Props, State> {
                             onChange={this.handlePPClick}
                         />
                         <label className="form-check-label" htmlFor="ppCheck">
-                            I have read and agree to
-                            {"  "}
-                            <a href={`${PPLink}`} target="_blank">
-                                Privacy Policy
-                            </a>
+                            <Trans i18nKey="create:privacy">
+                                <a href={`${PPLink}`} target="_blank" />
+                            </Trans>
                         </label>
                     </div>
                 </div>
@@ -152,7 +153,7 @@ class InputPassphrase extends React.Component<Props, State> {
                         disabled={isSubmitted || !hasAgreePP || !hasAgreeTOC}
                         type="submit"
                     >
-                        {isSubmitted ? "CREATING..." : "OK"}
+                        {isSubmitted ? t("create:creating") : t("create:ok")}
                     </button>
                 </div>
             </Form>
@@ -200,7 +201,7 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase } = this.state;
         if (passphrase.length < 8) {
             this.setState({
-                passphraseError: "Minimum length is 8 characters",
+                passphraseError: this.props.t("create:pass_minimum"),
                 isPassphraseValid: false
             });
             return false;
@@ -217,7 +218,7 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase, passphraseConfirm } = this.state;
         if (passphrase !== passphraseConfirm) {
             this.setState({
-                passphraseConfirmError: "Password does not match!",
+                passphraseConfirmError: this.props.t("create:pass_mismatch"),
                 isPassphraseConfirmValid: false
             });
             return false;
@@ -235,13 +236,13 @@ class InputPassphrase extends React.Component<Props, State> {
         if (username === "") {
             this.setState({
                 isUsernameValid: false,
-                usernameError: "username is required"
+                usernameError: this.props.t("create:name_required")
             });
             return false;
         }
         if (username.length > 20) {
             this.setState({
-                usernameError: "Maximum length is 20 characters",
+                usernameError: this.props.t("create:name_maximum"),
                 isUsernameValid: false
             });
             return false;
@@ -284,4 +285,4 @@ class InputPassphrase extends React.Component<Props, State> {
     };
 }
 
-export default InputPassphrase;
+export default withTranslation()(InputPassphrase);
