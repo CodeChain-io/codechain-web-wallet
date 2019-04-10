@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54 (76480) - https://sketchapp.com -->
+    <title>facebook-brands</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.8">
+        <g id="Artboard" transform="translate(-145.000000, -31.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="facebook-brands" transform="translate(145.000000, 31.000000)">
+                <path d="M28,1.54375 L28,26.45 C28,27.30625 27.30625,27.99375 26.45625,27.99375 L19.31875,27.99375 L19.31875,17.15625 L22.95625,17.15625 L23.5,12.93125 L19.3125,12.93125 L19.3125,10.23125 C19.3125,9.00625 19.65,8.175 21.40625,8.175 L23.64375,8.175 L23.64375,4.39375 C23.25625,4.34375 21.93125,4.225 20.38125,4.225 C17.15625,4.225 14.94375,6.19375 14.94375,9.8125 L14.94375,12.93125 L11.29375,12.93125 L11.29375,17.15625 L14.94375,17.15625 L14.94375,28 L1.54375,28 C0.69375,28 0,27.30625 0,26.45625 L0,1.54375 C0,0.69375 0.69375,0 1.54375,0 L26.45,0 C27.30625,0 28,0.69375 28,1.54375 Z" id="Path"></path>
+            </g>
+        </g>
+    </g>
+</svg>

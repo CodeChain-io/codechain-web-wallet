@@ -30,6 +30,7 @@ import AssetDetail from "../AssetDetail/AssetDetail";
 import AssetList from "../AssetList/AssetList";
 import CreateWallet from "../CreateWallet/CreateWallet";
 import Exchange from "../Exchange";
+import Footer from "../Footer";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
 import MintAsset from "../MintAsset";
@@ -77,52 +78,58 @@ class App extends React.Component<Props, any> {
                 <div id="app" className="app" ref={this.appRef}>
                     <ToastContainer className="custom-toast" />
                     {passphrase && <Header />}
-                    <Switch>
-                        <Route path="/login" component={Login} />
-                        <Route
-                            path="/selectKeyfile"
-                            component={SelectKeyFile}
-                        />
-                        <Route path="/createWallet" component={CreateWallet} />
-                        <Route
-                            path="/restoreWallet"
-                            component={RestoreWallet}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/"
-                            component={AddressList}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/index.html"
-                            component={AddressList}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/mint"
-                            component={MintAsset}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/chargeCCC"
-                            component={Exchange}
-                        />
-                        <PrivateRoute
-                            path="/:address/assets"
-                            component={AssetList}
-                        />
-                        <PrivateRoute
-                            path="/:address/account"
-                            component={Account}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/:address/:assetType"
-                            component={AssetDetail}
-                        />
-                        <Route component={NotFound} />
-                    </Switch>
+                    <div className="app-container">
+                        <Switch>
+                            <Route path="/login" component={Login} />
+                            <Route
+                                path="/selectKeyfile"
+                                component={SelectKeyFile}
+                            />
+                            <Route
+                                path="/createWallet"
+                                component={CreateWallet}
+                            />
+                            <Route
+                                path="/restoreWallet"
+                                component={RestoreWallet}
+                            />
+                            <PrivateRoute
+                                exact={true}
+                                path="/"
+                                component={AddressList}
+                            />
+                            <PrivateRoute
+                                exact={true}
+                                path="/index.html"
+                                component={AddressList}
+                            />
+                            <PrivateRoute
+                                exact={true}
+                                path="/mint"
+                                component={MintAsset}
+                            />
+                            <PrivateRoute
+                                exact={true}
+                                path="/chargeCCC"
+                                component={Exchange}
+                            />
+                            <PrivateRoute
+                                path="/:address/assets"
+                                component={AssetList}
+                            />
+                            <PrivateRoute
+                                path="/:address/account"
+                                component={Account}
+                            />
+                            <PrivateRoute
+                                exact={true}
+                                path="/:address/:assetType"
+                                component={AssetDetail}
+                            />
+                            <Route component={NotFound} />
+                        </Switch>
+                    </div>
+                    <Footer />
                 </div>
             </Router>
         );
