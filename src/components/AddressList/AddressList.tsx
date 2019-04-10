@@ -45,7 +45,13 @@ class AddressList extends React.Component<Props, any> {
                 <Container>
                     <div className="asset-address-container mb-5">
                         <div className="deco asset-title-deco" />
-                        <h5 className="mb-4">Asset Address</h5>
+                        <h5 className="mb-1">Asset Address</h5>
+                        <div className="mb-4 address-description">
+                            <span>
+                                This is an address that can be used to mint or
+                                trade new tokens.
+                            </span>
+                        </div>
                         <Row className="address-item-container">
                             {_.map(assetAddresses, (address, index: number) => (
                                 <Col md={6} lg={4} xl={3} key={index}>
@@ -84,7 +90,14 @@ class AddressList extends React.Component<Props, any> {
                     <hr />
                     <div className="platform-address-container">
                         <div className="deco platform-title-deco" />
-                        <h5 className="mb-4">CCC Address</h5>
+                        <h5 className="mb-1">CCC Address</h5>
+                        <div className="mb-4 address-description">
+                            <span>
+                                This is an address that can be used to store
+                                CCC, which is used to transfer tokens or as
+                                transaction fees.
+                            </span>
+                        </div>
                         <Row className="address-item-container">
                             {_.map(
                                 platformAddresses,

@@ -139,6 +139,11 @@ class MintAsset extends React.Component<Props, State> {
                     </div>
                     <div className="page-container mint-container">
                         <h2 className="title">Mint asset</h2>
+                        <span className="mint-description">
+                            Please enter the information of the new token to be
+                            issued. All tokens are recorded on CodeChain and
+                            anyone has access to the information below.
+                        </span>
                         {!assetAddresses ? (
                             <span className="loading-text">Loading...</span>
                         ) : selectedAddress ? (
@@ -258,8 +263,8 @@ class MintAsset extends React.Component<Props, State> {
                                                                     : !availableQuarkList[
                                                                           feePayer
                                                                       ]
-                                                                        ? "loading..."
-                                                                        : "100,000 (CCC)"
+                                                                    ? "loading..."
+                                                                    : "100,000 (CCC)"
                                                             }
                                                             disable={
                                                                 feePayer ==
