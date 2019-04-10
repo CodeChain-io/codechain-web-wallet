@@ -94,17 +94,6 @@ class Footer extends React.Component<Props> {
                                         <img src={medium} />
                                     </a>
                                 </li>
-                                <li className="list-inline-item language-selector-container">
-                                    <select
-                                        onChange={this.onLanguageChange}
-                                        className="language-selector"
-                                        value={this.props.i18n.language}
-                                        defaultValue="en"
-                                    >
-                                        <option value="en">English</option>
-                                        <option value="ko">한국어</option>
-                                    </select>
-                                </li>
                             </ul>
                         </Col>
                     </Row>
@@ -112,11 +101,6 @@ class Footer extends React.Component<Props> {
             </div>
         );
     }
-
-    public onLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const lang = event.target.value;
-        this.props.i18n.changeLanguage(lang);
-    };
 }
 
 export default withTranslation()(Footer);

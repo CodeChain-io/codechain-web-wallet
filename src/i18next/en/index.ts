@@ -11,7 +11,7 @@ export default {
         confirm: create_confirm,
         mnemonic: create_mnemonic,
         seed: create_seed,
-        select: create_select,
+        select: create_select
     },
     main,
     mint,

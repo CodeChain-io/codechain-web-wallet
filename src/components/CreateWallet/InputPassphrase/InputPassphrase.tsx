@@ -153,7 +153,9 @@ class InputPassphrase extends React.Component<Props, State> {
                         disabled={isSubmitted || !hasAgreePP || !hasAgreeTOC}
                         type="submit"
                     >
-                        {isSubmitted ? t("create:seed.creating") : t("create:seed.ok")}
+                        {isSubmitted
+                            ? t("create:seed.creating")
+                            : t("create:seed.ok")}
                     </button>
                 </div>
             </Form>
@@ -218,7 +220,9 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase, passphraseConfirm } = this.state;
         if (passphrase !== passphraseConfirm) {
             this.setState({
-                passphraseConfirmError: this.props.t("create:seed.pass_mismatch"),
+                passphraseConfirmError: this.props.t(
+                    "create:seed.pass_mismatch"
+                ),
                 isPassphraseConfirmValid: false
             });
             return false;
