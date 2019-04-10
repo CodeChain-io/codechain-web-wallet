@@ -1,4 +1,5 @@
 import * as React from "react";
+import { WithTranslation, withTranslation } from "react-i18next";
 import { Col, Container, Row } from "reactstrap";
 import facebook from "./img/facebook.svg";
 import github from "./img/github.svg";
@@ -7,7 +8,9 @@ import medium from "./img/medium.svg";
 import twitter from "./img/twitter.svg";
 import "./index.css";
 
-export default class Footer extends React.Component {
+type Props = WithTranslation;
+
+class Footer extends React.Component<Props> {
     public render() {
         return (
             <div className="Footer">
@@ -92,9 +95,14 @@ export default class Footer extends React.Component {
                                     </a>
                                 </li>
                                 <li className="list-inline-item language-selector-container">
-                                    <select className="language-selector">
-                                        <option>English</option>
-                                        <option>한국어</option>
+                                    <select
+                                        onChange={this.onLanguageChange}
+                                        className="language-selector"
+                                        value={this.props.i18n.language}
+                                        defaultValue="en"
+                                    >
+                                        <option value="en">English</option>
+                                        <option value="ko">한국어</option>
                                     </select>
                                 </li>
                             </ul>
@@ -104,4 +112,11 @@ export default class Footer extends React.Component {
             </div>
         );
     }
+
+    public onLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const lang = event.target.value;
+        this.props.i18n.changeLanguage(lang);
+    };
 }
+
+export default withTranslation()(Footer);
