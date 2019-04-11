@@ -113,19 +113,19 @@ class CCCReceiverContainer extends React.Component<Props, State> {
 
     private handleAddressValidationCheck = () => {
         const { receiver } = this.state;
-        const { address: myAddress } = this.props;
+        const { t, address: myAddress } = this.props;
         const address = receiver.address;
         if (address === "") {
             this.setState({
                 isAddressValid: false,
-                addressError: "recipient address is required"
+                addressError: t("send:ccc.error.address.required")
             });
             return false;
         }
         if (address === myAddress) {
             this.setState({
                 isAddressValid: false,
-                addressError: "can't send CCC to sender's address"
+                addressError: t("send:ccc.error.address.not_equal")
             });
             return false;
         }
@@ -143,19 +143,19 @@ class CCCReceiverContainer extends React.Component<Props, State> {
         }
         this.setState({
             isAddressValid: false,
-            addressError: "invalid address"
+            addressError: t("send:ccc.error.address.invalid")
         });
         return false;
     };
 
     private handleAmountValidationCheck = () => {
         const { receiver, fee } = this.state;
-        const { totalAmount } = this.props;
+        const { t, totalAmount } = this.props;
         const cccString = receiver.quantity;
         if (cccString === "") {
             this.setState({
                 isAmountValid: false,
-                amountError: "amount is required"
+                amountError: t("send:ccc.error.amount.required")
             });
             return false;
         }
@@ -164,14 +164,14 @@ class CCCReceiverContainer extends React.Component<Props, State> {
         if (amountCCC.isNaN()) {
             this.setState({
                 isAmountValid: false,
-                amountError: "invalid number"
+                amountError: t("send:ccc.error.amount.invalid")
             });
             return false;
         }
         if (amountCCC.lt(1)) {
             this.setState({
                 isAmountValid: false,
-                amountError: "minimum value is 1"
+                amountError: t("send:ccc.error.amount.minimum")
             });
             return false;
         }
@@ -179,7 +179,7 @@ class CCCReceiverContainer extends React.Component<Props, State> {
         if (amountCCC.plus(amountFee).gt(totalAmount.value)) {
             this.setState({
                 isAmountValid: false,
-                amountError: "not enough CCC"
+                amountError: t("send:ccc.error.amount.not_enough")
             });
             return false;
         }
@@ -192,12 +192,12 @@ class CCCReceiverContainer extends React.Component<Props, State> {
 
     private handleFeeValidationCheck = () => {
         const { receiver, fee } = this.state;
-        const { totalAmount } = this.props;
+        const { t, totalAmount } = this.props;
         const feeString = fee;
         if (feeString === "") {
             this.setState({
                 isFeeValid: false,
-                feeError: "fee is required"
+                feeError: t("send:ccc.error.fee.required")
             });
             return false;
         }
@@ -205,14 +205,16 @@ class CCCReceiverContainer extends React.Component<Props, State> {
         if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
-                feeError: "invalid number"
+                feeError: t("send:ccc.error.fee.invalid")
             });
             return false;
         }
         if (amountFee.lt(MinimumFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: `minimum value is ${MinimumFee}`
+                feeError: t("send:ccc.error.fee.minimum", {
+                    minimum: MinimumFee
+                })
             });
             return false;
         }
@@ -222,7 +224,7 @@ class CCCReceiverContainer extends React.Component<Props, State> {
         if (amountCCC.plus(amountFee).gt(totalAmount.value)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "not enough CCC"
+                feeError: t("send:ccc.error.fee.not_enough")
             });
             return false;
         }

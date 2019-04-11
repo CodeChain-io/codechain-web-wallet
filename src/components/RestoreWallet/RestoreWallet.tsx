@@ -309,4 +309,4 @@ const mapDispatchToProps = (
 export default connect(
     undefined,
     mapDispatchToProps
-)((withTranslation()(withRouter(RestoreWallet))));
+)(withTranslation()(withRouter(RestoreWallet)));

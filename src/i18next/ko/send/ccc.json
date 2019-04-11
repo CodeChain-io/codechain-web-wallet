@@ -1,0 +1,41 @@
+{
+    "title": "CCC 전송",
+    "complete": "전송 완료",
+    "balance": "잔고",
+    "receiver": {
+        "label": "받는 사람 주소",
+        "placeholder": "받는 사람 주소"
+    },
+    "amount": {
+        "label": "수량",
+        "placeholder": "수량"
+    },
+    "fee": {
+        "label": "수수료",
+        "tooltip": "최소 수수료는 100 CCC이며, 수수료가 높을수록 빠르게 처리됩니다."
+    },
+    "button": "전송",
+    "recent": {
+        "title": "최근 거래내역",
+        "empty": "거래내역이 없습니다"
+    },
+    "error": {
+        "address": {
+            "required": "recipient address is required",
+            "not_equal": "can't send CCC to sender's address",
+            "invalid": "invalid address"
+        },
+        "amount": {
+            "required": "amount is required",
+            "invalid": "invalid number",
+            "minimum": "minimum value is 1",
+            "not_enough": "not enough CCC"
+        },
+        "fee": {
+            "required": "fee is required",
+            "invalid": "invalid number",
+            "minimum": "minimum value is {{minimum}}",
+            "not_enough": "not enough CCC"
+        }
+    }
+}

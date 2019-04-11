@@ -7,7 +7,8 @@ import * as create_select from "./create/select.json";
 import * as main from "./main.json";
 import * as mint from "./mint.json";
 import * as restore from "./restore.json";
-import * as send from "./send.json";
+import * as send_asset from "./send/asset.json";
+import * as send_ccc from "./send/ccc.json";
 import * as welcome from "./welcome.json";
 
 export default {
@@ -20,7 +21,10 @@ export default {
     main,
     mint,
     restore,
-    send,
+    send: {
+        asset: send_asset,
+        ccc: send_ccc
+    },
     welcome,
     charge,
     asset

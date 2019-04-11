@@ -1,0 +1,66 @@
+{
+    "title": "자산 전송",
+    "complete": "전송 완료",
+    "receiver": {
+        "label": "받는 사람 주소",
+        "placeholder": "받는 사람 주소"
+    },
+    "quantity": {
+        "label": "수량",
+        "placeholder": "수량"
+    },
+    "memo": {
+        "label": "메모 (선택)",
+        "placeholder": "메모"
+    },
+    "fee": {
+        "label": "수수료",
+        "tooltip": "최소 수수료는 100 CCC이며, 수수료가 높을수록 빠르게 처리됩니다."
+    },
+    "payer": {
+        "label": "수수료 납부 주소",
+        "tooltip": "아래 주소에서 수수료를 이체합니다.",
+        "select": "선택",
+        "empty": "주소가 없습니다"
+    },
+    "add": "받는 사람 추가",
+    "button": "전송",
+    "recent": {
+        "title": "최근 거래내역",
+        "empty": "거래내역이 없습니다"
+    },
+    "list": {
+        "title": "자산 목록",
+        "empty": "보유하고 있는 자산이 없습니다"
+    },
+    "error": {
+        "memo": {
+            "maximum": "Maximum 25 characters limit"
+        },
+        "fee": {
+            "not_selected": "Select fee payer",
+            "invalid_balance": "invalid balance",
+            "required": "fee is required",
+            "invalid": "invalid number",
+            "minimum": "minimum value is {{minimum}}",
+            "not_enough": "not enough CCC"
+        },
+        "receiver": {
+            "required": "recipient address is required",
+            "not_available": "can't send asset to sender's address",
+            "invalid": "invalid address"
+        },
+        "quantity": {
+            "required": "quantity is required",
+            "invalid": "invalid number",
+            "minimum": "minimum value is 1",
+            "not_enough": "not enough asset"
+        },
+        "password": {
+            "wrong": "Wrong password. Please try again."
+        },
+        "gateway": {
+            "unauthorized": "The transaction was not authorized. Please contact the asset issuer for additional assistance."
+        }
+    }
+}

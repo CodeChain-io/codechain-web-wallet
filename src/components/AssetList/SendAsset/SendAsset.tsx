@@ -219,6 +219,7 @@ class SendAsset extends React.Component<Props, State> {
     ) => {
         const { UTXOList } = this.props;
         const {
+            t,
             selectedAssetType: assetType,
             address,
             networkId,
@@ -349,7 +350,7 @@ class SendAsset extends React.Component<Props, State> {
             );
         } catch (e) {
             if (e.message === "DecryptionFailed") {
-                toast.error("Wrong password. Please try again.", {
+                toast.error(t("send:asset.error.password.wrong"), {
                     position: toast.POSITION.BOTTOM_CENTER,
                     autoClose: 5000,
                     closeButton: false,
@@ -371,15 +372,12 @@ class SendAsset extends React.Component<Props, State> {
                 );
                 this.setState({ isSentTx: true });
             } catch (e) {
-                toast.error(
-                    "The transaction was not authorized. Please contact the asset issuer for additional assistance.",
-                    {
-                        position: toast.POSITION.BOTTOM_CENTER,
-                        closeButton: false,
-                        hideProgressBar: true,
-                        autoClose: false
-                    }
-                );
+                toast.error(t("send:asset.error.gateway.unauthorized"), {
+                    position: toast.POSITION.BOTTOM_CENTER,
+                    closeButton: false,
+                    hideProgressBar: true,
+                    autoClose: false
+                });
                 console.error(e);
             }
         } else {

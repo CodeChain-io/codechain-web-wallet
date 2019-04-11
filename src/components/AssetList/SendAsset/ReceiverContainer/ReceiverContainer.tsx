@@ -312,11 +312,12 @@ class ReceiverContainer extends React.Component<Props, State> {
     };
 
     private checkMemo = () => {
+        const { t } = this.props;
         const { memo } = this.state;
         if (memo.length > 25) {
             this.setState({
                 isMemoValid: false,
-                memoError: "Maximum 25 characters limit"
+                memoError: t("send:asset.error.memo.maximum")
             });
             return false;
         }
@@ -329,23 +330,23 @@ class ReceiverContainer extends React.Component<Props, State> {
 
     private checkFeeValidation = () => {
         const { fee, feePayer } = this.state;
-        const { availableQuarkList } = this.props;
+        const { t, availableQuarkList } = this.props;
 
         if (!feePayer) {
             this.setState({
                 isFeeValid: false,
-                feeError: "Select fee payer"
+                feeError: t("send:asset.error.fee.not_selected")
             });
             return false;
         }
         const availableQuark = availableQuarkList[feePayer];
         if (!availableQuark) {
-            throw Error("invalid balacne");
+            throw Error(t("send:asset.error.fee.invalid_balance"));
         }
         if (fee === "") {
             this.setState({
                 isFeeValid: false,
-                feeError: "fee is required"
+                feeError: t("send:asset.error.fee.required")
             });
             return false;
         }
@@ -353,14 +354,16 @@ class ReceiverContainer extends React.Component<Props, State> {
         if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
-                feeError: "invalid number"
+                feeError: t("send:asset.error.fee.invalid")
             });
             return false;
         }
         if (amountFee.lt(MinimumFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: `minimum value is ${MinimumFee}`
+                feeError: t("send:asset.error.fee.minimum", {
+                    minimum: MinimumFee
+                })
             });
             return false;
         }
@@ -368,7 +371,7 @@ class ReceiverContainer extends React.Component<Props, State> {
         if (availableQuark.value.lt(amountFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "not enough CCC"
+                feeError: t("send:asset.error.fee.not_enough")
             });
             return false;
         }
@@ -425,7 +428,7 @@ class ReceiverContainer extends React.Component<Props, State> {
 
     private handleAddressValidationCheck = (index: number) => {
         const { receivers } = this.state;
-        const { address: myAddress } = this.props;
+        const { t, address: myAddress } = this.props;
         const address = receivers[index].address;
         if (address === "") {
             this.setState({
@@ -434,7 +437,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                     [index]: {
                         ...this.state.addressValidations[index],
                         isAddressValid: false,
-                        addressError: "recipient address is required"
+                        addressError: t("send:asset.error.receiver.required")
                     }
                 }
             });
@@ -447,7 +450,9 @@ class ReceiverContainer extends React.Component<Props, State> {
                     [index]: {
                         ...this.state.addressValidations[index],
                         isAddressValid: false,
-                        addressError: "can't send asset to sender's address"
+                        addressError: t(
+                            "send:asset.error.receiver.not_available"
+                        )
                     }
                 }
             });
@@ -475,7 +480,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                 [index]: {
                     ...this.state.addressValidations[index],
                     isAddressValid: false,
-                    addressError: "invalid address"
+                    addressError: t("send:asset.error.receiver.invalid")
                 }
             }
         });
@@ -484,7 +489,7 @@ class ReceiverContainer extends React.Component<Props, State> {
 
     private handleQuantityValidationCheck = (index: number) => {
         const { receivers } = this.state;
-        const { totalQuantity } = this.props;
+        const { t, totalQuantity } = this.props;
         const quantityString = this.state.receivers[index].quantity;
         if (quantityString === "") {
             this.setState({
@@ -493,7 +498,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                     [index]: {
                         ...this.state.quantityValidations[index],
                         isQuantityValid: false,
-                        quantityError: "quantity is required"
+                        quantityError: t("send:asset.error.quantity.required")
                     }
                 }
             });
@@ -507,7 +512,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                     [index]: {
                         ...this.state.quantityValidations[index],
                         isQuantityValid: false,
-                        quantityError: "invalid number"
+                        quantityError: t("send:asset.error.quantity.invalid")
                     }
                 }
             });
@@ -520,7 +525,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                     [index]: {
                         ...this.state.quantityValidations[index],
                         isQuantityValid: false,
-                        quantityError: "minimum value is 1"
+                        quantityError: t("send:asset.error.quantity.minimum")
                     }
                 }
             });
@@ -542,7 +547,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                     [index]: {
                         ...this.state.quantityValidations[index],
                         isQuantityValid: false,
-                        quantityError: "not enough asset"
+                        quantityError: t("send:asset.error.quantity.not_enough")
                     }
                 }
             });
