@@ -1,0 +1,25 @@
+{
+    "title": "Charge CCC",
+    "loading": "Loading...",
+    "select_address": {
+        "title": "Top up your CCC address"
+    },
+    "description": "You can get CCC by transferring BTC to the address below. Maximum charging amount is 30 million CCC. If you want to charge in larger bulks, contact support@kodebox.io.",
+    "empty_address": "There is no CCC address",
+    "btc_address": {
+        "title": "BTC Address",
+        "loading": "Loading..."
+    },
+    "exchange_rate": {
+        "button": "CCC simulator"
+    },
+    "exchange_state": {
+        "title": "Status",
+        "no_record": "There is no record",
+        "loading": "Loading...",
+        "success": "Success",
+        "pending": "Pending",
+        "confirm_left": "{{confirmCount}} confirm{{isPlural}} left",
+        "reverted": "Reverted"
+    }
+}

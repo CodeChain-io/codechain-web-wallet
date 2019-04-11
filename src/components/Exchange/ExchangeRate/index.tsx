@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import * as React from "react";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -20,7 +21,7 @@ interface DispatchProps {
     fetchBTCToCCCRateIfNeed: () => Promise<void>;
 }
 
-type Props = StateProps & DispatchProps;
+type Props = WithTranslation & StateProps & DispatchProps;
 class ExchangeRate extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -56,7 +57,7 @@ class ExchangeRate extends React.Component<Props, State> {
                             className="simulator-label"
                             onClick={this.toggleCalculator}
                         >
-                            CCC simulator
+                            <Trans i18nKey="charge:exchange_rate.button" />
                         </span>
                     </div>
                 </div>
@@ -94,4 +95,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(ExchangeRate);
+)(withTranslation()(ExchangeRate));

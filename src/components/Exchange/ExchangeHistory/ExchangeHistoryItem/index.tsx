@@ -1,10 +1,11 @@
 import { BigNumber } from "bignumber.js";
 import * as React from "react";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { NetworkId } from "../../../../model/address";
 import { getExplorerHost } from "../../../../utils/network";
 import "./index.css";
 
-interface Props {
+interface OwnProps {
     history: {
         received: {
             hash: string;
@@ -21,7 +22,8 @@ interface Props {
     networkId: NetworkId;
 }
 
-export default class ExchangeHistoryItem extends React.Component<Props, any> {
+type Props = OwnProps & WithTranslation;
+class ExchangeHistoryItem extends React.Component<Props, any> {
     public render() {
         const { history, networkId } = this.props;
         return (
@@ -46,13 +48,7 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
                                     history.received.status
                                 }`}
                             >
-                                {history.received.status === "pending"
-                                    ? `${2 - history.received.confirm} confirm${
-                                          2 - history.received.confirm >= 2
-                                              ? "s"
-                                              : ""
-                                      } left`
-                                    : history.received.status}
+                                {this.renderStatus(history.received.status)}
                             </span>
                         </a>
                     </div>
@@ -79,7 +75,7 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
                                             history.sent.status
                                         }`}
                                     >
-                                        {history.sent.status}
+                                        {this.renderStatus(history.sent.status)}
                                     </span>
                                 </a>
                             </div>
@@ -89,4 +85,29 @@ export default class ExchangeHistoryItem extends React.Component<Props, any> {
             </div>
         );
     }
+    private renderStatus = (
+        status: "success" | "reverted" | "pending",
+        confirm?: number
+    ) => {
+        if (status === "success") {
+            return <Trans i18nKey="success" />;
+        } else if (status === "pending" && confirm != null) {
+            return (
+                <Trans
+                    i18nKey="confirm_left"
+                    values={{
+                        confirmCount: 2 - confirm,
+                        isPlural: 2 - confirm >= 2 ? "s" : ""
+                    }}
+                />
+            );
+        } else if (status === "pending") {
+            return <Trans i18nKey="pending" />;
+        } else if (status === "reverted") {
+            return <Trans i18nKey="reverted" />;
+        }
+        return null;
+    };
 }
+
+export default withTranslation()(ExchangeHistoryItem);

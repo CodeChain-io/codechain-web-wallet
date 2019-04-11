@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -35,7 +36,7 @@ interface DispatchProps {
     fetchExchangeHistoryIfNeed: (address: string) => Promise<void>;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 class ExchangeHistory extends React.Component<Props, any> {
     public componentDidMount() {
         this.props.fetchExchangeHistoryIfNeed(this.props.address);
@@ -50,7 +51,7 @@ class ExchangeHistory extends React.Component<Props, any> {
         return (
             <div className="Exchange-history">
                 <h5 className="exchange-address-title">
-                    Status{" "}
+                    <Trans i18nKey="charge:exchange_rate.title" />{" "}
                     <span onClick={this.refresh} className="refresh-btn">
                         <FontAwesomeIcon icon="redo-alt" className="ml-1" />
                     </span>
@@ -72,14 +73,14 @@ class ExchangeHistory extends React.Component<Props, any> {
                                         <img src={Empty} />
                                     </div>
                                     <div className="mt-3 empty">
-                                        There is no record
+                                        <Trans i18nKey="charge:exchange_state.no_record" />
                                     </div>
                                 </div>
                             </div>
                         )
                     ) : (
                         <div className="exchange-history-loading">
-                            loading...
+                            <Trans i18nKey="loading" />
                         </div>
                     )}
                 </div>
@@ -113,4 +114,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(ExchangeHistory);
+)(withTranslation()(ExchangeHistory));

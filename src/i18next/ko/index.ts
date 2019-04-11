@@ -1,3 +1,4 @@
+import * as charge from "./charge.json";
 import * as create_confirm from "./create/confirm.json";
 import * as create_mnemonic from "./create/mnemonic.json";
 import * as create_seed from "./create/seed.json";
@@ -17,5 +18,6 @@ export default {
     main,
     mint,
     send,
-    welcome
+    welcome,
+    charge
 };

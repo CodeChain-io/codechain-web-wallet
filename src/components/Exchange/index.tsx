@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
@@ -25,7 +26,7 @@ interface DispatchProps {
 interface State {
     selectedAddress?: string;
 }
-type Props = StateProps & DispatchProps & RouteComponentProps;
+type Props = WithTranslation & StateProps & DispatchProps & RouteComponentProps;
 class Exchange extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -65,14 +66,18 @@ class Exchange extends React.Component<Props, State> {
                         </Link>
                     </div>
                     <div className="page-container exchange-container">
-                        <h2 className="title">Charge CCC</h2>
+                        <h2 className="title">
+                            <Trans i18nKey={"charge:title"} />
+                        </h2>
                         {!platformAddresses ? (
-                            <span className="loading-text">Loading...</span>
+                            <span className="loading-text">
+                                <Trans i18nKey="charge:loading" />
+                            </span>
                         ) : selectedAddress ? (
                             <div>
                                 <div className="select-address-container">
                                     <span className="select-address-label">
-                                        Top up your CCC address
+                                        <Trans i18nKey="charge:select_address.title" />
                                     </span>
                                     <select
                                         onChange={
@@ -89,11 +94,7 @@ class Exchange extends React.Component<Props, State> {
                                 </div>
                                 <div className="description-container">
                                     <span className="description">
-                                        You can get CCC by transferring BTC to
-                                        the address below. Maximum charging
-                                        amount is 30 million CCC. If you want to
-                                        charge in larger bulks, contact
-                                        support@kodebox.io.
+                                        <Trans i18nKey="charge:description" />
                                     </span>
                                 </div>
                                 <div className="btc-address-container">
@@ -110,7 +111,7 @@ class Exchange extends React.Component<Props, State> {
                             </div>
                         ) : (
                             <span className="no-address-label">
-                                There is no CCC address
+                                <Trans i18nKey="charge:empty_address" />
                             </span>
                         )}
                     </div>
@@ -138,4 +139,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Exchange);
+)(withTranslation()(Exchange));

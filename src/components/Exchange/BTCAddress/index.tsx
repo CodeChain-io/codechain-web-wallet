@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
+import { WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import { Action } from "redux";
@@ -22,7 +23,7 @@ interface DispatchProps {
     fetchBTCAddressIfNeed: (address: string) => Promise<void>;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 class BTCAddress extends React.Component<Props> {
     public componentDidMount() {
         const { address } = this.props;
@@ -34,16 +35,16 @@ class BTCAddress extends React.Component<Props> {
         }
     }
     public render() {
-        const { btcAddress } = this.props;
+        const { btcAddress, t } = this.props;
         return (
             <div className="BTC-address">
                 <div className="d-flex input-container">
                     <ValidationInput
                         className="btc-input"
-                        value={btcAddress || "Loading..."}
+                        value={btcAddress || t("charge:btc_address.loading")!}
                         showValidation={false}
                         disable={true}
-                        labelText="BTC Address"
+                        labelText={t("charge:btc_address.title")}
                     />
                     <CopyToClipboard
                         text={btcAddress || ""}
@@ -88,4 +89,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(BTCAddress);
+)(withTranslation()(BTCAddress));
