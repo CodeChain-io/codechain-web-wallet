@@ -1,7 +1,9 @@
+import BigNumber from "bignumber.js";
 import { AssetSchemeDoc } from "codechain-indexer-types";
 import { H160, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Col, Row } from "reactstrap";
@@ -37,7 +39,7 @@ interface DispatchProps {
     fetchWalletFromStorageIfNeed: () => void;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = OwnProps & StateProps & DispatchProps & WithTranslation;
 
 class AssetDetail extends React.Component<Props, any> {
     public async componentDidMount() {
@@ -52,7 +54,8 @@ class AssetDetail extends React.Component<Props, any> {
             },
             networkId,
             availableAsset,
-            addressName
+            addressName,
+            t
         } = this.props;
         if (!assetScheme || !availableAsset) {
             return null;
@@ -68,7 +71,9 @@ class AssetDetail extends React.Component<Props, any> {
                         addressName={addressName}
                     />
                     <div className="detail-history-container">
-                        <h4 className="mr-auto">Asset detail</h4>
+                        <h4 className="mr-auto">
+                            <Trans i18nKey={"asset:title"} />
+                        </h4>
                         <div className="d-flex mt-4 mb-4 align-itmes-center">
                             <ImageLoader
                                 className="asset-image"
@@ -87,7 +92,7 @@ class AssetDetail extends React.Component<Props, any> {
                                 </div>
                                 <div>
                                     <span className="total-text mr-3">
-                                        Total
+                                        <Trans i18nKey={"asset:total"} />
                                     </span>
                                     <span className="quantity-text number">
                                         {availableAsset.quantities.toLocaleString()}
@@ -98,23 +103,35 @@ class AssetDetail extends React.Component<Props, any> {
                         <hr />
                         <div className="info-container">
                             <Row>
-                                <Col md={2}>Description</Col>
+                                <Col md={2}>
+                                    <Trans i18nKey={"asset:description"} />
+                                </Col>
                                 <Col md={10}>
-                                    {metadata.description || "None"}
+                                    {metadata.description || t("asset:none")}
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md={2}>Approver</Col>
+                                <Col md={2}>
+                                    <Trans i18nKey="asset:approver" />
+                                </Col>
                                 <Col md={10}>
-                                    {assetScheme.approver || "None"}
+                                    {assetScheme.approver || t("asset:none")}
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md={2}>Total supply</Col>
-                                <Col md={10}>{assetScheme.supply}</Col>
+                                <Col md={2}>
+                                    <Trans i18nKey="asset:total_supply" />
+                                </Col>
+                                <Col md={10}>
+                                    {new BigNumber(
+                                        assetScheme.supply
+                                    ).toFormat()}
+                                </Col>
                             </Row>
                         </div>
-                        <h4 className="mb-3">Recent transactions</h4>
+                        <h4 className="mb-3">
+                            <Trans i18nKey="asset:recent_transactions" />
+                        </h4>
                         <AssetTxHistory
                             address={address}
                             assetType={new H160(assetType)}
@@ -178,4 +195,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AssetDetail);
+)(withTranslation()(AssetDetail));
