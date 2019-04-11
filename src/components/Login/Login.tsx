@@ -110,7 +110,7 @@ class Login extends React.Component<Props, State> {
     }
 
     public handleOnChangePassphrase = (passphrase: string) => {
-        this.setState({ passphrase });
+        this.setState({ passphrase, isValid: undefined });
     };
 
     public handleSignIn = async () => {
