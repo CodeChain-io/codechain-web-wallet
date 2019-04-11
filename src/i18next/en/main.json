@@ -23,5 +23,6 @@
     },
     "confirmed": "Confirmed",
     "pending": "Pending",
-    "memo": "Memo"
+    "memo": "Memo",
+    "copied": "Copied to clipboard"
 }

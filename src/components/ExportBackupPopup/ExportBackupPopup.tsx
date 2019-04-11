@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 import Form from "reactstrap/lib/Form";
@@ -21,8 +22,11 @@ interface State {
     backupPhraseString?: string | null;
 }
 
-class ExportBackupPopup extends React.Component<Props, State> {
-    constructor(props: Props) {
+class ExportBackupPopup extends React.Component<
+    Props & WithTranslation,
+    State
+> {
+    constructor(props: Props & WithTranslation) {
         super(props);
         this.state = {
             passphrase: "",
@@ -33,7 +37,7 @@ class ExportBackupPopup extends React.Component<Props, State> {
         };
     }
     public render() {
-        const { className, toggle, isOpen } = this.props;
+        const { className, toggle, isOpen, t } = this.props;
         const {
             passphrase,
             isValidPassphrase,
@@ -49,7 +53,9 @@ class ExportBackupPopup extends React.Component<Props, State> {
                 size="sm"
                 centered={true}
             >
-                <ModalHeader toggle={toggle}>Backup phrase</ModalHeader>
+                <ModalHeader toggle={toggle}>
+                    <Trans i18nKey="backup:title" />
+                </ModalHeader>
                 <ModalBody>
                     <Form onSubmit={this.handleOnFormSubmit}>
                         <div className="passphrase-container">
@@ -72,8 +78,7 @@ class ExportBackupPopup extends React.Component<Props, State> {
                             {!revealBackupPhrase && (
                                 <div className="d-flex align-items-center justify-content-center disable-panel">
                                     <span>
-                                        Enter your passphrase to reveal backup
-                                        phrase.
+                                        <Trans i18nKey="backup:reveal" />
                                     </span>
                                 </div>
                             )}
@@ -83,8 +88,8 @@ class ExportBackupPopup extends React.Component<Props, State> {
                                 onChange={this.handlePassphrase}
                                 value={passphrase}
                                 showValidation={true}
-                                labelText="PASSWORD"
-                                placeholder="password"
+                                labelText={t("backup:password.label")}
+                                placeholder={t("backup:password.placeholder")}
                                 type="password"
                                 isValid={isValidPassphrase}
                                 error={passphraseError}
@@ -101,7 +106,7 @@ class ExportBackupPopup extends React.Component<Props, State> {
                                     revealBackupPhrase
                                 }
                             >
-                                SEE BACKUP PHRASE
+                                <Trans i18nKey="backup:see_btn" />
                             </Button>
                         </div>
                     </Form>
@@ -131,7 +136,7 @@ class ExportBackupPopup extends React.Component<Props, State> {
         } else {
             this.setState({
                 isValidPassphrase: false,
-                passphraseError: "invalid password"
+                passphraseError: this.props.t("backup:password_error")
             });
         }
     };
@@ -148,7 +153,7 @@ class ExportBackupPopup extends React.Component<Props, State> {
         });
     };
     private handleCopyPhrase = () => {
-        toast.info("Copied!", {
+        toast.info(this.props.t("main:copied"), {
             position: toast.POSITION.BOTTOM_CENTER,
             autoClose: 1000,
             closeButton: false,
@@ -157,4 +162,4 @@ class ExportBackupPopup extends React.Component<Props, State> {
     };
 }
 
-export default ExportBackupPopup;
+export default withTranslation()(ExportBackupPopup);

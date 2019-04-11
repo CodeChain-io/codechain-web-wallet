@@ -57,9 +57,13 @@ class PayTxItem extends React.Component<Props & WithTranslation, any> {
                 </div>
                 <div className="status-container">
                     {isPending ? (
-                        <Trans i18nKey="main:pending" />
+                        <span className="pending">
+                            <Trans i18nKey="main:pending" />
+                        </span>
                     ) : (
-                        <Trans i18nKey="main:confirmed" />
+                        <span className="confirmed">
+                            <Trans i18nKey="main:confirmed" />
+                        </span>
                     )}
                 </div>
             </div>

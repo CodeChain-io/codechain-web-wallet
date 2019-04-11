@@ -19,9 +19,10 @@
     },
     "menu": {
         "sign_out": "로그아웃",
-        "backup_phrase": "백업 문구"
+        "backup_phrase": "백업 문구 확인"
     },
     "confirmed": "완료",
     "pending": "처리중",
-    "memo": "메모"
+    "memo": "메모",
+    "copied": "클립보드에 복사되었습니다"
 }

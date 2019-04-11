@@ -86,7 +86,7 @@ class AddressContainer extends React.Component<Props & WithTranslation, State> {
     };
 
     private handleCopyAddress = () => {
-        toast.info("Copied!", {
+        toast.info(this.props.t("main:copied"), {
             position: toast.POSITION.BOTTOM_CENTER,
             autoClose: 1000,
             closeButton: false,

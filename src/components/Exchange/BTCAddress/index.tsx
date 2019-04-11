@@ -60,7 +60,7 @@ class BTCAddress extends React.Component<Props> {
     }
 
     private handleCopyPhrase = () => {
-        toast.info("Copied!", {
+        toast.info(this.props.t("main:copied"), {
             position: toast.POSITION.BOTTOM_CENTER,
             autoClose: 1000,
             closeButton: false,

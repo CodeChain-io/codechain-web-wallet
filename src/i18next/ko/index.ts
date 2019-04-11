@@ -1,4 +1,5 @@
 import * as asset from "./asset.json";
+import * as backup from "./backup.json";
 import * as charge from "./charge.json";
 import * as create_confirm from "./create/confirm.json";
 import * as create_mnemonic from "./create/mnemonic.json";
@@ -27,5 +28,6 @@ export default {
     },
     welcome,
     charge,
-    asset
+    asset,
+    backup
 };

@@ -187,7 +187,7 @@ class AddressItem extends React.Component<Props, State> {
         this.setState({ isCopyHovering: false });
     };
     private handleCopyAddress = () => {
-        toast.info("Copied!", {
+        toast.info(this.props.t("main:copied"), {
             position: toast.POSITION.BOTTOM_CENTER,
             autoClose: 1000,
             closeButton: false,
