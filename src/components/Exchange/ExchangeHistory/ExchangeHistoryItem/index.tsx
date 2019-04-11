@@ -48,7 +48,10 @@ class ExchangeHistoryItem extends React.Component<Props, any> {
                                     history.received.status
                                 }`}
                             >
-                                {this.renderStatus(history.received.status)}
+                                {this.renderStatus(
+                                    history.received.status,
+                                    history.received.confirm
+                                )}
                             </span>
                         </a>
                     </div>

@@ -96,11 +96,6 @@ class RestoreWallet extends React.Component<Props, State> {
                             onChange={this.handleChangeSecretPhraseInput}
                         />
                     </div>
-                    <div className="password-description">
-                        <span>
-                            <Trans i18nKey="restore:mnemonic.detail" />
-                        </span>
-                    </div>
                     <div className="username-input-container">
                         <ValidationInput
                             labelText={t("restore:name.label")}
@@ -139,6 +134,11 @@ class RestoreWallet extends React.Component<Props, State> {
                             error={passphraseConfirmError}
                             onBlur={this.checkPassphraseConfirm}
                         />
+                    </div>
+                    <div className="password-description">
+                        <span>
+                            <Trans i18nKey="restore:mnemonic.detail" />
+                        </span>
                     </div>
                     <div className="main-btn-container">
                         <button
