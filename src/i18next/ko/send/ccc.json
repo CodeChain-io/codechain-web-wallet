@@ -1,7 +1,7 @@
 {
     "title": "CCC 전송",
     "complete": "전송 완료",
-    "balance": "잔고",
+    "balance": "잔액",
     "receiver": {
         "label": "받는 사람 주소",
         "placeholder": "받는 사람 주소"

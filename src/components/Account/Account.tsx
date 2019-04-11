@@ -89,9 +89,9 @@ class Account extends React.Component<Props, State> {
                         />
                         <div>
                             <div className="element-container mb-3">
-                                <h5 className="element-title">
+                                <h4 className="element-title">
                                     <Trans i18nKey="send:ccc.balance" />
-                                </h5>
+                                </h4>
                                 <div className="ccc-text number">
                                     <span className="mr-2">
                                         {availableQuark.toLocaleString()}
