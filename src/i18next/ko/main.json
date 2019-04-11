@@ -16,7 +16,7 @@
         "faucet": "CodeChain Faucet"
     },
     "menu": {
-        "sign_out": "Sign out",
-        "backup_phrase": "Backup phrase"
+        "sign_out": "로그아웃",
+        "backup_phrase": "백업 문구"
     }
 }
