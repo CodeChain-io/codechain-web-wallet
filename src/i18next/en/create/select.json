@@ -1,11 +1,11 @@
 {
-    "title": "Securely store and transfer your asset tokens with CodeChain Wallet. First time using CodeChain Wallet?",
+    "title": "Securely store and transfer your asset tokens with CodeChain Wallet. <b>First time using CodeChain Wallet?</b>",
     "create": {
-        "title": "Yes, Create a new wallet",
+        "title": "Yes, create a new wallet",
         "detail": "Create a new wallet and its backup phrase."
     },
     "restore": {
-        "title": "No, I already have",
-        "detail": "Sign in using backup phrase."
+        "title": "No, I already have one",
+        "detail": "Sign in using a backup phrase."
     }
 }
