@@ -11,6 +11,7 @@ import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { isAssetAddress, isPlatformAddress } from "../../model/address";
 import {
+    getCountOfTxByAddress,
     getPendingTransactions,
     getTxsByAddress,
     sendTxToGateway
@@ -28,7 +29,11 @@ export type Action =
     | UpdateBestBlockNumber
     | SetFetchingBestBlockNumber
     | SetFetchingTxListById
-    | CacheTxListById;
+    | CacheTxListById
+    | SetFetchingCountOfTxList
+    | SetFetchingCountOfTxListById
+    | CacheCountOfTxList
+    | CacheCountOfTxListById;
 
 export enum ActionType {
     CachePendingTxList = "CachePendingTxList",
@@ -38,7 +43,11 @@ export enum ActionType {
     SetFetchingBestBlockNumber = "SetFetchingBestBlockNumber",
     SetFetchingTxList = "SetFetchingTxList",
     SetFetchingTxListById = "SetFetchingTxListById",
-    CacheTxListById = "CacheTxListById"
+    CacheTxListById = "CacheTxListById",
+    SetFetchingCountOfTxList = "SetFetchingCountOfTxList",
+    SetFetchingCountOfTxListById = "SetFetchingCountOfTxListById",
+    CacheCountOfTxList = "CacheCountOfTxList",
+    CacheCountOfTxListById = "CacheCountOfTxListById"
 }
 
 export interface SetFetchingTxListById {
@@ -98,6 +107,82 @@ export interface UpdateBestBlockNumber {
 export interface SetFetchingBestBlockNumber {
     type: ActionType.SetFetchingBestBlockNumber;
 }
+
+export interface SetFetchingCountOfTxList {
+    type: ActionType.SetFetchingCountOfTxList;
+    data: {
+        address: string;
+    };
+}
+
+export interface SetFetchingCountOfTxListById {
+    type: ActionType.SetFetchingCountOfTxListById;
+    data: {
+        address: string;
+        assetType: H160;
+    };
+}
+
+export interface CacheCountOfTxList {
+    type: ActionType.CacheCountOfTxList;
+    data: {
+        address: string;
+        count: number;
+    };
+}
+
+export interface CacheCountOfTxListById {
+    type: ActionType.CacheCountOfTxListById;
+    data: {
+        address: string;
+        assetType: H160;
+        count: number;
+    };
+}
+
+const cacheCountOfTxList = (
+    address: string,
+    count: number
+): CacheCountOfTxList => ({
+    type: ActionType.CacheCountOfTxList,
+    data: {
+        address,
+        count
+    }
+});
+
+const cacheCountOfTxListById = (
+    address: string,
+    assetType: H160,
+    count: number
+): CacheCountOfTxListById => ({
+    type: ActionType.CacheCountOfTxListById,
+    data: {
+        address,
+        assetType,
+        count
+    }
+});
+
+const setFetchingCountOfTxList = (
+    address: string
+): SetFetchingCountOfTxList => ({
+    type: ActionType.SetFetchingCountOfTxList,
+    data: {
+        address
+    }
+});
+
+const setFetchingCountOfTxListById = (
+    address: string,
+    assetType: H160
+): SetFetchingCountOfTxListById => ({
+    type: ActionType.SetFetchingCountOfTxListById,
+    data: {
+        address,
+        assetType
+    }
+});
 
 const cachePendingTxList = (
     address: string,
@@ -162,16 +247,21 @@ const fetchPendingTxListIfNeed = (address: string) => {
     };
 };
 
-const fetchTxListIfNeed = (address: string) => {
+const fetchTxListIfNeed = (
+    address: string,
+    params?: { page?: number; itemsPerPage?: number; force: boolean }
+) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
+        const { page = 1, itemsPerPage = 10, force = false } = params || {};
         const cachedTxList = getState().chainReducer.txList[address];
-        if (cachedTxList && cachedTxList.isFetching) {
+        if (!force && cachedTxList && cachedTxList.isFetching) {
             return;
         }
         if (
+            !force &&
             cachedTxList &&
             cachedTxList.updatedAt &&
             +new Date() - cachedTxList.updatedAt < 3000
@@ -187,8 +277,12 @@ const fetchTxListIfNeed = (address: string) => {
                 }
             });
             const networkId = getState().globalReducer.networkId;
-            // FIXME: Add pagination
-            const txList = await getTxsByAddress(address, 1, 100, networkId);
+            const txList = await getTxsByAddress(
+                address,
+                page,
+                itemsPerPage,
+                networkId
+            );
             dispatch({
                 type: ActionType.CacheTxList,
                 data: {
@@ -205,6 +299,75 @@ const fetchTxListIfNeed = (address: string) => {
                     dispatch(accountActions.calculateAvailableQuark(address));
                 }
             }, 300);
+            dispatch(hideLoading() as any);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+const fetchCountOfTxListIfNeed = (address: string) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const cachedCountOfTxList = getState().chainReducer.countOfTxList[
+            address
+        ];
+        if (cachedCountOfTxList && cachedCountOfTxList.isFetching) {
+            return;
+        }
+        if (
+            cachedCountOfTxList &&
+            cachedCountOfTxList.updatedAt &&
+            +new Date() - cachedCountOfTxList.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch(showLoading() as any);
+            dispatch(setFetchingCountOfTxList(address));
+            const networkId = getState().globalReducer.networkId;
+            const txCount = await getCountOfTxByAddress({ address, networkId });
+            dispatch(cacheCountOfTxList(address, txCount));
+            dispatch(hideLoading() as any);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+};
+
+const fetchCountOfTxListByAssetTypeIfNeed = (
+    address: string,
+    assetType: H160
+) => {
+    return async (
+        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
+        getState: () => ReducerConfigure
+    ) => {
+        const id = getIdByAddressAssetType(address, assetType);
+        const cachedCountOfTxListById = getState().chainReducer
+            .countOfTxListById[id];
+        if (cachedCountOfTxListById && cachedCountOfTxListById.isFetching) {
+            return;
+        }
+        if (
+            cachedCountOfTxListById &&
+            cachedCountOfTxListById.updatedAt &&
+            +new Date() - cachedCountOfTxListById.updatedAt < 3000
+        ) {
+            return;
+        }
+        try {
+            dispatch(showLoading() as any);
+            dispatch(setFetchingCountOfTxListById(address, assetType));
+            const networkId = getState().globalReducer.networkId;
+            const txCount = await getCountOfTxByAddress({
+                address,
+                networkId,
+                assetType
+            });
+            dispatch(cacheCountOfTxListById(address, assetType, txCount));
             dispatch(hideLoading() as any);
         } catch (e) {
             console.log(e);
@@ -329,17 +492,23 @@ const sendTransactionByGateway = (
     };
 };
 
-const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H160) => {
+const fetchTxListByAssetTypeIfNeed = (
+    address: string,
+    assetType: H160,
+    params?: { page?: number; itemsPerPage?: number; force: boolean }
+) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
+        const { page = 1, itemsPerPage = 10, force = false } = params || {};
         const id = getIdByAddressAssetType(address, assetType);
         const cachedTxListById = getState().chainReducer.txListById[id];
-        if (cachedTxListById && cachedTxListById.isFetching) {
+        if (!force && cachedTxListById && cachedTxListById.isFetching) {
             return;
         }
         if (
+            !force &&
             cachedTxListById &&
             cachedTxListById.updatedAt &&
             +new Date() - cachedTxListById.updatedAt < 3000
@@ -356,11 +525,10 @@ const fetchTxListByAssetTypeIfNeed = (address: string, assetType: H160) => {
                 }
             });
             const networkId = getState().globalReducer.networkId;
-            // FIXME: Add pagination
             const txList = await getTxsByAddress(
                 address,
-                1,
-                100,
+                page,
+                itemsPerPage,
                 networkId,
                 assetType
             );
@@ -384,5 +552,7 @@ export default {
     fetchTxListIfNeed,
     fetchTxListByAssetTypeIfNeed,
     sendSignedTransaction,
-    sendTransactionByGateway
+    sendTransactionByGateway,
+    fetchCountOfTxListByAssetTypeIfNeed,
+    fetchCountOfTxListIfNeed
 };

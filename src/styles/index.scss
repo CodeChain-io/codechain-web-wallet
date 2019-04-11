@@ -137,3 +137,30 @@ input.form-control[type="number"] {
     background-color: $wallet-blue;
   }
 }
+
+.pagination {
+  display: inline-flex;
+  .page-link {
+    padding: 0px 8px 0px 8px;
+    line-height: 28px;
+    color: $standard-grey;
+    border: none;
+    font-size: 1.3rem;
+
+    &:hover {
+      background-color: inherit;
+    }
+  }
+  .navigation-icon {
+    color: $standard-grey;
+    font-size: 1.3rem;
+    border-radius: 2px;
+  }
+  .page-item.active {
+    .page-link {
+      background-color: inherit;
+      color: $wallet-blue;
+      font-weight: bold;
+    }
+  }
+}

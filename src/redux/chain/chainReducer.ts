@@ -17,6 +17,13 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
+    countOfTxList: {
+        [address: string]: {
+            data?: number | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
     pendingTxListById: {
         [id: string]: {
             data?: TransactionDoc[] | null;
@@ -31,6 +38,13 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
+    countOfTxListById: {
+        [id: string]: {
+            data?: number | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
     bestBlockNumber?: {
         data?: number | null;
         isFetching: boolean;
@@ -41,8 +55,10 @@ export interface ChainState {
 export const chainInitState: ChainState = {
     pendingTxList: {},
     txList: {},
+    countOfTxList: {},
     bestBlockNumber: undefined,
     txListById: {},
+    countOfTxListById: {},
     pendingTxListById: {}
 };
 
@@ -134,6 +150,62 @@ export const chainReducer = (
             return {
                 ...state,
                 txList
+            };
+        }
+        case ActionType.SetFetchingCountOfTxList: {
+            return {
+                ...state,
+                countOfTxList: {
+                    ...state.countOfTxList,
+                    [action.data.address]: {
+                        ...state.countOfTxList[action.data.address],
+                        isFetching: true
+                    }
+                }
+            };
+        }
+        case ActionType.SetFetchingCountOfTxListById: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const id = getIdByAddressAssetType(address, assetType);
+            return {
+                ...state,
+                countOfTxListById: {
+                    ...state.countOfTxListById,
+                    [id]: {
+                        ...state.countOfTxListById[id],
+                        isFetching: true
+                    }
+                }
+            };
+        }
+        case ActionType.CacheCountOfTxList: {
+            return {
+                ...state,
+                countOfTxList: {
+                    ...state.countOfTxList,
+                    [action.data.address]: {
+                        data: action.data.count,
+                        isFetching: false,
+                        updatedAt: +new Date()
+                    }
+                }
+            };
+        }
+        case ActionType.CacheCountOfTxListById: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const id = getIdByAddressAssetType(address, assetType);
+            return {
+                ...state,
+                countOfTxListById: {
+                    ...state.countOfTxListById,
+                    [id]: {
+                        data: action.data.count,
+                        isFetching: false,
+                        updatedAt: +new Date()
+                    }
+                }
             };
         }
         case ActionType.SetFetchingTxListById: {

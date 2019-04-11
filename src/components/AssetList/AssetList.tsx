@@ -205,7 +205,7 @@ class AssetList extends React.Component<Props, State> {
         this.clearInterval();
         this.refresher = setInterval(() => {
             this.fetchAll();
-        }, 5000);
+        }, 10000);
         this.fetchAll();
     };
     private clearInterval = () => {

@@ -2,7 +2,8 @@
 @import "styles/mixin.scss";
 
 .Asset-tx-item {
-  border-top: 1px solid $disabled-grey;
+  border-bottom: 1px solid $disabled-grey;
+
   & > div {
     padding: 18px;
 
