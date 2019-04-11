@@ -11,5 +11,9 @@
         "add": "주소 추가",
         "charge": "CCC 충전",
         "faucet": "CodeChain Faucet"
+    },
+    "menu": {
+        "sign_out": "Sign out",
+        "backup_phrase": "Backup phrase"
     }
 }

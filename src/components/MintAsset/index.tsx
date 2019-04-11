@@ -141,7 +141,9 @@ class MintAsset extends React.Component<Props, State> {
                         </Link>
                     </div>
                     <div className="page-container mint-container">
-                        <h2 className="title">Mint asset</h2>
+                        <h2 className="title">
+                            <Trans i18nKey="mint:title" />
+                        </h2>
                         <span className="mint-description">
                             <Trans i18nKey="mint:detail" />
                         </span>
@@ -168,8 +170,10 @@ class MintAsset extends React.Component<Props, State> {
                                     <div>
                                         <div className="asset-info-container">
                                             <ValidationInput
-                                                labelText="Name"
-                                                placeholder="name"
+                                                labelText={t("mint:name.label")}
+                                                placeholder={t(
+                                                    "mint:name.placeholder"
+                                                )}
                                                 value={name}
                                                 onChange={this.handleNameChange}
                                                 showValidation={false}
@@ -183,7 +187,9 @@ class MintAsset extends React.Component<Props, State> {
                                                 labelText={t(
                                                     "mint:supply.label"
                                                 )}
-                                                placeholder="supply"
+                                                placeholder={t(
+                                                    "mint:supply.placeholder"
+                                                )}
                                                 value={supply}
                                                 type="number"
                                                 onChange={
@@ -192,9 +198,9 @@ class MintAsset extends React.Component<Props, State> {
                                                 showValidation={false}
                                                 isValid={isSupplyValid}
                                                 error={supplyError}
-                                                tooltip={
-                                                    "The total number of tokens issued."
-                                                }
+                                                tooltip={t(
+                                                    "mint:supply.tooltip"
+                                                )}
                                                 onBlur={
                                                     this.checkSupplyValidation
                                                 }
@@ -202,16 +208,20 @@ class MintAsset extends React.Component<Props, State> {
                                             <div className="d-flex">
                                                 <div className="icon-url-input-container">
                                                     <ValidationInput
-                                                        labelText="Icon URL (Optional)"
-                                                        placeholder="url"
+                                                        labelText={t(
+                                                            "mint:url.label"
+                                                        )}
+                                                        placeholder={t(
+                                                            "mint:url.placeholder"
+                                                        )}
                                                         value={iconURL}
                                                         onChange={
                                                             this
                                                                 .handleIconURLChange
                                                         }
-                                                        tooltip={
-                                                            "Upload the url of the image to be used as the token's icon. If nothing is uploaded, a random icon(identicon) will be created."
-                                                        }
+                                                        tooltip={t(
+                                                            "mint:url.tooltip"
+                                                        )}
                                                         showValidation={false}
                                                     />
                                                 </div>
@@ -274,14 +284,20 @@ class MintAsset extends React.Component<Props, State> {
                                                             labelText={t(
                                                                 "mint:fee.title"
                                                             )}
-                                                            tooltip="The minimum fee is 100,000 CCC, and the higher the fee, the faster it is processed."
+                                                            tooltip={t(
+                                                                "mint:fee.tooltip"
+                                                            )}
                                                             placeholder={
                                                                 !feePayer
-                                                                    ? "select payer"
+                                                                    ? t(
+                                                                          "mint:fee.placeholder_select_fee_payer"
+                                                                      )
                                                                     : !availableQuarkList[
                                                                           feePayer
                                                                       ]
-                                                                    ? "loading..."
+                                                                    ? t(
+                                                                          "mint:fee.placeholder_loading"
+                                                                      )
                                                                     : "100,000 (CCC)"
                                                             }
                                                             disable={
@@ -313,7 +329,7 @@ class MintAsset extends React.Component<Props, State> {
                                                                 disabled={true}
                                                             >
                                                                 <option>
-                                                                    no address
+                                                                    <Trans i18nKey="mint:payer.no_address" />
                                                                 </option>
                                                             </select>
                                                         ) : (
@@ -337,8 +353,7 @@ class MintAsset extends React.Component<Props, State> {
                                                                             true
                                                                         }
                                                                     >
-                                                                        select
-                                                                        address
+                                                                        <Trans i18nKey="mint:payer.select_address" />
                                                                     </option>
                                                                     {platformAddresses.map(
                                                                         pa => (
@@ -381,7 +396,9 @@ class MintAsset extends React.Component<Props, State> {
                                                 className="btn btn-primary square w-100 send-btn"
                                                 onClick={this.mintAsset}
                                             >
-                                                Mint
+                                                <Trans
+                                                    i18nKey={"mint:mint_btn"}
+                                                />
                                             </button>
                                         </div>
                                     </div>

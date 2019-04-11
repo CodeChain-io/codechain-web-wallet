@@ -11,5 +11,9 @@
         "add": "ADD ADDRESS",
         "charge": "Charge CCC",
         "faucet": "CodeChain Faucet"
+    },
+    "menu": {
+        "sign_out": "Sign out",
+        "backup_phrase": "Backup phrase"
     }
 }

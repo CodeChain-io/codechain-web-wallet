@@ -3,6 +3,7 @@ import languageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 
 import en from "./en";
+import ko from "./ko";
 
 i18next
     .use(languageDetector)
@@ -19,7 +20,8 @@ i18next
             excludeCacheFor: ["cimode"]
         },
         resources: {
-            en
+            en,
+            ko
         }
     });
 
