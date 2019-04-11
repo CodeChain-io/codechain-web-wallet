@@ -50,5 +50,16 @@
       font-weight: bold;
       font-size: 24px;
     }
+
+    .asset-image {
+      height: 37px;
+      width: 37px;
+      display: inline-block;
+      margin-bottom: 0px;
+      border-radius: 19px;
+      margin-right: 12px;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
   }
 }

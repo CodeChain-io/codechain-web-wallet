@@ -5,7 +5,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { AddressType, WalletAddress } from "../../../model/address";
+import { AddressType, NetworkId, WalletAddress } from "../../../model/address";
 import { ReducerConfigure } from "../../../redux";
 import "./AddressItem.css";
 
@@ -13,6 +13,7 @@ import { U64 } from "codechain-sdk/lib/core/classes";
 import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import accountActions from "../../../redux/account/accountActions";
 import assetActions from "../../../redux/asset/assetActions";
+import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
 import * as copyBtnHover from "./img/copy-hover.svg";
 import * as copyBtn from "./img/copy.svg";
 
@@ -32,6 +33,7 @@ interface StateProps {
               quantities: U64;
           }[]
         | null;
+    networkId: NetworkId;
 }
 interface State {
     isCopyHovering: boolean;
@@ -68,7 +70,8 @@ class AddressItem extends React.Component<Props, State> {
             walletAddress,
             className,
             availableQuark,
-            availableAssets
+            availableAssets,
+            networkId
         } = this.props;
         const { isCopyHovering } = this.state;
         return (
@@ -127,12 +130,30 @@ class AddressItem extends React.Component<Props, State> {
                 {walletAddress.type === AddressType.Asset && (
                     <div className="platform-account">
                         {availableAssets ? (
-                            <span className="number balance">
-                                {availableAssets.length}{" "}
-                                {availableAssets.length >= 2
-                                    ? "Assets"
-                                    : "Asset"}
-                            </span>
+                            availableAssets.length > 0 ? (
+                                [
+                                    availableAssets.slice(0, 3).map(a => (
+                                        <div
+                                            className="asset-image"
+                                            key={a.assetType}
+                                        >
+                                            <ImageLoader
+                                                isAssetImage={true}
+                                                data={a.assetType}
+                                                size={37}
+                                                networkId={networkId}
+                                            />
+                                        </div>
+                                    )),
+                                    availableAssets.length > 3 && (
+                                        <span key="others" className="balance">
+                                            + {availableAssets.length - 3}
+                                        </span>
+                                    )
+                                ]
+                            ) : (
+                                <span className="balance">No Asset</span>
+                            )
                         ) : (
                             <span className="number balance">Loading...</span>
                         )}
@@ -177,7 +198,8 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
         state.assetReducer.availableAssets[walletAddress.address];
     return {
         availableQuark,
-        availableAssets
+        availableAssets,
+        networkId: state.globalReducer.networkId
     };
 };
 const mapDispatchToProps = (
