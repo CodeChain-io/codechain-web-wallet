@@ -51,7 +51,7 @@ class ExchangeHistory extends React.Component<Props, any> {
         return (
             <div className="Exchange-history">
                 <h5 className="exchange-address-title">
-                    <Trans i18nKey="charge:exchange_rate.title" />{" "}
+                    <Trans i18nKey="charge:exchange_state.title" />{" "}
                     <span onClick={this.refresh} className="refresh-btn">
                         <FontAwesomeIcon icon="redo-alt" className="ml-1" />
                     </span>

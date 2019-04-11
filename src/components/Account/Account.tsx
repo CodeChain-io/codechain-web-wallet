@@ -20,7 +20,7 @@ interface OwnProps {
 
 interface StateProps {
     availableQuark?: U64 | null;
-    addressName?: string | null;
+    addressIndex?: number | null;
 }
 
 interface DispatchProps {
@@ -72,7 +72,7 @@ class Account extends React.Component<Props, State> {
             match: {
                 params: { address }
             },
-            addressName
+            addressIndex
         } = this.props;
         const { sendingCCC } = this.state;
         if (!availableQuark) {
@@ -85,7 +85,7 @@ class Account extends React.Component<Props, State> {
                         <AddressContainer
                             address={address}
                             backButtonPath="/"
-                            addressName={addressName}
+                            addressIndex={addressIndex}
                         />
                         <div>
                             <div className="element-container mb-3">
@@ -177,7 +177,7 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     );
     return {
         availableQuark,
-        addressName: assetAddress && assetAddress.name
+        addressIndex: assetAddress && assetAddress.index
     };
 };
 const mapDispatchToProps = (

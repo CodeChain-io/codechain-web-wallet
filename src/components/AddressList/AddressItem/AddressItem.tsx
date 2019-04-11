@@ -10,6 +10,7 @@ import { ReducerConfigure } from "../../../redux";
 import "./AddressItem.css";
 
 import { U64 } from "codechain-sdk/lib/core/classes";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import accountActions from "../../../redux/account/accountActions";
 import assetActions from "../../../redux/asset/assetActions";
 import * as copyBtnHover from "./img/copy-hover.svg";
@@ -36,7 +37,11 @@ interface State {
     isCopyHovering: boolean;
 }
 
-type Props = RouteComponentProps & OwnProps & DispatchProps & StateProps;
+type Props = WithTranslation &
+    RouteComponentProps &
+    OwnProps &
+    DispatchProps &
+    StateProps;
 
 class AddressItem extends React.Component<Props, State> {
     public constructor(props: Props) {
@@ -80,7 +85,12 @@ class AddressItem extends React.Component<Props, State> {
                 >
                     <div>
                         <p className="address-name mb-0">
-                            {walletAddress.name}
+                            <Trans
+                                i18nKey="main:address"
+                                values={{
+                                    index: walletAddress.index + 1
+                                }}
+                            />
                         </p>
                     </div>
                     <span className="address-text mono">
@@ -183,4 +193,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(withRouter(AddressItem));
+)(withRouter(withTranslation()(AddressItem)));

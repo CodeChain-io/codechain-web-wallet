@@ -102,7 +102,7 @@ const fetchWalletFromStorageIfNeed = () => {
                         }
                     ).value;
                     return {
-                        name: `Asset Address ${key.pathIndex + 1}`,
+                        index: key.pathIndex,
                         address,
                         type: AddressType.Asset
                     };
@@ -136,7 +136,7 @@ const fetchWalletFromStorageIfNeed = () => {
                         networkId
                     }).value;
                     return {
-                        name: `CCC Address ${key.pathIndex + 1}`,
+                        index: key.pathIndex,
                         address,
                         type: AddressType.Platform
                     };

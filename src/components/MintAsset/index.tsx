@@ -329,7 +329,9 @@ class MintAsset extends React.Component<Props, State> {
                                                                 disabled={true}
                                                             >
                                                                 <option>
-                                                                    <Trans i18nKey="mint:payer.no_address" />
+                                                                    {t(
+                                                                        "mint:payer.no_address"
+                                                                    )}
                                                                 </option>
                                                             </select>
                                                         ) : (
@@ -365,9 +367,14 @@ class MintAsset extends React.Component<Props, State> {
                                                                                     pa.address
                                                                                 }
                                                                             >
-                                                                                {
-                                                                                    pa.name
-                                                                                }
+                                                                                <Trans
+                                                                                    i18nKey="main:address"
+                                                                                    values={{
+                                                                                        index:
+                                                                                            pa.index +
+                                                                                            1
+                                                                                    }}
+                                                                                />
                                                                             </option>
                                                                         )
                                                                     )}

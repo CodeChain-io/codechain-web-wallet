@@ -30,7 +30,7 @@ interface StateProps {
         assetType: string;
         quantities: U64;
     } | null;
-    addressName?: string | null;
+    addressIndex?: number | null;
 }
 
 interface DispatchProps {
@@ -54,7 +54,7 @@ class AssetDetail extends React.Component<Props, any> {
             },
             networkId,
             availableAsset,
-            addressName,
+            addressIndex,
             t
         } = this.props;
         if (!assetScheme || !availableAsset) {
@@ -68,7 +68,7 @@ class AssetDetail extends React.Component<Props, any> {
                     <AddressContainer
                         address={address}
                         backButtonPath={`/${address}/assets`}
-                        addressName={addressName}
+                        addressIndex={addressIndex}
                     />
                     <div className="detail-history-container">
                         <h4 className="mr-auto">
@@ -176,7 +176,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
         assetScheme: assetScheme && assetScheme.data,
         networkId,
         availableAsset,
-        addressName: assetAddress && assetAddress.name
+        addressIndex: assetAddress && assetAddress.index
     };
 };
 const mapDispatchToProps = (

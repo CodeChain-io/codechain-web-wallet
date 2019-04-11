@@ -33,7 +33,7 @@ interface StateProps {
           }[]
         | null;
     networkId: NetworkId;
-    addressName?: string | null;
+    addressIndex?: number | null;
 }
 
 interface DispatchProps {
@@ -93,7 +93,7 @@ class AssetList extends React.Component<Props, State> {
             pendingTxList,
             availableAssets,
             networkId,
-            addressName
+            addressIndex
         } = this.props;
         const { selectedAssetType } = this.state;
         if (!addressUTXOList || !pendingTxList || !availableAssets) {
@@ -106,7 +106,7 @@ class AssetList extends React.Component<Props, State> {
                         <AddressContainer
                             address={address}
                             backButtonPath="/"
-                            addressName={addressName}
+                            addressIndex={addressIndex}
                         />
                         <div>
                             <div className="element-container mb-3">
@@ -245,7 +245,7 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
         pendingTxList: pendingTxList && pendingTxList.data,
         availableAssets,
         networkId,
-        addressName: assetAddress && assetAddress.name
+        addressIndex: assetAddress && assetAddress.index
     };
 };
 const mapDispatchToProps = (

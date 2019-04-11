@@ -46,7 +46,9 @@ class AddressList extends React.Component<Props> {
                 <Container>
                     <div className="asset-address-container mb-5">
                         <div className="deco asset-title-deco" />
-                        <h5 className="mb-1">Asset Address</h5>
+                        <h5 className="mb-1">
+                            <Trans i18nKey="main:asset.title" />
+                        </h5>
                         <div className="mb-4 address-description">
                             <span>
                                 <Trans i18nKey="main:asset.detail" />
@@ -90,7 +92,9 @@ class AddressList extends React.Component<Props> {
                     <hr />
                     <div className="platform-address-container">
                         <div className="deco platform-title-deco" />
-                        <h5 className="mb-1">CCC Address</h5>
+                        <h5 className="mb-1">
+                            <Trans i18nKey="main:ccc.title" />
+                        </h5>
                         <div className="mb-4 address-description">
                             <span>
                                 <Trans i18nKey="main:ccc.detail" />

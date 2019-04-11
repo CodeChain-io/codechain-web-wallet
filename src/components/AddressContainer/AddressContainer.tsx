@@ -9,27 +9,28 @@ import { toast } from "react-toastify";
 import * as copyBtnHover from "./img/copy-hover.svg";
 import * as copyBtn from "./img/copy.svg";
 
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import "./AddressContainer.css";
 
 interface Props {
     address: string;
     backButtonPath: string;
-    addressName?: string | null;
+    addressIndex?: number | null;
 }
 
 interface State {
     isCopyHovering: boolean;
 }
 
-class AddressContainer extends React.Component<Props, State> {
-    public constructor(props: Props) {
+class AddressContainer extends React.Component<Props & WithTranslation, State> {
+    public constructor(props: Props & WithTranslation) {
         super(props);
         this.state = {
             isCopyHovering: false
         };
     }
     public render() {
-        const { address, backButtonPath, addressName } = this.props;
+        const { address, backButtonPath, addressIndex } = this.props;
         const { isCopyHovering } = this.state;
         return (
             <div className="Address-container d-flex align-items-center">
@@ -40,7 +41,15 @@ class AddressContainer extends React.Component<Props, State> {
                     <QRCode value={address} size={57} />
                 </div>
                 <div className="ml-3 name-address-container">
-                    <h2 className="mb-0">{addressName}</h2>
+                    <h2 className="mb-0">
+                        <Trans
+                            i18nKey="main:address"
+                            values={{
+                                index:
+                                    addressIndex != null ? addressIndex + 1 : ""
+                            }}
+                        />
+                    </h2>
                     <span className="mono address-text mr-3">
                         <MediaQuery query="(max-width: 768px)">
                             {address.slice(0, 8)}
@@ -86,4 +95,4 @@ class AddressContainer extends React.Component<Props, State> {
     };
 }
 
-export default AddressContainer;
+export default withTranslation()(AddressContainer);

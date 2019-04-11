@@ -3,7 +3,7 @@ import { U64 } from "codechain-sdk/lib/core/classes";
 export type NetworkId = "cc" | "tc" | "sc" | "wc";
 
 export interface WalletAddress {
-    name: string;
+    index: number;
     type: AddressType;
     address: string;
 }

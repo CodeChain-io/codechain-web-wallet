@@ -1,11 +1,14 @@
 {
+    "address": "Address {{index}}",
     "asset": {
+        "title": "Asset Address",
         "detail": "This is an address that can be used to mint or trade new tokens.",
         "restore": "Restoring asset address ...",
         "add": "ADD ADDRESS",
         "mint": "Mint a new asset"
     },
     "ccc": {
+        "title": "CCC Address",
         "detail": "This is an address that can be used to store CCC, which is used to transfer tokens or as transaction fees.",
         "restore": "Restoring CCC address ...",
         "add": "ADD ADDRESS",

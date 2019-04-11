@@ -102,7 +102,7 @@ export async function restorePlatformAddresses(
             lastValidPlatfromPathIndex = currentPath;
         }
         platformAddresses.push({
-            name: `CCC Address ${currentPath + 1}`,
+            index: currentPath,
             address,
             type: AddressType.Platform
         });
@@ -173,7 +173,7 @@ export async function createPlatformAddress(
         networkId
     }).value;
     return {
-        name: `CCC Address ${newPathIndex + 1}`,
+        index: newPathIndex,
         address,
         type: AddressType.Platform
     };
@@ -226,7 +226,7 @@ export async function createAssetAddress(
         networkId
     }).value;
     return {
-        name: `Asset Address ${newPathIndex + 1}`,
+        index: newPathIndex,
         address,
         type: AddressType.Asset
     };
@@ -270,7 +270,7 @@ export async function restoreAssetAddresses(
             lastValidAssetPathIndex = currentPath;
         }
         assetAddresses.push({
-            name: `Asset Address ${currentPath + 1}`,
+            index: currentPath,
             address,
             type: AddressType.Asset
         });

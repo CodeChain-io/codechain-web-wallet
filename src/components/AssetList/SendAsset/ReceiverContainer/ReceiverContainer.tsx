@@ -235,7 +235,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                         disabled={true}
                                     >
                                         <option>
-                                            <Trans i18nKey="send:asset.payer.empty" />
+                                            {t("send:asset.payer.empty")}
                                         </option>
                                     </select>
                                 ) : (
@@ -250,14 +250,16 @@ class ReceiverContainer extends React.Component<Props, State> {
                                                 value="default"
                                                 disabled={true}
                                             >
-                                                <Trans i18nKey="send:asset.payer.select" />
+                                                {t("send:asset.payer.select")}
                                             </option>
                                             {_.map(platformAddresses, pa => (
                                                 <option
                                                     value={pa.address}
                                                     key={pa.address}
                                                 >
-                                                    {pa.name}
+                                                    {t("main:address", {
+                                                        index: pa.index + 1
+                                                    })}
                                                 </option>
                                             ))}
                                         </select>
