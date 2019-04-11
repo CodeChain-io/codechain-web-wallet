@@ -6,6 +6,7 @@ import * as create_seed from "./create/seed.json";
 import * as create_select from "./create/select.json";
 import * as main from "./main.json";
 import * as mint from "./mint.json";
+import * as restore from "./restore.json";
 import * as send from "./send.json";
 import * as welcome from "./welcome.json";
 
@@ -18,6 +19,7 @@ export default {
     },
     main,
     mint,
+    restore,
     send,
     welcome,
     charge,

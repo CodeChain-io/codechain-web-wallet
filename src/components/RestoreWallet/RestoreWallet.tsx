@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -31,9 +32,9 @@ interface DispatchProps {
     clearData: () => Promise<void>;
 }
 
-type Props = RouteComponentProps & DispatchProps;
+type Props = WithTranslation & RouteComponentProps & DispatchProps;
 class RestoreWallet extends React.Component<Props, State> {
-    public constructor(props: any) {
+    public constructor(props: Props) {
         super(props);
         this.state = {
             secretPhrase: "",
@@ -56,6 +57,7 @@ class RestoreWallet extends React.Component<Props, State> {
         await clearKeystore();
     }
     public render() {
+        const { t } = this.props;
         const {
             passphrase,
             passphraseConfirm,
@@ -81,13 +83,11 @@ class RestoreWallet extends React.Component<Props, State> {
                 >
                     <div className="title-container">
                         <h4 className="title">
-                            Restore your wallet
-                            <br />
-                            using backup phrase
+                            <Trans i18nKey="restore:title" />
                         </h4>
                     </div>
                     <div className="description">
-                        Please select the 12 words in proper order to log in.
+                        <Trans i18nKey="restore:description" />
                     </div>
                     <div className="phrase-container">
                         <textarea
@@ -98,19 +98,16 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="password-description">
                         <span>
-                            This is the password used to log in to CodeChain
-                            Wallet through this browser. In cases you lose this
-                            password, you can regain access with your backup
-                            phrase.
+                            <Trans i18nKey="restore:mnemonic.detail" />
                         </span>
                     </div>
                     <div className="username-input-container">
                         <ValidationInput
-                            labelText="NEW USERNAME"
+                            labelText={t("restore:name.label")}
                             onChange={this.handleUsernameInput}
                             value={username}
                             showValidation={true}
-                            placeholder="username"
+                            placeholder={t("restore:name.placeholder")}
                             type="text"
                             isValid={isUsernameValid}
                             error={usernameError}
@@ -119,11 +116,11 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="passphrase-input-container">
                         <ValidationInput
-                            labelText="NEW PASSWORD"
+                            labelText={t("restore:password.label")}
                             onChange={this.handlePassphraseInput}
                             value={passphrase}
                             showValidation={true}
-                            placeholder="password"
+                            placeholder={t("restore:password.placeholder")}
                             type="password"
                             isValid={isPassphraseValid}
                             error={passphraseError}
@@ -132,11 +129,11 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="passphrase-confirm-container">
                         <ValidationInput
-                            labelText="CONFIRM PASSWORD"
+                            labelText={t("restore:confirm.label")}
                             onChange={this.handlePassphraseConfirmInput}
                             value={passphraseConfirm}
                             showValidation={true}
-                            placeholder="confirm password"
+                            placeholder={t("restore:confirm.placeholder")}
                             type="password"
                             isValid={isPassphraseConfirmValid}
                             error={passphraseConfirmError}
@@ -148,7 +145,7 @@ class RestoreWallet extends React.Component<Props, State> {
                             className="btn btn-primary reverse square main-btn"
                             type="submit"
                         >
-                            OK
+                            {t("restore:ok")}
                         </button>
                     </div>
                 </Form>
@@ -163,7 +160,7 @@ class RestoreWallet extends React.Component<Props, State> {
 
     private handleSubmit = async () => {
         const { passphrase, username, secretPhrase } = this.state;
-        const { login, history } = this.props;
+        const { t, login, history } = this.props;
 
         if (!this.checkUsernameValid()) {
             return;
@@ -179,7 +176,7 @@ class RestoreWallet extends React.Component<Props, State> {
         const splitPassphrases = secretPhrase.match(/\S+/g);
 
         if (!splitPassphrases || splitPassphrases.length !== 12) {
-            toast.error("Your backup phrase is invalid. Please check.", {
+            toast.error(t("restore:error.mnemonic.invalid"), {
                 position: toast.POSITION.BOTTOM_CENTER,
                 autoClose: 5000,
                 closeButton: false,
@@ -193,7 +190,7 @@ class RestoreWallet extends React.Component<Props, State> {
             await login(passphrase!);
             history.push(`/`);
         } catch (e) {
-            toast.error("Your backup phrase is invalid. Please check.", {
+            toast.error(t("restore:error.mnemonic.invalid"), {
                 position: toast.POSITION.BOTTOM_CENTER,
                 autoClose: 5000,
                 closeButton: false,
@@ -209,10 +206,11 @@ class RestoreWallet extends React.Component<Props, State> {
     };
 
     private checkPassphraseValid = () => {
+        const { t } = this.props;
         const { passphrase } = this.state;
         if (passphrase.length < 8) {
             this.setState({
-                passphraseError: "Minimum length is 8 characters",
+                passphraseError: t("restore:error.password.minimum"),
                 isPassphraseValid: false
             });
             return false;
@@ -226,17 +224,18 @@ class RestoreWallet extends React.Component<Props, State> {
     };
 
     private checkUsernameValid = () => {
+        const { t } = this.props;
         const { username } = this.state;
         if (username === "") {
             this.setState({
                 isUsernameValid: false,
-                usernameError: "username is required"
+                usernameError: t("restore:error.name.required")
             });
             return false;
         }
         if (username.length > 20) {
             this.setState({
-                usernameError: "Maximum length is 20 characters",
+                usernameError: t("restore:error.name.maximum"),
                 isUsernameValid: false
             });
             return false;
@@ -259,10 +258,11 @@ class RestoreWallet extends React.Component<Props, State> {
     };
 
     private checkPassphraseConfirm = () => {
+        const { t } = this.props;
         const { passphrase, passphraseConfirm } = this.state;
         if (passphrase !== passphraseConfirm) {
             this.setState({
-                passphraseConfirmError: "Password does not match!",
+                passphraseConfirmError: t("restore:error.confirm.mismatch"),
                 isPassphraseConfirmValid: false
             });
             return false;
@@ -307,6 +307,6 @@ const mapDispatchToProps = (
     }
 });
 export default connect(
-    () => ({}),
+    undefined,
     mapDispatchToProps
-)(withRouter(RestoreWallet));
+)((withTranslation()(withRouter(RestoreWallet))));
