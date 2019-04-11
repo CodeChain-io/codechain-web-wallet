@@ -33,7 +33,7 @@
         "placeholder": "supply"
     },
     "payer": {
-        "title": "FEE PAYER",
+        "title": "CHARGE FEE TO",
         "tooltip": "The fee will be transferred from the address below.",
         "no_address": "no address",
         "select_address": "select address"
