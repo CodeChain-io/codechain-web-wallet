@@ -2,14 +2,20 @@
     "detail": "Please enter the information of the new token to be issued. All tokens are recorded on CodeChain and anyone has access to the information below.",
     "loading": "Loading...",
     "complete": "COMPLETE!",
+    "description": {
+        "title": "Description (Optional)",
+        "tooltip": "Please give a description for the token."
+    },
     "address": {
-        "title": "Mint asset in this address"
+        "title": "Mint asset in this address",
+        "tooltip": "Tokens are issued to the address below and can be transferred to other addresses at any time."
     },
     "fee": {
         "title": "FEE"
     },
     "payer": {
-        "title": "FEE PAYER"
+        "title": "FEE PAYER",
+        "tooltip": "The fee will be transferred from the address below."
     },
     "error": {
         "asset": {

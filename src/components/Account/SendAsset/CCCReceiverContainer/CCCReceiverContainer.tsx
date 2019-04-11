@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import { PlatformAddress, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import "./CCCReceiverContainer.css";
 import CCCReceiverItem from "./CCCReceiverItem/CCCReceiverItem";
 
@@ -19,19 +20,18 @@ interface State {
     feeError?: string;
 }
 
-interface Props {
+interface OwnProps {
     address: string;
     totalAmount: U64;
     isSending: boolean;
     onSubmit: (receiver: { address: string; quantity: U64 }, fee: U64) => void;
 }
 
+type Props = WithTranslation & OwnProps;
+
 const MinimumFee = 100;
 
-export default class CCCReceiverContainer extends React.Component<
-    Props,
-    State
-> {
+class CCCReceiverContainer extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -92,7 +92,7 @@ export default class CCCReceiverContainer extends React.Component<
                             type="submit"
                             className="btn btn-primary square w-100 send-btn"
                         >
-                            Send
+                            <Trans i18nKey="send:ccc.button" />
                         </button>
                     </div>
                 </form>
@@ -292,3 +292,5 @@ export default class CCCReceiverContainer extends React.Component<
         );
     };
 }
+
+export default withTranslation()(CCCReceiverContainer);

@@ -1,6 +1,7 @@
 import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Action } from "redux";
@@ -31,7 +32,7 @@ interface State {
     sendingCCC: boolean;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 
 class Account extends React.Component<Props, State> {
     private refresher: any;
@@ -88,7 +89,9 @@ class Account extends React.Component<Props, State> {
                         />
                         <div>
                             <div className="element-container mb-3">
-                                <h5 className="element-title">Balance</h5>
+                                <h5 className="element-title">
+                                    <Trans i18nKey="send:ccc.balance" />
+                                </h5>
                                 <div className="ccc-text number">
                                     <span className="mr-2">
                                         {availableQuark.toLocaleString()}
@@ -101,12 +104,14 @@ class Account extends React.Component<Props, State> {
                                         onClick={this.openSendingCCC}
                                         disabled={sendingCCC}
                                     >
-                                        SEND
+                                        <Trans i18nKey="send:ccc.button" />
                                     </button>
                                 </div>
                             </div>
                             <div className="element-container">
-                                <h4 className="mb-3">Recent transactions</h4>
+                                <h4 className="mb-3">
+                                    <Trans i18nKey="send:ccc.recent.title" />
+                                </h4>
                                 <PayTxHistory address={address} />
                             </div>
                         </div>
@@ -188,4 +193,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Account);
+)(withTranslation()(Account));

@@ -2,6 +2,7 @@ import { TransactionDoc } from "codechain-indexer-types";
 import { H160 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -30,7 +31,7 @@ interface DispatchProps {
     fetchTxListByAssetTypeIfNeed: (address: string, assetType: H160) => void;
 }
 
-type Props = StateProps & OwnProps & DispatchProps;
+type Props = WithTranslation & StateProps & OwnProps & DispatchProps;
 
 class AssetTxHistory extends React.Component<Props> {
     private refresher: any;
@@ -69,7 +70,7 @@ class AssetTxHistory extends React.Component<Props> {
                                 <img src={Empty} />
                             </div>
                             <div className="mt-3 empty">
-                                There is no transaction
+                                <Trans i18nKey="send:asset.recent.empty" />
                             </div>
                         </div>
                     </div>
@@ -161,4 +162,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AssetTxHistory);
+)(withTranslation()(AssetTxHistory));

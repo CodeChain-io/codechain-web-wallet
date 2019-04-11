@@ -1,8 +1,8 @@
 {
-    "title": "Welcome back {{name}}!",
+    "title": "환영합니다, {{name}}!",
     "password": "비밀번호",
     "password_placeholder": "비밀번호",
-    "password_invalid": "Wrong password. Please try again.",
+    "password_invalid": "비밀번호를 잘못 입력하셨습니다. 다시 확인하세요.",
     "signin": "로그인",
-    "different": "OPEN A DIFFERENT WALLET"
+    "different": "다른 지갑 열기"
 }

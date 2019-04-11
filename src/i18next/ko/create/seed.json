@@ -4,13 +4,13 @@
     "password": "비밀번호",
     "password_confirm": "비밀번호 확인",
     "terms": "<0>이용약관</0>을 읽고 동의합니다",
-    "privacy": "I have read and agree to <0>Privacy Policy</0>",
+    "privacy": "<0>개인정보처리방침</0>을 읽고 동의합니다",
     "ok": "OK",
-    "creating": "CREATING...",
+    "creating": "생성중...",
     "error": {
-        "pass_minimum": "Minimum length is 8 characters",
-        "pass_mismatch": "Password does not match!",
-        "name_required": "username is required",
-        "name_maximum": "Maximum length is 20 characters"
+        "pass_minimum": "비밀번호는 최소 8자 이상이어야 합니다",
+        "pass_mismatch": "비밀번호가 일치하지 않습니다",
+        "name_required": "이름을 입력해주세요",
+        "name_maximum": "이름은 최대 20자까지 가능합니다"
     }
 }

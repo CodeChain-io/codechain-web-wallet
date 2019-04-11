@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { WithTranslation, withTranslation } from "react-i18next";
 import { Tooltip } from "reactstrap";
 
-interface Props {
+interface OwnProps {
     tooltip: string;
 }
 
@@ -10,7 +11,9 @@ interface State {
     tooltipOpen: boolean;
 }
 
-export default class TooltipLabel extends React.Component<Props, State> {
+type Props = WithTranslation & OwnProps;
+
+class TooltipLabel extends React.Component<Props, State> {
     public uniqueId: string;
     constructor(props: Props) {
         super(props);
@@ -19,7 +22,7 @@ export default class TooltipLabel extends React.Component<Props, State> {
     }
 
     public render() {
-        const { tooltip } = this.props;
+        const { t, tooltip } = this.props;
         return [
             <span
                 key="tooltip-text"
@@ -35,7 +38,7 @@ export default class TooltipLabel extends React.Component<Props, State> {
                 target={`tooltip-${this.uniqueId}`}
                 toggle={this.toggleTooltip}
             >
-                {tooltip}
+                {t(tooltip)}
             </Tooltip>
         ];
     }
@@ -58,3 +61,5 @@ export default class TooltipLabel extends React.Component<Props, State> {
         return text;
     };
 }
+
+export default withTranslation()(TooltipLabel);

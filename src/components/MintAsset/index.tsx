@@ -180,7 +180,9 @@ class MintAsset extends React.Component<Props, State> {
                                                 }
                                             />
                                             <ValidationInput
-                                                labelText="Supply"
+                                                labelText={t(
+                                                    "mint:supply.label"
+                                                )}
                                                 placeholder="supply"
                                                 value={supply}
                                                 type="number"
@@ -224,8 +226,8 @@ class MintAsset extends React.Component<Props, State> {
                                             </div>
                                             <div className="mb-4">
                                                 <span className="input-label d-block mb-2">
-                                                    Description (Optional)
-                                                    <TooltipLabel tooltip="Please give a description for the token." />
+                                                    <Trans i18nKey="mint:description.title" />
+                                                    <TooltipLabel tooltip="mint:description.tooltip" />
                                                 </span>
                                                 <textarea
                                                     className="form-control description-area"
@@ -239,7 +241,7 @@ class MintAsset extends React.Component<Props, State> {
                                             <div className="select-address-container">
                                                 <span className="select-address-label">
                                                     <Trans i18nKey="mint:address.title" />
-                                                    <TooltipLabel tooltip="Tokens are issued to the address below and can be transferred to other addresses at any time." />
+                                                    <TooltipLabel tooltip="mint:address.tooltip" />
                                                 </span>
                                                 <select
                                                     onChange={
@@ -302,7 +304,7 @@ class MintAsset extends React.Component<Props, State> {
                                                     <div className="fee-payer-container">
                                                         <div className="input-label">
                                                             <Trans i18nKey="mint:payer.title" />
-                                                            <TooltipLabel tooltip="The fee will be transferred from the address below." />
+                                                            <TooltipLabel tooltip="mint:payer.tooltip" />
                                                         </div>
                                                         {platformAddresses.length ===
                                                         0 ? (

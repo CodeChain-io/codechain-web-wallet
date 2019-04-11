@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { WithTranslation, withTranslation } from "react-i18next";
 import ValidationInput from "../../../../ValidationInput/ValidationInput";
 
 import { U64 } from "codechain-sdk/lib/core/classes";
 import "./ReceiverItem.css";
 
-interface Props {
+interface OwnProps {
     receiver: {
         address: string;
         quantity: string;
@@ -24,9 +25,12 @@ interface Props {
     hideCancel?: boolean;
 }
 
-export default class ReceiverItem extends React.Component<Props, any> {
+type Props = WithTranslation & OwnProps;
+
+class ReceiverItem extends React.Component<Props> {
     public render() {
         const {
+            t,
             receiver,
             index,
             isAddressValid,
@@ -55,8 +59,8 @@ export default class ReceiverItem extends React.Component<Props, any> {
                 <ValidationInput
                     value={receiver.address}
                     onChange={this.handleChangeAddressInput}
-                    labelText="RECIPIENT ADDRESS"
-                    placeholder="recipient address"
+                    labelText={t("send:asset.receiver.label")}
+                    placeholder={t("send:asset.receiver.placeholder")}
                     showValidation={true}
                     isValid={isAddressValid}
                     onBlur={this.handleBlurAddressInput}
@@ -66,8 +70,8 @@ export default class ReceiverItem extends React.Component<Props, any> {
                     <ValidationInput
                         value={receiver.quantity}
                         onChange={this.handleChangeQuantitiesInput}
-                        labelText="QUANTITY"
-                        placeholder="quantity"
+                        labelText={t("send:asset.quantity.label")}
+                        placeholder={t("send:asset.quantity.placeholder")}
                         type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
@@ -121,3 +125,5 @@ export default class ReceiverItem extends React.Component<Props, any> {
         onQuantityChange(index, event.target.value);
     };
 }
+
+export default withTranslation()(ReceiverItem);

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AssetSchemeDoc, UTXODoc } from "codechain-indexer-types";
@@ -83,7 +84,7 @@ interface DispatchProps {
     ) => Promise<{}>;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 
 class SendAsset extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -133,7 +134,9 @@ class SendAsset extends React.Component<Props, State> {
                 <div className="cancel-icon-container" onClick={onClose}>
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
-                <h2 className="title">Send asset</h2>
+                <h2 className="title">
+                    <Trans i18nKey="send:asset.title" />
+                </h2>
                 {isSentTx ? (
                     <div className="d-flex align-items-center justify-content-center text-center complete-container">
                         <div className="text-center">
@@ -141,7 +144,9 @@ class SendAsset extends React.Component<Props, State> {
                                 <img src={CheckIcon} />
                             </div>
                             <div className="mt-3">
-                                <span>COMPLETE!</span>
+                                <span>
+                                    <Trans i18nKey="send:asset.complete" />
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -479,4 +484,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(SendAsset);
+)(withTranslation()(SendAsset));

@@ -60,8 +60,7 @@ class SelectKeyFile extends React.Component<Props, State> {
                     </h4>
                     <div>
                         <span className="description-text">
-                            Securely store and transfer your asset tokens with
-                            CodeChain Wallet. First time using CodeChain Wallet?
+                            <Trans i18nKey="create:select.title" />
                         </span>
                     </div>
                 </div>

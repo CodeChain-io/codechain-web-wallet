@@ -2,14 +2,20 @@
     "detail": "새로 발행할 토큰의 정보를 입력하세요. 토큰은 코드체인에 기록되며, 누구나 아래 정보를 볼 수 있습니다.",
     "loading": "Loading...",
     "complete": "COMPLETE!",
+    "description": {
+        "title": "Description (Optional)",
+        "tooltip": "토큰에 대해 설명해주세요."
+    },
     "address": {
-        "title": "Mint asset in this address"
+        "title": "Mint asset in this address",
+        "tooltip": "토큰은 아래 주소로 발행되며, 언제든지 다른 주소로 이체할 수 있습니다."
     },
     "fee": {
         "title": "FEE"
     },
     "payer": {
-        "title": "FEE PAYER"
+        "title": "FEE PAYER",
+        "tooltip": "아래 주소에서 수수료를 이체합니다."
     },
     "error": {
         "asset": {

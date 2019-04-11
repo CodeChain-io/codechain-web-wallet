@@ -1,8 +1,9 @@
 import * as React from "react";
+import { WithTranslation, withTranslation } from "react-i18next";
 import ValidationInput from "../../../../ValidationInput/ValidationInput";
 import "./CCCReceiverItem.css";
 
-interface Props {
+interface OwnProps {
     receiver: {
         address: string;
         quantity: string;
@@ -23,9 +24,12 @@ interface Props {
     isFeeValid?: boolean;
 }
 
-export default class CCCReceiverItem extends React.Component<Props, any> {
+type Props = WithTranslation & OwnProps;
+
+class CCCReceiverItem extends React.Component<Props> {
     public render() {
         const {
+            t,
             receiver,
             isAddressValid,
             isAmountValid,
@@ -40,8 +44,8 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                 <ValidationInput
                     value={receiver.address}
                     onChange={this.handleChangeAddressInput}
-                    labelText="RECEIVER ADDRESS"
-                    placeholder="receiver address"
+                    labelText={t("send:ccc.receiver.label")}
+                    placeholder={t("send:ccc.receiver.placeholder")}
                     showValidation={true}
                     isValid={isAddressValid}
                     onBlur={this.handleBlurAddressInput}
@@ -51,8 +55,8 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                     <ValidationInput
                         value={receiver.quantity}
                         onChange={this.handleChangedAmountInput}
-                        labelText="AMOUNT"
-                        placeholder="amount"
+                        labelText={t("send:ccc.amount.label")}
+                        placeholder={t("send:ccc.amount.placeholder")}
                         type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
@@ -72,13 +76,13 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                     <ValidationInput
                         value={fee}
                         onChange={this.handleChangeFeeInput}
-                        labelText="FEE"
+                        labelText={t("send:ccc.fee.label")}
                         placeholder={`100 (CCC)`}
                         type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isFeeValid}
-                        tooltip="The minimum fee is 100,000 CCC, and the higher the fee, the faster it is processed."
+                        tooltip="send:ccc.fee.tooltip"
                         onBlur={this.handleBlurFeeInput}
                         error={feeError}
                     />
@@ -128,3 +132,5 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
         onFeeChange(event.target.value);
     };
 }
+
+export default withTranslation()(CCCReceiverItem);

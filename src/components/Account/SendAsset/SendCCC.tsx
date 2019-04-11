@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SDK } from "codechain-sdk";
@@ -50,7 +51,7 @@ interface State {
     isSent: boolean;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 
 class SendCCC extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -77,7 +78,9 @@ class SendCCC extends React.Component<Props, State> {
                 <div className="cancel-icon-container" onClick={onClose}>
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
-                <h2 className="title">Send CCC</h2>
+                <h2 className="title">
+                    <Trans i18nKey="send:ccc.title" />
+                </h2>
                 {isSent ? (
                     <div className="d-flex align-items-center justify-content-center text-center complete-container">
                         <div className="text-center">
@@ -85,14 +88,18 @@ class SendCCC extends React.Component<Props, State> {
                                 <img src={CheckIcon} />
                             </div>
                             <div className="mt-3">
-                                <span>COMPLETE!</span>
+                                <span>
+                                    <Trans i18nKey="send:ccc.complete" />
+                                </span>
                             </div>
                         </div>
                     </div>
                 ) : (
                     <div>
                         <div className="d-flex align-items-center balance-container mb-4">
-                            <div className="mr-auto balance-text">Balance</div>
+                            <div className="mr-auto balance-text">
+                                <Trans i18nKey="send:ccc.balance" />
+                            </div>
                             <span className="amount number">
                                 {availableQuark.toLocaleString()} CCC
                             </span>
@@ -237,4 +244,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(SendCCC);
+)(withTranslation()(SendCCC));

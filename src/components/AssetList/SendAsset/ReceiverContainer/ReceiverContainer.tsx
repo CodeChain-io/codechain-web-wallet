@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import { AssetTransferAddress, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -69,7 +70,7 @@ interface DispatchProps {
     fetchAvailableQuark: (address: string) => void;
 }
 
-type Props = OwnProps & DispatchProps & StateProps;
+type Props = WithTranslation & OwnProps & DispatchProps & StateProps;
 
 const MinimumFee = 100;
 class ReceiverContainer extends React.Component<Props, State> {
@@ -124,6 +125,7 @@ class ReceiverContainer extends React.Component<Props, State> {
             isMemoValid
         } = this.state;
         const {
+            t,
             platformAddresses,
             gatewayURL,
             availableQuarkList,
@@ -179,17 +181,17 @@ class ReceiverContainer extends React.Component<Props, State> {
                             className="btn btn-primary add-receiver-btn"
                             onClick={this.handleAddReceiver}
                         >
-                            Add a new recipient
+                            <Trans i18nKey="send:asset.add" />
                         </button>
                     </div>
                     <div className="memo-container">
                         <ValidationInput
-                            labelText="Memo (Optional)"
+                            labelText={t("send:asset.memo.label")}
                             value={memo}
                             isValid={isMemoValid}
                             error={memoError}
                             showValidation={true}
-                            placeholder="memo (Maximum 25 characters)"
+                            placeholder={t("send:asset.memo.placeholder")}
                             onBlur={this.checkMemo}
                             onChange={this.handleChangeMemo}
                         />
@@ -201,7 +203,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                     value={fee}
                                     onChange={this.handleChangeFee}
                                     showValidation={true}
-                                    labelText="FEE"
+                                    labelText={t("send:asset.fee.label")}
                                     type="number"
                                     placeholder={
                                         !feePayer
@@ -210,7 +212,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                             ? "loading..."
                                             : "100 (CCC)"
                                     }
-                                    tooltip="The minimum fee is 100,000 CCC, and the higher the fee, the faster it is processed."
+                                    tooltip="send:asset.fee.tooltip"
                                     disable={
                                         feePayer == null ||
                                         (feePayer != null &&
@@ -224,15 +226,17 @@ class ReceiverContainer extends React.Component<Props, State> {
                             </div>
                             <div className="fee-payer-container">
                                 <div className="payer-label">
-                                    FEE PAYER
-                                    <TooltipLabel tooltip="The fee will be transferred from the address below." />
+                                    <Trans i18nKey="send:asset.payer.label" />
+                                    <TooltipLabel tooltip="send:asset.payer.tooltip" />
                                 </div>
                                 {platformAddresses.length === 0 ? (
                                     <select
                                         className="form-control"
                                         disabled={true}
                                     >
-                                        <option>no address</option>
+                                        <option>
+                                            <Trans i18nKey="send:asset.payer.empty" />
+                                        </option>
                                     </select>
                                 ) : (
                                     <div>
@@ -246,7 +250,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                                 value="default"
                                                 disabled={true}
                                             >
-                                                select address
+                                                <Trans i18nKey="send:asset.payer.select" />
                                             </option>
                                             {_.map(platformAddresses, pa => (
                                                 <option
@@ -277,7 +281,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                             className="btn btn-primary square w-100 send-btn"
                             disabled={isSendingTx}
                         >
-                            Send
+                            <Trans i18nKey="send:asset.button" />
                         </button>
                     </div>
                 </form>
@@ -664,4 +668,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(ReceiverContainer);
+)(withTranslation()(ReceiverContainer));

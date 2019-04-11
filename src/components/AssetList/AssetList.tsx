@@ -2,6 +2,7 @@ import { AggsUTXODoc, TransactionDoc } from "codechain-indexer-types";
 import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Action } from "redux";
@@ -46,7 +47,7 @@ interface State {
     selectedAssetType?: string | null;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 
 class AssetList extends React.Component<Props, State> {
     private refresher: any;
@@ -109,7 +110,9 @@ class AssetList extends React.Component<Props, State> {
                         />
                         <div>
                             <div className="element-container mb-3">
-                                <h4 className="mb-3">Asset list</h4>
+                                <h4 className="mb-3">
+                                    <Trans i18nKey="send:asset.list.title" />
+                                </h4>
                                 <div className="asset-item-container">
                                     {availableAssets.length > 0 ? (
                                         _.map(
@@ -146,7 +149,7 @@ class AssetList extends React.Component<Props, State> {
                                                     <img src={Empty} />
                                                 </div>
                                                 <div className="mt-3 empty">
-                                                    There is no asset
+                                                    <Trans i18nKey="send:asset.list.empty" />
                                                 </div>
                                             </div>
                                         </div>
@@ -154,7 +157,9 @@ class AssetList extends React.Component<Props, State> {
                                 </div>
                             </div>
                             <div className="element-container mb-3">
-                                <h4 className="mb-3">Recent transactions</h4>
+                                <h4 className="mb-3">
+                                    <Trans i18nKey="send:asset.recent.title" />
+                                </h4>
                                 <AssetTxHistory address={address} />
                             </div>
                         </div>
@@ -262,4 +267,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AssetList);
+)(withTranslation()(AssetList));
