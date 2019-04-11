@@ -1,11 +1,13 @@
 {
     "address": "주소 {{index}}",
+    "address_loading": "로딩중 ...",
     "asset": {
         "title": "디지털 자산 주소",
         "detail": "토큰을 새로 발행하거나 거래할 수 있는 주소입니다.",
         "restore": "불러오는중 ...",
         "add": "주소 추가",
-        "mint": "디지털 자산 발행"
+        "mint": "디지털 자산 발행",
+        "no_asset": "보유 자산 없음"
     },
     "ccc": {
         "title": "CCC 주소",

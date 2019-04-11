@@ -123,7 +123,9 @@ class AddressItem extends React.Component<Props, State> {
                                 {availableQuark.toLocaleString()} CCC
                             </span>
                         ) : (
-                            <span className="number balance">Loading...</span>
+                            <span className="number balance">
+                                <Trans i18nKey="main:address_loading" />
+                            </span>
                         )}
                     </div>
                 )}
@@ -152,10 +154,14 @@ class AddressItem extends React.Component<Props, State> {
                                     )
                                 ]
                             ) : (
-                                <span className="balance">No Asset</span>
+                                <span className="balance">
+                                    <Trans i18nKey="main:asset.no_asset" />
+                                </span>
                             )
                         ) : (
-                            <span className="number balance">Loading...</span>
+                            <span className="number balance">
+                                <Trans i18nKey="main:address_loading" />
+                            </span>
                         )}
                     </div>
                 )}
