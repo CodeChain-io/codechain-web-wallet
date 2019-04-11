@@ -90,11 +90,11 @@ class ExchangeHistoryItem extends React.Component<Props, any> {
         confirm?: number
     ) => {
         if (status === "success") {
-            return <Trans i18nKey="success" />;
+            return <Trans i18nKey="charge:exchange_state.success" />;
         } else if (status === "pending" && confirm != null) {
             return (
                 <Trans
-                    i18nKey="confirm_left"
+                    i18nKey="charge:exchange_state.confirm_left"
                     values={{
                         confirmCount: 2 - confirm,
                         isPlural: 2 - confirm >= 2 ? "s" : ""
@@ -102,9 +102,9 @@ class ExchangeHistoryItem extends React.Component<Props, any> {
                 />
             );
         } else if (status === "pending") {
-            return <Trans i18nKey="pending" />;
+            return <Trans i18nKey="charge:exchange_state.pending" />;
         } else if (status === "reverted") {
-            return <Trans i18nKey="reverted" />;
+            return <Trans i18nKey="charge:exchange_state.reverted" />;
         }
         return null;
     };

@@ -20,5 +20,8 @@
     "menu": {
         "sign_out": "Sign out",
         "backup_phrase": "Backup phrase"
-    }
+    },
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "memo": "Memo"
 }

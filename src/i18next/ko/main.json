@@ -20,5 +20,8 @@
     "menu": {
         "sign_out": "로그아웃",
         "backup_phrase": "백업 문구"
-    }
+    },
+    "confirmed": "완료",
+    "pending": "처리중",
+    "memo": "메모"
 }

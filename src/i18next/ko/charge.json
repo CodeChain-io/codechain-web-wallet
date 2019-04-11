@@ -19,7 +19,7 @@
         "loading": "로딩중...",
         "success": "완료",
         "pending": "처리중",
-        "confirm_left": "{{confirmCount}} 컨펌{{isPlural}} 남음",
+        "confirm_left": "{{confirmCount}} 승인 남음",
         "reverted": "처리중"
     }
 }

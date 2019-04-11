@@ -441,7 +441,7 @@ class MintAsset extends React.Component<Props, State> {
         if (name.trim() === "") {
             this.setState({
                 isNameValid: false,
-                nameError: this.props.t("mint:name.required")
+                nameError: this.props.t("mint:error.name.required")
             });
             return false;
         }
@@ -457,7 +457,7 @@ class MintAsset extends React.Component<Props, State> {
         if (supply.trim() === "") {
             this.setState({
                 isSupplyValid: false,
-                supplyError: this.props.t("mint:supply.required")
+                supplyError: this.props.t("mint:error.supply.required")
             });
             return false;
         }
@@ -466,7 +466,7 @@ class MintAsset extends React.Component<Props, State> {
         if (amountSupply.isNaN() || amountSupply.lt(0)) {
             this.setState({
                 isSupplyValid: false,
-                supplyError: this.props.t("mint:supply.invalid")
+                supplyError: this.props.t("mint:error.supply.invalid")
             });
             return false;
         }
@@ -485,18 +485,18 @@ class MintAsset extends React.Component<Props, State> {
         if (!feePayer) {
             this.setState({
                 isFeeValid: false,
-                feeError: this.props.t("mint:supply.not_selected")
+                feeError: this.props.t("mint:error.fee.not_selected")
             });
             return false;
         }
         const availableQuark = availableQuarkList[feePayer];
         if (!availableQuark) {
-            throw Error(this.props.t("mint:supply.invalid_balance"));
+            throw Error(this.props.t("mint:error.fee.invalid_balance"));
         }
         if (fee.trim() === "") {
             this.setState({
                 isFeeValid: false,
-                feeError: this.props.t("mint:supply.required")
+                feeError: this.props.t("mint:error.fee.required")
             });
             return false;
         }
@@ -504,14 +504,14 @@ class MintAsset extends React.Component<Props, State> {
         if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
-                feeError: this.props.t("mint:supply.invalid")
+                feeError: this.props.t("mint:error.fee.invalid")
             });
             return false;
         }
         if (amountFee.lt(MinimumFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: this.props.t("mint:supply.minimum", {
+                feeError: this.props.t("mint:error.fee.minimum", {
                     fee: MinimumFee
                 })
             });
@@ -521,7 +521,7 @@ class MintAsset extends React.Component<Props, State> {
         if (availableQuark.value.lt(amountFee)) {
             this.setState({
                 isFeeValid: false,
-                feeError: this.props.t("mint:supply.minimum_balance")
+                feeError: this.props.t("mint:error.fee.minimum_balance")
             });
             return false;
         }

@@ -3,6 +3,7 @@ import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as moment from "moment";
 import * as React from "react";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import MediaQuery from "react-responsive";
 import { NetworkId } from "../../../model/address";
 import { getExplorerHost } from "../../../utils/network";
@@ -16,7 +17,7 @@ interface Props {
     address: string;
     networkId: NetworkId;
 }
-export default class PayTxItem extends React.Component<Props, any> {
+class PayTxItem extends React.Component<Props & WithTranslation, any> {
     public render() {
         const { tx, address, networkId, isPending, timestamp } = this.props;
         const aggrTx = TxUtil.getAggsQuark(address, [tx]);
@@ -56,12 +57,13 @@ export default class PayTxItem extends React.Component<Props, any> {
                 </div>
                 <div className="status-container">
                     {isPending ? (
-                        <span className="pending">Pending</span>
+                        <Trans i18nKey="main:pending" />
                     ) : (
-                        <span className="confirmed">Confirmed</span>
+                        <Trans i18nKey="main:confirmed" />
                     )}
                 </div>
             </div>
         );
     }
 }
+export default withTranslation()(PayTxItem);

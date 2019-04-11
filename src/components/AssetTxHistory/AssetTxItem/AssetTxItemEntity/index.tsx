@@ -3,6 +3,7 @@ import { H160, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as moment from "moment";
 import * as React from "react";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import MediaQuery from "react-responsive";
 import { Action } from "redux";
@@ -36,7 +37,7 @@ interface DispatchProps {
     fetchAssetSchemeIfNeed: (assetType: H160) => void;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = OwnProps & StateProps & DispatchProps & WithTranslation;
 class AssetTxItemEntity extends React.Component<Props, any> {
     public componentDidMount() {
         this.props.fetchAssetSchemeIfNeed(
@@ -50,7 +51,8 @@ class AssetTxItemEntity extends React.Component<Props, any> {
             networkId,
             tx,
             isPending,
-            assetScheme
+            assetScheme,
+            t
         } = this.props;
 
         let metadata;
@@ -94,7 +96,8 @@ class AssetTxItemEntity extends React.Component<Props, any> {
                         tx.transferAsset.metadata !== "" && (
                             <div className="memo-container">
                                 <span className="memo-text">
-                                    Memo: {tx.transferAsset.metadata}
+                                    {t("main:memo")}:{" "}
+                                    {tx.transferAsset.metadata}
                                 </span>
                             </div>
                         )}
@@ -104,9 +107,13 @@ class AssetTxItemEntity extends React.Component<Props, any> {
                 </div>
                 <div className="status-container">
                     {isPending ? (
-                        <span className="pending">Pending</span>
+                        <span className="pending">
+                            <Trans i18nKey="main:pending" />
+                        </span>
                     ) : (
-                        <span className="confirmed">Confirmed</span>
+                        <span className="confirmed">
+                            <Trans i18nKey="main:confirmed" />
+                        </span>
                     )}
                 </div>
             </div>
@@ -156,4 +163,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AssetTxItemEntity);
+)(withTranslation()(AssetTxItemEntity));
