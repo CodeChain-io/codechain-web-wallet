@@ -175,15 +175,17 @@ class ReceiverContainer extends React.Component<Props, State> {
                             />
                         ))}
                     </div>
-                    <div>
-                        <button
-                            type="button"
-                            className="btn btn-primary add-receiver-btn"
-                            onClick={this.handleAddReceiver}
-                        >
-                            <Trans i18nKey="send:asset.add" />
-                        </button>
-                    </div>
+                    {receivers.length < 10 && (
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-primary add-receiver-btn"
+                                onClick={this.handleAddReceiver}
+                            >
+                                <Trans i18nKey="send:asset.add" />
+                            </button>
+                        </div>
+                    )}
                     <div className="memo-container">
                         <ValidationInput
                             labelText={t("send:asset.memo.label")}
