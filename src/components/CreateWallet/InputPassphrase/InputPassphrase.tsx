@@ -203,7 +203,7 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase } = this.state;
         if (passphrase.length < 8) {
             this.setState({
-                passphraseError: this.props.t("create:seed.pass_minimum"),
+                passphraseError: this.props.t("create:seed.error.pass_minimum"),
                 isPassphraseValid: false
             });
             return false;
@@ -221,7 +221,7 @@ class InputPassphrase extends React.Component<Props, State> {
         if (passphrase !== passphraseConfirm) {
             this.setState({
                 passphraseConfirmError: this.props.t(
-                    "create:seed.pass_mismatch"
+                    "create:seed.error.pass_mismatch"
                 ),
                 isPassphraseConfirmValid: false
             });
@@ -240,13 +240,13 @@ class InputPassphrase extends React.Component<Props, State> {
         if (username === "") {
             this.setState({
                 isUsernameValid: false,
-                usernameError: this.props.t("create:seed.name_required")
+                usernameError: this.props.t("create:seed.error.name_required")
             });
             return false;
         }
         if (username.length > 20) {
             this.setState({
-                usernameError: this.props.t("create:seed.name_maximum"),
+                usernameError: this.props.t("create:seed.error.name_maximum"),
                 isUsernameValid: false
             });
             return false;
@@ -265,7 +265,12 @@ class InputPassphrase extends React.Component<Props, State> {
             passphraseError: undefined,
             isPassphraseValid: undefined
         });
-        this.setState({ passphrase: event.target.value });
+        this.setState({
+            passphrase: event.target.value,
+            passphraseConfirm: "",
+            passphraseConfirmError: undefined,
+            isPassphraseConfirmValid: undefined
+        });
     };
 
     private handlePassphraseConfirmInput = (
