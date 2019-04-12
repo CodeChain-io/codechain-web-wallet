@@ -24,5 +24,6 @@
     "confirmed": "Confirmed",
     "pending": "Pending",
     "memo": "Memo",
-    "copied": "Copied to clipboard"
+    "copied": "Copied to clipboard",
+    "max": "max"
 }

@@ -2,8 +2,8 @@
     "title": "Send asset",
     "complete": "COMPLETE!",
     "receiver": {
-        "label": "RECEIVER ADDRESS",
-        "placeholder": "receiver address"
+        "label": "RECIPIENT ADDRESS",
+        "placeholder": "recipient address"
     },
     "quantity": {
         "label": "QUANTITY",

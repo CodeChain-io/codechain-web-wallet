@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import ValidationInput from "../../../../ValidationInput/ValidationInput";
 
 import { U64 } from "codechain-sdk/lib/core/classes";
@@ -85,7 +85,7 @@ class ReceiverItem extends React.Component<Props> {
                         className="btn btn-primary max-btn"
                         onClick={this.handleMaxValueClick}
                     >
-                        max
+                        <Trans i18nKey="main:max" />
                     </button>
                 </div>
             </div>

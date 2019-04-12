@@ -3,8 +3,8 @@
     "complete": "COMPLETE!",
     "balance": "Balance",
     "receiver": {
-        "label": "RECEIVER ADDRESS",
-        "placeholder": "receiver address"
+        "label": "RECIPIENT ADDRESS",
+        "placeholder": "recipient address"
     },
     "amount": {
         "label": "AMOUNT",
