@@ -1,6 +1,6 @@
 {
     "title": "Backup phrase",
-    "reveal": "Enter your passphrase to reveal backup phrase.",
+    "reveal": "Enter your password to reveal backup phrase.",
     "password": {
         "label": "PASSWORD",
         "placeholder": "password"
