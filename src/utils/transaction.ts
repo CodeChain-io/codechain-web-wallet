@@ -218,11 +218,21 @@ async function createMintAssetTx(data: {
     });
 
     const seq = await sdk.rpc.chain.getSeq(data.feePayer);
+
+    const { transactions } = await sdk.rpc.chain.getPendingTransactions();
+    const newSeq =
+        seq +
+        transactions.filter(
+            t =>
+                t.getSignerAddress({ networkId: data.networkId }).toString() ===
+                data.feePayer
+        ).length;
+
     const signedTransaction = await sdk.key.signTransaction(tx, {
         account: data.feePayer,
         keyStore,
         fee: data.fee,
-        seq,
+        seq: newSeq,
         passphrase: data.passphrase
     });
     return signedTransaction;

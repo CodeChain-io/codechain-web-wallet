@@ -212,11 +212,17 @@ class SendCCC extends React.Component<Props, State> {
             asset: assetKeyMapping
         });
         const seq = await sdk.rpc.chain.getSeq(address);
+        const { transactions } = await sdk.rpc.chain.getPendingTransactions();
+        const newSeq =
+            seq +
+            transactions.filter(
+                t => t.getSignerAddress({ networkId }).toString() === address
+            ).length;
         const signedTx = await sdk.key.signTransaction(tx, {
             account: address,
             keyStore,
             fee,
-            seq,
+            seq: newSeq,
             passphrase
         });
         this.setState({ isSending: true });

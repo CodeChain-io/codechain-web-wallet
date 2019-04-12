@@ -406,13 +406,23 @@ class SendAsset extends React.Component<Props, State> {
         } else {
             const feePayer = fee!.payer;
             const seq = await sdk.rpc.chain.getSeq(feePayer);
+            const {
+                transactions
+            } = await sdk.rpc.chain.getPendingTransactions();
+            const newSeq =
+                seq +
+                transactions.filter(
+                    tx =>
+                        tx.getSignerAddress({ networkId }).toString() ===
+                        feePayer
+                ).length;
             const signedTransaction = await sdk.key.signTransaction(
                 transferTx,
                 {
                     account: feePayer,
                     keyStore,
                     fee: fee!.quantity,
-                    seq,
+                    seq: newSeq,
                     passphrase
                 }
             );
