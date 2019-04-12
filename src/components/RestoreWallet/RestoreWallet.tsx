@@ -280,7 +280,10 @@ class RestoreWallet extends React.Component<Props, State> {
     ) => {
         this.setState({
             passphraseError: undefined,
-            isPassphraseValid: undefined
+            isPassphraseValid: undefined,
+            passphraseConfirm: "",
+            isPassphraseConfirmValid: undefined,
+            passphraseConfirmError: undefined
         });
         this.setState({ passphrase: event.target.value });
     };
