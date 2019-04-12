@@ -10,7 +10,8 @@
     },
     "address": {
         "title": "Mint asset in this address",
-        "tooltip": "Tokens are issued to the address below and can be transferred to other addresses at any time."
+        "tooltip": "Tokens are issued to the address below and can be transferred to other addresses at any time.",
+        "address_type": "Asset"
     },
     "name": {
         "label": "Name",

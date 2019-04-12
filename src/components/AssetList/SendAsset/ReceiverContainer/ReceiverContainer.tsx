@@ -259,6 +259,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                                     value={pa.address}
                                                     key={pa.address}
                                                 >
+                                                    CCC{" "}
                                                     {t("main:address", {
                                                         index: pa.index + 1
                                                     })}

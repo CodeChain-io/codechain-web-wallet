@@ -52,7 +52,7 @@ class Exchange extends React.Component<Props, State> {
         }
     }
     public render() {
-        const { platformAddresses } = this.props;
+        const { platformAddresses, t } = this.props;
         const { selectedAddress } = this.state;
         return (
             <div className="Exchange">
@@ -86,8 +86,14 @@ class Exchange extends React.Component<Props, State> {
                                         className="form-control"
                                     >
                                         {platformAddresses.map(a => (
-                                            <option key={a.address}>
-                                                {a.address}
+                                            <option
+                                                key={a.address}
+                                                value={a.address}
+                                            >
+                                                CCC{" "}
+                                                {t("main:address", {
+                                                    index: a.index + 1
+                                                })}
                                             </option>
                                         ))}
                                     </select>

@@ -261,8 +261,17 @@ class MintAsset extends React.Component<Props, State> {
                                                     className="form-control"
                                                 >
                                                     {assetAddresses.map(a => (
-                                                        <option key={a.address}>
-                                                            {a.address}
+                                                        <option
+                                                            key={a.address}
+                                                            value={a.address}
+                                                        >
+                                                            {t(
+                                                                "mint:address.address_type"
+                                                            )}{" "}
+                                                            {t("main:address", {
+                                                                index:
+                                                                    a.index + 1
+                                                            })}
                                                         </option>
                                                     ))}
                                                 </select>
@@ -369,6 +378,7 @@ class MintAsset extends React.Component<Props, State> {
                                                                                     pa.address
                                                                                 }
                                                                             >
+                                                                                CCC{" "}
                                                                                 {t(
                                                                                     "main:address",
                                                                                     {
