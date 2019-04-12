@@ -116,8 +116,8 @@ export async function restorePlatformAddresses(
     let retValue: WalletAddress[];
     let retKeys: StoredKey[];
     if (lastValidPlatfromPathIndex == null) {
-        retValue = [];
-        retKeys = [];
+        retValue = platformAddresses.slice(0, 1);
+        retKeys = platformKeys.slice(0, 1);
     } else {
         retValue = platformAddresses.slice(0, lastValidPlatfromPathIndex + 1);
         retKeys = platformKeys.slice(0, lastValidPlatfromPathIndex + 1);
@@ -285,8 +285,8 @@ export async function restoreAssetAddresses(
     let retValue: WalletAddress[];
     let retKeys: StoredKey[];
     if (lastValidAssetPathIndex == null) {
-        retValue = [];
-        retKeys = [];
+        retValue = assetAddresses.slice(0, 1);
+        retKeys = assetKeys.slice(0, 1);
     } else {
         retValue = assetAddresses.slice(0, lastValidAssetPathIndex + 1);
         retKeys = assetKeys.slice(0, lastValidAssetPathIndex + 1);
