@@ -197,9 +197,32 @@ class SendAsset extends React.Component<Props, State> {
         );
     }
 
+    public updateWindowDimensions = () => {
+        if (window.innerWidth <= 872) {
+            this.addModalOpenClass();
+        } else {
+            this.removeModalOpenClass();
+        }
+    };
+
     public async componentDidMount() {
+        this.updateWindowDimensions();
+        window.addEventListener("resize", this.updateWindowDimensions);
         this.init();
     }
+
+    public componentWillUnmount() {
+        this.removeModalOpenClass();
+        window.removeEventListener("resize", this.updateWindowDimensions);
+    }
+
+    private addModalOpenClass = () => {
+        document.body.className = "modal-open";
+    };
+
+    private removeModalOpenClass = () => {
+        document.body.className = "";
+    };
 
     private init = () => {
         const { selectedAssetType, address } = this.props;

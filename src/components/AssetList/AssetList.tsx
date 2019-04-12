@@ -183,6 +183,8 @@ class AssetList extends React.Component<Props, State> {
         this.setState({ selectedAssetType: undefined });
     };
     private handleSelectAsset = (assetType: string) => {
+        window.scrollTo(0, 0);
+
         const selectedAssetType = this.state.selectedAssetType;
         if (!selectedAssetType) {
             this.setState({

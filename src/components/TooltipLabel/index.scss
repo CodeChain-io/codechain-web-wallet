@@ -1,0 +1,9 @@
+@import "styles/variables.scss";
+
+.Tooltip-label {
+  display: inline;
+  .question-circle {
+    color: $standard-grey;
+    cursor: pointer;
+  }
+}

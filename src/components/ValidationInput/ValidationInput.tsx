@@ -52,15 +52,16 @@ export default class ValidationInput extends React.Component<Props, State> {
         const { isFocus } = this.state;
         return (
             <div className={`Validation-input ${className} mb-4`}>
-                {labelText && (
+                {labelText && [
                     <Label
+                        key="label"
                         for={`id-${this.uniqueId}`}
                         className={`mb-0 label-text ${reverse && "reverse"}`}
                     >
                         {labelText}
-                        {tooltip && <TooltipLabel tooltip={tooltip} />}
-                    </Label>
-                )}
+                    </Label>,
+                    tooltip && <TooltipLabel tooltip={tooltip} key="tooltip" />
+                ]}
                 {type === "number" ? (
                     <NumberFormat
                         value={value}

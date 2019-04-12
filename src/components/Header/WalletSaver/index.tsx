@@ -10,12 +10,14 @@ class WalletSaver extends React.Component<any, any> {
     public componentDidMount() {
         this.startTimer();
         document.addEventListener("mousedown", this.handleClickOutside);
+        document.addEventListener("touchend", this.handleTouchOutside);
         document.addEventListener("keydown", this.handleKeyDown);
     }
 
     public componentWillUnmount() {
         this.clearTimer();
         document.removeEventListener("mousedown", this.handleClickOutside);
+        document.removeEventListener("touchend", this.handleTouchOutside);
         document.removeEventListener("keydown", this.handleKeyDown);
     }
 
@@ -24,6 +26,10 @@ class WalletSaver extends React.Component<any, any> {
     }
 
     private handleClickOutside = () => {
+        this.resetTimer();
+    };
+
+    private handleTouchOutside = () => {
         this.resetTimer();
     };
 

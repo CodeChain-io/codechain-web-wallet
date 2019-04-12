@@ -10,7 +10,16 @@
 
   @media screen and (max-width: 872px) {
     & {
+      z-index: 2;
+      background-color: white;
       padding: 30px;
+    }
+    & {
+      height: calc(100vh - #{$header-height});
+      overflow: scroll;
+    }
+    .loading-container {
+      height: calc(100vh - #{$header-height});
     }
   }
 

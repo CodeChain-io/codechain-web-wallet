@@ -132,6 +132,7 @@ class Account extends React.Component<Props, State> {
     }
 
     private openSendingCCC = () => {
+        window.scrollTo(0, 0);
         this.setState({ sendingCCC: true });
     };
 
