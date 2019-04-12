@@ -33,6 +33,7 @@
         "title": "Asset list",
         "empty": "There is no asset"
     },
+    "remove": "remove",
     "error": {
         "memo": {
             "maximum": "Maximum 25 characters limit"

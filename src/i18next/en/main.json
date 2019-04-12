@@ -18,7 +18,7 @@
         "faucet": "CodeChain Faucet"
     },
     "menu": {
-        "sign_out": "Sign out",
+        "lock": "Lock wallet",
         "backup_phrase": "Backup phrase"
     },
     "confirmed": "Confirmed",

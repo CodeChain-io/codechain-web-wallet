@@ -4,5 +4,5 @@
     "password_placeholder": "password",
     "password_invalid": "Wrong password. Please try again.",
     "signin": "SIGN IN",
-    "different": "OPEN A DIFFERENT WALLET"
+    "different": "Delete data from this browser and open a different wallet"
 }

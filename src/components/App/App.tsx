@@ -18,6 +18,7 @@ import {
     faExclamationCircle,
     faFileDownload,
     faInfoCircle,
+    faLock,
     faPlus,
     faPlusCircle,
     faQuestionCircle,
@@ -73,7 +74,8 @@ library.add(
     faAngleRight,
     faAngleDoubleRight,
     faAngleLeft,
-    faAngleDoubleLeft
+    faAngleDoubleLeft,
+    faLock
 );
 
 interface StateProps {

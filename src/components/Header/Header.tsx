@@ -5,6 +5,7 @@ import "./Header.css";
 import * as Logo from "./img/logo.svg";
 import MenuButton from "./MenuButton/MenuButton";
 import NetworkButton from "./NetworkButton/NetworkButton";
+import WalletSaver from "./WalletSaver";
 
 export default class Header extends React.Component {
     public render() {
@@ -14,6 +15,7 @@ export default class Header extends React.Component {
                     <Link to="/">
                         <img src={Logo} className="logo" />
                     </Link>
+                    <WalletSaver />
                     <NetworkButton className="ml-auto" />
                     <MenuButton className="" />
                 </div>

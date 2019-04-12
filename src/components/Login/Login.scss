@@ -25,9 +25,10 @@
     margin-bottom: 36px;
     cursor: pointer;
     .open-different-btn {
-      font-size: 1.28rem;
-      color: $wallet-blue;
+      font-size: 1.2rem;
+      color: $dark-grey;
       font-weight: 600;
+      text-decoration: underline;
     }
   }
 

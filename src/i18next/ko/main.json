@@ -18,7 +18,7 @@
         "faucet": "CodeChain Faucet"
     },
     "menu": {
-        "sign_out": "로그아웃",
+        "lock": "지갑 잠금",
         "backup_phrase": "백업 문구 확인"
     },
     "confirmed": "완료",

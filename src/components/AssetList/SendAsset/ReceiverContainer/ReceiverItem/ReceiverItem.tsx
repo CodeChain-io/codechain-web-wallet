@@ -52,7 +52,8 @@ class ReceiverItem extends React.Component<Props> {
                             className="receiver-item-cancel"
                             onClick={this.handleRemove}
                         >
-                            remove <FontAwesomeIcon icon="times" />
+                            {t("send:asset.remove")}{" "}
+                            <FontAwesomeIcon icon="times" />
                         </span>
                     )}
                 </div>

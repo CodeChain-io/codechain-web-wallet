@@ -66,16 +66,15 @@ class MenuButton extends React.Component<Props, State> {
                         <ul className="list-unstyled mb-0">
                             <li onClick={this.handleSignout}>
                                 <div className="d-flex align-items-center justify-content-end">
-                                    <span className="mr-1">
-                                        {t("main:menu.sign_out")}
+                                    <span className="mr-2">
+                                        {t("main:menu.lock")}
                                     </span>
-
-                                    <FontAwesomeIcon icon="arrow-circle-right" />
+                                    <FontAwesomeIcon icon="lock" />
                                 </div>
                             </li>
                             <li onClick={this.openExportPopup}>
                                 <div className="d-flex align-items-center justify-content-end">
-                                    <span className="mr-1">
+                                    <span className="mr-2">
                                         {t("main:menu.backup_phrase")}
                                     </span>
                                     <FontAwesomeIcon icon="arrow-circle-down" />
