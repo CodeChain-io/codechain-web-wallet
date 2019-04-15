@@ -4,7 +4,7 @@
     "select_address": {
         "title": "Top up your CCC address"
     },
-    "description": "You can get CCC by transferring BTC to the address below. Maximum amount is 30 million CCC per charging. If you want to charge in larger bulks, contact support@kodebox.io.",
+    "description": "You can get CCC by transferring BTC to the address below. It takes 3 Bitcoin confirmations, and the maximum amount is 30 million CCC per charging. If you want to charge in larger bulks, contact support@kodebox.io.",
     "empty_address": "There is no CCC address",
     "btc_address": {
         "title": "BTC Address",
