@@ -119,7 +119,7 @@ class Login extends React.Component<Props, State> {
 
         const isValid = await checkPassphrase(passphrase);
         if (!isValid) {
-            this.setState({ isValid: false });
+            this.setState({ isValid: false, passphrase: "" });
             return;
         }
 
