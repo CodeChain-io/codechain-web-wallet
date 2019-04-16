@@ -7,47 +7,62 @@ import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "../../../redux";
-import { fetchBTCAddressIfNeed } from "../../../redux/exchange/exchangeActions";
+import { fetchExchangeAddressIfNeed } from "../../../redux/exchange/exchangeActions";
 import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./index.css";
 
 interface OwnProps {
     address: string;
+    selectedCurrency: "btc" | "eth";
 }
 
 interface StateProps {
-    btcAddress?: string;
+    exchangeAddress?: string;
 }
 
 interface DispatchProps {
-    fetchBTCAddressIfNeed: (address: string) => Promise<void>;
+    fetchExchangeAddressIfNeed: (
+        address: string,
+        selectedCurrency: "btc" | "eth"
+    ) => Promise<void>;
 }
 
 type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
-class BTCAddress extends React.Component<Props> {
+class ExchangeAddress extends React.Component<Props> {
     public componentDidMount() {
-        const { address } = this.props;
-        this.props.fetchBTCAddressIfNeed(address);
+        const { address, selectedCurrency } = this.props;
+        this.props.fetchExchangeAddressIfNeed(address, selectedCurrency);
     }
     public componentWillUpdate(nextProps: Props) {
-        if (nextProps.address !== this.props.address) {
-            this.props.fetchBTCAddressIfNeed(nextProps.address);
+        if (
+            nextProps.address !== this.props.address ||
+            nextProps.selectedCurrency !== this.props.selectedCurrency
+        ) {
+            this.props.fetchExchangeAddressIfNeed(
+                nextProps.address,
+                nextProps.selectedCurrency
+            );
         }
     }
     public render() {
-        const { btcAddress, t } = this.props;
+        const { exchangeAddress, t, selectedCurrency } = this.props;
         return (
             <div className="BTC-address">
                 <div className="d-flex input-container">
                     <ValidationInput
                         className="btc-input"
-                        value={btcAddress || t("charge:btc_address.loading")!}
+                        value={
+                            exchangeAddress ||
+                            t("charge:exchange_address.loading")!
+                        }
                         showValidation={false}
                         disable={true}
-                        labelText={t("charge:btc_address.title")}
+                        labelText={t(
+                            `charge:exchange_address.title.${selectedCurrency}`
+                        )}
                     />
                     <CopyToClipboard
-                        text={btcAddress || ""}
+                        text={exchangeAddress || ""}
                         onCopy={this.handleCopyPhrase}
                     >
                         <div className="copy-btn-container">
@@ -70,23 +85,29 @@ class BTCAddress extends React.Component<Props> {
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
-    const { address } = ownProps;
+    const { address, selectedCurrency } = ownProps;
     return {
-        btcAddress:
-            state.exchangeReducer.btcAddress[address] &&
-            state.exchangeReducer.btcAddress[address].data
+        exchangeAddress:
+            (state.exchangeReducer.exchangeAddress[selectedCurrency] || {})[
+                address
+            ] &&
+            state.exchangeReducer.exchangeAddress[selectedCurrency][address]
+                .data
     };
 };
 
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchBTCAddressIfNeed: (address: string) => {
-        return dispatch(fetchBTCAddressIfNeed(address));
+    fetchExchangeAddressIfNeed: (
+        address: string,
+        selectedCurrency: "btc" | "eth"
+    ) => {
+        return dispatch(fetchExchangeAddressIfNeed(address, selectedCurrency));
     }
 });
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(withTranslation()(BTCAddress));
+)(withTranslation()(ExchangeAddress));

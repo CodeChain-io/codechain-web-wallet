@@ -2,67 +2,78 @@ import { Action, ActionType } from "./exchangeActions";
 
 export interface ExchangeState {
     exchangeHistory: {
-        [address: string]: {
-            data?:
-                | {
-                      received: {
-                          hash: string;
-                          quantity: string;
-                          status: "success" | "pending" | "reverted";
-                          confirm: number;
-                      };
-                      sent: {
-                          hash?: string;
-                          quantity: string;
-                          status: "success" | "pending";
-                      };
-                  }[]
-                | null;
+        [currency: string]: {
+            [address: string]: {
+                data?:
+                    | {
+                          received: {
+                              hash: string;
+                              quantity: string;
+                              status: "success" | "pending" | "reverted";
+                              confirm: number;
+                          };
+                          sent: {
+                              hash?: string;
+                              quantity: string;
+                              status: "success" | "pending";
+                          };
+                      }[]
+                    | null;
+                isFetching: boolean;
+                updatedAt?: number | null;
+            };
+        };
+    };
+    exchangeAddress: {
+        [currency: string]: {
+            [address: string]: {
+                data?: string | null;
+                isFetching: boolean;
+                updatedAt?: number | null;
+            };
+        };
+    };
+    exchangeRate: {
+        [currency: string]: {
+            data?: number | null;
             isFetching: boolean;
             updatedAt?: number | null;
         };
     };
-    btcAddress: {
-        [address: string]: {
-            data?: string | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        };
-    };
-    btcToCCCRate?: {
-        data?: number | null;
-        isFetching: boolean;
-        updatedAt?: number | null;
-    } | null;
 }
 
 export const exchangeInitState: ExchangeState = {
     exchangeHistory: {},
-    btcAddress: {},
-    btcToCCCRate: undefined
+    exchangeAddress: {},
+    exchangeRate: {}
 };
 
 export const exchangeReducer = (state = exchangeInitState, action: Action) => {
     switch (action.type) {
-        case ActionType.CacheBTCAddress: {
+        case ActionType.CacheExchangeAddress: {
             return {
                 ...state,
-                btcAddress: {
-                    [action.data.address]: {
-                        isFetching: false,
-                        data: action.data.btcAddress,
-                        updatedAt: +new Date()
+                exchangeAddress: {
+                    [action.data.currency]: {
+                        ...state.exchangeAddress[action.data.currency],
+                        [action.data.address]: {
+                            isFetching: false,
+                            data: action.data.btcAddress,
+                            updatedAt: +new Date()
+                        }
                     }
                 }
             };
         }
-        case ActionType.CacheBTCToCCCRate: {
+        case ActionType.CacheExchangeRate: {
             return {
                 ...state,
-                btcToCCCRate: {
-                    isFetching: false,
-                    data: action.data.rate,
-                    updatedAt: +new Date()
+                exchangeRate: {
+                    [action.data.currency]: {
+                        isFetching: false,
+                        data: action.data.rate,
+                        updatedAt: +new Date()
+                    }
                 }
             };
         }
@@ -70,31 +81,41 @@ export const exchangeReducer = (state = exchangeInitState, action: Action) => {
             return {
                 ...state,
                 exchangeHistory: {
-                    [action.data.address]: {
-                        isFetching: false,
-                        data: action.data.history,
-                        updatedAt: +new Date()
+                    [action.data.currency]: {
+                        ...state.exchangeHistory[action.data.currency],
+                        [action.data.address]: {
+                            isFetching: false,
+                            data: action.data.history,
+                            updatedAt: +new Date()
+                        }
                     }
                 }
             };
         }
-        case ActionType.SetFetchingBTCAddress: {
+        case ActionType.SetFetchingExchangeAddress: {
             return {
                 ...state,
-                btcAddress: {
-                    [action.data.address]: {
-                        ...state.btcAddress[action.data.address],
+                exchangeAddress: {
+                    [action.data.currency]: {
+                        ...state.exchangeAddress[action.data.currency],
+                        [action.data.address]: {
+                            ...(state.exchangeAddress[action.data.currency] ||
+                                {})[action.data.address],
+                            isFetching: true
+                        }
+                    }
+                }
+            };
+        }
+        case ActionType.SetFetchingExchangeRate: {
+            return {
+                ...state,
+                exchangeRate: {
+                    ...state.exchangeRate,
+                    [action.data.currency]: {
+                        ...state.exchangeRate[action.data.currency],
                         isFetching: true
                     }
-                }
-            };
-        }
-        case ActionType.SetFetchingBTCToCCCRate: {
-            return {
-                ...state,
-                btcToCCCRate: {
-                    ...state.btcToCCCRate,
-                    isFetching: true
                 }
             };
         }
@@ -102,9 +123,13 @@ export const exchangeReducer = (state = exchangeInitState, action: Action) => {
             return {
                 ...state,
                 exchangeHistory: {
-                    [action.data.address]: {
-                        ...state.exchangeHistory[action.data.address],
-                        isFetching: true
+                    [action.data.currency]: {
+                        ...state.exchangeHistory[action.data.currency],
+                        [action.data.address]: {
+                            ...(state.exchangeHistory[action.data.currency] ||
+                                {})[action.data.address],
+                            isFetching: true
+                        }
                     }
                 }
             };

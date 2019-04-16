@@ -5,8 +5,8 @@ import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "../../../redux";
-import { fetchBTCToCCCRateIfNeed } from "../../../redux/exchange/exchangeActions";
-import BTCCalculator from "../BTCCalculator";
+import { fetchExchangeRateIfNeed } from "../../../redux/exchange/exchangeActions";
+import ExchangeCalculator from "../ExchangeCalculator";
 import "./index.css";
 
 interface State {
@@ -14,14 +14,18 @@ interface State {
 }
 
 interface StateProps {
-    btcToCCCRate?: number;
+    exchangeRate?: number;
 }
 
 interface DispatchProps {
-    fetchBTCToCCCRateIfNeed: () => Promise<void>;
+    fetchExchangeRateIfNeed: (currency: "btc" | "eth") => Promise<void>;
 }
 
-type Props = WithTranslation & StateProps & DispatchProps;
+interface OwnProps {
+    selectedCurrency: "btc" | "eth";
+}
+
+type Props = WithTranslation & StateProps & DispatchProps & OwnProps;
 class ExchangeRate extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -30,11 +34,17 @@ class ExchangeRate extends React.Component<Props, State> {
         };
     }
     public componentDidMount() {
-        this.props.fetchBTCToCCCRateIfNeed();
+        const { selectedCurrency } = this.props;
+        this.props.fetchExchangeRateIfNeed(selectedCurrency);
+    }
+    public componentWillUpdate(nextProps: Props) {
+        if (nextProps.selectedCurrency !== this.props.selectedCurrency) {
+            this.props.fetchExchangeRateIfNeed(nextProps.selectedCurrency);
+        }
     }
     public render() {
         const { showCalculator } = this.state;
-        const { btcToCCCRate } = this.props;
+        const { exchangeRate, selectedCurrency } = this.props;
         return (
             <div className="Exchange-rate">
                 <div className="exchange-rate-item-container text-right">
@@ -44,12 +54,12 @@ class ExchangeRate extends React.Component<Props, State> {
                         <span>1,000 CCC</span>
                         <span> = </span>
                         <span>
-                            {btcToCCCRate
+                            {exchangeRate
                                 ? new BigNumber(1000)
-                                      .div(btcToCCCRate)
+                                      .div(exchangeRate)
                                       .toFixed(8)
                                 : "Loading"}{" "}
-                            BTC
+                            {this.getLabel(selectedCurrency)}
                         </span>
                     </div>
                     <div>
@@ -63,12 +73,23 @@ class ExchangeRate extends React.Component<Props, State> {
                 </div>
                 {showCalculator && (
                     <div className="BTC-calculator-container">
-                        <BTCCalculator btcToCCCRate={btcToCCCRate} />
+                        <ExchangeCalculator
+                            exchangeRate={exchangeRate}
+                            currency={selectedCurrency}
+                        />
                     </div>
                 )}
             </div>
         );
     }
+    private getLabel = (currency: "btc" | "eth") => {
+        if (currency === "btc") {
+            return "BTC";
+        } else if (currency === "eth") {
+            return "ETH";
+        }
+        return "";
+    };
     private toggleCalculator = () => {
         this.setState({
             showCalculator: !this.state.showCalculator
@@ -76,19 +97,19 @@ class ExchangeRate extends React.Component<Props, State> {
     };
 }
 
-const mapStateToProps = (state: ReducerConfigure) => {
+const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     return {
-        btcToCCCRate:
-            state.exchangeReducer.btcToCCCRate &&
-            state.exchangeReducer.btcToCCCRate.data
+        exchangeRate:
+            state.exchangeReducer.exchangeRate[ownProps.selectedCurrency] &&
+            state.exchangeReducer.exchangeRate[ownProps.selectedCurrency].data
     };
 };
 
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchBTCToCCCRateIfNeed: () => {
-        return dispatch(fetchBTCToCCCRateIfNeed());
+    fetchExchangeRateIfNeed: (currency: "btc" | "eth") => {
+        return dispatch(fetchExchangeRateIfNeed(currency));
     }
 });
 

@@ -4,20 +4,21 @@ import * as React from "react";
 import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./index.css";
 interface Props {
-    btcToCCCRate?: number;
+    exchangeRate?: number;
+    currency: "btc" | "eth";
 }
 interface State {
     btc: string;
     ccc: string;
 }
-export default class BTCCalculator extends React.Component<Props, State> {
+export default class ExchangeCalculator extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = { btc: "", ccc: "" };
     }
     public render() {
         const { btc, ccc } = this.state;
-        const { btcToCCCRate } = this.props;
+        const { exchangeRate, currency } = this.props;
         return (
             <div className="BTC-calculator">
                 <div className="input-container">
@@ -25,10 +26,10 @@ export default class BTCCalculator extends React.Component<Props, State> {
                         value={btc}
                         onChange={this.handleBTCChange}
                         showValidation={false}
-                        labelText={"BTC"}
-                        placeholder={"1 BTC"}
-                        disable={!btcToCCCRate}
-                        decimalScale={8}
+                        labelText={`${this.getLabel(currency)}`}
+                        placeholder={`1 ${this.getLabel(currency)}`}
+                        disable={!exchangeRate}
+                        decimalScale={this.getDecimalScale(currency)}
                         type="number"
                     />
                     <FontAwesomeIcon
@@ -42,27 +43,43 @@ export default class BTCCalculator extends React.Component<Props, State> {
                         labelText={"CCC"}
                         decimalScale={0}
                         placeholder={`${
-                            btcToCCCRate
-                                ? btcToCCCRate.toLocaleString()
+                            exchangeRate
+                                ? exchangeRate.toLocaleString()
                                 : "Loading"
                         } CCC`}
                         type="number"
-                        disable={!btcToCCCRate}
+                        disable={!exchangeRate}
                     />
                 </div>
             </div>
         );
     }
+    private getLabel = (currency: "btc" | "eth") => {
+        if (currency === "btc") {
+            return "BTC";
+        } else if (currency === "eth") {
+            return "ETH";
+        }
+        return "";
+    };
+    private getDecimalScale = (currency: "btc" | "eth") => {
+        if (currency === "btc") {
+            return 8;
+        } else if (currency === "eth") {
+            return 18;
+        }
+        return 0;
+    };
     private handleBTCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { btcToCCCRate } = this.props;
+        const { exchangeRate } = this.props;
         const btc = event.target.value;
-        const ccc = new BigNumber(btc).multipliedBy(btcToCCCRate!);
+        const ccc = new BigNumber(btc).multipliedBy(exchangeRate!);
         this.setState({ btc, ccc: ccc.isNaN() ? "" : ccc.toString(10) });
     };
     private handleCCCChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { btcToCCCRate } = this.props;
+        const { exchangeRate } = this.props;
         const ccc = event.target.value;
-        const btc = new BigNumber(ccc).div(btcToCCCRate!);
+        const btc = new BigNumber(ccc).div(exchangeRate!);
         this.setState({ btc: btc.isNaN() ? "" : btc.toString(10), ccc });
     };
 }

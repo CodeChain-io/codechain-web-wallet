@@ -1,0 +1,15 @@
+@import "styles/variables.scss";
+
+.Currency-toggle-button {
+  button.btn-primary {
+    background-color: white !important;
+    color: $wallet-blue !important;
+    border-radius: 4px;
+    padding: 0px 16px 0px 16px !important;
+  }
+  button.btn-primary.active {
+    color: white !important;
+    background-color: $wallet-blue !important;
+    border-color: $wallet-blue !important;
+  }
+}

@@ -10,7 +10,8 @@ import { ThunkDispatch } from "redux-thunk";
 import { WalletAddress } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import actions from "../../redux/wallet/walletActions";
-import BTCAddress from "./BTCAddress";
+import CurrencyToggleButton from "./CurrencyToggleButton";
+import ExchangeAddress from "./ExchangeAddress";
 import ExchangeHistory from "./ExchangeHistory";
 import ExchangeRate from "./ExchangeRate";
 import "./index.css";
@@ -25,12 +26,13 @@ interface DispatchProps {
 
 interface State {
     selectedAddress?: string;
+    selectedCurrency: "btc" | "eth";
 }
 type Props = WithTranslation & StateProps & DispatchProps & RouteComponentProps;
 class Exchange extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = { selectedAddress: undefined };
+        this.state = { selectedAddress: undefined, selectedCurrency: "btc" };
     }
     public componentDidMount() {
         this.props.fetchWalletFromStorageIfNeed();
@@ -53,7 +55,7 @@ class Exchange extends React.Component<Props, State> {
     }
     public render() {
         const { platformAddresses, t } = this.props;
-        const { selectedAddress } = this.state;
+        const { selectedAddress, selectedCurrency } = this.state;
         return (
             <div className="Exchange">
                 <Container>
@@ -66,9 +68,17 @@ class Exchange extends React.Component<Props, State> {
                         </Link>
                     </div>
                     <div className="page-container exchange-container">
-                        <h2 className="title">
-                            <Trans i18nKey={"charge:title"} />
-                        </h2>
+                        <div className="d-flex">
+                            <h2 className="title mr-auto">
+                                <Trans i18nKey={"charge:title"} />
+                            </h2>
+                            <CurrencyToggleButton
+                                selectedCurrency={this.state.selectedCurrency}
+                                onChangedCurrency={
+                                    this.handleChangeSelectCurrency
+                                }
+                            />
+                        </div>
                         {!platformAddresses ? (
                             <span className="loading-text">
                                 <Trans i18nKey="charge:loading" />
@@ -100,18 +110,26 @@ class Exchange extends React.Component<Props, State> {
                                 </div>
                                 <div className="description-container">
                                     <span className="description">
-                                        <Trans i18nKey="charge:description" />
+                                        <Trans
+                                            i18nKey={`charge:description.${selectedCurrency}`}
+                                        />
                                     </span>
                                 </div>
                                 <div className="btc-address-container">
-                                    <BTCAddress address={selectedAddress} />
+                                    <ExchangeAddress
+                                        selectedCurrency={selectedCurrency}
+                                        address={selectedAddress}
+                                    />
                                 </div>
                                 <div className="exchange-rate-container">
-                                    <ExchangeRate />
+                                    <ExchangeRate
+                                        selectedCurrency={selectedCurrency}
+                                    />
                                 </div>
                                 <div className="exchange-history-container">
                                     <ExchangeHistory
                                         address={selectedAddress}
+                                        selectedCurrency={selectedCurrency}
                                     />
                                 </div>
                             </div>
@@ -129,6 +147,9 @@ class Exchange extends React.Component<Props, State> {
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
         this.setState({ selectedAddress: event.target.value });
+    };
+    private handleChangeSelectCurrency = (currency: "btc" | "eth") => {
+        this.setState({ selectedCurrency: currency });
     };
 }
 

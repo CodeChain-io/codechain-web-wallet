@@ -6,6 +6,7 @@ import { getExplorerHost } from "../../../../utils/network";
 import "./index.css";
 
 interface OwnProps {
+    selectedCurrency: "btc" | "eth";
     history: {
         received: {
             hash: string;
@@ -25,20 +26,22 @@ interface OwnProps {
 type Props = OwnProps & WithTranslation;
 class ExchangeHistoryItem extends React.Component<Props, any> {
     public render() {
-        const { history, networkId } = this.props;
+        const { history, networkId, selectedCurrency } = this.props;
         return (
             <div className="Exchange-history-item">
                 <div className="item-container received-container">
                     <div>
-                        <span className="title-label">BTC</span>
+                        <span className="title-label">
+                            {this.getLabel(selectedCurrency)}
+                        </span>
                     </div>
                     <div>
                         {new BigNumber(history.received.quantity).toFormat()}{" "}
-                        BTC
+                        {this.getLabel(selectedCurrency)}
                     </div>
                     <div className="status-container">
                         <a
-                            href={`https://blockexplorer.com/tx/${
+                            href={`${this.getExplorer(selectedCurrency)}${
                                 history.received.hash
                             }`}
                             target="_blank"
@@ -88,10 +91,28 @@ class ExchangeHistoryItem extends React.Component<Props, any> {
             </div>
         );
     }
+    private getExplorer = (currency: "btc" | "eth") => {
+        if (currency === "btc") {
+            return "https://blockexplorer.com/tx/";
+        } else if (currency === "eth") {
+            return "https://etherscan.io/tx/";
+        }
+        return "";
+    };
+    private getLabel = (currency: "btc" | "eth") => {
+        if (currency === "btc") {
+            return "BTC";
+        } else if (currency === "eth") {
+            return "ETH";
+        }
+        return "";
+    };
     private renderStatus = (
         status: "success" | "reverted" | "pending",
         confirm?: number
     ) => {
+        const { selectedCurrency } = this.props;
+        const confirmCount = selectedCurrency === "btc" ? 2 : 44;
         if (status === "success") {
             return <Trans i18nKey="charge:exchange_state.success" />;
         } else if (status === "pending" && confirm != null) {
@@ -99,8 +120,8 @@ class ExchangeHistoryItem extends React.Component<Props, any> {
                 <Trans
                     i18nKey="charge:exchange_state.confirm_left"
                     values={{
-                        confirmCount: 2 - confirm,
-                        isPlural: 2 - confirm >= 2 ? "s" : ""
+                        confirmCount: confirmCount - confirm,
+                        isPlural: confirmCount - confirm >= 2 ? "s" : ""
                     }}
                 />
             );

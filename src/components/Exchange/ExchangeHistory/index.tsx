@@ -13,6 +13,7 @@ import "./index.css";
 
 interface OwnProps {
     address: string;
+    selectedCurrency: "btc" | "eth";
 }
 
 interface StateProps {
@@ -33,21 +34,33 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    fetchExchangeHistoryIfNeed: (address: string) => Promise<void>;
+    fetchExchangeHistoryIfNeed: (
+        address: string,
+        currency: "btc" | "eth"
+    ) => Promise<void>;
 }
 
 type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 class ExchangeHistory extends React.Component<Props, any> {
     public componentDidMount() {
-        this.props.fetchExchangeHistoryIfNeed(this.props.address);
+        this.props.fetchExchangeHistoryIfNeed(
+            this.props.address,
+            this.props.selectedCurrency
+        );
     }
     public componentWillUpdate(nextProps: Props) {
-        if (nextProps.address !== this.props.address) {
-            this.props.fetchExchangeHistoryIfNeed(nextProps.address);
+        if (
+            nextProps.address !== this.props.address ||
+            nextProps.selectedCurrency !== this.props.selectedCurrency
+        ) {
+            this.props.fetchExchangeHistoryIfNeed(
+                nextProps.address,
+                nextProps.selectedCurrency
+            );
         }
     }
     public render() {
-        const { exchangeHistory, networkId } = this.props;
+        const { exchangeHistory, networkId, selectedCurrency } = this.props;
         return (
             <div className="Exchange-history">
                 <h5 className="exchange-address-title">
@@ -61,6 +74,7 @@ class ExchangeHistory extends React.Component<Props, any> {
                         exchangeHistory.length > 0 ? (
                             exchangeHistory.map((h, index) => (
                                 <ExchangeHistoryItem
+                                    selectedCurrency={selectedCurrency}
                                     key={index}
                                     history={h}
                                     networkId={networkId}
@@ -89,16 +103,22 @@ class ExchangeHistory extends React.Component<Props, any> {
     }
 
     private refresh = () => {
-        this.props.fetchExchangeHistoryIfNeed(this.props.address);
+        this.props.fetchExchangeHistoryIfNeed(
+            this.props.address,
+            this.props.selectedCurrency
+        );
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
-    const { address } = ownProps;
+    const { address, selectedCurrency } = ownProps;
     return {
         exchangeHistory:
-            state.exchangeReducer.exchangeHistory[address] &&
-            state.exchangeReducer.exchangeHistory[address].data,
+            (state.exchangeReducer.exchangeHistory[selectedCurrency] || {})[
+                address
+            ] &&
+            state.exchangeReducer.exchangeHistory[selectedCurrency][address]
+                .data,
         networkId: state.globalReducer.networkId
     };
 };
@@ -106,8 +126,8 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchExchangeHistoryIfNeed: (address: string) => {
-        return dispatch(fetchExchangeHistoryIfNeed(address));
+    fetchExchangeHistoryIfNeed: (address: string, currency: "btc" | "eth") => {
+        return dispatch(fetchExchangeHistoryIfNeed(address, currency));
     }
 });
 

@@ -4,10 +4,13 @@
     "select_address": {
         "title": "Top up your CCC address"
     },
-    "description": "You can get CCC by transferring BTC to the address below. It takes 3 Bitcoin confirmations, and the maximum amount is 30 million CCC per charging. If you want to charge in larger bulks, contact support@kodebox.io.",
+    "description": {
+        "btc": "You can get CCC by transferring BTC to the address below. It takes 3 Bitcoin confirmations, and the maximum amount is 30 million CCC per charging. If you want to charge in larger bulks, contact support@kodebox.io.",
+        "eth": "You can get CCC by transferring ETH to the address below. It takes 45 Ethereum confirmations, and the maximum amount is 30 million CCC per charging. If you want to charge in larger bulks, contact support@kodebox.io."
+    },
     "empty_address": "There is no CCC address",
-    "btc_address": {
-        "title": "BTC Address",
+    "exchange_address": {
+        "title": { "btc": "BTC Address", "eth": "ETH Address" },
         "loading": "Loading..."
     },
     "exchange_rate": {
