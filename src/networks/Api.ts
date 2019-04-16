@@ -171,9 +171,9 @@ export async function getCountOfTxByAddress(data: {
     return await getRequest<number>(query);
 }
 
-export async function createBTCAddress(address: string) {
+export async function createBTCAddress(address: string, type: "btc" | "eth") {
     const apiHost = getExchangeHost();
-    const query = `${apiHost}/receivers/${address}/btc`;
+    const query = `${apiHost}/receivers/${address}/${type}`;
     const btcAddress = await getRequest<{
         type: string;
         address: string;
@@ -182,15 +182,15 @@ export async function createBTCAddress(address: string) {
     return btcAddress;
 }
 
-export async function getBTCtoCCCRate() {
+export async function getBTCtoCCCRate(type: "btc" | "eth") {
     const apiHost = getExchangeHost();
-    const query = `${apiHost}/rates/btc`;
+    const query = `${apiHost}/rates/${type}`;
     return await getRequest<{ toCCC: number }>(query);
 }
 
-export async function getExchangeHistory(address: string) {
+export async function getExchangeHistory(address: string, type: "btc" | "eth") {
     const apiHost = getExchangeHost();
-    const query = `${apiHost}/histories/${address}/btc`;
+    const query = `${apiHost}/histories/${address}/${type}`;
     return await getRequest<
         {
             received: {

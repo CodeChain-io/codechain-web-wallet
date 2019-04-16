@@ -158,7 +158,7 @@ export const fetchBTCAddressIfNeed = (address: string) => {
         try {
             dispatch(showLoading());
             dispatch(setFetchingBTCAddress(address));
-            const btcAddress = await createBTCAddress(address);
+            const btcAddress = await createBTCAddress(address, "btc");
             dispatch(cacheBTCAddress(address, btcAddress.address));
             dispatch(hideLoading());
         } catch (e) {
@@ -186,7 +186,7 @@ export const fetchBTCToCCCRateIfNeed = () => {
         try {
             dispatch(showLoading());
             dispatch(setFetchingBTCToCCCRate());
-            const response = await getBTCtoCCCRate();
+            const response = await getBTCtoCCCRate("btc");
             dispatch(cacheBTCToCCCRate(response.toCCC));
             dispatch(hideLoading());
         } catch (e) {
@@ -216,7 +216,7 @@ export const fetchExchangeHistoryIfNeed = (address: string) => {
         try {
             dispatch(showLoading());
             dispatch(setFetchingExchangeHistory(address));
-            const response = await getExchangeHistory(address);
+            const response = await getExchangeHistory(address, "btc");
             dispatch(cacheExchangeHistory(address, response));
             dispatch(hideLoading());
         } catch (e) {
