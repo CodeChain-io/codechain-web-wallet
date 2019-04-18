@@ -79,6 +79,7 @@ class ReceiverItem extends React.Component<Props> {
                         isValid={isQuantityValid}
                         onBlur={this.handleBlurQuantityInput}
                         error={quantityError}
+                        decimalScale={0}
                     />
                     <button
                         type="button"

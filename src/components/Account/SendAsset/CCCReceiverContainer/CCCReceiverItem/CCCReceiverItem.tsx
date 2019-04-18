@@ -63,6 +63,7 @@ class CCCReceiverItem extends React.Component<Props> {
                         isValid={isAmountValid}
                         onBlur={this.handleBlurAmountInput}
                         error={amountError}
+                        decimalScale={0}
                     />
                     <button
                         type="button"
@@ -85,6 +86,7 @@ class CCCReceiverItem extends React.Component<Props> {
                         tooltip="send:ccc.fee.tooltip"
                         onBlur={this.handleBlurFeeInput}
                         error={feeError}
+                        decimalScale={0}
                     />
                 </div>
             </div>

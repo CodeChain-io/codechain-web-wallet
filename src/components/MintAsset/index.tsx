@@ -187,6 +187,7 @@ class MintAsset extends React.Component<Props, State> {
                                                 labelText={t(
                                                     "mint:supply.label"
                                                 )}
+                                                decimalScale={0}
                                                 placeholder={t(
                                                     "mint:supply.placeholder"
                                                 )}
@@ -282,6 +283,7 @@ class MintAsset extends React.Component<Props, State> {
                                                     <div className="fee-input-container">
                                                         <ValidationInput
                                                             value={fee}
+                                                            decimalScale={0}
                                                             onChange={
                                                                 this
                                                                     .handleChangeFee

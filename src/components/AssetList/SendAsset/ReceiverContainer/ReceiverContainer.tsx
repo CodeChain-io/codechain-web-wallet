@@ -207,6 +207,7 @@ class ReceiverContainer extends React.Component<Props, State> {
                                     showValidation={true}
                                     labelText={t("send:asset.fee.label")}
                                     type="number"
+                                    decimalScale={0}
                                     placeholder={
                                         !feePayer
                                             ? "select payer"
