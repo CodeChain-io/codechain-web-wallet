@@ -5,6 +5,7 @@ import facebook from "./img/facebook.svg";
 import github from "./img/github.svg";
 import gitter from "./img/gitter.svg";
 import medium from "./img/medium.svg";
+import telegram from "./img/telegram.svg";
 import twitter from "./img/twitter.svg";
 import "./index.css";
 
@@ -92,6 +93,14 @@ class Footer extends React.Component<Props> {
                                         href="https://medium.com/codechain"
                                     >
                                         <img src={medium} />
+                                    </a>
+                                </li>
+                                <li className="list-inline-item">
+                                    <a
+                                        target="_blank"
+                                        href="http://t.me/codechain_protocol"
+                                    >
+                                        <img src={telegram} />
                                     </a>
                                 </li>
                                 <li className="list-inline-item language-selector-container">
