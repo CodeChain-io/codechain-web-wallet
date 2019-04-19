@@ -1,8 +1,8 @@
 {
   "main.css": "static/css/main.d0c6a597.css",
   "main.css.map": "static/css/main.d0c6a597.css.map",
-  "main.js": "static/js/main.d62f7941.js",
-  "main.js.map": "static/js/main.d62f7941.js.map",
+  "main.js": "static/js/main.115e9cd2.js",
+  "main.js.map": "static/js/main.115e9cd2.js.map",
   "static/media/cautiondisabled.svg": "static/media/cautiondisabled.5f741cde.svg",
   "static/media/check_icon.svg": "static/media/check_icon.b6365a20.svg",
   "static/media/copy-hover.svg": "static/media/copy-hover.790a3790.svg",
@@ -20,6 +20,7 @@
   "static/media/plus-standard.svg": "static/media/plus-standard.e3e35367.svg",
   "static/media/restore-hover.svg": "static/media/restore-hover.61f75205.svg",
   "static/media/restore-standard.svg": "static/media/restore-standard.5ed52c2c.svg",
+  "static/media/telegram.svg": "static/media/telegram.afaec1a7.svg",
   "static/media/testnet.svg": "static/media/testnet.afbd2264.svg",
   "static/media/twitter.svg": "static/media/twitter.a2682b66.svg"
 }
