@@ -26,13 +26,13 @@ interface DispatchProps {
 
 interface State {
     selectedAddress?: string;
-    selectedCurrency: "btc" | "eth";
+    selectedCurrency: "eth";
 }
 type Props = WithTranslation & StateProps & DispatchProps & RouteComponentProps;
 class Exchange extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = { selectedAddress: undefined, selectedCurrency: "btc" };
+        this.state = { selectedAddress: undefined, selectedCurrency: "eth" };
     }
     public componentDidMount() {
         this.props.fetchWalletFromStorageIfNeed();
@@ -148,7 +148,7 @@ class Exchange extends React.Component<Props, State> {
     ) => {
         this.setState({ selectedAddress: event.target.value });
     };
-    private handleChangeSelectCurrency = (currency: "btc" | "eth") => {
+    private handleChangeSelectCurrency = (currency: "eth") => {
         this.setState({ selectedCurrency: currency });
     };
 }
