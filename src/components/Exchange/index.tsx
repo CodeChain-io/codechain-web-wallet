@@ -113,6 +113,14 @@ class Exchange extends React.Component<Props, State> {
                                         <Trans
                                             i18nKey={`charge:description.${selectedCurrency}`}
                                         />
+                                        {selectedCurrency === "eth" && [
+                                            <br key="linebreak1" />,
+                                            <br key="linebreak2" />,
+                                            <Trans
+                                                key="warning"
+                                                i18nKey={`charge:warning`}
+                                            />
+                                        ]}
                                     </span>
                                 </div>
                                 <div className="btc-address-container">
