@@ -104,9 +104,9 @@ class CCCReceiverContainer extends React.Component<Props, State> {
         const { totalAmount } = this.props;
         const { fee } = this.state;
         const remainingCCC = totalAmount.value.minus(fee);
-        try {
-            return new U64(remainingCCC).toLocaleString();
-        } catch (e) {
+        if (remainingCCC.gt(0)) {
+            return remainingCCC.toString();
+        } else {
             return "0";
         }
     };
