@@ -263,11 +263,11 @@ class SendAsset extends React.Component<Props, State> {
         );
 
         const inputUTXO = [];
-        let currentSum = new U64(0);
+        let inputUTXOSum = new U64(0);
         for (const utxo of UTXOList!) {
             inputUTXO.push(utxo);
-            currentSum = U64.plus(currentSum, utxo.quantity);
-            if (currentSum.lte(sumOfSendingAsset)) {
+            inputUTXOSum = U64.plus(inputUTXOSum, utxo.quantity);
+            if (inputUTXOSum.gte(sumOfSendingAsset)) {
                 break;
             }
         }
@@ -338,7 +338,7 @@ class SendAsset extends React.Component<Props, State> {
             };
         });
 
-        const refundAmount = U64.minus(currentSum, sumOfSendingAsset);
+        const refundAmount = U64.minus(inputUTXOSum, sumOfSendingAsset);
         if (refundAmount.gt(0)) {
             outputData.push({
                 recipient: address,
