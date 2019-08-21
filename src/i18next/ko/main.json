@@ -11,10 +11,9 @@
     },
     "ccc": {
         "title": "CCC 주소",
-        "detail": "자산 전송 혹은 발행 수수료로 쓰이는 CCC를 보관하는 주소입니다. 비트코인으로 CCC를 구입할 수 있습니다.",
+        "detail": "자산 전송 혹은 발행 수수료로 쓰이는 CCC를 보관하는 주소입니다.",
         "restore": "불러오는중 ...",
         "add": "주소 추가",
-        "charge": "CCC 충전",
         "faucet": "CodeChain Faucet"
     },
     "menu": {

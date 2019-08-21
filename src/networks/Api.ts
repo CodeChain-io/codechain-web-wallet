@@ -9,7 +9,7 @@ import { H160, Transaction, U64 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-import { getExchangeHost, getIndexerHost } from "../utils/network";
+import { getIndexerHost } from "../utils/network";
 
 async function getRequest<T>(url: string) {
     const response = await axios.get<T>(url);
@@ -169,47 +169,4 @@ export async function getCountOfTxByAddress(data: {
         query += `&assetType=${data.assetType.value}`;
     }
     return await getRequest<number>(query);
-}
-
-export async function createBTCAddress(
-    address: string,
-    currency: "btc" | "eth"
-) {
-    const apiHost = getExchangeHost();
-    const query = `${apiHost}/receivers/${address}/${currency}`;
-    const btcAddress = await getRequest<{
-        type: string;
-        address: string;
-        createdAt: Date;
-    }>(query);
-    return btcAddress;
-}
-
-export async function getBTCtoCCCRate(currency: "btc" | "eth") {
-    const apiHost = getExchangeHost();
-    const query = `${apiHost}/rates/${currency}`;
-    return await getRequest<{ toCCC: number }>(query);
-}
-
-export async function getExchangeHistory(
-    address: string,
-    currency: "btc" | "eth"
-) {
-    const apiHost = getExchangeHost();
-    const query = `${apiHost}/histories/${address}/${currency}`;
-    return await getRequest<
-        {
-            received: {
-                hash: string;
-                quantity: string;
-                status: "success" | "pending" | "reverted";
-                confirm: number;
-            };
-            sent: {
-                hash?: string;
-                quantity: string;
-                status: "success" | "pending";
-            };
-        }[]
-    >(query);
 }

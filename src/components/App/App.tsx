@@ -38,7 +38,6 @@ import AddressList from "../AddressList/AddressList";
 import AssetDetail from "../AssetDetail/AssetDetail";
 import AssetList from "../AssetList/AssetList";
 import CreateWallet from "../CreateWallet/CreateWallet";
-import Exchange from "../Exchange";
 import Footer from "../Footer";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
@@ -125,11 +124,6 @@ class App extends React.Component<Props, any> {
                                     exact={true}
                                     path="/mint"
                                     component={MintAsset}
-                                />
-                                <PrivateRoute
-                                    exact={true}
-                                    path="/chargeCCC"
-                                    component={Exchange}
                                 />
                                 <PrivateRoute
                                     path="/:address/assets"
