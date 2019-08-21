@@ -127,13 +127,7 @@ class AddressList extends React.Component<Props> {
                                             />
                                         </div>
                                         {platformAddresses.length > 0 &&
-                                            (networkId === "cc" ? (
-                                                <Link to="/chargeCCC">
-                                                    <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
-                                                        <Trans i18nKey="main:ccc.charge" />
-                                                    </div>
-                                                </Link>
-                                            ) : (
+                                            (networkId === "wc" && (
                                                 <a
                                                     href="https://corgi.codechain.io/faucet"
                                                     target="_blank"
