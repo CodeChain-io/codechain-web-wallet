@@ -1,0 +1,67 @@
+{
+    "title": "Send asset",
+    "complete": "COMPLETE!",
+    "receiver": {
+        "label": "RECIPIENT ADDRESS",
+        "placeholder": "recipient address"
+    },
+    "quantity": {
+        "label": "QUANTITY",
+        "placeholder": "quantity"
+    },
+    "memo": {
+        "label": "Memo (Optional)",
+        "placeholder": "memo"
+    },
+    "fee": {
+        "label": "FEE",
+        "tooltip": "The minimum fee is 100 CCC, and the higher the fee, the faster it is processed."
+    },
+    "payer": {
+        "label": "CHARGE FEE TO",
+        "tooltip": "The fee will be transferred from the address below.",
+        "select": "select address",
+        "empty": "no address"
+    },
+    "add": "Add a new recipient",
+    "button": "Send",
+    "recent": {
+        "title": "Recent transactions",
+        "empty": "There is no transaction"
+    },
+    "list": {
+        "title": "Asset list",
+        "empty": "There is no asset"
+    },
+    "remove": "remove",
+    "error": {
+        "memo": {
+            "maximum": "Maximum 25 characters limit"
+        },
+        "fee": {
+            "not_selected": "Select fee payer",
+            "invalid_balance": "invalid balance",
+            "required": "fee is required",
+            "invalid": "invalid number",
+            "minimum": "minimum value is {{minimum}}",
+            "not_enough": "not enough CCC"
+        },
+        "receiver": {
+            "required": "recipient address is required",
+            "not_available": "can't send asset to sender's address",
+            "invalid": "invalid address"
+        },
+        "quantity": {
+            "required": "quantity is required",
+            "invalid": "invalid number",
+            "minimum": "minimum value is 1",
+            "not_enough": "not enough asset"
+        },
+        "password": {
+            "wrong": "Wrong password. Please try again."
+        },
+        "gateway": {
+            "unauthorized": "The transaction was not authorized. Please contact the asset issuer for additional assistance."
+        }
+    }
+}

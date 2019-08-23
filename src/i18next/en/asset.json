@@ -1,0 +1,9 @@
+{
+    "title": "Asset detail",
+    "total": "Balance",
+    "description": "Description",
+    "approver": "Approver",
+    "total_supply": "Total supply",
+    "recent_transactions": "Recent transactions",
+    "none": "None"
+}

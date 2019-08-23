@@ -1,0 +1,29 @@
+{
+    "title": "Charge CCC",
+    "loading": "Loading...",
+    "select_address": {
+        "title": "Top up your CCC address"
+    },
+    "description": {
+        "btc": "You can get CCC by transferring BTC to the address below. It takes 3 Bitcoin confirmations, and the maximum amount is 30 million CCC per charging. If you want to charge in larger bulks, contact support@kodebox.io.",
+        "eth": "You can get CCC by transferring ETH to the address below. It takes 45 Ethereum confirmations, and the maximum amount is 30 million CCC per charging. If you want to charge in larger bulks, contact support@kodebox.io."
+    },
+    "warning": "We recommend you to use Metamask, MyEthWallet, etc. Charging using other wallets with multisig contract may not work.",
+    "empty_address": "There is no CCC address",
+    "exchange_address": {
+        "title": { "btc": "BTC Address", "eth": "ETH Address" },
+        "loading": "Loading..."
+    },
+    "exchange_rate": {
+        "button": "CCC simulator"
+    },
+    "exchange_state": {
+        "title": "Status",
+        "no_record": "There is no record",
+        "loading": "Loading...",
+        "success": "Success",
+        "pending": "Pending",
+        "confirm_left": "{{confirmCount}} confirm{{isPlural}} left",
+        "reverted": "Reverted"
+    }
+}

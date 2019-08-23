@@ -1,0 +1,22 @@
+@import "styles/variables.scss";
+
+.BTC-address {
+  .btc-address-title {
+    color: $dark-grey;
+  }
+  .input-container {
+    align-items: flex-end;
+    .btc-input {
+      flex: 1;
+    }
+
+    .copy-btn-container {
+      margin-bottom: 23px;
+      border: 1px solid $wallet-blue;
+      padding: 3px 8px 3px 8px;
+      border-radius: 5px;
+      color: $wallet-blue;
+      cursor: pointer;
+    }
+  }
+}

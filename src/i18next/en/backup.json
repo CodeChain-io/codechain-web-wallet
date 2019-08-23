@@ -1,0 +1,10 @@
+{
+    "title": "Backup phrase",
+    "reveal": "Enter your password to reveal backup phrase.",
+    "password": {
+        "label": "PASSWORD",
+        "placeholder": "password"
+    },
+    "see_btn": "SEE BACKUP PHRASE",
+    "password_error": "Wrong password. Please try again."
+}

@@ -1,0 +1,9 @@
+{
+    "title": "자산 정보",
+    "total": "잔액",
+    "description": "설명",
+    "approver": "승인자",
+    "total_supply": "총 발행량",
+    "recent_transactions": "최근 트랜잭션",
+    "none": "없음"
+}

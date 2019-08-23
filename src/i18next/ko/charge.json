@@ -1,0 +1,29 @@
+{
+    "title": "CCC 충전",
+    "loading": "로딩중...",
+    "select_address": {
+        "title": "충전할 주소를 선택하세요."
+    },
+    "description": {
+        "btc": "아래 BTC 주소로 비트코인을 입금해 CCC를 충전할 수 있습니다. 비트코인 트랜잭션이 3컨펌되면 충전되며, 1회 최대 충전량은 3,000만 CCC입니다. 이외의 충전은 support@kodebox.io로 문의하시기 바랍니다.",
+        "eth": "아래 ETH 주소로 이더리움을 입금해 CCC를 충전할 수 있습니다. 이더리움 트랜잭션이 45컨펌되면 충전되며, 1회 최대 충전량은 3,000만 CCC입니다. 이외의 충전은 support@kodebox.io로 문의하시기 바랍니다"
+    },
+    "warning": "메타마스크, 마이이더월렛 등을 사용해 입금하기를 권장합니다. 이외에 멀티시그 지갑 등을 이용하여 입금하는 경우 충전이 실패할 수 있습니다.",
+    "empty_address": "CCC 주소가 없습니다.",
+    "exchange_address": {
+        "title": { "btc": "BTC 주소", "eth": "ETH 주소" },
+        "loading": "로딩중..."
+    },
+    "exchange_rate": {
+        "button": "CCC 환율계산기"
+    },
+    "exchange_state": {
+        "title": "처리 현황",
+        "no_record": "내역이 없습니다",
+        "loading": "로딩중...",
+        "success": "완료",
+        "pending": "처리중",
+        "confirm_left": "{{confirmCount}} 승인 남음",
+        "reverted": "처리중"
+    }
+}

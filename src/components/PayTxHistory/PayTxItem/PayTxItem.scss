@@ -1,0 +1,67 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
+.Pay-tx-item {
+  border-bottom: 1px solid $disabled-grey;
+
+  & > div {
+    padding: 18px;
+
+    @include respond_below(sm) {
+      & {
+        padding: 8px;
+      }
+    }
+  }
+  .date-container {
+    white-space: pre;
+    color: $dark-grey;
+    font-weight: 400;
+
+    @include respond_below(sm) {
+      & {
+        text-align: center;
+      }
+    }
+  }
+  .pay-info-container {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .transaction-hash {
+      color: $dark-grey;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .balance-container {
+    color: $dark-grey;
+    font-size: 1.3rem;
+    @include respond_below(sm) {
+      & {
+        font-size: 1.1rem;
+      }
+    }
+  }
+  .status-container {
+    font-weight: 600;
+    width: 80px;
+    text-align: center;
+    .pending {
+      color: $off-yellow;
+    }
+
+    .confirmed {
+      color: $varified-green;
+    }
+
+    .failed {
+      color: $error-red;
+    }
+  }
+}

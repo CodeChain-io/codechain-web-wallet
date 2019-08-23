@@ -1,0 +1,29 @@
+{
+    "address": "주소 {{index}}",
+    "address_loading": "로딩중 ...",
+    "asset": {
+        "title": "디지털 자산 주소",
+        "detail": "자산을 새로 발행하거나 거래할 수 있는 주소입니다.",
+        "restore": "불러오는중 ...",
+        "add": "주소 추가",
+        "mint": "디지털 자산 발행",
+        "no_asset": "보유 자산 없음"
+    },
+    "ccc": {
+        "title": "CCC 주소",
+        "detail": "자산 전송 혹은 발행 수수료로 쓰이는 CCC를 보관하는 주소입니다. 비트코인으로 CCC를 구입할 수 있습니다.",
+        "restore": "불러오는중 ...",
+        "add": "주소 추가",
+        "charge": "CCC 충전",
+        "faucet": "CodeChain Faucet"
+    },
+    "menu": {
+        "lock": "지갑 잠금",
+        "backup_phrase": "백업 문구 확인"
+    },
+    "confirmed": "완료",
+    "pending": "처리중",
+    "memo": "메모",
+    "copied": "클립보드에 복사되었습니다",
+    "max": "전액"
+}

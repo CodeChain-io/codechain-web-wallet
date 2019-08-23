@@ -4,20 +4,44 @@
   .add-receiver-btn {
     padding-left: 12px;
     padding-right: 12px;
+    margin-bottom: 22px;
   }
-  .fee-input-container {
-    width: 150px;
-    margin-right: 10px;
+  .fee-container {
+    .fee-input-container {
+      width: 150px;
+      margin-right: 10px;
+    }
+    .fee-payer-container {
+      .payer-label {
+        font-weight: bold;
+        color: $standard-grey;
+      }
+      flex: 1;
+      .available-ccc-text {
+        font-size: 0.8rem;
+        color: $standard-grey;
+      }
+    }
   }
-  .fee-payer-container {
-    .payer-label {
+  .memo-container {
+    margin-bottom: 20px;
+    .input-label {
       font-weight: bold;
       color: $standard-grey;
     }
-    flex: 1;
-    .available-ccc-text {
-      font-size: 0.8rem;
-      color: $standard-grey;
+
+    textarea {
+      border: 1px solid $wallet-blue;
     }
+  }
+
+  .Receiver-item {
+    border-top: 2px solid $disabledbg-grey;
+    padding-top: 15px;
+  }
+
+  .Receiver-item:nth-child(1) {
+    border-top: none;
+    padding-top: 0;
   }
 }

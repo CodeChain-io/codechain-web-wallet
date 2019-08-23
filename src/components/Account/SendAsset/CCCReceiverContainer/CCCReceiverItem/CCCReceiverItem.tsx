@@ -1,20 +1,21 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import ValidationInput from "../../../../ValidationInput/ValidationInput";
 import "./CCCReceiverItem.css";
 
-interface Props {
+interface OwnProps {
     receiver: {
         address: string;
-        amount: string;
+        quantity: string;
     };
     remainingAmount: string;
     fee: string;
     onAddressChange: (address: string) => void;
-    onAmountChange: (amount: string) => void;
+    onAmountChange: (quantity: string) => void;
     onAddressValidationCheck: () => void;
     onAmountValidationCheck: () => void;
     onFeeValidationCheck: () => void;
-    onFeeChange: (amound: string) => void;
+    onFeeChange: (quantity: string) => void;
     isAddressValid?: boolean;
     isAmountValid?: boolean;
     addressError?: string;
@@ -23,9 +24,12 @@ interface Props {
     isFeeValid?: boolean;
 }
 
-export default class CCCReceiverItem extends React.Component<Props, any> {
+type Props = WithTranslation & OwnProps;
+
+class CCCReceiverItem extends React.Component<Props> {
     public render() {
         const {
+            t,
             receiver,
             isAddressValid,
             isAmountValid,
@@ -40,8 +44,8 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                 <ValidationInput
                     value={receiver.address}
                     onChange={this.handleChangeAddressInput}
-                    labelText="RECEIVER ADDRESS"
-                    placeholder="receiver address"
+                    labelText={t("send:ccc.receiver.label")}
+                    placeholder={t("send:ccc.receiver.placeholder")}
                     showValidation={true}
                     isValid={isAddressValid}
                     onBlur={this.handleBlurAddressInput}
@@ -49,37 +53,40 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
                 />
                 <div className="d-flex align-items-end">
                     <ValidationInput
-                        value={receiver.amount}
+                        value={receiver.quantity}
                         onChange={this.handleChangedAmountInput}
-                        labelText="AMOUNT"
-                        placeholder="amount"
-                        type="text"
+                        labelText={t("send:ccc.amount.label")}
+                        placeholder={t("send:ccc.amount.placeholder")}
+                        type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isAmountValid}
                         onBlur={this.handleBlurAmountInput}
                         error={amountError}
+                        decimalScale={0}
                     />
                     <button
                         type="button"
                         className="btn btn-primary max-btn"
                         onClick={this.handleMaxValueClick}
                     >
-                        max
+                        <Trans i18nKey="main:max" />
                     </button>
                 </div>
                 <div>
                     <ValidationInput
                         value={fee}
                         onChange={this.handleChangeFeeInput}
-                        labelText="FEE"
-                        placeholder="fee (CCC)"
-                        type="text"
+                        labelText={t("send:ccc.fee.label")}
+                        placeholder={`100 (CCC)`}
+                        type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isFeeValid}
+                        tooltip="send:ccc.fee.tooltip"
                         onBlur={this.handleBlurFeeInput}
                         error={feeError}
+                        decimalScale={0}
                     />
                 </div>
             </div>
@@ -127,3 +134,5 @@ export default class CCCReceiverItem extends React.Component<Props, any> {
         onFeeChange(event.target.value);
     };
 }
+
+export default withTranslation()(CCCReceiverItem);

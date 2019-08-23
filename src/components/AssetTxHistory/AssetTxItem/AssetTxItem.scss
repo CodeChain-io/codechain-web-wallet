@@ -1,0 +1,88 @@
+@import "styles/variables.scss";
+@import "styles/mixin.scss";
+
+.Asset-tx-item {
+  border-bottom: 1px solid $disabled-grey;
+
+  & > div {
+    padding: 18px;
+
+    @include respond_below(sm) {
+      & {
+        padding: 8px;
+      }
+    }
+  }
+  .date-container {
+    white-space: pre;
+    color: $dark-grey;
+    font-weight: 400;
+
+    @include respond_below(sm) {
+      & {
+        text-align: center;
+      }
+    }
+  }
+  .asset-info-container {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .asset-image {
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .asset-name {
+      color: $standard-grey;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .transaction-hash {
+      color: $dark-grey;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .memo-container {
+    margin-top: 8px;
+    .memo-text {
+      color: $dark-grey;
+      font-size: 0.9rem;
+    }
+  }
+  .balance-container {
+    color: $dark-grey;
+    font-size: 1.3rem;
+    @include respond_below(sm) {
+      & {
+        font-size: 1.1rem;
+      }
+    }
+  }
+  .status-container {
+    font-weight: 600;
+    width: 80px;
+    text-align: center;
+    .pending {
+      color: $off-yellow;
+    }
+
+    .confirmed {
+      color: $varified-green;
+    }
+
+    .failed {
+      color: $error-red;
+    }
+  }
+}

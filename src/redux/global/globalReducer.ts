@@ -8,7 +8,7 @@ export interface GlobalState {
 
 export const globalInitState: GlobalState = {
     passphrase: undefined,
-    networkId: "tc"
+    networkId: "cc"
 };
 
 export const globalReducer = (state = globalInitState, action: Action) => {

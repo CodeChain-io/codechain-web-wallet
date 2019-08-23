@@ -1,11 +1,11 @@
-import BigNumber from "bignumber.js";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";
 import { PlatformAccount } from "../../model/address";
 import { getPlatformAccount } from "../../networks/Api";
-import { getAggsParcel } from "../../utils/parcel";
+import { TxUtil } from "../../utils/transaction";
 import chainActions from "../chain/chainActions";
 
 export type Action = UpdateAvailableQuark | UpdateAccount | SetFetchingAccount;
@@ -20,7 +20,7 @@ export interface UpdateAvailableQuark {
     type: ActionType.UpdateAvailableQuark;
     data: {
         address: string;
-        amount: string;
+        amount: U64;
     };
 }
 
@@ -88,12 +88,10 @@ const fetchAccountIfNeed = (address: string) => {
 };
 
 const fetchAvailableQuark = (address: string) => {
-    return (
-        dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
-        getState: () => ReducerConfigure
-    ) => {
-        dispatch(chainActions.fetchUnconfirmedParcelListIfNeed(address));
-        dispatch(chainActions.fetchPendingParcelListIfNeed(address));
+    return (dispatch: ThunkDispatch<ReducerConfigure, void, Action>) => {
+        dispatch(chainActions.fetchPendingTxListIfNeed(address));
+        dispatch(chainActions.fetchTxListIfNeed(address));
+        dispatch(chainActions.fetchCountOfTxListIfNeed(address));
         dispatch(fetchAccountIfNeed(address));
     };
 };
@@ -110,48 +108,34 @@ const calculateAvailableQuark = (address: string) => {
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const unconfirmedParcelListObj = getState().chainReducer
-            .unconfirmedParcelList[address];
+        const txListObj = getState().chainReducer.txList[address];
         const accountObj = getState().accountReducer.accounts[address];
-        const pendingParcelListObj = getState().chainReducer.pendingParcelList[
-            address
-        ];
-        const unconfirmedParcelList =
-            unconfirmedParcelListObj && unconfirmedParcelListObj.data;
+        const pendingTxListObj = getState().chainReducer.pendingTxList[address];
+        const txList = txListObj && txListObj.data;
         const account = accountObj && accountObj.data;
-        const pendingParcelList =
-            pendingParcelListObj && pendingParcelListObj.data;
-        if (!unconfirmedParcelList || !account || !pendingParcelList) {
+        const pendingTxList = pendingTxListObj && pendingTxListObj.data;
+        if (!txList || !account || !pendingTxList) {
             return;
         }
-        const aggrUnconfirmedParcel = getAggsParcel(
+
+        const txHashList = _.map(txList, tx => tx.hash);
+        const validPendingTxList = _.filter(
+            pendingTxList,
+            pendingTx => !_.includes(txHashList, pendingTx.hash)
+        );
+        const aggrPendingQuark = TxUtil.getAggsQuark(
             address,
-            unconfirmedParcelList
+            validPendingTxList
         );
-        const unconfirmedParcelHashList = _.map(
-            unconfirmedParcelList,
-            parcel => parcel.hash
+        const availableQuark = U64.minus(
+            account.balance,
+            aggrPendingQuark.input
         );
-        const validPendingParcelList = _.filter(
-            pendingParcelList,
-            pendingParcel =>
-                !_.includes(
-                    unconfirmedParcelHashList,
-                    pendingParcel.parcel.hash
-                )
-        );
-        const aggrPendingParcel = getAggsParcel(
-            address,
-            _.map(validPendingParcelList, p => p.parcel)
-        );
-        const availableQuark = new BigNumber(account.balance)
-            .minus(aggrUnconfirmedParcel.output)
-            .minus(aggrPendingParcel.input);
         dispatch({
             type: ActionType.UpdateAvailableQuark,
             data: {
                 address,
-                amount: availableQuark.toString(10)
+                amount: availableQuark
             }
         });
     };

@@ -1,10 +1,5 @@
-import {
-    AggsUTXO,
-    AssetSchemeDoc,
-    UTXO
-} from "codechain-indexer-types/lib/types";
-import { MetadataFormat } from "codechain-indexer-types/lib/utils";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import { AggsUTXODoc, AssetSchemeDoc, UTXODoc } from "codechain-indexer-types";
+import { H160, U64 } from "codechain-sdk/lib/core/classes";
 import { Action, ActionType } from "./assetActions";
 
 export interface AssetState {
@@ -16,14 +11,14 @@ export interface AssetState {
     };
     aggsUTXOList: {
         [address: string]: {
-            data?: AggsUTXO[] | null;
+            data?: AggsUTXODoc[] | null;
             updatedAt?: number | null;
             isFetching: boolean;
         } | null;
     };
     UTXOList: {
         [id: string]: {
-            data?: UTXO[] | null;
+            data?: UTXODoc[] | null;
             updatedAt?: number | null;
             isFetching: boolean;
         } | null;
@@ -32,8 +27,7 @@ export interface AssetState {
         [address: string]:
             | {
                   assetType: string;
-                  quantities: number;
-                  metadata: MetadataFormat;
+                  quantities: U64;
               }[]
             | null;
     };
@@ -46,7 +40,7 @@ export const assetInitState: AssetState = {
     availableAssets: {}
 };
 
-export const getIdForCacheUTXO = (address: string, assetType: H256) => {
+export const getIdForCacheUTXO = (address: string, assetType: H160) => {
     return `${address}-${assetType.value}`;
 };
 

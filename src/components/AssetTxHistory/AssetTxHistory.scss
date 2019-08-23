@@ -1,0 +1,13 @@
+@import "styles/variables.scss";
+
+.Asset-tx-history {
+  .empty {
+    color: $disabled-grey;
+    font-size: 1.14rem;
+    font-weight: bold;
+  }
+  .pagination-container {
+    margin-top: 20px;
+    text-align: center;
+  }
+}

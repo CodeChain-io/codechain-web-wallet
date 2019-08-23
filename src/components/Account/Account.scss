@@ -28,9 +28,6 @@
       }
     }
 
-    .element-title {
-      font-size: 1.28rem;
-    }
     .ccc-text {
       color: $platform-green;
       font-size: 3rem;
@@ -46,11 +43,11 @@
     }
   }
 
-  .send-ccc-container {
+  .right-container {
     margin: 28px 12px 28px 12px;
     width: 412px;
 
-    .send-ccc-panel {
+    .right-panel {
       box-shadow: 0 2px 11px 0 rgba(0, 0, 0, 0.5);
       background-color: #ffffff;
       border-radius: 5px;
@@ -61,7 +58,7 @@
       width: 100%;
       margin: 0 0 0 0;
 
-      .send-ccc-panel {
+      .right-panel {
         height: calc(100vh - #{$header-height});
         border-radius: 0;
         box-shadow: none;

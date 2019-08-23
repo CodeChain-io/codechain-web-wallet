@@ -16,13 +16,12 @@ interface State {
 }
 
 export class ImageLoader extends React.Component<Props, State> {
-    // FIXME: Change the default host
     constructor(prop: Props) {
         super(prop);
         let requestUrl;
         if (prop.isAssetImage) {
-            const host = getIndexerHost(prop.networkId || "tc");
-            requestUrl = `${host}/api/asset/image/${prop.data}`;
+            const host = getIndexerHost(prop.networkId || "cc");
+            requestUrl = `${host}/api/asset-image/${prop.data}`;
         } else {
             requestUrl = this.getDefaultImage();
         }

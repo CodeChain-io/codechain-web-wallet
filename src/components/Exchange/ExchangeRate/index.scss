@@ -1,0 +1,19 @@
+@import "styles/variables.scss";
+
+.Exchange-rate {
+  .exchange-rate-item-container {
+    color: $dark-grey;
+
+    .exchange-rate-item {
+      font-weight: bold;
+    }
+
+    .simulator-label {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+  .BTC-calculator-container {
+    margin-top: 12px;
+  }
+}

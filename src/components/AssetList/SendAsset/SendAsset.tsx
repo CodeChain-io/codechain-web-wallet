@@ -1,17 +1,17 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AssetSchemeDoc, UTXO } from "codechain-indexer-types/lib/types";
-import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
+import { AssetSchemeDoc, UTXODoc } from "codechain-indexer-types";
 import { SDK } from "codechain-sdk";
 import {
     Asset,
     AssetTransferAddress,
     AssetTransferOutput,
-    AssetTransferTransaction,
-    H256,
-    SignedParcel,
-    U256
+    H160,
+    SignedTransaction,
+    Transaction,
+    U64
 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
 import * as _ from "lodash";
@@ -33,6 +33,7 @@ import { getIdForCacheUTXO } from "../../../redux/asset/assetReducer";
 import chainActions from "../../../redux/chain/chainActions";
 import walletActions from "../../../redux/wallet/walletActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
+import * as Metadata from "../../../utils/metadata";
 import { getCodeChainHost } from "../../../utils/network";
 import { getAssetKeys, getPlatformKeys } from "../../../utils/storage";
 import * as CheckIcon from "./img/check_icon.svg";
@@ -47,13 +48,12 @@ interface OwnProps {
 
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
-    isSendingTx: boolean;
-    UTXOList: UTXO[] | null;
+    UTXOList: UTXODoc[] | null;
     availableAssets?:
         | {
               assetType: string;
-              quantities: number;
-              metadata: MetadataFormat;
+              quantities: U64;
+              metadata: Metadata.Metadata;
           }[]
         | null;
     networkId: NetworkId;
@@ -63,39 +63,40 @@ interface StateProps {
 }
 
 interface State {
-    isSendBtnClicked?: boolean;
+    isSendingTx: boolean;
+    isSentTx: boolean;
 }
 
 interface DispatchProps {
-    fetchAssetSchemeIfNeed: (assetType: H256) => void;
+    fetchAssetSchemeIfNeed: (assetType: H160) => void;
     fetchAvailableAssets: (address: string) => void;
-    fetchUTXOListIfNeed: (address: string, assetType: H256) => void;
+    fetchUTXOListIfNeed: (address: string, assetType: H160) => void;
     sendTransactionByGateway: (
         address: string,
-        transferTx: AssetTransferTransaction,
-        getewayURL: string
-    ) => void;
+        transferTx: Transaction,
+        gatewayURL: string
+    ) => Promise<{}>;
     fetchWalletFromStorageIfNeed: () => void;
-    sendTransactionByParcel: (
+    sendSignedTransaction: (
         address: string,
-        signedParcel: SignedParcel,
-        transferTx: AssetTransferTransaction,
+        signedTransaction: SignedTransaction,
         feePayer: string
-    ) => void;
+    ) => Promise<{}>;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 
 class SendAsset extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isSendBtnClicked: undefined
+            isSendingTx: false,
+            isSentTx: false
         };
     }
     public render() {
         const { onClose } = this.props;
-        const { isSendBtnClicked } = this.state;
+        const { isSendingTx, isSentTx } = this.state;
         const {
             assetScheme,
             selectedAssetType: assetType,
@@ -104,7 +105,6 @@ class SendAsset extends React.Component<Props, State> {
         } = this.props;
         const {
             availableAssets,
-            isSendingTx,
             UTXOList,
             platformAddresses,
             assetAddresses
@@ -118,7 +118,9 @@ class SendAsset extends React.Component<Props, State> {
         ) {
             return (
                 <div>
-                    <div className="mt-5">Loading...</div>
+                    <div className="Send-asset">
+                        <div className="loading-container" />
+                    </div>
                 </div>
             );
         }
@@ -126,28 +128,25 @@ class SendAsset extends React.Component<Props, State> {
             availableAssets,
             a => a.assetType === assetType
         );
-        if (!availableAsset) {
-            return (
-                <div>
-                    <div className="mt-5">Invalid assetType</div>
-                </div>
-            );
-        }
-        const metadata = Type.getMetadata(assetScheme.metadata);
+        const metadata = Metadata.parseMetadata(assetScheme.metadata);
         return (
             <div className="Send-asset animated fadeIn">
                 <div className="cancel-icon-container" onClick={onClose}>
                     <FontAwesomeIcon className="cancel-icon" icon="times" />
                 </div>
-                <h2 className="title">Send asset</h2>
-                {isSendBtnClicked && !isSendingTx ? (
+                <h2 className="title">
+                    <Trans i18nKey="send:asset.title" />
+                </h2>
+                {isSentTx ? (
                     <div className="d-flex align-items-center justify-content-center text-center complete-container">
                         <div className="text-center">
                             <div>
                                 <img src={CheckIcon} />
                             </div>
                             <div className="mt-3">
-                                <span>COMPLETE!</span>
+                                <span>
+                                    <Trans i18nKey="send:asset.complete" />
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -169,13 +168,20 @@ class SendAsset extends React.Component<Props, State> {
                                     )}`}
                             </span>
                             <span className="quantity number">
-                                {availableAsset.quantities.toLocaleString()}
+                                {availableAsset
+                                    ? availableAsset.quantities.toLocaleString()
+                                    : 0}
                             </span>
                         </div>
                         <ReceiverContainer
                             address={address}
                             onSubmit={this.handleSubmit}
-                            totalQuantity={availableAsset.quantities}
+                            totalQuantity={
+                                availableAsset
+                                    ? availableAsset.quantities
+                                    : new U64(0)
+                            }
+                            isSendingTx={isSendingTx}
                             gatewayURL={
                                 metadata.gateway && metadata.gateway.url
                             }
@@ -191,27 +197,52 @@ class SendAsset extends React.Component<Props, State> {
         );
     }
 
+    public updateWindowDimensions = () => {
+        if (window.innerWidth <= 872) {
+            this.addModalOpenClass();
+        } else {
+            this.removeModalOpenClass();
+        }
+    };
+
     public async componentDidMount() {
+        this.updateWindowDimensions();
+        window.addEventListener("resize", this.updateWindowDimensions);
         this.init();
     }
 
+    public componentWillUnmount() {
+        this.removeModalOpenClass();
+        window.removeEventListener("resize", this.updateWindowDimensions);
+    }
+
+    private addModalOpenClass = () => {
+        document.body.className = "modal-open";
+    };
+
+    private removeModalOpenClass = () => {
+        document.body.className = "";
+    };
+
     private init = () => {
         const { selectedAssetType, address } = this.props;
-        this.props.fetchAssetSchemeIfNeed(new H256(selectedAssetType));
-        this.props.fetchUTXOListIfNeed(address, new H256(selectedAssetType));
+        this.props.fetchAssetSchemeIfNeed(new H160(selectedAssetType));
+        this.props.fetchUTXOListIfNeed(address, new H160(selectedAssetType));
         this.props.fetchAvailableAssets(address);
         this.props.fetchWalletFromStorageIfNeed();
     };
 
     private handleSubmit = async (
-        receivers: { address: string; quantity: number }[],
+        receivers: { address: string; quantity: U64 }[],
+        memo: string,
         fee?: {
             payer: string;
-            amount: U256;
+            quantity: U64;
         } | null
     ) => {
         const { UTXOList } = this.props;
         const {
+            t,
             selectedAssetType: assetType,
             address,
             networkId,
@@ -225,17 +256,18 @@ class SendAsset extends React.Component<Props, State> {
             return;
         }
 
-        const sumOfSendingAsset = _.sumBy(
+        const sumOfSendingAsset = _.reduce(
             receivers,
-            receiver => receiver.quantity
+            (m, receiver) => U64.plus(m, receiver.quantity),
+            new U64(0)
         );
 
         const inputUTXO = [];
-        let currentSum = 0;
+        let inputUTXOSum = new U64(0);
         for (const utxo of UTXOList!) {
             inputUTXO.push(utxo);
-            currentSum += utxo.asset.amount;
-            if (currentSum > sumOfSendingAsset) {
+            inputUTXOSum = U64.plus(inputUTXOSum, utxo.quantity);
+            if (inputUTXOSum.gte(sumOfSendingAsset)) {
                 break;
             }
         }
@@ -252,9 +284,9 @@ class SendAsset extends React.Component<Props, State> {
 
         const platformKeyMapping = _.reduce(
             storedPlatformKeys,
-            (memo, storedPlatformKey) => {
+            (m, storedPlatformKey) => {
                 return {
-                    ...memo,
+                    ...m,
                     [storedPlatformKey.key]: {
                         seedHash,
                         path: getPlatformAddressPath(
@@ -268,9 +300,9 @@ class SendAsset extends React.Component<Props, State> {
 
         const assetKeyMapping = _.reduce(
             storedAssetKeys,
-            (memo, storedAssetKey) => {
+            (m, storedAssetKey) => {
                 return {
-                    ...memo,
+                    ...m,
                     [storedAssetKey.key]: {
                         seedHash,
                         path: getAssetAddressPath(storedAssetKey.pathIndex)
@@ -287,38 +319,48 @@ class SendAsset extends React.Component<Props, State> {
 
         const inputAssets = _.map(inputUTXO, utxo => {
             return Asset.fromJSON({
-                asset_type: utxo.asset.assetType,
-                lock_script_hash: utxo.asset.lockScriptHash,
-                parameters: utxo.asset.parameters,
-                amount: utxo.asset.amount,
-                transactionHash: utxo.asset.transactionHash,
-                transactionOutputIndex: utxo.asset.transactionOutputIndex
+                assetType: utxo.assetType,
+                lockScriptHash: utxo.lockScriptHash,
+                parameters: utxo.parameters,
+                quantity: utxo.quantity,
+                tracker: utxo.transactionTracker,
+                transactionOutputIndex: utxo.transactionOutputIndex,
+                orderHash: utxo.orderHash,
+                shardId: utxo.shardId
             }).createTransferInput();
         });
         const outputData = _.map(receivers, receiver => {
             return {
                 recipient: receiver.address,
-                amount: receiver.quantity,
+                quantity: receiver.quantity,
+                shardId: 0, // FIXME: Add a valid data
                 assetType
             };
         });
-        outputData.push({
-            recipient: address,
-            amount: currentSum - sumOfSendingAsset,
-            assetType
-        });
+
+        const refundAmount = U64.minus(inputUTXOSum, sumOfSendingAsset);
+        if (refundAmount.gt(0)) {
+            outputData.push({
+                recipient: address,
+                quantity: refundAmount,
+                assetType,
+                shardId: 0
+            });
+        }
         const outputs = _.map(
             outputData,
             o =>
                 new AssetTransferOutput({
                     recipient: AssetTransferAddress.fromString(o.recipient),
-                    amount: o.amount,
-                    assetType: new H256(o.assetType)
+                    quantity: o.quantity,
+                    shardId: 0, // FIXME: Add a valid data
+                    assetType: new H160(o.assetType)
                 })
         );
-        const transferTx = sdk.core.createAssetTransferTransaction({
+        const transferTx = sdk.core.createTransferAssetTransaction({
             inputs: inputAssets,
-            outputs
+            outputs,
+            metadata: memo
         });
         try {
             await Promise.all(
@@ -331,9 +373,9 @@ class SendAsset extends React.Component<Props, State> {
             );
         } catch (e) {
             if (e.message === "DecryptionFailed") {
-                toast.error("Invalid password", {
+                toast.error(t("send:asset.error.password.wrong"), {
                     position: toast.POSITION.BOTTOM_CENTER,
-                    autoClose: 1000,
+                    autoClose: 5000,
                     closeButton: false,
                     hideProgressBar: true
                 });
@@ -341,43 +383,75 @@ class SendAsset extends React.Component<Props, State> {
             console.log(e);
             return;
         }
-        const metadata = Type.getMetadata(assetScheme.metadata);
-        if (metadata.gateway) {
-            this.props.sendTransactionByGateway(
-                address,
-                transferTx,
-                metadata.gateway.url
-            );
+        const metadata = Metadata.parseMetadata(assetScheme.metadata);
+
+        this.setState({ isSendingTx: true });
+        if (metadata.gateway && metadata.gateway.url) {
+            try {
+                await this.props.sendTransactionByGateway(
+                    address,
+                    transferTx,
+                    metadata.gateway.url
+                );
+                this.setState({ isSentTx: true });
+            } catch (e) {
+                toast.error(t("send:asset.error.gateway.unauthorized"), {
+                    position: toast.POSITION.BOTTOM_CENTER,
+                    closeButton: false,
+                    hideProgressBar: true,
+                    autoClose: false
+                });
+                console.error(e);
+            }
         } else {
-            const parcel = sdk.core.createAssetTransactionGroupParcel({
-                transactions: [transferTx]
-            });
             const feePayer = fee!.payer;
-            const nonce = await sdk.rpc.chain.getNonce(feePayer);
-            const signedParcel = await sdk.key.signParcel(parcel, {
-                account: feePayer,
-                keyStore,
-                fee: fee!.amount,
-                nonce,
-                passphrase
-            });
-            this.props.sendTransactionByParcel(
-                address,
-                signedParcel,
+            const seq = await sdk.rpc.chain.getSeq(feePayer);
+            const {
+                transactions
+            } = await sdk.rpc.chain.getPendingTransactions();
+            const newSeq =
+                seq +
+                transactions.filter(
+                    tx =>
+                        tx.getSignerAddress({ networkId }).toString() ===
+                        feePayer
+                ).length;
+            const signedTransaction = await sdk.key.signTransaction(
                 transferTx,
-                feePayer
+                {
+                    account: feePayer,
+                    keyStore,
+                    fee: fee!.quantity,
+                    seq: newSeq,
+                    passphrase
+                }
             );
+            try {
+                await this.props.sendSignedTransaction(
+                    address,
+                    signedTransaction,
+                    feePayer
+                );
+                this.setState({ isSentTx: true });
+            } catch (e) {
+                toast.error("Server is not responding.", {
+                    position: toast.POSITION.BOTTOM_CENTER,
+                    autoClose: 5000,
+                    closeButton: false,
+                    hideProgressBar: true
+                });
+                console.error(e);
+            }
         }
-        this.setState({ isSendBtnClicked: true });
+        this.setState({ isSendingTx: false });
     };
 }
 
 const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const { selectedAssetType, address } = ownProps;
     const assetScheme =
-        state.assetReducer.assetScheme[new H256(selectedAssetType).value];
-    const sendingTx = state.chainReducer.sendingTx[address];
-    const id = getIdForCacheUTXO(address, new H256(selectedAssetType));
+        state.assetReducer.assetScheme[new H160(selectedAssetType).value];
+    const id = getIdForCacheUTXO(address, new H160(selectedAssetType));
     const UTXOList = state.assetReducer.UTXOList[id];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
@@ -386,7 +460,6 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
     const platformAddresses = state.walletReducer.platformAddresses;
     return {
         assetScheme: assetScheme && assetScheme.data,
-        isSendingTx: sendingTx != null,
         UTXOList: UTXOList && UTXOList.data,
         availableAssets,
         networkId,
@@ -399,7 +472,7 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAssetSchemeIfNeed: (assetType: H256) => {
+    fetchAssetSchemeIfNeed: (assetType: H160) => {
         dispatch(assetActions.fetchAssetSchemeIfNeed(assetType));
     },
     fetchAvailableAssets: (address: string) => {
@@ -407,10 +480,10 @@ const mapDispatchToProps = (
     },
     sendTransactionByGateway: (
         address: string,
-        transferTx: AssetTransferTransaction,
+        transferTx: Transaction,
         gatewayURL: string
     ) => {
-        dispatch(
+        return dispatch(
             chainActions.sendTransactionByGateway(
                 address,
                 transferTx,
@@ -418,22 +491,20 @@ const mapDispatchToProps = (
             )
         );
     },
-    sendTransactionByParcel: (
+    sendSignedTransaction: (
         address: string,
-        signedParcel: SignedParcel,
-        transferTx: AssetTransferTransaction,
+        signedTransaction: SignedTransaction,
         feePayer: string
     ) => {
-        dispatch(
-            chainActions.sendTransactionByParcel(
+        return dispatch(
+            chainActions.sendSignedTransaction(
                 address,
-                signedParcel,
-                transferTx,
+                signedTransaction,
                 feePayer
             )
         );
     },
-    fetchUTXOListIfNeed: (address: string, assetType: H256) => {
+    fetchUTXOListIfNeed: (address: string, assetType: H160) => {
         dispatch(assetActions.fetchUTXOListIfNeed(address, assetType));
     },
     fetchWalletFromStorageIfNeed: () => {
@@ -444,4 +515,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(SendAsset);
+)(withTranslation()(SendAsset));

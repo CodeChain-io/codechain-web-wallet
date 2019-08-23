@@ -1,0 +1,36 @@
+{
+    "title": "Restore your wallet<br />using a backup phrase",
+    "detail": "Please select the 12 words in proper order to log in.",
+    "description": "Please insert the 12 words of your backup phrase in proper order to restore your Wallet.",
+    "mnemonic": {
+        "detail": "This is the password used to log in to CodeChain Wallet through this browser. In cases you lose this password, you can regain access with your backup phrase."
+    },
+    "name": {
+        "label": "NEW USERNAME",
+        "placeholder": "username"
+    },
+    "password": {
+        "label": "NEW PASSWORD",
+        "placeholder": "password"
+    },
+    "confirm": {
+        "label": "CONFIRM PASSWORD",
+        "placeholder": "confirm password"
+    },
+    "ok": "OK",
+    "error": {
+        "mnemonic": {
+            "invalid": "Your backup phrase is invalid. Please check."
+        },
+        "password": {
+            "minimum": "Minimum length is 8 characters"
+        },
+        "confirm": {
+            "mismatch": "Password does not match!"
+        },
+        "name": {
+            "required": "username is required",
+            "maximum": "Maximum length is 20 characters"
+        }
+    }
+}

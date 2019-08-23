@@ -1,25 +1,9 @@
-import {
-    ParcelDoc,
-    PendingParcelDoc,
-    PendingTransactionDoc,
-    TransactionDoc
-} from "codechain-indexer-types/lib/types";
-import {
-    AssetTransferTransaction,
-    H256,
-    SignedParcel
-} from "codechain-sdk/lib/core/classes";
+import { TransactionDoc } from "codechain-indexer-types";
+import { H160 } from "codechain-sdk/lib/core/classes";
 import { Action, ActionType } from "./chainActions";
 
 export interface ChainState {
     pendingTxList: {
-        [address: string]: {
-            data?: PendingTransactionDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
-    unconfirmedTxList: {
         [address: string]: {
             data?: TransactionDoc[] | null;
             isFetching: boolean;
@@ -33,9 +17,16 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
+    countOfTxList: {
+        [address: string]: {
+            data?: number | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
+    };
     pendingTxListById: {
         [id: string]: {
-            data?: PendingTransactionDoc[] | null;
+            data?: TransactionDoc[] | null;
             isFetching: boolean;
             updatedAt?: number | null;
         } | null;
@@ -47,55 +38,31 @@ export interface ChainState {
             updatedAt?: number | null;
         } | null;
     };
-    sendingTx: {
-        [address: string]: AssetTransferTransaction | null;
-    };
-    sendingSignedParcel: {
-        [address: string]: SignedParcel | null;
+    countOfTxListById: {
+        [id: string]: {
+            data?: number | null;
+            isFetching: boolean;
+            updatedAt?: number | null;
+        } | null;
     };
     bestBlockNumber?: {
         data?: number | null;
         isFetching: boolean;
         updatedAt?: number | null;
     } | null;
-    parcelList: {
-        [address: string]: {
-            data?: ParcelDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
-    unconfirmedParcelList: {
-        [address: string]: {
-            data?: ParcelDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
-    pendingParcelList: {
-        [address: string]: {
-            data?: PendingParcelDoc[] | null;
-            isFetching: boolean;
-            updatedAt?: number | null;
-        } | null;
-    };
 }
 
 export const chainInitState: ChainState = {
     pendingTxList: {},
-    unconfirmedTxList: {},
     txList: {},
-    sendingTx: {},
-    sendingSignedParcel: {},
+    countOfTxList: {},
     bestBlockNumber: undefined,
     txListById: {},
-    pendingTxListById: {},
-    parcelList: {},
-    unconfirmedParcelList: {},
-    pendingParcelList: {}
+    countOfTxListById: {},
+    pendingTxListById: {}
 };
 
-export const getIdByAddressAssetType = (address: string, assetType: H256) => {
+export const getIdByAddressAssetType = (address: string, assetType: H160) => {
     return `${address}-${assetType.value}`;
 };
 
@@ -133,59 +100,6 @@ export const chainReducer = (
             return {
                 ...state,
                 pendingTxList
-            };
-        }
-        case ActionType.CacheUnconfirmedTxList: {
-            const address = action.data.address;
-            const currentUnconfirmedTxList = {
-                data: action.data.unconfirmedTxList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const unconfirmedTxList = {
-                ...state.unconfirmedTxList,
-                [address]: currentUnconfirmedTxList
-            };
-            return {
-                ...state,
-                unconfirmedTxList
-            };
-        }
-        case ActionType.SetFetchingUnconfirmedTxList: {
-            const address = action.data.address;
-            const currentUnconfirmedTxList = {
-                ...state.unconfirmedTxList[address],
-                isFetching: true
-            };
-            const unconfirmedTxList = {
-                ...state.unconfirmedTxList,
-                [address]: currentUnconfirmedTxList
-            };
-            return {
-                ...state,
-                unconfirmedTxList
-            };
-        }
-        case ActionType.SetSendingTx: {
-            const address = action.data.address;
-            const sendingTx = {
-                ...state.sendingTx,
-                [address]: action.data.tx
-            };
-            return {
-                ...state,
-                sendingTx
-            };
-        }
-        case ActionType.SetSendingSignedParcel: {
-            const address = action.data.address;
-            const sendingSignedParcel = {
-                ...state.sendingSignedParcel,
-                [address]: action.data.signedParcel
-            };
-            return {
-                ...state,
-                sendingSignedParcel
             };
         }
         case ActionType.UpdateBestBlockNumber: {
@@ -238,6 +152,62 @@ export const chainReducer = (
                 txList
             };
         }
+        case ActionType.SetFetchingCountOfTxList: {
+            return {
+                ...state,
+                countOfTxList: {
+                    ...state.countOfTxList,
+                    [action.data.address]: {
+                        ...state.countOfTxList[action.data.address],
+                        isFetching: true
+                    }
+                }
+            };
+        }
+        case ActionType.SetFetchingCountOfTxListById: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const id = getIdByAddressAssetType(address, assetType);
+            return {
+                ...state,
+                countOfTxListById: {
+                    ...state.countOfTxListById,
+                    [id]: {
+                        ...state.countOfTxListById[id],
+                        isFetching: true
+                    }
+                }
+            };
+        }
+        case ActionType.CacheCountOfTxList: {
+            return {
+                ...state,
+                countOfTxList: {
+                    ...state.countOfTxList,
+                    [action.data.address]: {
+                        data: action.data.count,
+                        isFetching: false,
+                        updatedAt: +new Date()
+                    }
+                }
+            };
+        }
+        case ActionType.CacheCountOfTxListById: {
+            const address = action.data.address;
+            const assetType = action.data.assetType;
+            const id = getIdByAddressAssetType(address, assetType);
+            return {
+                ...state,
+                countOfTxListById: {
+                    ...state.countOfTxListById,
+                    [id]: {
+                        data: action.data.count,
+                        isFetching: false,
+                        updatedAt: +new Date()
+                    }
+                }
+            };
+        }
         case ActionType.SetFetchingTxListById: {
             const address = action.data.address;
             const assetType = action.data.assetType;
@@ -271,99 +241,6 @@ export const chainReducer = (
             return {
                 ...state,
                 txListById
-            };
-        }
-        case ActionType.CacheParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                data: action.data.parcelList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const parcelList = {
-                ...state.parcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                parcelList
-            };
-        }
-        case ActionType.CachePendingParcelList: {
-            const address = action.data.address;
-            const currentPendingParcelList = {
-                data: action.data.pendingParcelList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const pendingParcelList = {
-                ...state.pendingParcelList,
-                [address]: currentPendingParcelList
-            };
-            return {
-                ...state,
-                pendingParcelList
-            };
-        }
-        case ActionType.CacheUnconfirmedParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                data: action.data.parcelList,
-                updatedAt: +new Date(),
-                isFetching: false
-            };
-            const unconfirmedParcelList = {
-                ...state.unconfirmedParcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                unconfirmedParcelList
-            };
-        }
-        case ActionType.SetFetchingParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                ...state.parcelList[address],
-                isFetching: true
-            };
-            const parcelList = {
-                ...state.parcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                parcelList
-            };
-        }
-        case ActionType.SetFetchingPendingParcelList: {
-            const address = action.data.address;
-            const currentPendingParcelList = {
-                ...state.pendingParcelList[address],
-                isFetching: true
-            };
-            const pendingParcelList = {
-                ...state.pendingParcelList,
-                [address]: currentPendingParcelList
-            };
-            return {
-                ...state,
-                pendingParcelList
-            };
-        }
-        case ActionType.SetFetchingUnconfirmedParcelList: {
-            const address = action.data.address;
-            const currentParcelList = {
-                ...state.unconfirmedParcelList[address],
-                isFetching: true
-            };
-            const unconfirmedParcelList = {
-                ...state.unconfirmedParcelList,
-                [address]: currentParcelList
-            };
-            return {
-                ...state,
-                unconfirmedParcelList
             };
         }
     }

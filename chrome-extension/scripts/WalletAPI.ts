@@ -1,11 +1,8 @@
-import { AggsUTXO } from "codechain-indexer-types/lib/types";
-import { PlatformAddress } from "codechain-primitives/lib";
+import { AggsUTXODoc } from "codechain-indexer-types";
 import {
-  AssetTransferInput,
-  AssetTransferTransaction,
-  Parcel,
-  SignedParcel,
-  U256
+  SignedTransaction,
+  Transaction,
+  U64
 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import { getCodeChainHost, getIndexerHost } from "../../src/utils/network";
@@ -13,21 +10,14 @@ import MessageTunnel from "./MessageTunnel";
 
 interface API {
   signTxInput: (
-    assetTransferTransaction: AssetTransferTransaction,
+    assetTransferTransaction: Transaction,
     index: number
-  ) => Promise<AssetTransferTransaction>;
-  signParcel: (
-    parcel: Parcel,
-    options: {
-      feePayer: string;
-      fee: U256;
-    }
-  ) => Promise<SignedParcel>;
+  ) => Promise<Transaction>;
   getNetworkId: () => Promise<NetworkId>;
   getPlatformAddresses: () => Promise<string[]>;
   getAssetAddresses: () => Promise<string[]>;
-  getAvailableAssets: (assetAddress: string) => Promise<AggsUTXO | null>;
-  getAvailableQuark: (platformAddress: string) => Promise<U256 | null>;
+  getAvailableAssets: (assetAddress: string) => Promise<AggsUTXODoc | null>;
+  getAvailableQuark: (platformAddress: string) => Promise<U64 | null>;
   getCodeChainNodeHost: (networkId: NetworkId) => Promise<string>;
   getIndexerHost: (networkId: NetworkId) => Promise<string>;
 }
@@ -53,7 +43,7 @@ export default class WalletAPI implements API {
   };
 
   public getAvailableQuark = async (platformAddress: string) => {
-    const response = await this.sendRequest<U256 | null>({
+    const response = await this.sendRequest<U64 | null>({
       type: "getAvailableQuark",
       body: {
         address: platformAddress
@@ -63,7 +53,7 @@ export default class WalletAPI implements API {
   };
 
   public getAvailableAssets = async (assetAddress: string) => {
-    const response = await this.sendRequest<AggsUTXO | null>({
+    const response = await this.sendRequest<AggsUTXODoc | null>({
       type: "getAvailableAssets",
       body: {
         address: assetAddress
@@ -87,10 +77,10 @@ export default class WalletAPI implements API {
   };
 
   public signTxInput = async (
-    assetTransferTransaction: AssetTransferTransaction,
+    assetTransferTransaction: Transaction,
     index: number
   ) => {
-    const response = await this.sendRequest<AssetTransferTransaction>({
+    const response = await this.sendRequest<Transaction>({
       type: "signTxInput",
       body: {
         tx: assetTransferTransaction,
@@ -100,17 +90,17 @@ export default class WalletAPI implements API {
     return response;
   };
 
-  public signParcel = async (
-    parcel: Parcel,
+  public signTx = async (
+    transaction: Transaction,
     options: {
       feePayer: string;
-      fee: U256;
+      fee: U64;
     }
   ) => {
-    const response = await this.sendRequest<SignedParcel>({
-      type: "signParcel",
+    const response = await this.sendRequest<SignedTransaction>({
+      type: "signTx",
       body: {
-        parcel,
+        transaction,
         options
       }
     });

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Container } from "reactstrap";
@@ -30,7 +31,7 @@ interface State {
     isCreateBtnHover: boolean;
 }
 
-type Props = RouteComponentProps & DispatchProps & StateProps;
+type Props = WithTranslation & RouteComponentProps & DispatchProps & StateProps;
 class SelectKeyFile extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
@@ -52,6 +53,16 @@ class SelectKeyFile extends React.Component<Props, State> {
                 <div className="text-center title-container">
                     <img src={Logo} className="logo" />
                     <h1 className="mt-4 logo-title">Wallet</h1>
+                </div>
+                <div className="welcome-text-container">
+                    <h4 className="welcome-text">
+                        Welcome to CodeChain wallet
+                    </h4>
+                    <div>
+                        <span className="description-text">
+                            <Trans i18nKey="create:select.title" />
+                        </span>
+                    </div>
                 </div>
                 <div className="button-container d-flex justify-content-center">
                     <div
@@ -75,14 +86,17 @@ class SelectKeyFile extends React.Component<Props, State> {
                                 )}
                             </div>
                             <div className="text">
-                                Create
-                                <br />
-                                new wallet
+                                <Trans i18nKey="create:select.create.title" />
+                            </div>
+                            <div className="button-description">
+                                <span>
+                                    <Trans i18nKey="create:select.create.detail" />
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div
-                        className="button-item d-flex align-items-center justify-content-center"
+                        className="button-item d-flex justify-content-center"
                         onClick={this.onClickRestore}
                         onMouseEnter={this.handleImportButtonHover}
                         onMouseLeave={this.handleImportButtopOut}
@@ -99,9 +113,12 @@ class SelectKeyFile extends React.Component<Props, State> {
                                 )}
                             </div>
                             <div className="text">
-                                Restore
-                                <br />
-                                your wallet
+                                <Trans i18nKey="create:select.restore.title" />
+                            </div>
+                            <div className="button-description">
+                                <span>
+                                    <Trans i18nKey="create:select.restore.detail" />
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -141,4 +158,4 @@ const mapDispatchToProps = (
 export default connect(
     () => ({}),
     mapDispatchToProps
-)(withRouter(SelectKeyFile));
+)(withTranslation("select")(withRouter(SelectKeyFile)));

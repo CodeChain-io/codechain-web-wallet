@@ -1,6 +1,7 @@
-import { U256 } from "codechain-sdk/lib/core/classes";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Action } from "redux";
@@ -8,9 +9,8 @@ import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "../../redux";
 import accountActions from "../../redux/account/accountActions";
 import walletActions from "../../redux/wallet/walletActions";
-import { changeQuarkToCCCString } from "../../utils/unit";
 import AddressContainer from "../AddressContainer/AddressContainer";
-import ParcelHistory from "../ParcelHistory/ParcelHistory";
+import PayTxHistory from "../PayTxHistory/PayTxHistory";
 import "./Account.css";
 import SendCCC from "./SendAsset/SendCCC";
 
@@ -19,8 +19,8 @@ interface OwnProps {
 }
 
 interface StateProps {
-    availableQuark?: U256 | null;
-    addressName?: string | null;
+    availableQuark?: U64 | null;
+    addressIndex?: number | null;
 }
 
 interface DispatchProps {
@@ -32,9 +32,10 @@ interface State {
     sendingCCC: boolean;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 
 class Account extends React.Component<Props, State> {
+    private refresher: any;
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -61,13 +62,17 @@ class Account extends React.Component<Props, State> {
         this.init();
     }
 
+    public componentWillUnmount() {
+        this.clearInterval();
+    }
+
     public render() {
         const {
             availableQuark,
             match: {
                 params: { address }
             },
-            addressName
+            addressIndex
         } = this.props;
         const { sendingCCC } = this.state;
         if (!availableQuark) {
@@ -80,39 +85,42 @@ class Account extends React.Component<Props, State> {
                         <AddressContainer
                             address={address}
                             backButtonPath="/"
-                            addressName={addressName}
+                            addressIndex={addressIndex}
                         />
                         <div>
                             <div className="element-container mb-3">
-                                <h5 className="element-title">Balance</h5>
+                                <h4 className="element-title">
+                                    <Trans i18nKey="send:ccc.balance" />
+                                </h4>
                                 <div className="ccc-text number">
                                     <span className="mr-2">
-                                        {changeQuarkToCCCString(availableQuark)}
+                                        {availableQuark.toLocaleString()}
                                     </span>
                                     <span>CCC</span>
                                 </div>
                                 <div className="mt-4">
                                     <button
-                                        className="btn btn-primary square reverse send-btn"
+                                        className="btn btn-primary square reverse send-btn mr-3 mb-3"
                                         onClick={this.openSendingCCC}
                                         disabled={sendingCCC}
                                     >
-                                        SEND
+                                        <Trans i18nKey="send:ccc.button" />
                                     </button>
                                 </div>
                             </div>
                             <div className="element-container">
-                                <h4 className="mb-3">Transaction history</h4>
-                                <ParcelHistory address={address} />
+                                <h4 className="mb-3">
+                                    <Trans i18nKey="send:ccc.recent.title" />
+                                </h4>
+                                <PayTxHistory address={address} />
                             </div>
                         </div>
                     </div>
                     {sendingCCC && (
-                        <div className="send-ccc-container">
-                            <div className="send-ccc-panel">
+                        <div className="right-container">
+                            <div className="right-panel">
                                 <SendCCC
                                     address={address}
-                                    isSendingCCC={sendingCCC}
                                     onClose={this.handleCloseSendingCCC}
                                 />
                             </div>
@@ -124,6 +132,7 @@ class Account extends React.Component<Props, State> {
     }
 
     private openSendingCCC = () => {
+        window.scrollTo(0, 0);
         this.setState({ sendingCCC: true });
     };
 
@@ -134,9 +143,17 @@ class Account extends React.Component<Props, State> {
     };
 
     private init = async () => {
+        this.clearInterval();
+        this.refresher = setInterval(() => {
+            this.fetchAll();
+        }, 10000);
         this.fetchAll();
     };
-
+    private clearInterval = () => {
+        if (this.refresher) {
+            clearInterval(this.refresher);
+        }
+    };
     private fetchAll = async () => {
         const {
             match: {
@@ -160,8 +177,8 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
         aa => aa.address === address
     );
     return {
-        availableQuark: availableQuark && new U256(availableQuark),
-        addressName: assetAddress && assetAddress.name
+        availableQuark,
+        addressIndex: assetAddress && assetAddress.index
     };
 };
 const mapDispatchToProps = (
@@ -177,4 +194,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Account);
+)(withTranslation()(Account));

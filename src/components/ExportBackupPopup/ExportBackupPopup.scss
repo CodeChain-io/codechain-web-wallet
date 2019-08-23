@@ -20,11 +20,25 @@
       position: relative;
       border-radius: 5px;
       overflow: hidden;
-      height: 170px;
+      height: 200px;
       border: 1px solid $wallet-blue;
       font-size: 1.14rem;
       color: $wallet-blue;
       text-align: center;
+      position: relative;
+
+      .copy-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        border: 1px solid $wallet-blue;
+        padding: 2px 8px 2px 8px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        background: $wallet-blue;
+        color: white;
+        cursor: pointer;
+      }
 
       .passphrase-panel {
         width: 100%;

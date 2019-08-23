@@ -28,17 +28,30 @@
     margin-bottom: 26px;
 
     .backup-phrase-panel {
-      height: 170px;
+      height: 200px;
       border-radius: 5px;
       box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
       background-color: #ffffff;
       border: 1px solid $wallet-blue;
-      overflow: scroll;
       padding: 30px;
 
       font-size: 1.3rem;
       color: $wallet-blue;
       text-align: center;
+      position: relative;
+
+      .copy-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        border: 1px solid $wallet-blue;
+        padding: 2px 8px 2px 8px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        background: $wallet-blue;
+        color: white;
+        cursor: pointer;
+      }
     }
   }
 }

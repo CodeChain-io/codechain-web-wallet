@@ -1,0 +1,8 @@
+{
+    "title": "Welcome back {{name}}!",
+    "password": "PASSWORD",
+    "password_placeholder": "password",
+    "password_invalid": "Wrong password. Please try again.",
+    "signin": "SIGN IN",
+    "different": "Delete data from this browser and open a different wallet"
+}

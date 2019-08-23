@@ -1,15 +1,15 @@
 import BigNumber from "bignumber.js";
-import { PlatformAddress, U256 } from "codechain-sdk/lib/core/classes";
+import { PlatformAddress, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
-import { changeQuarkToCCCString } from "../../../../utils/unit";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import "./CCCReceiverContainer.css";
 import CCCReceiverItem from "./CCCReceiverItem/CCCReceiverItem";
 
 interface State {
     receiver: {
         address: string;
-        amount: string;
+        quantity: string;
     };
     fee: string;
     isAddressValid?: boolean;
@@ -20,24 +20,26 @@ interface State {
     feeError?: string;
 }
 
-interface Props {
+interface OwnProps {
     address: string;
-    totalAmount: U256;
-    onSubmit: (receiver: { address: string; amount: U256 }, fee: U256) => void;
+    totalAmount: U64;
+    isSending: boolean;
+    onSubmit: (receiver: { address: string; quantity: U64 }, fee: U64) => void;
 }
 
-export default class CCCReceiverContainer extends React.Component<
-    Props,
-    State
-> {
+type Props = WithTranslation & OwnProps;
+
+const MinimumFee = 100;
+
+class CCCReceiverContainer extends React.Component<Props, State> {
     public constructor(props: Props) {
         super(props);
         this.state = {
             receiver: {
                 address: "",
-                amount: ""
+                quantity: ""
             },
-            fee: "0.0000001",
+            fee: `${MinimumFee}`,
             isFeeValid: undefined,
             feeError: undefined,
             isAddressValid: undefined,
@@ -57,6 +59,7 @@ export default class CCCReceiverContainer extends React.Component<
             feeError,
             fee
         } = this.state;
+        const { isSending } = this.props;
         return (
             <div className="CCCReceiver-container">
                 <form onSubmit={this.handleSubmit}>
@@ -85,10 +88,11 @@ export default class CCCReceiverContainer extends React.Component<
                     </div>
                     <div className="mt-5">
                         <button
+                            disabled={isSending}
                             type="submit"
                             className="btn btn-primary square w-100 send-btn"
                         >
-                            Send
+                            <Trans i18nKey="send:ccc.button" />
                         </button>
                     </div>
                 </form>
@@ -99,24 +103,29 @@ export default class CCCReceiverContainer extends React.Component<
     private calculateRemainingCCCString = () => {
         const { totalAmount } = this.props;
         const { fee } = this.state;
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
-        const remainingQuark = totalAmount.value.minus(feeQuark);
-        try {
-            return changeQuarkToCCCString(new U256(remainingQuark));
-        } catch (e) {
-            console.log(e);
+        const remainingCCC = totalAmount.value.minus(fee);
+        if (remainingCCC.gt(0)) {
+            return remainingCCC.toString();
+        } else {
             return "0";
         }
     };
 
     private handleAddressValidationCheck = () => {
         const { receiver } = this.state;
-        const { address: myAddress } = this.props;
+        const { t, address: myAddress } = this.props;
         const address = receiver.address;
+        if (address === "") {
+            this.setState({
+                isAddressValid: false,
+                addressError: t("send:ccc.error.address.required")
+            });
+            return false;
+        }
         if (address === myAddress) {
             this.setState({
                 isAddressValid: false,
-                addressError: "can't send CCC to sender's address"
+                addressError: t("send:ccc.error.address.not_equal")
             });
             return false;
         }
@@ -134,36 +143,43 @@ export default class CCCReceiverContainer extends React.Component<
         }
         this.setState({
             isAddressValid: false,
-            addressError: "invalid address"
+            addressError: t("send:ccc.error.address.invalid")
         });
         return false;
     };
 
     private handleAmountValidationCheck = () => {
         const { receiver, fee } = this.state;
-        const { totalAmount } = this.props;
-        const amountQuark = new BigNumber(receiver.amount).multipliedBy(
-            Math.pow(10, 9)
-        );
-        if (amountQuark.isNaN()) {
+        const { t, totalAmount } = this.props;
+        const cccString = receiver.quantity;
+        if (cccString === "") {
             this.setState({
                 isAmountValid: false,
-                amountError: "invalid number"
+                amountError: t("send:ccc.error.amount.required")
             });
             return false;
         }
-        if (amountQuark.lt(1)) {
+        console.log(cccString);
+        const amountCCC = new BigNumber(cccString);
+        if (amountCCC.isNaN()) {
             this.setState({
                 isAmountValid: false,
-                amountError: "minimum value is 0.000000001"
+                amountError: t("send:ccc.error.amount.invalid")
             });
             return false;
         }
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
-        if (amountQuark.plus(feeQuark).gt(totalAmount.value)) {
+        if (amountCCC.lt(1)) {
             this.setState({
                 isAmountValid: false,
-                amountError: "not enough CCC"
+                amountError: t("send:ccc.error.amount.minimum")
+            });
+            return false;
+        }
+        const amountFee = new BigNumber(fee);
+        if (amountCCC.plus(amountFee).gt(totalAmount.value)) {
+            this.setState({
+                isAmountValid: false,
+                amountError: t("send:ccc.error.amount.not_enough")
             });
             return false;
         }
@@ -176,29 +192,39 @@ export default class CCCReceiverContainer extends React.Component<
 
     private handleFeeValidationCheck = () => {
         const { receiver, fee } = this.state;
-        const { totalAmount } = this.props;
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
-        if (feeQuark.isNaN()) {
+        const { t, totalAmount } = this.props;
+        const feeString = fee;
+        if (feeString === "") {
             this.setState({
                 isFeeValid: false,
-                feeError: "invalid number"
+                feeError: t("send:ccc.error.fee.required")
             });
             return false;
         }
-        if (feeQuark.lt(10)) {
+        const amountFee = new BigNumber(feeString);
+        if (amountFee.isNaN()) {
             this.setState({
                 isFeeValid: false,
-                feeError: "minimum value is 0.00000001"
+                feeError: t("send:ccc.error.fee.invalid")
             });
             return false;
         }
-        const amountQuark = new BigNumber(receiver.amount).multipliedBy(
-            Math.pow(10, 9)
+        if (amountFee.lt(MinimumFee)) {
+            this.setState({
+                isFeeValid: false,
+                feeError: t("send:ccc.error.fee.minimum", {
+                    minimum: MinimumFee
+                })
+            });
+            return false;
+        }
+        const amountCCC = new BigNumber(
+            receiver.quantity === "" ? "0" : receiver.quantity
         );
-        if (amountQuark.plus(feeQuark).gt(totalAmount.value)) {
+        if (amountCCC.plus(amountFee).gt(totalAmount.value)) {
             this.setState({
                 isFeeValid: false,
-                feeError: "not enough CCC"
+                feeError: t("send:ccc.error.fee.not_enough")
             });
             return false;
         }
@@ -214,19 +240,19 @@ export default class CCCReceiverContainer extends React.Component<
         this.setState({
             receiver: {
                 address,
-                amount: receiver.amount
+                quantity: receiver.quantity
             },
             addressError: undefined,
             isAddressValid: undefined
         });
     };
 
-    private handleAmountChange = (amount: string) => {
+    private handleAmountChange = (quantity: string) => {
         const { receiver } = this.state;
         this.setState({
             receiver: {
                 address: receiver.address,
-                amount
+                quantity
             },
             amountError: undefined,
             isAmountValid: undefined
@@ -257,16 +283,16 @@ export default class CCCReceiverContainer extends React.Component<
             return;
         }
 
-        const amountQuark = new BigNumber(receiver.amount).multipliedBy(
-            Math.pow(10, 9)
-        );
-        const feeQuark = new BigNumber(fee).multipliedBy(Math.pow(10, 9));
+        const amountCCC = new BigNumber(receiver.quantity);
+        const amountFee = new BigNumber(fee);
         this.props.onSubmit(
             {
                 address: receiver.address,
-                amount: new U256(amountQuark)
+                quantity: new U64(amountCCC)
             },
-            new U256(feeQuark)
+            new U64(amountFee)
         );
     };
 }
+
+export default withTranslation()(CCCReceiverContainer);

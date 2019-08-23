@@ -1,0 +1,119 @@
+@import "styles/variables.scss";
+
+.Mint-asset {
+  padding: 50px;
+  position: relative;
+
+  @media screen and (max-width: 872px) {
+    & {
+      padding: 30px 0px 30px 0px;
+    }
+  }
+
+  .page-container {
+    width: 100%;
+    max-width: 450px;
+    margin-bottom: 18px;
+  }
+
+  .mint-container {
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.07);
+    border-radius: 5px;
+  }
+
+  .title {
+    color: $wallet-blue;
+  }
+
+  .mint-description {
+    color: $dark-grey;
+  }
+
+  .asset-info-container {
+    margin-top: 30px;
+  }
+
+  .description-area {
+    border: 1px solid $wallet-blue;
+  }
+
+  .icon-url-input-container {
+    flex: 1;
+  }
+
+  .select-address-container {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    .select-address-label {
+      color: $standard-grey;
+      font-weight: bold;
+    }
+    select {
+      border: 1px solid $wallet-blue;
+      margin-top: 8px;
+    }
+  }
+
+  .loading-text,
+  .no-address-label {
+    line-height: 60px;
+    font-weight: bold;
+    color: $dark-grey;
+  }
+
+  .preview-container {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    margin-left: 12px;
+    margin-top: 8px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    border: 1px solid $wallet-blue;
+  }
+
+  .fee-container {
+    .fee-input-container {
+      width: 150px;
+      margin-right: 10px;
+    }
+    .fee-payer-container {
+      flex: 1;
+      .available-ccc-text {
+        font-size: 0.8rem;
+        color: $standard-grey;
+      }
+    }
+  }
+
+  .input-label {
+    font-weight: bold;
+    color: $standard-grey;
+  }
+
+  .complete-container {
+    height: 400px;
+    font-size: 1.7rem;
+    color: $wallet-blue;
+    font-weight: bold;
+  }
+  .minting-panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(44, 44, 44, 0.3);
+  }
+
+  .back-icon-container {
+    cursor: pointer;
+    .back-icon {
+      font-size: 2rem;
+      color: $wallet-blue;
+    }
+  }
+}

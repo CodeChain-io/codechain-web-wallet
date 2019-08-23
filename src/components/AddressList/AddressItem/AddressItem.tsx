@@ -5,13 +5,15 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
-import { AddressType, WalletAddress } from "../../../model/address";
+import { AddressType, NetworkId, WalletAddress } from "../../../model/address";
 import { ReducerConfigure } from "../../../redux";
-import { changeQuarkToCCCString } from "../../../utils/unit";
 import "./AddressItem.css";
 
-import { U256 } from "codechain-sdk/lib/core/classes";
+import { U64 } from "codechain-sdk/lib/core/classes";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import accountActions from "../../../redux/account/accountActions";
+import assetActions from "../../../redux/asset/assetActions";
+import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
 import * as copyBtnHover from "./img/copy-hover.svg";
 import * as copyBtn from "./img/copy.svg";
 
@@ -21,15 +23,27 @@ interface OwnProps {
 }
 interface DispatchProps {
     fetchAvailableQuark: (address: string) => void;
+    fetchAvailableAssets: (address: string) => void;
 }
 interface StateProps {
-    availableQuark?: U256 | null;
+    availableQuark?: U64 | null;
+    availableAssets?:
+        | {
+              assetType: string;
+              quantities: U64;
+          }[]
+        | null;
+    networkId: NetworkId;
 }
 interface State {
     isCopyHovering: boolean;
 }
 
-type Props = RouteComponentProps & OwnProps & DispatchProps & StateProps;
+type Props = WithTranslation &
+    RouteComponentProps &
+    OwnProps &
+    DispatchProps &
+    StateProps;
 
 class AddressItem extends React.Component<Props, State> {
     public constructor(props: Props) {
@@ -39,13 +53,26 @@ class AddressItem extends React.Component<Props, State> {
         };
     }
     public componentDidMount() {
-        const { walletAddress, fetchAvailableQuark } = this.props;
+        const {
+            walletAddress,
+            fetchAvailableQuark,
+            fetchAvailableAssets
+        } = this.props;
         if (walletAddress.type === AddressType.Platform) {
             fetchAvailableQuark(walletAddress.address);
         }
+        if (walletAddress.type === AddressType.Asset) {
+            fetchAvailableAssets(walletAddress.address);
+        }
     }
     public render() {
-        const { walletAddress, className, availableQuark } = this.props;
+        const {
+            walletAddress,
+            className,
+            availableQuark,
+            availableAssets,
+            networkId
+        } = this.props;
         const { isCopyHovering } = this.state;
         return (
             <div
@@ -61,14 +88,19 @@ class AddressItem extends React.Component<Props, State> {
                 >
                     <div>
                         <p className="address-name mb-0">
-                            {walletAddress.name}
+                            <Trans
+                                i18nKey="main:address"
+                                values={{
+                                    index: walletAddress.index + 1
+                                }}
+                            />
                         </p>
                     </div>
                     <span className="address-text mono">
-                        {walletAddress.address.slice(0, 12)}
+                        {walletAddress.address.slice(0, 10)}
                         ...
                         {walletAddress.address.slice(
-                            walletAddress.address.length - 12,
+                            walletAddress.address.length - 10,
                             walletAddress.address.length
                         )}
                     </span>
@@ -88,10 +120,48 @@ class AddressItem extends React.Component<Props, State> {
                     <div className="platform-account">
                         {availableQuark ? (
                             <span className="number balance">
-                                {changeQuarkToCCCString(availableQuark)} CCC
+                                {availableQuark.toLocaleString()} CCC
                             </span>
                         ) : (
-                            <span className="number balance">Loading...</span>
+                            <span className="number balance">
+                                <Trans i18nKey="main:address_loading" />
+                            </span>
+                        )}
+                    </div>
+                )}
+                {walletAddress.type === AddressType.Asset && (
+                    <div className="platform-account">
+                        {availableAssets ? (
+                            availableAssets.length > 0 ? (
+                                [
+                                    availableAssets.slice(0, 3).map(a => (
+                                        <div
+                                            className="asset-image"
+                                            key={a.assetType}
+                                        >
+                                            <ImageLoader
+                                                isAssetImage={true}
+                                                data={a.assetType}
+                                                size={37}
+                                                networkId={networkId}
+                                            />
+                                        </div>
+                                    )),
+                                    availableAssets.length > 3 && (
+                                        <span key="others" className="balance">
+                                            + {availableAssets.length - 3}
+                                        </span>
+                                    )
+                                ]
+                            ) : (
+                                <span className="balance">
+                                    <Trans i18nKey="main:asset.no_asset" />
+                                </span>
+                            )
+                        ) : (
+                            <span className="number balance">
+                                <Trans i18nKey="main:address_loading" />
+                            </span>
                         )}
                     </div>
                 )}
@@ -117,7 +187,7 @@ class AddressItem extends React.Component<Props, State> {
         this.setState({ isCopyHovering: false });
     };
     private handleCopyAddress = () => {
-        toast.info("Copied!", {
+        toast.info(this.props.t("main:copied"), {
             position: toast.POSITION.BOTTOM_CENTER,
             autoClose: 1000,
             closeButton: false,
@@ -130,8 +200,12 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const { walletAddress } = props;
     const availableQuark =
         state.accountReducer.availableQuark[walletAddress.address];
+    const availableAssets =
+        state.assetReducer.availableAssets[walletAddress.address];
     return {
-        availableQuark: availableQuark && new U256(availableQuark)
+        availableQuark,
+        availableAssets,
+        networkId: state.globalReducer.networkId
     };
 };
 const mapDispatchToProps = (
@@ -139,9 +213,12 @@ const mapDispatchToProps = (
 ) => ({
     fetchAvailableQuark: (address: string) => {
         dispatch(accountActions.fetchAvailableQuark(address));
+    },
+    fetchAvailableAssets: (address: string) => {
+        dispatch(assetActions.fetchAvailableAssets(address));
     }
 });
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(withRouter(AddressItem));
+)(withRouter(withTranslation()(AddressItem)));

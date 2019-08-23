@@ -9,7 +9,7 @@ export function getNetworkNameById(networkId: NetworkId) {
         case "sc":
             return "SALUKI";
         case "wc":
-            return "CORGI";
+            return "TESTNET";
     }
     throw new Error("Unknown networkId");
 }
@@ -26,17 +26,22 @@ export function getCodeChainHost(networkId: NetworkId) {
     return server.chain[networkId];
 }
 
+export function getExchangeHost() {
+    return server.exchange;
+}
+
 const server = {
     indexer: {
-        cc: "https://husky.codechain.io/explorer",
+        cc: "https://explorer.codechain.io",
         tc: "https://husky.codechain.io/explorer",
         sc: "https://saluki.codechain.io/explorer",
         wc: "https://corgi.codechain.io/explorer"
     },
     chain: {
-        cc: "https://husky.codechain.io/explorer",
+        cc: "https://rpc.codechain.io",
         tc: "http://52.79.108.1:8080",
         sc: "http://52.78.210.78:8080",
-        wc: "http://52.78.215.10:8080"
-    }
+        wc: "https://corgi-rpc.codechain.io"
+    },
+    exchange: "https://pig.codechain.io/api"
 };

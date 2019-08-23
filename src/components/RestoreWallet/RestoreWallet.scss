@@ -27,6 +27,11 @@
     }
   }
 
+  .password-description {
+    margin-top: 20px;
+    color: $dark-grey;
+  }
+
   .restore-content {
     max-width: 416px;
     margin-bottom: 60px;
@@ -35,7 +40,7 @@
     }
 
     .phrase-container {
-      margin-top: 30px;
+      margin-top: 20px;
       .phrase-input {
         padding: 30px;
         width: 100%;
@@ -47,8 +52,8 @@
         border: 1px solid $wallet-blue;
       }
     }
-    .passphrase-input-container {
-      margin-top: 36px;
+    .username-input-container {
+      margin-top: 18px;
     }
   }
 

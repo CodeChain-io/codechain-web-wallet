@@ -1,17 +1,19 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import ValidationInput from "../../../../ValidationInput/ValidationInput";
 
+import { U64 } from "codechain-sdk/lib/core/classes";
 import "./ReceiverItem.css";
 
-interface Props {
+interface OwnProps {
     receiver: {
         address: string;
-        quantity: number;
+        quantity: string;
     };
-    remainingAsset: number;
+    remainingAsset: U64;
     onAddressChange: (index: number, address: string) => void;
-    onQuantityChange: (index: number, quantity: number) => void;
+    onQuantityChange: (index: number, quantity: string) => void;
     onAddressValidationCheck: (index: number) => void;
     onQuantityValidationCheck: (index: number) => void;
     isAddressValid?: boolean;
@@ -20,36 +22,46 @@ interface Props {
     quantityError?: string;
     index: number;
     onRemove: (index: number) => void;
+    hideCancel?: boolean;
 }
 
-export default class ReceiverItem extends React.Component<Props, any> {
+type Props = WithTranslation & OwnProps;
+
+class ReceiverItem extends React.Component<Props> {
     public render() {
         const {
+            t,
             receiver,
             index,
             isAddressValid,
             isQuantityValid,
             addressError,
-            quantityError
+            quantityError,
+            hideCancel
         } = this.props;
         return (
             <div className="Receiver-item animated fadeIn">
                 <div className="d-flex align-items-end">
-                    <span className="mr-auto receiver-item-index">
-                        {index + 1}
-                    </span>
-                    <span
-                        className="receiver-item-cancel"
-                        onClick={this.handleRemove}
-                    >
-                        cancel <FontAwesomeIcon icon="times" />
-                    </span>
+                    {!hideCancel && (
+                        <span className="mr-auto receiver-item-index">
+                            {index + 1}
+                        </span>
+                    )}
+                    {!hideCancel && (
+                        <span
+                            className="receiver-item-cancel"
+                            onClick={this.handleRemove}
+                        >
+                            {t("send:asset.remove")}{" "}
+                            <FontAwesomeIcon icon="times" />
+                        </span>
+                    )}
                 </div>
                 <ValidationInput
                     value={receiver.address}
                     onChange={this.handleChangeAddressInput}
-                    labelText="RECEIVER ADDRESS"
-                    placeholder="receiver address"
+                    labelText={t("send:asset.receiver.label")}
+                    placeholder={t("send:asset.receiver.placeholder")}
                     showValidation={true}
                     isValid={isAddressValid}
                     onBlur={this.handleBlurAddressInput}
@@ -59,21 +71,22 @@ export default class ReceiverItem extends React.Component<Props, any> {
                     <ValidationInput
                         value={receiver.quantity}
                         onChange={this.handleChangeQuantitiesInput}
-                        labelText="QUANTITY"
-                        placeholder="quantity"
+                        labelText={t("send:asset.quantity.label")}
+                        placeholder={t("send:asset.quantity.placeholder")}
                         type="number"
                         className="flex-grow-1 flex-shrink-1"
                         showValidation={true}
                         isValid={isQuantityValid}
                         onBlur={this.handleBlurQuantityInput}
                         error={quantityError}
+                        decimalScale={0}
                     />
                     <button
                         type="button"
                         className="btn btn-primary max-btn"
                         onClick={this.handleMaxValueClick}
                     >
-                        max
+                        <Trans i18nKey="main:max" />
                     </button>
                 </div>
             </div>
@@ -97,7 +110,7 @@ export default class ReceiverItem extends React.Component<Props, any> {
 
     private handleMaxValueClick = () => {
         const { index, onQuantityChange, remainingAsset } = this.props;
-        onQuantityChange(index, remainingAsset);
+        onQuantityChange(index, remainingAsset.toString(10));
     };
 
     private handleChangeAddressInput = (
@@ -111,7 +124,8 @@ export default class ReceiverItem extends React.Component<Props, any> {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         const { index, onQuantityChange } = this.props;
-        const quantity = parseInt(event.target.value, 10);
-        onQuantityChange(index, quantity);
+        onQuantityChange(index, event.target.value);
     };
 }
+
+export default withTranslation()(ReceiverItem);

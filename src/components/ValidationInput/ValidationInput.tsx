@@ -1,5 +1,7 @@
 import * as React from "react";
+import NumberFormat from "react-number-format";
 import { Label } from "reactstrap";
+import TooltipLabel from "../TooltipLabel";
 import * as IconCheck from "./img/icons-check.svg";
 import * as IconError from "./img/icons-error.svg";
 import "./ValidationInput.css";
@@ -8,7 +10,7 @@ interface Props {
     placeholder?: string;
     className?: string;
     error?: string | null;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     value: string | number;
     type?: string;
     labelText?: string;
@@ -17,8 +19,19 @@ interface Props {
     showValidation: boolean;
     reverse?: boolean;
     disable?: boolean;
+    decimalScale?: number;
+    tooltip?: string;
 }
-export default class ValidationInput extends React.Component<Props, any> {
+interface State {
+    isFocus: boolean;
+}
+export default class ValidationInput extends React.Component<Props, State> {
+    public uniqueId: string;
+    constructor(props: Props) {
+        super(props);
+        this.state = { isFocus: false };
+        this.uniqueId = this.makeId(10);
+    }
     public render() {
         const {
             onChange,
@@ -32,31 +45,66 @@ export default class ValidationInput extends React.Component<Props, any> {
             isValid,
             reverse,
             showValidation,
-            disable
+            disable,
+            decimalScale,
+            tooltip
         } = this.props;
-        const guid = this.guid();
+        const { isFocus } = this.state;
         return (
             <div className={`Validation-input ${className} mb-4`}>
-                {labelText && (
+                {labelText && [
                     <Label
-                        for={`id-${guid}`}
+                        key="label"
+                        for={`id-${this.uniqueId}`}
                         className={`mb-0 label-text ${reverse && "reverse"}`}
                     >
                         {labelText}
-                    </Label>
+                    </Label>,
+                    tooltip && <TooltipLabel tooltip={tooltip} key="tooltip" />
+                ]}
+                {type === "number" ? (
+                    <NumberFormat
+                        value={value}
+                        decimalScale={decimalScale}
+                        autoComplete="off"
+                        className={`form-control ${reverse &&
+                            "reverse"} ${showValidation && "validation-form"}`}
+                        id={`id-${this.uniqueId}`}
+                        placeholder={placeholder}
+                        // onChange={onChange}
+                        onBlur={onBlur}
+                        disabled={disable}
+                        thousandSeparator={true}
+                        // tslint:disable-next-line:jsx-no-lambda
+                        onFocus={() => {
+                            this.setState({ isFocus: true });
+                        }}
+                        // tslint:disable-next-line:jsx-no-lambda
+                        onBlurCapture={() => {
+                            this.setState({ isFocus: false });
+                        }}
+                        // tslint:disable-next-line:jsx-no-lambda
+                        onValueChange={values => {
+                            const { value: v } = values;
+                            if (onChange && isFocus) {
+                                onChange({ target: { value: v } } as any);
+                            }
+                        }}
+                    />
+                ) : (
+                    <input
+                        autoComplete="off"
+                        type={`${type || "text"}`}
+                        className={`form-control ${reverse &&
+                            "reverse"} ${showValidation && "validation-form"}`}
+                        id={`id-${this.uniqueId}`}
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        disabled={disable}
+                    />
                 )}
-                <input
-                    autoComplete="off"
-                    type={`${type || "text"}`}
-                    className={`form-control ${reverse &&
-                        "reverse"} ${showValidation && "validation-form"}`}
-                    id={`id-${guid}`}
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    disabled={disable}
-                />
                 {isValid && (
                     <img
                         className="valid-icon animated fadeIn"
@@ -75,25 +123,17 @@ export default class ValidationInput extends React.Component<Props, any> {
             </div>
         );
     }
-    private guid = () => {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
+
+    private makeId = (length: number) => {
+        let text = "";
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        for (let i = 0; i < length; i++) {
+            text += possible.charAt(
+                Math.floor(Math.random() * possible.length)
+            );
         }
-        return (
-            s4() +
-            s4() +
-            "-" +
-            s4() +
-            "-" +
-            s4() +
-            "-" +
-            s4() +
-            "-" +
-            s4() +
-            s4() +
-            s4()
-        );
+
+        return text;
     };
 }

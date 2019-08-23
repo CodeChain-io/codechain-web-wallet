@@ -1,32 +1,48 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+    faAngleDoubleLeft,
+    faAngleDoubleRight,
+    faAngleLeft,
+    faAngleRight,
     faArrowAltCircleDown,
     faArrowCircleDown,
     faArrowCircleRight,
     faArrowLeft,
+    faArrowRight,
     faBars,
     faChevronLeft,
     faCircle,
+    faCopy,
     faEllipsisH,
+    faExchangeAlt,
+    faExclamationCircle,
     faFileDownload,
     faInfoCircle,
+    faLock,
     faPlus,
     faPlusCircle,
+    faQuestionCircle,
+    faRedoAlt,
     faTimes,
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
+import { I18nextProvider } from "react-i18next";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import i18n from "../../i18next";
 import { ReducerConfigure } from "../../redux";
 import Account from "../Account/Account";
 import AddressList from "../AddressList/AddressList";
 import AssetDetail from "../AssetDetail/AssetDetail";
 import AssetList from "../AssetList/AssetList";
 import CreateWallet from "../CreateWallet/CreateWallet";
+import Exchange from "../Exchange";
+import Footer from "../Footer";
 import Header from "../Header/Header";
 import Login from "../Login/Login";
+import MintAsset from "../MintAsset";
 import NotFound from "../NotFound/NotFound";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import RestoreWallet from "../RestoreWallet/RestoreWallet";
@@ -47,7 +63,19 @@ library.add(
     faCircle,
     faEllipsisH,
     faArrowCircleRight,
-    faArrowCircleDown
+    faArrowCircleDown,
+    faExchangeAlt,
+    faCopy,
+    faArrowRight,
+    faRedoAlt,
+    faExclamationCircle,
+    faQuestionCircle,
+    faChevronLeft,
+    faAngleRight,
+    faAngleDoubleRight,
+    faAngleLeft,
+    faAngleDoubleLeft,
+    faLock
 );
 
 interface StateProps {
@@ -63,48 +91,66 @@ class App extends React.Component<Props, any> {
     public render() {
         const { passphrase } = this.props;
         return (
-            <Router>
-                <div id="app" className="app" ref={this.appRef}>
-                    <ToastContainer className="custom-toast" />
-                    {passphrase && <Header />}
-                    <Switch>
-                        <Route path="/login" component={Login} />
-                        <Route
-                            path="/selectKeyfile"
-                            component={SelectKeyFile}
-                        />
-                        <Route path="/createWallet" component={CreateWallet} />
-                        <Route
-                            path="/restoreWallet"
-                            component={RestoreWallet}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/"
-                            component={AddressList}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/index.html"
-                            component={AddressList}
-                        />
-                        <PrivateRoute
-                            path="/:address/assets"
-                            component={AssetList}
-                        />
-                        <PrivateRoute
-                            path="/:address/account"
-                            component={Account}
-                        />
-                        <PrivateRoute
-                            exact={true}
-                            path="/:address/:assetType"
-                            component={AssetDetail}
-                        />
-                        <Route component={NotFound} />
-                    </Switch>
-                </div>
-            </Router>
+            <I18nextProvider i18n={i18n}>
+                <Router basename={process.env.PUBLIC_URL || "/"}>
+                    <div id="app" className="app" ref={this.appRef}>
+                        <ToastContainer className="custom-toast" />
+                        {passphrase && <Header />}
+                        <div className="app-container">
+                            <Switch>
+                                <Route path="/login" component={Login} />
+                                <Route
+                                    path="/selectKeyfile"
+                                    component={SelectKeyFile}
+                                />
+                                <Route
+                                    path="/createWallet"
+                                    component={CreateWallet}
+                                />
+                                <Route
+                                    path="/restoreWallet"
+                                    component={RestoreWallet}
+                                />
+                                <PrivateRoute
+                                    exact={true}
+                                    path="/"
+                                    component={AddressList}
+                                />
+                                <PrivateRoute
+                                    exact={true}
+                                    path="/index.html"
+                                    component={AddressList}
+                                />
+                                <PrivateRoute
+                                    exact={true}
+                                    path="/mint"
+                                    component={MintAsset}
+                                />
+                                <PrivateRoute
+                                    exact={true}
+                                    path="/chargeCCC"
+                                    component={Exchange}
+                                />
+                                <PrivateRoute
+                                    path="/:address/assets"
+                                    component={AssetList}
+                                />
+                                <PrivateRoute
+                                    path="/:address/account"
+                                    component={Account}
+                                />
+                                <PrivateRoute
+                                    exact={true}
+                                    path="/:address/:assetType"
+                                    component={AssetDetail}
+                                />
+                                <Route component={NotFound} />
+                            </Switch>
+                        </div>
+                        <Footer />
+                    </div>
+                </Router>
+            </I18nextProvider>
         );
     }
 }

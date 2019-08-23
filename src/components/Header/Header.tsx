@@ -5,8 +5,9 @@ import "./Header.css";
 import * as Logo from "./img/logo.svg";
 import MenuButton from "./MenuButton/MenuButton";
 import NetworkButton from "./NetworkButton/NetworkButton";
+import WalletSaver from "./WalletSaver";
 
-class Header extends React.Component {
+export default class Header extends React.Component {
     public render() {
         return (
             <div className="Header" key="header">
@@ -14,6 +15,7 @@ class Header extends React.Component {
                     <Link to="/">
                         <img src={Logo} className="logo" />
                     </Link>
+                    <WalletSaver />
                     <NetworkButton className="ml-auto" />
                     <MenuButton className="" />
                 </div>
@@ -22,4 +24,3 @@ class Header extends React.Component {
         );
     }
 }
-export default Header;

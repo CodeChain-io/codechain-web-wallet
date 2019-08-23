@@ -1,0 +1,10 @@
+{
+    "title": "Your<br />backup phrase",
+    "detail": "Your secret backup phrase makes it easy to back up and restore your account.",
+    "warning": "WARNING: Never disclose your backup phrase. Anyone with this phrase can take your Asset forever.",
+    "tip": "Tips :",
+    "tip_detail": "Store this phrase in a password manager like 1 Password. Write this phrase on a piece of paper and store in asecure location. If you want even more security, writeit down on multiple pieces of paper and store each in 2- 3 different locations.",
+    "copy": "COPY",
+    "button": "I MEMORIZED MY BACKUP PHRASE",
+    "copied": "Copied to clipboard"
+}

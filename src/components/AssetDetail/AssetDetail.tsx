@@ -1,8 +1,9 @@
-import { AssetSchemeDoc } from "codechain-indexer-types/lib/types";
-import { MetadataFormat, Type } from "codechain-indexer-types/lib/utils";
-import { H256 } from "codechain-sdk/lib/core/classes";
+import BigNumber from "bignumber.js";
+import { AssetSchemeDoc } from "codechain-indexer-types";
+import { H160, U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Col, Row } from "reactstrap";
@@ -13,8 +14,9 @@ import { ReducerConfigure } from "../../redux";
 import assetActions from "../../redux/asset/assetActions";
 import walletActions from "../../redux/wallet/walletActions";
 import { ImageLoader } from "../../utils/ImageLoader/ImageLoader";
+import { parseMetadata } from "../../utils/metadata";
 import AddressContainer from "../AddressContainer/AddressContainer";
-import TxHistory from "../TxHistory/TxHistory";
+import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import "./AssetDetail.css";
 
 interface OwnProps {
@@ -26,19 +28,18 @@ interface StateProps {
     networkId: NetworkId;
     availableAsset?: {
         assetType: string;
-        quantities: number;
-        metadata: MetadataFormat;
+        quantities: U64;
     } | null;
-    addressName?: string | null;
+    addressIndex?: number | null;
 }
 
 interface DispatchProps {
-    fetchAssetSchemeIfNeed: (assetType: H256) => void;
+    fetchAssetSchemeIfNeed: (assetType: H160) => void;
     fetchAvailableAssets: (address: string) => void;
     fetchWalletFromStorageIfNeed: () => void;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = OwnProps & StateProps & DispatchProps & WithTranslation;
 
 class AssetDetail extends React.Component<Props, any> {
     public async componentDidMount() {
@@ -53,23 +54,26 @@ class AssetDetail extends React.Component<Props, any> {
             },
             networkId,
             availableAsset,
-            addressName
+            addressIndex,
+            t
         } = this.props;
         if (!assetScheme || !availableAsset) {
             return null;
         }
 
-        const metadata = Type.getMetadata(assetScheme.metadata);
+        const metadata = parseMetadata(assetScheme.metadata);
         return (
             <div className="Asset-detail d-flex animated fadeIn">
                 <div className="panel mx-auto">
                     <AddressContainer
                         address={address}
                         backButtonPath={`/${address}/assets`}
-                        addressName={addressName}
+                        addressIndex={addressIndex}
                     />
                     <div className="detail-history-container">
-                        <h4 className="mr-auto">Asset detail</h4>
+                        <h4 className="mr-auto">
+                            <Trans i18nKey={"asset:title"} />
+                        </h4>
                         <div className="d-flex mt-4 mb-4 align-itmes-center">
                             <ImageLoader
                                 className="asset-image"
@@ -84,11 +88,11 @@ class AssetDetail extends React.Component<Props, any> {
                                 </h4>
                                 <div className="mono asset-type">
                                     0x
-                                    {new H256(assetType).value}
+                                    {new H160(assetType).value}
                                 </div>
                                 <div>
                                     <span className="total-text mr-3">
-                                        Total
+                                        <Trans i18nKey={"asset:total"} />
                                     </span>
                                     <span className="quantity-text number">
                                         {availableAsset.quantities.toLocaleString()}
@@ -99,26 +103,38 @@ class AssetDetail extends React.Component<Props, any> {
                         <hr />
                         <div className="info-container">
                             <Row>
-                                <Col md={2}>Description</Col>
+                                <Col md={2}>
+                                    <Trans i18nKey={"asset:description"} />
+                                </Col>
                                 <Col md={10}>
-                                    {metadata.description || "None"}
+                                    {metadata.description || t("asset:none")}
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md={2}>Registrar</Col>
+                                <Col md={2}>
+                                    <Trans i18nKey="asset:approver" />
+                                </Col>
                                 <Col md={10}>
-                                    {assetScheme.registrar || "None"}
+                                    {assetScheme.approver || t("asset:none")}
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md={2}>Total supply</Col>
-                                <Col md={10}>{assetScheme.amount}</Col>
+                                <Col md={2}>
+                                    <Trans i18nKey="asset:total_supply" />
+                                </Col>
+                                <Col md={10}>
+                                    {new BigNumber(
+                                        assetScheme.supply
+                                    ).toFormat()}
+                                </Col>
                             </Row>
                         </div>
-                        <h4 className="mb-3">Transaction history</h4>
-                        <TxHistory
+                        <h4 className="mb-3">
+                            <Trans i18nKey="asset:recent_transactions" />
+                        </h4>
+                        <AssetTxHistory
                             address={address}
-                            assetType={new H256(assetType)}
+                            assetType={new H160(assetType)}
                         />
                     </div>
                 </div>
@@ -132,7 +148,7 @@ class AssetDetail extends React.Component<Props, any> {
                 params: { assetType, address }
             }
         } = this.props;
-        this.props.fetchAssetSchemeIfNeed(new H256(assetType));
+        this.props.fetchAssetSchemeIfNeed(new H160(assetType));
         this.props.fetchAvailableAssets(address);
         this.props.fetchWalletFromStorageIfNeed();
     };
@@ -145,12 +161,12 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
         }
     } = ownProps;
     const assetScheme =
-        state.assetReducer.assetScheme[new H256(assetType).value];
+        state.assetReducer.assetScheme[new H160(assetType).value];
     const networkId = state.globalReducer.networkId;
     const availableAssets = state.assetReducer.availableAssets[address];
     const availableAsset = _.find(
         availableAssets,
-        asset => asset.assetType === new H256(assetType).value
+        asset => asset.assetType === new H160(assetType).value
     );
     const assetAddress = _.find(
         state.walletReducer.assetAddresses,
@@ -160,13 +176,13 @@ const mapStateToProps = (state: ReducerConfigure, ownProps: OwnProps) => {
         assetScheme: assetScheme && assetScheme.data,
         networkId,
         availableAsset,
-        addressName: assetAddress && assetAddress.name
+        addressIndex: assetAddress && assetAddress.index
     };
 };
 const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
-    fetchAssetSchemeIfNeed: (assetType: H256) => {
+    fetchAssetSchemeIfNeed: (assetType: H160) => {
         dispatch(assetActions.fetchAssetSchemeIfNeed(assetType));
     },
     fetchAvailableAssets: (address: string) => {
@@ -179,4 +195,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AssetDetail);
+)(withTranslation()(AssetDetail));

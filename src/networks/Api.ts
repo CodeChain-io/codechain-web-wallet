@@ -1,18 +1,15 @@
 import axios from "axios";
 import {
-    AggsUTXO,
+    AggsUTXODoc,
     AssetSchemeDoc,
-    ParcelDoc,
-    PendingParcelDoc,
-    PendingTransactionDoc,
     TransactionDoc,
-    UTXO
-} from "codechain-indexer-types/lib/types";
-import { AssetTransferTransaction, H256 } from "codechain-sdk/lib/core/classes";
+    UTXODoc
+} from "codechain-indexer-types";
+import { H160, Transaction, U64 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
 import * as _ from "lodash";
 import { PlatformAccount } from "../model/address";
-import { getIndexerHost } from "../utils/network";
+import { getExchangeHost, getIndexerHost } from "../utils/network";
 
 async function getRequest<T>(url: string) {
     const response = await axios.get<T>(url);
@@ -30,26 +27,34 @@ async function postRequest<T>(url: string, body: any) {
     throw new Error(response.statusText);
 }
 
-export function getGatewayHost(networkId: NetworkId) {
-    // return server.gateway[networkId];
-    return "http://localhost:9000";
-}
-
 export async function getAggsUTXOList(
     address: string,
     networkId: NetworkId
-): Promise<AggsUTXO[]> {
+): Promise<AggsUTXODoc[]> {
     const apiHost = getIndexerHost(networkId);
-    return await getRequest<AggsUTXO[]>(`${apiHost}/api/aggs-utxo/${address}`);
+    const aggsUTXOList = await getRequest<AggsUTXODoc[]>(
+        `${apiHost}/api/aggs-utxo?address=${address}`
+    );
+    // FIXME: https://github.com/CodeChain-io/codechain-indexer/issues/59
+    return Promise.all(
+        aggsUTXOList.map(async (aggsUTXO: any) => {
+            const assetScheme = await getAssetByAssetType(
+                new H160(aggsUTXO.assetType),
+                networkId
+            );
+            aggsUTXO.assetScheme = assetScheme;
+            return aggsUTXO;
+        })
+    );
 }
 
 export async function getAssetByAssetType(
-    assetType: H256,
+    assetType: H160,
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
     return getRequest<AssetSchemeDoc>(
-        `${apiHost}/api/asset/${assetType.value}`
+        `${apiHost}/api/asset-scheme/${assetType.value}`
     );
 }
 
@@ -58,66 +63,40 @@ export async function getPlatformAccount(
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    const response = await getRequest<{ balance: string; nonce: string }>(
-        `${apiHost}/api/addr-platform-account/${address}`
+    const response = await getRequest<{ balance: string; seq: string }>(
+        `${apiHost}/api/account/${address}`
     );
 
     if (response) {
         return {
-            balance: response.balance.toString(),
-            nonce: response.nonce.toString()
+            balance: new U64(response.balance),
+            seq: new U64(response.seq)
         } as PlatformAccount;
     } else {
         return {
-            balance: "0",
-            nonce: "0"
+            balance: new U64(0),
+            seq: new U64(0)
         } as PlatformAccount;
     }
 }
 
 export async function getUTXOListByAssetType(
     address: string,
-    assetType: H256,
+    assetType: H160,
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    return await getRequest<UTXO[]>(
-        `${apiHost}/api/utxo/${
+    return await getRequest<UTXODoc[]>(
+        `${apiHost}/api/utxo?assetType=${
             assetType.value
-        }/owner/${address}?itemsPerPage=10000&page=1`
+        }&address=${address}&itemsPerPage=100&page=1`
     );
 }
 
-export async function sendTxToGateway(
-    tx: AssetTransferTransaction,
-    gatewayURl: string
-) {
-    console.log(gatewayURl);
-    return await postRequest<void>(`${gatewayURl}`, {
+export function sendTxToGateway(tx: Transaction, gatewayURl: string) {
+    return postRequest<void>(`${gatewayURl}`, {
         tx
     });
-}
-
-export async function getPendingParcels(address: string, networkId: NetworkId) {
-    const apiHost = getIndexerHost(networkId);
-    return await getRequest<PendingParcelDoc[]>(
-        `${apiHost}/api/parcels/pending/${address}?page=1&itemsPerPage=10000`
-    );
-}
-
-export async function getParcels(
-    address: string,
-    onlyUnconfirmed: boolean,
-    page: number,
-    itemsPerPage: number,
-    networkId: NetworkId
-) {
-    const apiHost = getIndexerHost(networkId);
-    let query = `${apiHost}/api/parcels?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
-    if (onlyUnconfirmed) {
-        query += `&onlyUnconfirmed=true&confirmThreshold=5`;
-    }
-    return await getRequest<ParcelDoc[]>(query);
 }
 
 export async function getPendingTransactions(
@@ -125,31 +104,112 @@ export async function getPendingTransactions(
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    return await getRequest<PendingTransactionDoc[]>(
-        `${apiHost}/api/txs/pending/${address}?page=1&itemsPerPage=10000`
+    const transactions = await getRequest<TransactionDoc[]>(
+        `${apiHost}/api/pending-tx?page=1&itemsPerPage=100&address=${address}`
     );
+
+    // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
+    await Promise.all(
+        transactions.map(async transaction => {
+            if (transaction.type === "transferAsset") {
+                await Promise.all(
+                    transaction.transferAsset.outputs.map(async output => {
+                        const assetScheme: any = await getRequest<
+                            AssetSchemeDoc
+                        >(`${apiHost}/api/asset-scheme/${output.assetType}`);
+                        output.assetScheme = assetScheme;
+                    })
+                );
+            }
+        })
+    );
+    return transactions;
 }
 
 export async function getTxsByAddress(
     address: string,
-    onlyUnconfirmed: boolean,
     page: number,
     itemsPerPage: number,
     networkId: NetworkId,
-    assetType?: H256
+    assetType?: H160
 ) {
     const apiHost = getIndexerHost(networkId);
-    let query = `${apiHost}/api/txs?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
-    if (onlyUnconfirmed) {
-        query += `&onlyUnconfirmed=true&confirmThreshold=5`;
-    }
+    let query = `${apiHost}/api/tx?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
     if (assetType) {
         query += `&assetType=${assetType.value}`;
     }
-    return await getRequest<TransactionDoc[]>(query);
+    const transactions = await getRequest<TransactionDoc[]>(query);
+
+    // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
+    await Promise.all(
+        transactions.map(async transaction => {
+            if (transaction.type === "transferAsset") {
+                await Promise.all(
+                    transaction.transferAsset.outputs.map(async output => {
+                        const assetScheme: any = await getRequest<
+                            AssetSchemeDoc
+                        >(`${apiHost}/api/asset-scheme/${output.assetType}`);
+                        output.assetScheme = assetScheme;
+                    })
+                );
+            }
+        })
+    );
+    return transactions;
 }
 
-export async function getBestBlockNumber(networkId: string) {
-    const apiHost = getIndexerHost(networkId);
-    return await getRequest<number>(`${apiHost}/api/blockNumber`);
+export async function getCountOfTxByAddress(data: {
+    address: string;
+    networkId: NetworkId;
+    assetType?: H160;
+}) {
+    const apiHost = getIndexerHost(data.networkId);
+    let query = `${apiHost}/api/tx/count?address=${data.address}`;
+    if (data.assetType) {
+        query += `&assetType=${data.assetType.value}`;
+    }
+    return await getRequest<number>(query);
+}
+
+export async function createBTCAddress(
+    address: string,
+    currency: "btc" | "eth"
+) {
+    const apiHost = getExchangeHost();
+    const query = `${apiHost}/receivers/${address}/${currency}`;
+    const btcAddress = await getRequest<{
+        type: string;
+        address: string;
+        createdAt: Date;
+    }>(query);
+    return btcAddress;
+}
+
+export async function getBTCtoCCCRate(currency: "btc" | "eth") {
+    const apiHost = getExchangeHost();
+    const query = `${apiHost}/rates/${currency}`;
+    return await getRequest<{ toCCC: number }>(query);
+}
+
+export async function getExchangeHistory(
+    address: string,
+    currency: "btc" | "eth"
+) {
+    const apiHost = getExchangeHost();
+    const query = `${apiHost}/histories/${address}/${currency}`;
+    return await getRequest<
+        {
+            received: {
+                hash: string;
+                quantity: string;
+                status: "success" | "pending" | "reverted";
+                confirm: number;
+            };
+            sent: {
+                hash?: string;
+                quantity: string;
+                status: "success" | "pending";
+            };
+        }[]
+    >(query);
 }

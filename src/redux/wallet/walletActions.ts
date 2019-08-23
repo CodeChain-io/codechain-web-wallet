@@ -102,7 +102,7 @@ const fetchWalletFromStorageIfNeed = () => {
                         }
                     ).value;
                     return {
-                        name: `A-address ${key.pathIndex}`,
+                        index: key.pathIndex,
                         address,
                         type: AddressType.Asset
                     };
@@ -136,7 +136,7 @@ const fetchWalletFromStorageIfNeed = () => {
                         networkId
                     }).value;
                     return {
-                        name: `P-address ${key.pathIndex}`,
+                        index: key.pathIndex,
                         address,
                         type: AddressType.Platform
                     };
@@ -173,9 +173,9 @@ const createWalletPlatformAddress = () => {
         const networkId = getState().globalReducer.networkId;
         const platformAddresses = getState().walletReducer.platformAddresses;
         if (platformAddresses && platformAddresses.length >= 10) {
-            toast.error("Address limit is 10", {
+            toast.error("Sorry, you can make up to 10 addresses.", {
                 position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 1000,
+                autoClose: 5000,
                 closeButton: false,
                 hideProgressBar: true
             });
@@ -204,9 +204,9 @@ const createWalletAssetAddress = () => {
         const networkId = getState().globalReducer.networkId;
         const assetAddresses = getState().walletReducer.assetAddresses;
         if (assetAddresses && assetAddresses.length >= 10) {
-            toast.error("Address limit is 10", {
+            toast.error("Sorry, you can make up to 10 addresses.", {
                 position: toast.POSITION.BOTTOM_CENTER,
-                autoClose: 1000,
+                autoClose: 5000,
                 closeButton: false,
                 hideProgressBar: true
             });

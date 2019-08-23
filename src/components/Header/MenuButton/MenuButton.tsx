@@ -6,6 +6,7 @@ import { NetworkId } from "../../../model/address";
 import { ReducerConfigure } from "../../../redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { WithTranslation, withTranslation } from "react-i18next";
 import { ThunkDispatch } from "redux-thunk";
 import globalActions from "../../../redux/global/globalActions";
 import ExportBackupPopup from "../../ExportBackupPopup/ExportBackupPopup";
@@ -28,7 +29,7 @@ interface DispatchProps {
     logout: () => void;
 }
 
-type Props = DispatchProps & StateProps & OwnProps;
+type Props = WithTranslation & DispatchProps & StateProps & OwnProps;
 class MenuButton extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -38,7 +39,7 @@ class MenuButton extends React.Component<Props, State> {
         };
     }
     public render() {
-        const { className } = this.props;
+        const { className, t } = this.props;
         const { exportPopupOpen, popoverOpen } = this.state;
         return (
             <div
@@ -65,13 +66,17 @@ class MenuButton extends React.Component<Props, State> {
                         <ul className="list-unstyled mb-0">
                             <li onClick={this.handleSignout}>
                                 <div className="d-flex align-items-center justify-content-end">
-                                    <span className="mr-1">Sign out</span>
-                                    <FontAwesomeIcon icon="arrow-circle-right" />
+                                    <span className="mr-2">
+                                        {t("main:menu.lock")}
+                                    </span>
+                                    <FontAwesomeIcon icon="lock" />
                                 </div>
                             </li>
                             <li onClick={this.openExportPopup}>
                                 <div className="d-flex align-items-center justify-content-end">
-                                    <span className="mr-1">Backup phrase</span>
+                                    <span className="mr-2">
+                                        {t("main:menu.backup_phrase")}
+                                    </span>
                                     <FontAwesomeIcon icon="arrow-circle-down" />
                                 </div>
                             </li>
@@ -112,4 +117,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(MenuButton);
+)(withTranslation()(MenuButton));

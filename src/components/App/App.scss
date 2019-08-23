@@ -8,4 +8,8 @@
       min-height: 45px;
     }
   }
+  .app-container {
+    min-height: calc(100vh - #{$header-height});
+    padding-bottom: 40px;
+  }
 }

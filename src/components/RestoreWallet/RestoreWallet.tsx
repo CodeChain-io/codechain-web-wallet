@@ -1,8 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Container } from "reactstrap";
+import Form from "reactstrap/lib/Form";
 import { ThunkDispatch } from "redux-thunk";
 import { clearKeystore, importMnemonic } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
@@ -19,16 +22,19 @@ interface State {
     passphraseError?: string;
     isPassphraseConfirmValid?: boolean;
     passphraseConfirmError?: string;
+    username: string;
+    isUsernameValid?: boolean;
+    usernameError?: string;
 }
 
 interface DispatchProps {
-    login: (passpharase: string) => void;
-    clearData: () => void;
+    login: (passpharase: string) => Promise<void>;
+    clearData: () => Promise<void>;
 }
 
-type Props = RouteComponentProps & DispatchProps;
+type Props = WithTranslation & RouteComponentProps & DispatchProps;
 class RestoreWallet extends React.Component<Props, State> {
-    public constructor(props: any) {
+    public constructor(props: Props) {
         super(props);
         this.state = {
             secretPhrase: "",
@@ -37,7 +43,10 @@ class RestoreWallet extends React.Component<Props, State> {
             isPassphraseValid: undefined,
             passphraseError: undefined,
             isPassphraseConfirmValid: undefined,
-            passphraseConfirmError: undefined
+            passphraseConfirmError: undefined,
+            username: "",
+            isUsernameValid: undefined,
+            usernameError: undefined
         };
     }
     public async componentDidMount() {
@@ -48,6 +57,7 @@ class RestoreWallet extends React.Component<Props, State> {
         await clearKeystore();
     }
     public render() {
+        const { t } = this.props;
         const {
             passphrase,
             passphraseConfirm,
@@ -55,7 +65,10 @@ class RestoreWallet extends React.Component<Props, State> {
             isPassphraseValid,
             passphraseConfirmError,
             passphraseError,
-            secretPhrase
+            secretPhrase,
+            username,
+            isUsernameValid,
+            usernameError
         } = this.state;
         return (
             <Container className="Restore-wallet animated fadeIn">
@@ -64,17 +77,17 @@ class RestoreWallet extends React.Component<Props, State> {
                         <FontAwesomeIcon icon="times" className="icon" />
                     </Link>
                 </div>
-                <div className="restore-content">
+                <Form
+                    className="restore-content"
+                    onSubmit={this.handleOnFormSubmit}
+                >
                     <div className="title-container">
                         <h4 className="title">
-                            Restore your wallet
-                            <br />
-                            using backup phrase
+                            <Trans i18nKey="restore:title" />
                         </h4>
                     </div>
                     <div className="description">
-                        Enter your secret twelve word phrase here to restore
-                        your wallet.
+                        <Trans i18nKey="restore:description" />
                     </div>
                     <div className="phrase-container">
                         <textarea
@@ -83,13 +96,26 @@ class RestoreWallet extends React.Component<Props, State> {
                             onChange={this.handleChangeSecretPhraseInput}
                         />
                     </div>
+                    <div className="username-input-container">
+                        <ValidationInput
+                            labelText={t("restore:name.label")}
+                            onChange={this.handleUsernameInput}
+                            value={username}
+                            showValidation={true}
+                            placeholder={t("restore:name.placeholder")}
+                            type="text"
+                            isValid={isUsernameValid}
+                            error={usernameError}
+                            onBlur={this.checkUsernameValid}
+                        />
+                    </div>
                     <div className="passphrase-input-container">
                         <ValidationInput
-                            labelText="PASSPHRASE"
+                            labelText={t("restore:password.label")}
                             onChange={this.handlePassphraseInput}
                             value={passphrase}
                             showValidation={true}
-                            placeholder="passphrase"
+                            placeholder={t("restore:password.placeholder")}
                             type="password"
                             isValid={isPassphraseValid}
                             error={passphraseError}
@@ -98,33 +124,47 @@ class RestoreWallet extends React.Component<Props, State> {
                     </div>
                     <div className="passphrase-confirm-container">
                         <ValidationInput
-                            labelText="PASSPHRASE CONFIRM"
+                            labelText={t("restore:confirm.label")}
                             onChange={this.handlePassphraseConfirmInput}
                             value={passphraseConfirm}
                             showValidation={true}
-                            placeholder="passphrase confirm"
+                            placeholder={t("restore:confirm.placeholder")}
                             type="password"
                             isValid={isPassphraseConfirmValid}
                             error={passphraseConfirmError}
                             onBlur={this.checkPassphraseConfirm}
                         />
                     </div>
+                    <div className="password-description">
+                        <span>
+                            <Trans i18nKey="restore:mnemonic.detail" />
+                        </span>
+                    </div>
                     <div className="main-btn-container">
                         <button
                             className="btn btn-primary reverse square main-btn"
-                            onClick={this.handleSubmit}
+                            type="submit"
                         >
-                            OK
+                            {t("restore:ok")}
                         </button>
                     </div>
-                </div>
+                </Form>
             </Container>
         );
     }
 
+    private handleOnFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        this.handleSubmit();
+    };
+
     private handleSubmit = async () => {
-        const { passphrase, secretPhrase } = this.state;
-        const { login, history } = this.props;
+        const { passphrase, username, secretPhrase } = this.state;
+        const { t, login, history } = this.props;
+
+        if (!this.checkUsernameValid()) {
+            return;
+        }
 
         if (!this.checkPassphraseValid()) {
             return;
@@ -136,16 +176,27 @@ class RestoreWallet extends React.Component<Props, State> {
         const splitPassphrases = secretPhrase.match(/\S+/g);
 
         if (!splitPassphrases || splitPassphrases.length !== 12) {
+            toast.error(t("restore:error.mnemonic.invalid"), {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 5000,
+                closeButton: false,
+                hideProgressBar: true
+            });
             return;
         }
-
-        await importMnemonic(splitPassphrases.join(" "), passphrase);
-        login(passphrase!);
-        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-        // This code is temporary for solving this problem.
-        setTimeout(() => {
+        try {
+            localStorage.setItem("USERNAME", username!);
+            await importMnemonic(splitPassphrases.join(" "), passphrase);
+            await login(passphrase!);
             history.push(`/`);
-        }, 300);
+        } catch (e) {
+            toast.error(t("restore:error.mnemonic.invalid"), {
+                position: toast.POSITION.BOTTOM_CENTER,
+                autoClose: 5000,
+                closeButton: false,
+                hideProgressBar: true
+            });
+        }
     };
 
     private handleChangeSecretPhraseInput = (
@@ -155,10 +206,11 @@ class RestoreWallet extends React.Component<Props, State> {
     };
 
     private checkPassphraseValid = () => {
+        const { t } = this.props;
         const { passphrase } = this.state;
         if (passphrase.length < 8) {
             this.setState({
-                passphraseError: "Minimum length is 8 characters",
+                passphraseError: t("restore:error.password.minimum"),
                 isPassphraseValid: false
             });
             return false;
@@ -171,11 +223,46 @@ class RestoreWallet extends React.Component<Props, State> {
         return true;
     };
 
+    private checkUsernameValid = () => {
+        const { t } = this.props;
+        const { username } = this.state;
+        if (username === "") {
+            this.setState({
+                isUsernameValid: false,
+                usernameError: t("restore:error.name.required")
+            });
+            return false;
+        }
+        if (username.length > 20) {
+            this.setState({
+                usernameError: t("restore:error.name.maximum"),
+                isUsernameValid: false
+            });
+            return false;
+        }
+        this.setState({
+            isUsernameValid: true,
+            usernameError: undefined
+        });
+        return true;
+    };
+
+    private handleUsernameInput = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        this.setState({
+            username: event.target.value,
+            usernameError: undefined,
+            isUsernameValid: undefined
+        });
+    };
+
     private checkPassphraseConfirm = () => {
+        const { t } = this.props;
         const { passphrase, passphraseConfirm } = this.state;
         if (passphrase !== passphraseConfirm) {
             this.setState({
-                passphraseConfirmError: "Password does not match!",
+                passphraseConfirmError: t("restore:error.confirm.mismatch"),
                 isPassphraseConfirmValid: false
             });
             return false;
@@ -193,7 +280,10 @@ class RestoreWallet extends React.Component<Props, State> {
     ) => {
         this.setState({
             passphraseError: undefined,
-            isPassphraseValid: undefined
+            isPassphraseValid: undefined,
+            passphraseConfirm: "",
+            isPassphraseConfirmValid: undefined,
+            passphraseConfirmError: undefined
         });
         this.setState({ passphrase: event.target.value });
     };
@@ -213,13 +303,13 @@ const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     login: (passphrase: string) => {
-        dispatch(globalActions.login(passphrase));
+        return dispatch(globalActions.login(passphrase));
     },
     clearData: () => {
-        dispatch(globalActions.clearData());
+        return dispatch(globalActions.clearData());
     }
 });
 export default connect(
-    () => ({}),
+    undefined,
     mapDispatchToProps
-)(withRouter(RestoreWallet));
+)(withTranslation()(withRouter(RestoreWallet)));

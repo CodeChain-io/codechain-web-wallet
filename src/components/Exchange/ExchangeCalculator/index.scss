@@ -1,0 +1,19 @@
+@import "styles/variables.scss";
+
+.BTC-calculator {
+  border: 1px solid $dark-grey;
+  padding: 12px 12px 0px 12px;
+  .calculator-rate-title {
+    color: $dark-grey;
+  }
+  .input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .exchange-icon {
+      margin: 8px;
+      color: $dark-grey;
+    }
+  }
+}

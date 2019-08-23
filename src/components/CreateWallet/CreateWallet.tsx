@@ -14,6 +14,7 @@ import {
 } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import globalActions from "../../redux/global/globalActions";
+import actions from "../../redux/wallet/walletActions";
 import { clearPassphrase, clearWalletKeys } from "../../utils/storage";
 import ConfirmBackupPhrase from "./ConfirmBackupPhrase/ConfirmBackupPhrase";
 import "./CreateWallet.css";
@@ -30,11 +31,14 @@ interface State {
     currentPage: PageState;
     passphrase?: string | null;
     mnemonic?: string[];
+    username?: string;
 }
 
 interface DispatchProps {
-    login: (passpharase: string) => void;
-    clearData: () => void;
+    login: (passpharase: string) => Promise<void>;
+    clearData: () => Promise<void>;
+    createWalletAssetAddress: () => Promise<void>;
+    createWalletPlatformAddress: () => Promise<void>;
 }
 
 type Props = RouteComponentProps & DispatchProps;
@@ -43,7 +47,8 @@ class CreateWallet extends React.Component<Props, State> {
         super(props);
         this.state = {
             currentPage: PageState.inputPassPhrase,
-            passphrase: undefined
+            passphrase: undefined,
+            username: undefined
         };
     }
     public async componentDidMount() {
@@ -70,7 +75,7 @@ class CreateWallet extends React.Component<Props, State> {
                     )}
                     {currentPage === PageState.showSecretPhrase && (
                         <ShowBackupPhrase
-                            onSubmit={this.handleSumitShowPhrase}
+                            onSubmit={this.handleSubmitShowPhrase}
                             mnemonic={mnemonic!}
                         />
                     )}
@@ -98,30 +103,33 @@ class CreateWallet extends React.Component<Props, State> {
         );
     }
 
-    private handleSubmitPassphraseInput = async (passphrase: string) => {
+    private handleSubmitPassphraseInput = async (
+        username: string,
+        passphrase: string
+    ) => {
         await createSeed(passphrase);
         const mnemonicString = await exportMnemonic(passphrase);
         const mnemonic = mnemonicString.split(" ");
         this.setState({
             currentPage: PageState.showSecretPhrase,
             passphrase,
-            mnemonic
+            mnemonic,
+            username
         });
     };
 
-    private handleSumitShowPhrase = () => {
+    private handleSubmitShowPhrase = () => {
         this.setState({ currentPage: PageState.confirmSecretPhrase });
     };
 
-    private handleConfirmPhrase = () => {
+    private handleConfirmPhrase = async () => {
         const { login, history } = this.props;
-        const { passphrase } = this.state;
-        login(passphrase!);
-        // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
-        // This code is temporary for solving this problem.
-        setTimeout(() => {
-            history.push(`/`);
-        }, 300);
+        const { passphrase, username } = this.state;
+        localStorage.setItem("USERNAME", username!);
+        await login(passphrase!);
+        await this.props.createWalletAssetAddress();
+        await this.props.createWalletPlatformAddress();
+        history.push(`/`);
     };
 }
 
@@ -129,10 +137,16 @@ const mapDispatchToProps = (
     dispatch: ThunkDispatch<ReducerConfigure, void, Action>
 ) => ({
     login: (passphrase: string) => {
-        dispatch(globalActions.login(passphrase));
+        return dispatch(globalActions.login(passphrase));
     },
     clearData: () => {
-        dispatch(globalActions.clearData());
+        return dispatch(globalActions.clearData());
+    },
+    createWalletPlatformAddress: () => {
+        return dispatch(actions.createWalletPlatformAddress());
+    },
+    createWalletAssetAddress: () => {
+        return dispatch(actions.createWalletAssetAddress());
     }
 });
 

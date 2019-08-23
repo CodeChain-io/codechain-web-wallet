@@ -64,6 +64,7 @@ class NetworkButton extends React.Component<Props, State> {
                                     <img src={MainNet} />
                                 </div>
                             </li>
+                            {/*
                             <li onClick={_.partial(this.chagneNetworkId, "tc")}>
                                 <div className="d-flex align-items-center justify-content-end">
                                     <span className="mr-1">HUSKY</span>
@@ -76,9 +77,10 @@ class NetworkButton extends React.Component<Props, State> {
                                     <img src={TestNet} />
                                 </div>
                             </li>
+                            */}
                             <li onClick={_.partial(this.chagneNetworkId, "wc")}>
                                 <div className="d-flex align-items-center justify-content-end">
-                                    <span className="mr-1">CORGI</span>
+                                    <span className="mr-1">TESTNET</span>
                                     <img src={TestNet} />
                                 </div>
                             </li>

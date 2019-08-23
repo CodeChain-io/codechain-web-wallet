@@ -1,11 +1,8 @@
-import {
-    AggsUTXO,
-    PendingTransactionDoc,
-    TransactionDoc
-} from "codechain-indexer-types/lib/types";
-import { MetadataFormat } from "codechain-indexer-types/lib/utils";
+import { AggsUTXODoc, TransactionDoc } from "codechain-indexer-types";
+import { U64 } from "codechain-sdk/lib/core/classes";
 import * as _ from "lodash";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { match } from "react-router";
 import { Action } from "redux";
@@ -16,7 +13,7 @@ import assetActions from "../../redux/asset/assetActions";
 import chainActions from "../../redux/chain/chainActions";
 import walletActions from "../../redux/wallet/walletActions";
 import AddressContainer from "../AddressContainer/AddressContainer";
-import TxHistory from "../TxHistory/TxHistory";
+import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 import "./AssetList.css";
 import * as Empty from "./img/cautiondisabled.svg";
@@ -27,24 +24,21 @@ interface OwnProps {
 }
 
 interface StateProps {
-    addressUTXOList?: AggsUTXO[] | null;
-    pendingTxList?: PendingTransactionDoc[] | null;
-    unconfirmedTxList?: TransactionDoc[] | null;
+    addressUTXOList?: AggsUTXODoc[] | null;
+    pendingTxList?: TransactionDoc[] | null;
     availableAssets?:
         | {
               assetType: string;
-              quantities: number;
-              metadata: MetadataFormat;
+              quantities: U64;
           }[]
         | null;
     networkId: NetworkId;
-    addressName?: string | null;
+    addressIndex?: number | null;
 }
 
 interface DispatchProps {
     fetchAggsUTXOListIfNeed: (address: string) => void;
     fetchPendingTxListIfNeed: (address: string) => void;
-    fetchUnconfirmedTxListIfNeed: (address: string) => void;
     fetchAvailableAssets: (address: string) => void;
     fetchWalletFromStorageIfNeed: () => void;
 }
@@ -53,9 +47,10 @@ interface State {
     selectedAssetType?: string | null;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = WithTranslation & OwnProps & StateProps & DispatchProps;
 
 class AssetList extends React.Component<Props, State> {
+    private refresher: any;
     public constructor(props: Props) {
         super(props);
         this.state = {
@@ -83,6 +78,10 @@ class AssetList extends React.Component<Props, State> {
         this.init();
     }
 
+    public componentWillUnmount() {
+        this.clearInterval();
+    }
+
     public render() {
         const {
             match: {
@@ -92,18 +91,12 @@ class AssetList extends React.Component<Props, State> {
         const {
             addressUTXOList,
             pendingTxList,
-            unconfirmedTxList,
             availableAssets,
             networkId,
-            addressName
+            addressIndex
         } = this.props;
         const { selectedAssetType } = this.state;
-        if (
-            !addressUTXOList ||
-            !pendingTxList ||
-            !unconfirmedTxList ||
-            !availableAssets
-        ) {
+        if (!addressUTXOList || !pendingTxList || !availableAssets) {
             return null;
         }
         return (
@@ -113,14 +106,16 @@ class AssetList extends React.Component<Props, State> {
                         <AddressContainer
                             address={address}
                             backButtonPath="/"
-                            addressName={addressName}
+                            addressIndex={addressIndex}
                         />
                         <div>
                             <div className="element-container mb-3">
-                                <h4 className="mb-3">Asset list</h4>
-                                {availableAssets.length > 0 ? (
-                                    <div className="asset-item-container">
-                                        {_.map(
+                                <h4 className="mb-3">
+                                    <Trans i18nKey="send:asset.list.title" />
+                                </h4>
+                                <div className="asset-item-container">
+                                    {availableAssets.length > 0 ? (
+                                        _.map(
                                             availableAssets,
                                             availableAsset => (
                                                 <AssetItem
@@ -132,9 +127,6 @@ class AssetList extends React.Component<Props, State> {
                                                     }
                                                     quantities={
                                                         availableAsset.quantities
-                                                    }
-                                                    metadata={
-                                                        availableAsset.metadata
                                                     }
                                                     networkId={networkId}
                                                     address={address}
@@ -149,30 +141,32 @@ class AssetList extends React.Component<Props, State> {
                                                     }
                                                 />
                                             )
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="d-flex align-items-center justify-content-center">
-                                        <div>
-                                            <div className="text-center mt-3">
-                                                <img src={Empty} />
-                                            </div>
-                                            <div className="mt-3 empty">
-                                                There is no asset
+                                        )
+                                    ) : (
+                                        <div className="d-flex align-items-center justify-content-center">
+                                            <div>
+                                                <div className="text-center mt-3">
+                                                    <img src={Empty} />
+                                                </div>
+                                                <div className="mt-3 empty">
+                                                    <Trans i18nKey="send:asset.list.empty" />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                             <div className="element-container mb-3">
-                                <h4 className="mb-3">Recent transaction</h4>
-                                <TxHistory address={address} />
+                                <h4 className="mb-3">
+                                    <Trans i18nKey="send:asset.recent.title" />
+                                </h4>
+                                <AssetTxHistory address={address} />
                             </div>
                         </div>
                     </div>
                     {selectedAssetType && (
-                        <div className="send-asset-container">
-                            <div className="send-asset-panel">
+                        <div className="right-container">
+                            <div className="right-panel">
                                 <SendAsset
                                     address={address}
                                     selectedAssetType={selectedAssetType}
@@ -189,20 +183,37 @@ class AssetList extends React.Component<Props, State> {
         this.setState({ selectedAssetType: undefined });
     };
     private handleSelectAsset = (assetType: string) => {
+        window.scrollTo(0, 0);
+
         const selectedAssetType = this.state.selectedAssetType;
         if (!selectedAssetType) {
-            this.setState({ selectedAssetType: assetType });
+            this.setState({
+                selectedAssetType: assetType
+            });
         } else if (selectedAssetType === assetType) {
-            this.setState({ selectedAssetType: undefined });
+            this.setState({
+                selectedAssetType: undefined
+            });
         } else {
-            this.setState({ selectedAssetType: undefined });
+            this.setState({
+                selectedAssetType: undefined
+            });
             setTimeout(() => {
                 this.setState({ selectedAssetType: assetType });
             }, 100);
         }
     };
     private init = async () => {
+        this.clearInterval();
+        this.refresher = setInterval(() => {
+            this.fetchAll();
+        }, 10000);
         this.fetchAll();
+    };
+    private clearInterval = () => {
+        if (this.refresher) {
+            clearInterval(this.refresher);
+        }
     };
     private fetchAll = async () => {
         const {
@@ -210,7 +221,6 @@ class AssetList extends React.Component<Props, State> {
                 params: { address }
             }
         } = this.props;
-        this.props.fetchUnconfirmedTxListIfNeed(address);
         this.props.fetchPendingTxListIfNeed(address);
         this.props.fetchAggsUTXOListIfNeed(address);
         this.props.fetchAvailableAssets(address);
@@ -226,7 +236,6 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     } = props;
     const aggsUTXOList = state.assetReducer.aggsUTXOList[address];
     const pendingTxList = state.chainReducer.pendingTxList[address];
-    const unconfirmedTxList = state.chainReducer.unconfirmedTxList[address];
     const availableAssets = state.assetReducer.availableAssets[address];
     const networkId = state.globalReducer.networkId;
     const assetAddress = _.find(
@@ -236,10 +245,9 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     return {
         addressUTXOList: aggsUTXOList && aggsUTXOList.data,
         pendingTxList: pendingTxList && pendingTxList.data,
-        unconfirmedTxList: unconfirmedTxList && unconfirmedTxList.data,
         availableAssets,
         networkId,
-        addressName: assetAddress && assetAddress.name
+        addressIndex: assetAddress && assetAddress.index
     };
 };
 const mapDispatchToProps = (
@@ -251,9 +259,6 @@ const mapDispatchToProps = (
     fetchPendingTxListIfNeed: (address: string) => {
         dispatch(chainActions.fetchPendingTxListIfNeed(address));
     },
-    fetchUnconfirmedTxListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchUnconfirmedTxListIfNeed(address));
-    },
     fetchAvailableAssets: (address: string) => {
         dispatch(assetActions.fetchAvailableAssets(address));
     },
@@ -264,4 +269,4 @@ const mapDispatchToProps = (
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AssetList);
+)(withTranslation()(AssetList));

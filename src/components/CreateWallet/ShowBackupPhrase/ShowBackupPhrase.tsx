@@ -1,62 +1,64 @@
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import "./ShowBackupPhrase.css";
 
-interface Props {
+interface OwnProps {
     onSubmit: () => void;
     mnemonic: string[];
 }
+type Props = WithTranslation & OwnProps;
 
-class ShowBackupPhrase extends React.Component<Props, any> {
+class ShowBackupPhrase extends React.Component<Props> {
     public componentDidMount() {
         window.scrollTo(0, 0);
     }
     public render() {
-        const { onSubmit, mnemonic } = this.props;
+        const { mnemonic } = this.props;
         return (
             <div className="Show-backup-phrase animated fadeIn">
                 <div className="title-container">
                     <h4 className="title">
-                        Your
-                        <br />
-                        backup phrase
+                        <Trans i18nKey="create:mnemonic.title" />
                     </h4>
                 </div>
                 <div className="text-1">
-                    Your secret backup phrase makes it easy to back up and
-                    restore your account.
+                    <Trans i18nKey="create:mnemonic.detail" />
                 </div>
                 <div className="warning-text">
-                    WARNING: Never disclose your backup phrase. Anyone with this
-                    phrase can take your Asset forever.
+                    <Trans i18nKey="create:mnemonic.warning" />
                 </div>
                 <div className="tips-container">
-                    <p className="tips-text mb-0">Tips :</p>
+                    <p className="tips-text mb-0">
+                        <Trans i18nKey="create:mnemonic.tip" />
+                    </p>
                     <span className="text-2">
-                        Store this phrase in a password manager like 1 Password.
-                        Write this phrase on a piece of paper and store in a
-                        secure location. If you want even more security, write
-                        it down on multiple pieces of paper and store each in 2
-                        - 3 different locations.
+                        <Trans i18nKey="create:mnemonic.tip_detail" />
                     </span>
                 </div>
                 <div className="backup-phrase-container">
                     <div className="backup-phrase-panel d-flex align-items-center justify-content-center">
+                        <span>{mnemonic.join(" ")}</span>
                         <CopyToClipboard
                             text={mnemonic.join(" ")}
                             onCopy={this.handleCopyPhrase}
                         >
-                            <span>{mnemonic.join(" ")}</span>
+                            <div className="copy-btn">
+                                <span>
+                                    <Trans i18nKey="create:mnemonic.copy" />
+                                </span>
+                            </div>
                         </CopyToClipboard>
                     </div>
                 </div>
                 <div>
                     <button
                         className="btn btn-primary reverse square main-btn"
-                        onClick={onSubmit}
+                        type="submit"
+                        onClick={this.props.onSubmit}
                     >
-                        I MEMORIZED MY BACKUP PHRASE
+                        <Trans i18nKey="create:mnemonic.button" />
                     </button>
                 </div>
             </div>
@@ -64,7 +66,7 @@ class ShowBackupPhrase extends React.Component<Props, any> {
     }
 
     private handleCopyPhrase = () => {
-        toast.info("Copied!", {
+        toast.info(this.props.t("create:mnemonic.copied"), {
             position: toast.POSITION.BOTTOM_CENTER,
             autoClose: 1000,
             closeButton: false,
@@ -73,4 +75,4 @@ class ShowBackupPhrase extends React.Component<Props, any> {
     };
 }
 
-export default ShowBackupPhrase;
+export default withTranslation()(ShowBackupPhrase);

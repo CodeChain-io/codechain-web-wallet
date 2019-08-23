@@ -1,5 +1,7 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from "react-i18next";
 
+import { Form } from "reactstrap";
 import ValidationInput from "../../ValidationInput/ValidationInput";
 import "./InputPassphrase.css";
 
@@ -11,11 +13,23 @@ interface State {
     isPassphraseConfirmValid?: boolean;
     passphraseConfirmError?: string;
     isSubmitted: boolean;
+    username: string;
+    isUsernameValid?: boolean;
+    usernameError?: string;
+    hasAgreeTOC: boolean;
+    hasAgreePP: boolean;
 }
 
-interface Props {
-    onSubmit: (passphrase: string) => void;
+const TermsOfConditionLink =
+    "https://docs.google.com/document/d/1-HJep6vXMaiX4p62ijIfAc9yyX_rKAFkFLPsMod8tl0/edit?usp=sharing";
+const PPLink =
+    "https://docs.google.com/document/d/13Bonpgp2Va4dDlAIzvH2JSKFyOBlSSUrvFQ_PE2YqWI/edit?usp=sharing";
+
+interface OwnProps {
+    onSubmit: (username: string, passphrase: string) => void;
 }
+
+type Props = WithTranslation & OwnProps;
 
 class InputPassphrase extends React.Component<Props, State> {
     public constructor(props: Props) {
@@ -27,10 +41,16 @@ class InputPassphrase extends React.Component<Props, State> {
             passphraseError: undefined,
             isPassphraseConfirmValid: undefined,
             passphraseConfirmError: undefined,
-            isSubmitted: false
+            isSubmitted: false,
+            username: "",
+            isUsernameValid: undefined,
+            usernameError: undefined,
+            hasAgreeTOC: false,
+            hasAgreePP: false
         };
     }
     public render() {
+        const { t } = this.props;
         const {
             passphrase,
             passphraseConfirm,
@@ -38,24 +58,43 @@ class InputPassphrase extends React.Component<Props, State> {
             isPassphraseValid,
             passphraseConfirmError,
             passphraseError,
-            isSubmitted
+            isSubmitted,
+            username,
+            isUsernameValid,
+            usernameError,
+            hasAgreeTOC,
+            hasAgreePP
         } = this.state;
         return (
-            <div className="Input-passphrase animated fadeIn">
+            <Form
+                className="Input-passphrase animated fadeIn"
+                onSubmit={this.handleOnFormSubmit}
+            >
                 <div className="title-container">
                     <h4 className="title">
-                        Create
-                        <br />
-                        New Wallet
+                        <Trans i18nKey="create:seed.title" />
                     </h4>
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="PASSPHRASE"
+                        labelText={t("create:seed.name")}
+                        onChange={this.handleUsernameInput}
+                        value={username}
+                        showValidation={true}
+                        placeholder={t("create:seed.name")}
+                        type="text"
+                        isValid={isUsernameValid}
+                        error={usernameError}
+                        onBlur={this.checkUsernameValid}
+                    />
+                </div>
+                <div>
+                    <ValidationInput
+                        labelText={t("create:seed.password")}
                         onChange={this.handlePassphraseInput}
                         value={passphrase}
                         showValidation={true}
-                        placeholder="passphrase"
+                        placeholder={t("create:seed.password")}
                         type="password"
                         isValid={isPassphraseValid}
                         error={passphraseError}
@@ -64,38 +103,91 @@ class InputPassphrase extends React.Component<Props, State> {
                 </div>
                 <div>
                     <ValidationInput
-                        labelText="PASSPHRASE CONFIRM"
+                        labelText={t("create:seed.password_confirm")}
                         onChange={this.handlePassphraseConfirmInput}
                         value={passphraseConfirm}
                         showValidation={true}
-                        placeholder="passphrase confirm"
+                        placeholder={t("create:seed.password_confirm")}
                         type="password"
                         isValid={isPassphraseConfirmValid}
                         error={passphraseConfirmError}
                         onBlur={this.checkPassphraseConfirm}
                     />
                 </div>
+                <div className="form-container">
+                    <div className="form-check">
+                        <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="tocCheck"
+                            checked={hasAgreeTOC}
+                            onChange={this.handleTOCClick}
+                        />
+                        <label className="form-check-label" htmlFor="tocCheck">
+                            <Trans i18nKey="create:seed.terms">
+                                <a
+                                    href={`${TermsOfConditionLink}`}
+                                    target="_blank"
+                                />
+                            </Trans>
+                        </label>
+                    </div>
+                    <div className="form-check">
+                        <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="ppCheck"
+                            checked={hasAgreePP}
+                            onChange={this.handlePPClick}
+                        />
+                        <label className="form-check-label" htmlFor="ppCheck">
+                            <Trans i18nKey="create:seed.privacy">
+                                <a href={`${PPLink}`} target="_blank" />
+                            </Trans>
+                        </label>
+                    </div>
+                </div>
                 <div className="mt-5">
                     <button
                         className="btn btn-primary reverse square main-btn"
-                        onClick={this.handleSubmit}
-                        disabled={isSubmitted}
+                        disabled={isSubmitted || !hasAgreePP || !hasAgreeTOC}
+                        type="submit"
                     >
-                        {isSubmitted ? "CREATING..." : "OK"}
+                        {isSubmitted
+                            ? t("create:seed.creating")
+                            : t("create:seed.ok")}
                     </button>
                 </div>
-            </div>
+            </Form>
         );
     }
 
+    private handleTOCClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            hasAgreeTOC: event.target.checked
+        });
+    };
+
+    private handlePPClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            hasAgreePP: event.target.checked
+        });
+    };
+
+    private handleOnFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        this.handleSubmit();
+    };
+
     private handleSubmit = () => {
         const { onSubmit } = this.props;
-        const { passphrase } = this.state;
-
+        const { passphrase, username } = this.state;
+        if (!this.checkUsernameValid()) {
+            return;
+        }
         if (!this.checkPassphraseValid()) {
             return;
         }
-
         if (!this.checkPassphraseConfirm()) {
             return;
         }
@@ -103,7 +195,7 @@ class InputPassphrase extends React.Component<Props, State> {
         this.setState({ isSubmitted: true });
 
         setTimeout(() => {
-            onSubmit(passphrase);
+            onSubmit(username, passphrase);
         }, 500);
     };
 
@@ -111,7 +203,7 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase } = this.state;
         if (passphrase.length < 8) {
             this.setState({
-                passphraseError: "Minimum length is 8 characters",
+                passphraseError: this.props.t("create:seed.error.pass_minimum"),
                 isPassphraseValid: false
             });
             return false;
@@ -128,7 +220,9 @@ class InputPassphrase extends React.Component<Props, State> {
         const { passphrase, passphraseConfirm } = this.state;
         if (passphrase !== passphraseConfirm) {
             this.setState({
-                passphraseConfirmError: "Password does not match!",
+                passphraseConfirmError: this.props.t(
+                    "create:seed.error.pass_mismatch"
+                ),
                 isPassphraseConfirmValid: false
             });
             return false;
@@ -141,6 +235,29 @@ class InputPassphrase extends React.Component<Props, State> {
         return true;
     };
 
+    private checkUsernameValid = () => {
+        const { username } = this.state;
+        if (username === "") {
+            this.setState({
+                isUsernameValid: false,
+                usernameError: this.props.t("create:seed.error.name_required")
+            });
+            return false;
+        }
+        if (username.length > 20) {
+            this.setState({
+                usernameError: this.props.t("create:seed.error.name_maximum"),
+                isUsernameValid: false
+            });
+            return false;
+        }
+        this.setState({
+            isUsernameValid: true,
+            usernameError: undefined
+        });
+        return true;
+    };
+
     private handlePassphraseInput = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
@@ -148,7 +265,12 @@ class InputPassphrase extends React.Component<Props, State> {
             passphraseError: undefined,
             isPassphraseValid: undefined
         });
-        this.setState({ passphrase: event.target.value });
+        this.setState({
+            passphrase: event.target.value,
+            passphraseConfirm: "",
+            passphraseConfirmError: undefined,
+            isPassphraseConfirmValid: undefined
+        });
     };
 
     private handlePassphraseConfirmInput = (
@@ -160,6 +282,16 @@ class InputPassphrase extends React.Component<Props, State> {
         });
         this.setState({ passphraseConfirm: event.target.value });
     };
+
+    private handleUsernameInput = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        this.setState({
+            username: event.target.value,
+            usernameError: undefined,
+            isUsernameValid: undefined
+        });
+    };
 }
 
-export default InputPassphrase;
+export default withTranslation()(InputPassphrase);
