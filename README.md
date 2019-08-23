@@ -1,4 +1,4 @@
-# CodeChain Wallet [![Build Status](https://travis-ci.org/CodeChain-io/codechain-wallet.svg?branch=master)](https://travis-ci.org/CodeChain-io/codechain-wallet)
+# CodeChain Wallet [![Build Status](https://travis-ci.org/CodeChain-io/codechain-web-wallet.svg?branch=master)](https://travis-ci.org/CodeChain-io/codechain-web-wallet) [![Join the chat at https://gitter.im/CodeChain-io/codechain-web-wallet](https://badges.gitter.im/CodeChain-io/codechain-web-wallet.svg)](https://gitter.im/CodeChain-io/codechain-web-wallet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 CodeChain wallet is a simple, easy to use, an open-source tool for managing assets on the CodeChain system.
 
@@ -32,15 +32,12 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
-## Project framework
-
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
-
-Below you will find some information on how to perform common tasks.<br>
-You can find the most recent version of this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
-
 ## Supported Browsers
 
 By default, the generated project uses the latest version of React.
 
 You can refer [to the React documentation](https://reactjs.org/docs/react-dom.html#browser-support) for more information about supported browsers.
+
+## How to publish
+
+Run `bin/publish_to_ghpages.sh`.
