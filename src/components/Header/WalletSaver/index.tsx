@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -6,7 +6,8 @@ import { ReducerConfigure } from "../../../redux";
 import globalActions from "../../../redux/global/globalActions";
 
 class WalletSaver extends React.Component<any, any> {
-    public timer: NodeJS.Timeout;
+    public timer: NodeJS.Timeout | null = null;
+
     public componentDidMount() {
         this.startTimer();
         document.addEventListener("mousedown", this.handleClickOutside);

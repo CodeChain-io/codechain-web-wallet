@@ -5,7 +5,7 @@ import {
     SignedTransaction,
     Transaction
 } from "codechain-sdk/lib/core/classes";
-import * as _ from "lodash";
+import _ from "lodash";
 import { hideLoading, showLoading } from "react-redux-loading-bar";
 import { ThunkDispatch } from "redux-thunk";
 import { ReducerConfigure } from "..";

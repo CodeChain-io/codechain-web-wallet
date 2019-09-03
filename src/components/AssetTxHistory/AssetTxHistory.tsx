@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TransactionDoc } from "codechain-indexer-types";
 import { H160 } from "codechain-sdk/lib/core/classes";
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
@@ -14,7 +14,7 @@ import chainActions from "../../redux/chain/chainActions";
 import { getIdByAddressAssetType } from "../../redux/chain/chainReducer";
 import "./AssetTxHistory.css";
 import AssetTxItem from "./AssetTxItem/AssetTxItem";
-import * as Empty from "./img/cautiondisabled.svg";
+import Empty from "./img/cautiondisabled.svg";
 
 interface OwnProps {
     address: string;
@@ -24,7 +24,7 @@ interface OwnProps {
 interface StateProps {
     pendingTxList?: TransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
-    countOfTxList?: number;
+    countOfTxList?: number | null;
     networkId: NetworkId;
 }
 

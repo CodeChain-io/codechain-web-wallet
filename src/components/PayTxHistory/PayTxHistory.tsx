@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TransactionDoc } from "codechain-indexer-types";
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
@@ -10,7 +10,7 @@ import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../model/address";
 import { ReducerConfigure } from "../../redux";
 import chainActions from "../../redux/chain/chainActions";
-import * as Empty from "./img/cautiondisabled.svg";
+import Empty from "./img/cautiondisabled.svg";
 import "./PayTxHistory.css";
 import PayTxItem from "./PayTxItem/PayTxItem";
 
@@ -21,7 +21,7 @@ interface OwnProps {
 interface StateProps {
     pendingTxList?: TransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
-    countOfTxList?: number;
+    countOfTxList?: number | null;
     networkId: NetworkId;
 }
 

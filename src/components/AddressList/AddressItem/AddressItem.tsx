@@ -1,5 +1,5 @@
-import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
+import React from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -14,8 +14,8 @@ import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import accountActions from "../../../redux/account/accountActions";
 import assetActions from "../../../redux/asset/assetActions";
 import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
-import * as copyBtnHover from "./img/copy-hover.svg";
-import * as copyBtn from "./img/copy.svg";
+import copyBtnHover from "./img/copy-hover.svg";
+import copyBtn from "./img/copy.svg";
 
 interface OwnProps {
     walletAddress: WalletAddress;

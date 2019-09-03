@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { Form } from "reactstrap";
 import ValidationInput from "../../ValidationInput/ValidationInput";

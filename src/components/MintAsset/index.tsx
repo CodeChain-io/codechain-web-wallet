@@ -1,11 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 import { SignedTransaction, U64 } from "codechain-sdk/lib/core/classes";
-import * as React from "react";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
-import * as Spinner from "react-spinkit";
+import Spinner from "react-spinkit";
 import { toast } from "react-toastify";
 import { Container } from "reactstrap";
 import { Action } from "redux";
@@ -18,7 +18,7 @@ import walletActions from "../../redux/wallet/walletActions";
 import { TxUtil } from "../../utils/transaction";
 import TooltipLabel from "../TooltipLabel";
 import ValidationInput from "../ValidationInput/ValidationInput";
-import * as CheckIcon from "./img/check_icon.svg";
+import CheckIcon from "./img/check_icon.svg";
 import "./index.css";
 
 interface State {
@@ -42,7 +42,7 @@ interface State {
 interface StateProps {
     assetAddresses?: WalletAddress[] | null;
     platformAddresses?: WalletAddress[] | null;
-    availableQuarkList: { [address: string]: U64 | null };
+    availableQuarkList: { [address: string]: U64 | null | undefined };
     networkId: NetworkId;
     passphrase: string;
 }
@@ -54,7 +54,7 @@ interface DispatchProps {
         address: string,
         signedTransaction: SignedTransaction,
         feePayer: string
-    ) => Promise<{}>;
+    ) => Promise<unknown>;
 }
 
 const MinimumFee = 100000;

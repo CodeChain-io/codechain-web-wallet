@@ -1,13 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SDK } from "codechain-sdk";
 import { SignedTransaction, U64 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
-import * as _ from "lodash";
+import _ from "lodash";
 import { connect } from "react-redux";
-import * as Spinner from "react-spinkit";
+import Spinner from "react-spinkit";
 import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -24,7 +24,7 @@ import chainActions from "../../../redux/chain/chainActions";
 import { getCodeChainHost } from "../../../utils/network";
 import { getAssetKeys, getPlatformKeys } from "../../../utils/storage";
 import CCCReceiverContainer from "./CCCReceiverContainer/CCCReceiverContainer";
-import * as CheckIcon from "./img/check_icon.svg";
+import CheckIcon from "./img/check_icon.svg";
 import "./SendCCC.css";
 
 interface OwnProps {
@@ -43,7 +43,7 @@ interface DispatchProps {
     sendSignedTransaction: (
         address: string,
         signedTransaction: SignedTransaction
-    ) => Promise<{}>;
+    ) => Promise<unknown>;
 }
 
 interface State {

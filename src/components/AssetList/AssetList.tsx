@@ -1,7 +1,7 @@
 import { AggsUTXODoc, TransactionDoc } from "codechain-indexer-types";
 import { U64 } from "codechain-sdk/lib/core/classes";
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { match } from "react-router";
@@ -16,7 +16,7 @@ import AddressContainer from "../AddressContainer/AddressContainer";
 import AssetTxHistory from "../AssetTxHistory/AssetTxHistory";
 import AssetItem from "./AssetItem/AssetItem";
 import "./AssetList.css";
-import * as Empty from "./img/cautiondisabled.svg";
+import Empty from "./img/cautiondisabled.svg";
 import SendAsset from "./SendAsset/SendAsset";
 
 interface OwnProps {

@@ -1,8 +1,8 @@
 import { TransactionDoc } from "codechain-indexer-types";
 import { U64 } from "codechain-sdk/lib/core/classes";
-import * as _ from "lodash";
-import * as moment from "moment";
-import * as React from "react";
+import _ from "lodash";
+import moment from "moment";
+import React from "react";
 import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import MediaQuery from "react-responsive";
 import { NetworkId } from "../../../model/address";

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Container } from "reactstrap";
@@ -17,7 +17,7 @@ import { NetworkId } from "../../model/address";
 import { checkPassphrase } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import { getNetworkId, getPassphrase } from "../../utils/storage";
-import * as Logo from "./img/logo-vertical.svg";
+import Logo from "./img/logo-vertical.svg";
 import LoginForm from "./LoginForm/LoginForm";
 
 interface DispatchProps {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,9 +14,9 @@ import {
     U64
 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
-import * as _ from "lodash";
+import _ from "lodash";
 import { connect } from "react-redux";
-import * as Spinner from "react-spinkit";
+import Spinner from "react-spinkit";
 import { toast } from "react-toastify";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -36,7 +36,7 @@ import { ImageLoader } from "../../../utils/ImageLoader/ImageLoader";
 import * as Metadata from "../../../utils/metadata";
 import { getCodeChainHost } from "../../../utils/network";
 import { getAssetKeys, getPlatformKeys } from "../../../utils/storage";
-import * as CheckIcon from "./img/check_icon.svg";
+import CheckIcon from "./img/check_icon.svg";
 import ReceiverContainer from "./ReceiverContainer/ReceiverContainer";
 import "./SendAsset.css";
 
@@ -48,12 +48,11 @@ interface OwnProps {
 
 interface StateProps {
     assetScheme?: AssetSchemeDoc | null;
-    UTXOList: UTXODoc[] | null;
+    UTXOList?: UTXODoc[] | null;
     availableAssets?:
         | {
               assetType: string;
               quantities: U64;
-              metadata: Metadata.Metadata;
           }[]
         | null;
     networkId: NetworkId;
@@ -75,13 +74,13 @@ interface DispatchProps {
         address: string,
         transferTx: Transaction,
         gatewayURL: string
-    ) => Promise<{}>;
+    ) => Promise<unknown>;
     fetchWalletFromStorageIfNeed: () => void;
     sendSignedTransaction: (
         address: string,
         signedTransaction: SignedTransaction,
         feePayer: string
-    ) => Promise<{}>;
+    ) => Promise<unknown>;
 }
 
 type Props = WithTranslation & OwnProps & StateProps & DispatchProps;

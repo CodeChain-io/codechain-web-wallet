@@ -1,5 +1,5 @@
-import * as CryptoJS from "crypto-js";
-import * as _ from "lodash";
+import CryptoJS from "crypto-js";
+import _ from "lodash";
 import { AddressType, NetworkId } from "../model/address";
 
 const localstorageKeyOfPlatform = "platformKeys";

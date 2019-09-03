@@ -26,7 +26,7 @@ import {
     faTimes,
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
-import * as React from "react";
+import React from "react";
 import { I18nextProvider } from "react-i18next";
 import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";

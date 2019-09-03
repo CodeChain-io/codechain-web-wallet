@@ -2,7 +2,7 @@ import { TransactionDoc } from "codechain-indexer-types";
 import { SDK } from "codechain-sdk";
 import { U64 } from "codechain-sdk/lib/core/classes";
 import { LocalKeyStore } from "codechain-sdk/lib/key/LocalKeyStore";
-import * as _ from "lodash";
+import _ from "lodash";
 import { NetworkId } from "../model/address";
 import {
     getAssetAddressPath,
