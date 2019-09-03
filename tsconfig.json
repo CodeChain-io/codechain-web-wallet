@@ -18,7 +18,13 @@
     "importHelpers": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "isolatedModules": true,
+    "noEmit": true
   },
   "exclude": [
     "node_modules",
@@ -30,5 +36,6 @@
     "src/setupTests.ts",
     "chrome-extension",
     "build-scripts"
-  ]
+  ],
+  "include": ["src"]
 }
