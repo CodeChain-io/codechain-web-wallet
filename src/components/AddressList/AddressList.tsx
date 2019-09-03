@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -14,8 +14,8 @@ import AddressItem from "./AddressItem/AddressItem";
 import "./AddressList.css";
 
 interface StateProps {
-    platformAddresses?: WalletAddress[];
-    assetAddresses?: WalletAddress[];
+    platformAddresses?: WalletAddress[] | null;
+    assetAddresses?: WalletAddress[] | null;
     networkId: NetworkId;
     isLoadingAssetAddresses?: boolean | null;
     isLoadingPlatformAddresses?: boolean | null;

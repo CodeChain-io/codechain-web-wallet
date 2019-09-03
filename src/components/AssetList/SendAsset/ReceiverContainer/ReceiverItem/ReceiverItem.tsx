@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as React from "react";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import ValidationInput from "../../../../ValidationInput/ValidationInput";
 

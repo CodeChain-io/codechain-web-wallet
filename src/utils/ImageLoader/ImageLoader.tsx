@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { NetworkId } from "../../model/address";
 import { getIndexerHost } from "../network";
 const Identicon = require("identicon.js");

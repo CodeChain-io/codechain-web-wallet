@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Popover, PopoverBody } from "reactstrap";
 import { Action } from "redux";

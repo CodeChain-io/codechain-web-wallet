@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AssetSchemeDoc } from "codechain-indexer-types";
 import { H160, U64 } from "codechain-sdk/lib/core/classes";
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Action } from "redux";

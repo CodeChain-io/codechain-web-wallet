@@ -1,6 +1,6 @@
 import { TransactionDoc } from "codechain-indexer-types";
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
 import { NetworkId } from "../../../model/address";
 import { TxUtil } from "../../../utils/transaction";
 import "./AssetTxItem.css";

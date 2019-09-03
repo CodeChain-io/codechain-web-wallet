@@ -1,8 +1,8 @@
 import { AssetSchemeDoc, TransactionDoc } from "codechain-indexer-types";
 import { H160, U64 } from "codechain-sdk/lib/core/classes";
-import * as _ from "lodash";
-import * as moment from "moment";
-import * as React from "react";
+import _ from "lodash";
+import moment from "moment";
+import React from "react";
 import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import MediaQuery from "react-responsive";

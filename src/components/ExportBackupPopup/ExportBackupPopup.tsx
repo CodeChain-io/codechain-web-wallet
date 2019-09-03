@@ -1,5 +1,5 @@
-import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
+import React from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
 import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";

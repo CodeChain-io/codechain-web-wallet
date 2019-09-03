@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router-dom";
@@ -10,11 +10,11 @@ import { clearKeystore } from "../../model/keystore";
 import { ReducerConfigure } from "../../redux";
 import globalActions from "../../redux/global/globalActions";
 import { clearPassphrase, clearWalletKeys } from "../../utils/storage";
-import * as Logo from "./img/logo-vertical.svg";
-import * as CreateNewWalletIconHover from "./img/plus-hover.svg";
-import * as CreateNewWalletIcon from "./img/plus-standard.svg";
-import * as ImportKeyIconHover from "./img/restore-hover.svg";
-import * as ImportKeyIcon from "./img/restore-standard.svg";
+import Logo from "./img/logo-vertical.svg";
+import CreateNewWalletIconHover from "./img/plus-hover.svg";
+import CreateNewWalletIcon from "./img/plus-standard.svg";
+import ImportKeyIconHover from "./img/restore-hover.svg";
+import ImportKeyIcon from "./img/restore-standard.svg";
 import "./SelectKeyFile.css";
 
 interface StateProps {

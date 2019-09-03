@@ -1,10 +1,10 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import * as React from "react";
+import React from "react";
 import {
     applyMiddleware as applyMiddlewareChrome,
     Store
 } from "react-chrome-redux";
-import * as ReactDOM from "react-dom";
+import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { applyMiddleware, createStore } from "redux";

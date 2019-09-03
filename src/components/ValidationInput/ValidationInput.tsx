@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import NumberFormat from "react-number-format";
 import { Label } from "reactstrap";
 import TooltipLabel from "../TooltipLabel";
-import * as IconCheck from "./img/icons-check.svg";
-import * as IconError from "./img/icons-error.svg";
+import IconCheck from "./img/icons-check.svg";
+import IconError from "./img/icons-error.svg";
 import "./ValidationInput.css";
 
 interface Props {

@@ -7,7 +7,7 @@ import {
 } from "codechain-indexer-types";
 import { H160, Transaction, U64 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
-import * as _ from "lodash";
+import _ from "lodash";
 import { PlatformAccount } from "../model/address";
 import { getIndexerHost } from "../utils/network";
 
@@ -88,7 +88,7 @@ export async function getUTXOListByAssetType(
     const apiHost = getIndexerHost(networkId);
     return await getRequest<UTXODoc[]>(
         `${apiHost}/api/utxo?assetType=${
-            assetType.value
+        assetType.value
         }&address=${address}&itemsPerPage=100&page=1`
     );
 }

@@ -1,14 +1,14 @@
-import * as React from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Popover, PopoverBody } from "reactstrap";
 import { Action } from "redux";
 import { NetworkId } from "../../../model/address";
 import { ReducerConfigure } from "../../../redux";
 import { getNetworkNameById } from "../../../utils/network";
-import * as MainNet from "./img/mainnet.svg";
-import * as TestNet from "./img/testnet.svg";
+import MainNet from "./img/mainnet.svg";
+import TestNet from "./img/testnet.svg";
 
-import * as _ from "lodash";
+import _ from "lodash";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
 import globalActions from "../../../redux/global/globalActions";

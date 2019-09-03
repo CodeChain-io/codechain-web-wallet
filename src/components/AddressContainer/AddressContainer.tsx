@@ -1,13 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as QRCode from "qrcode.react";
-import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
+import QRCode from "qrcode.react";
+import React from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
 import MediaQuery from "react-responsive";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import * as copyBtnHover from "./img/copy-hover.svg";
-import * as copyBtn from "./img/copy.svg";
+import copyBtnHover from "./img/copy-hover.svg";
+import copyBtn from "./img/copy.svg";
 
 import { Trans, withTranslation, WithTranslation } from "react-i18next";
 import "./AddressContainer.css";

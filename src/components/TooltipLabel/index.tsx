@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as React from "react";
+import React from "react";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { Tooltip } from "reactstrap";
 import "./index.css";

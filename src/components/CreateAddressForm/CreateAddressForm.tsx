@@ -1,5 +1,5 @@
-import * as _ from "lodash";
-import * as React from "react";
+import _ from "lodash";
+import React from "react";
 import { AddressType } from "../../model/address";
 import ValidationInput from "../ValidationInput/ValidationInput";
 import "./CreateAddressForm.css";

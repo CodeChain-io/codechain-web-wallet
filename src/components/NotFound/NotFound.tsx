@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import "./NotFound.css";
 
 export default class NotFound extends React.Component<any, any> {
