@@ -38,7 +38,7 @@
     "react-responsive": "^6.0.1",
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.3.1",
-    "react-scripts-ts": "3.1.0",
+    "react-scripts": "^3.1.1",
     "react-spinkit": "^3.0.0",
     "react-toastify": "^4.4.3",
     "reactstrap": "^8.0.0",
@@ -50,12 +50,12 @@
   "scripts": {
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
-    "start-js": "react-scripts-ts start",
+    "start-js": "react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
-    "build": "npm run build-css && react-scripts-ts build",
+    "build": "npm run build-css && react-scripts build",
     "build-chrome": "REACT_APP_BUILD_TARGET=chrome-extension npm run build && node build-scripts/build-chrome-extension.js",
-    "test": "npm run build-css && react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject",
+    "test": "npm run build-css && react-scripts test",
+    "eject": "react-scripts eject",
     "lint": "tslint -p tsconfig.json && prettier 'src/**/*.{ts,tsx,scss,json,html,js,jsx}' -l",
     "fmt": "tslint -p tsconfig.json --fix && prettier 'src/**/*.{ts,tsx,scss,json,html,js,jsx}' --write"
   },
@@ -88,5 +88,17 @@
     "tinyify": "^2.5.0",
     "tsify": "^4.0.1",
     "typescript": "^3.4.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
