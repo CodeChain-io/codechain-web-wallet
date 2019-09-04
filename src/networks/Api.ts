@@ -88,7 +88,7 @@ export async function getUTXOListByAssetType(
     const apiHost = getIndexerHost(networkId);
     return await getRequest<UTXODoc[]>(
         `${apiHost}/api/utxo?assetType=${
-        assetType.value
+            assetType.value
         }&address=${address}&itemsPerPage=100&page=1`
     );
 }
