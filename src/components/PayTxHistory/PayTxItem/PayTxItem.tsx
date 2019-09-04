@@ -1,6 +1,5 @@
 import { TransactionDoc } from "codechain-indexer-types";
 import { U64 } from "codechain-sdk/lib/core/classes";
-import _ from "lodash";
 import moment from "moment";
 import React from "react";
 import { Trans, withTranslation, WithTranslation } from "react-i18next";
@@ -35,6 +34,7 @@ class PayTxItem extends React.Component<Props & WithTranslation, any> {
                     <a
                         className="mono transaction-hash"
                         target="_blank"
+                        rel="noopener noreferrer"
                         href={`${getExplorerHost(networkId)}/tx/${tx.hash}`}
                     >
                         0x

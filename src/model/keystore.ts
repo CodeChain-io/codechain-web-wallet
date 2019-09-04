@@ -5,7 +5,6 @@ import {
 } from "codechain-sdk/lib/core/classes";
 import { blake160 } from "codechain-sdk/lib/utils";
 import _ from "lodash";
-import { __await } from "tslib";
 import { getAggsUTXOList, getPlatformAccount } from "../networks/Api";
 import {
     getAssetKeys,

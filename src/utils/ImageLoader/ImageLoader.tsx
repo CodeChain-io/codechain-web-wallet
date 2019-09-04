@@ -39,6 +39,7 @@ export class ImageLoader extends React.Component<Props, State> {
                 className={className}
                 style={{ verticalAlign: "middle", width: size, height: size }}
                 src={requestUrl}
+                alt={"loader"}
                 onError={this.fallback}
             />
         );

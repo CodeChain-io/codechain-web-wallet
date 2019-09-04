@@ -131,6 +131,7 @@ class AddressList extends React.Component<Props> {
                                                 <a
                                                     href="https://corgi.codechain.io/faucet"
                                                     target="_blank"
+                                                    rel="noopener noreferrer"
                                                 >
                                                     <div className="buy-CCC-btn d-flex align-items-center justify-content-center">
                                                         <Trans i18nKey="main:ccc.faucet" />

@@ -85,7 +85,7 @@ class SendCCC extends React.Component<Props, State> {
                     <div className="d-flex align-items-center justify-content-center text-center complete-container">
                         <div className="text-center">
                             <div>
-                                <img src={CheckIcon} />
+                                <img src={CheckIcon} alt={"check"} />
                             </div>
                             <div className="mt-3">
                                 <span>

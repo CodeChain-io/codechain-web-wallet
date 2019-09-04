@@ -51,7 +51,7 @@ class SelectKeyFile extends React.Component<Props, State> {
         return (
             <Container className="Select-key-file animated fadeIn">
                 <div className="text-center title-container">
-                    <img src={Logo} className="logo" />
+                    <img src={Logo} alt={"logo"} className="logo" />
                     <h1 className="mt-4 logo-title">Wallet</h1>
                 </div>
                 <div className="welcome-text-container">
@@ -76,11 +76,13 @@ class SelectKeyFile extends React.Component<Props, State> {
                                 {isCreateBtnHover ? (
                                     <img
                                         src={CreateNewWalletIconHover}
+                                        alt={"create"}
                                         className="icon"
                                     />
                                 ) : (
                                     <img
                                         src={CreateNewWalletIcon}
+                                        alt={"create"}
                                         className="icon"
                                     />
                                 )}
@@ -106,10 +108,15 @@ class SelectKeyFile extends React.Component<Props, State> {
                                 {isImportBtnHover ? (
                                     <img
                                         src={ImportKeyIconHover}
+                                        alt={"import"}
                                         className="icon"
                                     />
                                 ) : (
-                                    <img src={ImportKeyIcon} className="icon" />
+                                    <img
+                                        src={ImportKeyIcon}
+                                        alt={"import"}
+                                        className="icon"
+                                    />
                                 )}
                             </div>
                             <div className="text">

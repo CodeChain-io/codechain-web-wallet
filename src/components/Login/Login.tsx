@@ -86,7 +86,7 @@ class Login extends React.Component<Props, State> {
         return (
             <Container className="Login animated fadeIn">
                 <div className="title-container text-center">
-                    <img src={Logo} className="logo" />
+                    <img src={Logo} alt={"logo"} className="logo" />
                     <h1 className="mt-4 logo-title">Wallet</h1>
                 </div>
                 <div className="login-form-container">

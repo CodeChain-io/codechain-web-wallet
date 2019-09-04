@@ -109,12 +109,14 @@ export default class ValidationInput extends React.Component<Props, State> {
                     <img
                         className="valid-icon animated fadeIn"
                         src={IconCheck}
+                        alt={"check"}
                     />
                 )}
                 {error && (
                     <img
                         className="error-icon animated fadeIn"
                         src={IconError}
+                        alt={"error"}
                     />
                 )}
                 {error && (

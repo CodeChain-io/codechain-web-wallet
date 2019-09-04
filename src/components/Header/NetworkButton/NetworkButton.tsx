@@ -48,7 +48,10 @@ class NetworkButton extends React.Component<Props, State> {
             >
                 <div className="d-flex align-items-center network-btn">
                     <div className="mr-1">{getNetworkNameById(networkId)}</div>
-                    <img src={networkId === "cc" ? MainNet : TestNet} />
+                    <img
+                        src={networkId === "cc" ? MainNet : TestNet}
+                        alt={"network"}
+                    />
                 </div>
                 <Popover
                     placement="bottom"
@@ -61,7 +64,7 @@ class NetworkButton extends React.Component<Props, State> {
                             <li onClick={_.partial(this.chagneNetworkId, "cc")}>
                                 <div className="d-flex align-items-center justify-content-end">
                                     <span className="mr-1">MAINNET</span>
-                                    <img src={MainNet} />
+                                    <img src={MainNet} alt={"mainnet"} />
                                 </div>
                             </li>
                             {/*
@@ -81,7 +84,7 @@ class NetworkButton extends React.Component<Props, State> {
                             <li onClick={_.partial(this.chagneNetworkId, "wc")}>
                                 <div className="d-flex align-items-center justify-content-end">
                                     <span className="mr-1">TESTNET</span>
-                                    <img src={TestNet} />
+                                    <img src={TestNet} alt={"testnet"} />
                                 </div>
                             </li>
                         </ul>

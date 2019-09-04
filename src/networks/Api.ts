@@ -7,7 +7,6 @@ import {
 } from "codechain-indexer-types";
 import { H160, Transaction, U64 } from "codechain-sdk/lib/core/classes";
 import { NetworkId } from "codechain-sdk/lib/core/types";
-import _ from "lodash";
 import { PlatformAccount } from "../model/address";
 import { getIndexerHost } from "../utils/network";
 

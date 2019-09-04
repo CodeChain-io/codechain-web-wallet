@@ -71,7 +71,7 @@ class PayTxHistory extends React.Component<Props, State> {
                     <div className="d-flex align-items-center justify-content-center">
                         <div>
                             <div className="text-center mt-3">
-                                <img src={Empty} />
+                                <img src={Empty} alt={"empty"} />
                             </div>
                             <div className="mt-3 empty">
                                 <Trans i18nKey="send:ccc.recent.empty" />
