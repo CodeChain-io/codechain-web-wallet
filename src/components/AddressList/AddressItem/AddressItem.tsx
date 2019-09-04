@@ -111,6 +111,7 @@ class AddressItem extends React.Component<Props, State> {
                         <img
                             className="ml-3"
                             src={isCopyHovering ? copyBtnHover : copyBtn}
+                            alt={"copy"}
                             onMouseOver={this.hoverCopyBtn}
                             onMouseOut={this.outCopyBtn}
                         />

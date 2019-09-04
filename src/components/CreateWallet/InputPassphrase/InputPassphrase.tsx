@@ -125,9 +125,11 @@ class InputPassphrase extends React.Component<Props, State> {
                         />
                         <label className="form-check-label" htmlFor="tocCheck">
                             <Trans i18nKey="create:seed.terms">
+                                {/* eslint-disable-next-line */}
                                 <a
                                     href={`${TermsOfConditionLink}`}
                                     target="_blank"
+                                    rel="noopener noreferrer"
                                 />
                             </Trans>
                         </label>
@@ -142,7 +144,12 @@ class InputPassphrase extends React.Component<Props, State> {
                         />
                         <label className="form-check-label" htmlFor="ppCheck">
                             <Trans i18nKey="create:seed.privacy">
-                                <a href={`${PPLink}`} target="_blank" />
+                                {/* eslint-disable-next-line */}
+                                <a
+                                    href={`${PPLink}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                />
                             </Trans>
                         </label>
                     </div>

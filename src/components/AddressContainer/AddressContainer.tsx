@@ -67,6 +67,7 @@ class AddressContainer extends React.Component<Props & WithTranslation, State> {
                         <img
                             className="copy-btn"
                             src={isCopyHovering ? copyBtnHover : copyBtn}
+                            alt={"copy"}
                             onMouseOver={this.hoverCopyBtn}
                             onMouseOut={this.outCopyBtn}
                             onBlur={this.outCopyBtn}

@@ -22,6 +22,7 @@ class Footer extends React.Component<Props> {
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://codechain.io"
                                     >
                                         About Us
@@ -30,6 +31,7 @@ class Footer extends React.Component<Props> {
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://codechain.io/#contact"
                                     >
                                         Contact
@@ -38,6 +40,7 @@ class Footer extends React.Component<Props> {
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://docs.google.com/document/d/13Bonpgp2Va4dDlAIzvH2JSKFyOBlSSUrvFQ_PE2YqWI/edit?usp=sharing"
                                     >
                                         Privacy Policy
@@ -46,6 +49,7 @@ class Footer extends React.Component<Props> {
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://docs.google.com/document/d/1-HJep6vXMaiX4p62ijIfAc9yyX_rKAFkFLPsMod8tl0/edit?usp=sharing"
                                     >
                                         Terms and Conditions
@@ -58,49 +62,55 @@ class Footer extends React.Component<Props> {
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://www.facebook.com/codechain/"
                                     >
-                                        <img src={facebook} />
+                                        <img src={facebook} alt={"facebook"} />
                                     </a>
                                 </li>
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://github.com/CodeChain-io/codechain-web-wallet"
                                     >
-                                        <img src={github} />
+                                        <img src={github} alt={"github"} />
                                     </a>
                                 </li>
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://gitter.im/CodeChain-io/codechain"
                                     >
-                                        <img src={gitter} />
+                                        <img src={gitter} alt={"gitter"} />
                                     </a>
                                 </li>
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://twitter.com/codechain_io"
                                     >
-                                        <img src={twitter} />
+                                        <img src={twitter} alt={"twitter"} />
                                     </a>
                                 </li>
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="https://medium.com/codechain"
                                     >
-                                        <img src={medium} />
+                                        <img src={medium} alt={"medium"} />
                                     </a>
                                 </li>
                                 <li className="list-inline-item">
                                     <a
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         href="http://t.me/codechain_protocol"
                                     >
-                                        <img src={telegram} />
+                                        <img src={telegram} alt={"telegram"} />
                                     </a>
                                 </li>
                                 <li className="list-inline-item language-selector-container">

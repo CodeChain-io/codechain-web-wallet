@@ -1,6 +1,5 @@
 import BigNumber from "bignumber.js";
 import { PlatformAddress, U64 } from "codechain-sdk/lib/core/classes";
-import _ from "lodash";
 import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
 import "./CCCReceiverContainer.css";
