@@ -24,7 +24,6 @@ interface OwnProps {
 interface StateProps {
     pendingTxList?: TransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
-    countOfTxList?: number | null;
     networkId: NetworkId;
 }
 
@@ -35,11 +34,6 @@ interface DispatchProps {
         address: string,
         assetType: H160,
         page: number
-    ) => void;
-    fetchCountOfTxListIfNeed: (address: string) => void;
-    fetchCountOfTxListByAssetTypeIfNeed: (
-        address: string,
-        assetType: H160
     ) => void;
 }
 
@@ -62,14 +56,8 @@ class AssetTxHistory extends React.Component<Props, State> {
     }
 
     public render() {
-        const {
-            pendingTxList,
-            txList,
-            address,
-            networkId,
-            countOfTxList
-        } = this.props;
-        if (!pendingTxList || !txList || countOfTxList == null) {
+        const { pendingTxList, txList, address, networkId } = this.props;
+        if (!pendingTxList || !txList) {
             return <div>Loading...</div>;
         }
         const txHashList = _.map(txList, tx => tx.hash);
@@ -111,12 +99,15 @@ class AssetTxHistory extends React.Component<Props, State> {
                         timestamp={tx.timestamp!}
                     />
                 ))}
-                {countOfTxList > 0 && (
+                {(this.state.activePage > 1 || txList.length > 0) && (
                     <div className="pagination-container">
                         <Pagination
                             activePage={this.state.activePage}
                             itemsCountPerPage={10}
-                            totalItemsCount={countOfTxList}
+                            totalItemsCount={
+                                (this.state.activePage - 1) * 10 +
+                                (txList.length + 1)
+                            }
                             pageRangeDisplayed={5}
                             onChange={this.handlePageChange}
                             itemClass="page-item"
@@ -178,19 +169,15 @@ class AssetTxHistory extends React.Component<Props, State> {
             fetchPendingTxListIfNeed,
             fetchTxListIfNeed,
             assetType,
-            fetchTxListByAssetTypeIfNeed,
-            fetchCountOfTxListIfNeed,
-            fetchCountOfTxListByAssetTypeIfNeed
+            fetchTxListByAssetTypeIfNeed
         } = this.props;
         const { activePage } = this.state;
         fetchPendingTxListIfNeed(address);
 
         if (assetType) {
             fetchTxListByAssetTypeIfNeed(address, assetType, activePage);
-            fetchCountOfTxListByAssetTypeIfNeed(address, assetType);
         } else {
             fetchTxListIfNeed(address, activePage);
-            fetchCountOfTxListIfNeed(address);
         }
     };
 }
@@ -203,16 +190,10 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
               getIdByAddressAssetType(address, assetType)
           ]
         : state.chainReducer.txList[address];
-    const countOfTxList = assetType
-        ? state.chainReducer.countOfTxListById[
-              getIdByAddressAssetType(address, assetType)
-          ]
-        : state.chainReducer.countOfTxList[address];
     const networkId = state.globalReducer.networkId;
     return {
         pendingTxList: pendingTxList && pendingTxList.data,
         txList: txList && txList.data,
-        countOfTxList: countOfTxList && countOfTxList.data,
         networkId
     };
 };
@@ -242,14 +223,6 @@ const mapDispatchToProps = (
                 itemsPerPage: 10,
                 force: true
             })
-        );
-    },
-    fetchCountOfTxListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchCountOfTxListIfNeed(address));
-    },
-    fetchCountOfTxListByAssetTypeIfNeed: (address: string, assetType: H160) => {
-        dispatch(
-            chainActions.fetchCountOfTxListByAssetTypeIfNeed(address, assetType)
         );
     }
 });

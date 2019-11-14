@@ -272,7 +272,6 @@ const fetchAvailableAssets = (address: string) => {
     return async (dispatch: ThunkDispatch<ReducerConfigure, void, Action>) => {
         dispatch(chainActions.fetchPendingTxListIfNeed(address));
         dispatch(chainActions.fetchTxListIfNeed(address));
-        dispatch(chainActions.fetchCountOfTxListIfNeed(address));
         dispatch(fetchAggsUTXOListIfNeed(address));
     };
 };

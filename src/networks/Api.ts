@@ -156,16 +156,3 @@ export async function getTxsByAddress(
     );
     return transactions;
 }
-
-export async function getCountOfTxByAddress(data: {
-    address: string;
-    networkId: NetworkId;
-    assetType?: H160;
-}) {
-    const apiHost = getIndexerHost(data.networkId);
-    let query = `${apiHost}/api/tx/count?address=${data.address}`;
-    if (data.assetType) {
-        query += `&assetType=${data.assetType.value}`;
-    }
-    return await getRequest<number>(query);
-}
