@@ -91,7 +91,6 @@ const fetchAvailableQuark = (address: string) => {
     return (dispatch: ThunkDispatch<ReducerConfigure, void, Action>) => {
         dispatch(chainActions.fetchPendingTxListIfNeed(address));
         dispatch(chainActions.fetchTxListIfNeed(address));
-        dispatch(chainActions.fetchCountOfTxListIfNeed(address));
         dispatch(fetchAccountIfNeed(address));
     };
 };

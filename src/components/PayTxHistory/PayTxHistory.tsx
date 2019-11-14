@@ -21,7 +21,6 @@ interface OwnProps {
 interface StateProps {
     pendingTxList?: TransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
-    countOfTxList?: number | null;
     networkId: NetworkId;
 }
 
@@ -32,7 +31,6 @@ interface State {
 interface DispatchProps {
     fetchPendingTxListIfNeed: (address: string) => void;
     fetchTxListIfNeed: (address: string, page: number) => void;
-    fetchCountOfTxListIfNeed: (address: string) => void;
 }
 
 type Props = WithTranslation & StateProps & OwnProps & DispatchProps;
@@ -50,14 +48,8 @@ class PayTxHistory extends React.Component<Props, State> {
     }
 
     public render() {
-        const {
-            pendingTxList,
-            txList,
-            address,
-            networkId,
-            countOfTxList
-        } = this.props;
-        if (!pendingTxList || !txList || countOfTxList == null) {
+        const { pendingTxList, txList, address, networkId } = this.props;
+        if (!pendingTxList || !txList) {
             return <div>Loading...</div>;
         }
         const txHashList = _.map(txList, tx => tx.hash);
@@ -99,12 +91,15 @@ class PayTxHistory extends React.Component<Props, State> {
                         timestamp={tx.timestamp!}
                     />
                 ))}
-                {countOfTxList > 0 && (
+                {(this.state.activePage > 1 || txList.length > 0) && (
                     <div className="pagination-container">
                         <Pagination
                             activePage={this.state.activePage}
                             itemsCountPerPage={10}
-                            totalItemsCount={countOfTxList}
+                            totalItemsCount={
+                                (this.state.activePage - 1) * 10 +
+                                (txList.length + 1)
+                            }
                             pageRangeDisplayed={5}
                             onChange={this.handlePageChange}
                             itemClass="page-item"
@@ -153,13 +148,11 @@ class PayTxHistory extends React.Component<Props, State> {
         const {
             address,
             fetchPendingTxListIfNeed,
-            fetchTxListIfNeed,
-            fetchCountOfTxListIfNeed
+            fetchTxListIfNeed
         } = this.props;
         const { activePage } = this.state;
         fetchPendingTxListIfNeed(address);
         fetchTxListIfNeed(address, activePage);
-        fetchCountOfTxListIfNeed(address);
     };
 }
 
@@ -167,11 +160,9 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     const { address } = props;
     const pendingTxList = state.chainReducer.pendingTxList[address];
     const txList = state.chainReducer.txList[address];
-    const countOfTxList = state.chainReducer.countOfTxList[address];
     const networkId = state.globalReducer.networkId;
     return {
         pendingTxList: pendingTxList && pendingTxList.data,
-        countOfTxList: countOfTxList && countOfTxList.data,
         txList: txList && txList.data,
         networkId
     };
@@ -190,9 +181,6 @@ const mapDispatchToProps = (
                 force: true
             })
         );
-    },
-    fetchCountOfTxListIfNeed: (address: string) => {
-        dispatch(chainActions.fetchCountOfTxListIfNeed(address));
     }
 });
 export default connect(
