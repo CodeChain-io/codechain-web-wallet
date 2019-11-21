@@ -31,7 +31,8 @@ export async function getAggsUTXOList(
     networkId: NetworkId
 ): Promise<AggsUTXODoc[]> {
     const apiHost = getIndexerHost(networkId);
-    const aggsUTXOList = await getRequest<AggsUTXODoc[]>(
+    // FIXME: Read all pages
+    const { data: aggsUTXOList } = await getRequest<{ data: AggsUTXODoc[] }>(
         `${apiHost}/api/aggs-utxo?address=${address}`
     );
     // FIXME: https://github.com/CodeChain-io/codechain-indexer/issues/59
@@ -85,11 +86,13 @@ export async function getUTXOListByAssetType(
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    return await getRequest<UTXODoc[]>(
+    // FIXME: Read all pages
+    const response = await getRequest<{ data: UTXODoc[] }>(
         `${apiHost}/api/utxo?assetType=${
             assetType.value
-        }&address=${address}&itemsPerPage=100&page=1`
+        }&address=${address}&itemsPerPage=100`
     );
+    return response.data;
 }
 
 export function sendTxToGateway(tx: Transaction, gatewayURl: string) {
@@ -103,8 +106,8 @@ export async function getPendingTransactions(
     networkId: NetworkId
 ) {
     const apiHost = getIndexerHost(networkId);
-    const transactions = await getRequest<TransactionDoc[]>(
-        `${apiHost}/api/pending-tx?page=1&itemsPerPage=100&address=${address}`
+    const { data: transactions } = await getRequest<{ data: TransactionDoc[] }>(
+        `${apiHost}/api/pending-tx?itemsPerPage=100&address=${address}`
     );
 
     // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
@@ -127,17 +130,19 @@ export async function getPendingTransactions(
 
 export async function getTxsByAddress(
     address: string,
-    page: number,
+    // FIXME: Support lastEvaluatedKey and firstEvaluatedKey
     itemsPerPage: number,
     networkId: NetworkId,
     assetType?: H160
 ) {
     const apiHost = getIndexerHost(networkId);
-    let query = `${apiHost}/api/tx?address=${address}&page=${page}&itemsPerPage=${itemsPerPage}`;
+    let query = `${apiHost}/api/tx?address=${address}&itemsPerPage=${itemsPerPage}`;
     if (assetType) {
         query += `&assetType=${assetType.value}`;
     }
-    const transactions = await getRequest<TransactionDoc[]>(query);
+    const { data: transactions } = await getRequest<{ data: TransactionDoc[] }>(
+        query
+    );
 
     // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
     await Promise.all(
