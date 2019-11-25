@@ -130,19 +130,40 @@ export async function getPendingTransactions(
 
 export async function getTxsByAddress(
     address: string,
-    // FIXME: Support lastEvaluatedKey and firstEvaluatedKey
-    itemsPerPage: number,
+    pagination: {
+        lastEvaluatedKey?: string;
+        firstEvaluatedKey?: string;
+        itemsPerPage: number;
+    },
     networkId: NetworkId,
     assetType?: H160
 ) {
     const apiHost = getIndexerHost(networkId);
-    let query = `${apiHost}/api/tx?address=${address}&itemsPerPage=${itemsPerPage}`;
+    let query = `${apiHost}/api/tx?address=${address}&itemsPerPage=${
+        pagination.itemsPerPage
+    }`;
     if (assetType) {
         query += `&assetType=${assetType.value}`;
     }
-    const { data: transactions } = await getRequest<{ data: TransactionDoc[] }>(
-        query
-    );
+    if (pagination.lastEvaluatedKey) {
+        query += `&lastEvaluatedKey=${pagination.lastEvaluatedKey}`;
+    }
+    if (pagination.firstEvaluatedKey) {
+        query += `&firstEvaluatedKey=${pagination.firstEvaluatedKey}`;
+    }
+    const {
+        data: transactions,
+        hasNextPage,
+        hasPreviousPage,
+        lastEvaluatedKey,
+        firstEvaluatedKey
+    } = await getRequest<{
+        data: TransactionDoc[];
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+        lastEvaluatedKey?: string;
+        firstEvaluatedKey?: string;
+    }>(query);
 
     // FIXME: This is temporary code. https://github.com/CodeChain-io/codechain-indexer/issues/5
     await Promise.all(
@@ -159,5 +180,11 @@ export async function getTxsByAddress(
             }
         })
     );
-    return transactions;
+    return {
+        transactions,
+        hasNextPage,
+        hasPreviousPage,
+        lastEvaluatedKey,
+        firstEvaluatedKey
+    };
 }
