@@ -3,8 +3,8 @@ import { TransactionDoc } from "codechain-indexer-types";
 import _ from "lodash";
 import React from "react";
 import { Trans, WithTranslation, withTranslation } from "react-i18next";
-import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { NetworkId } from "../../model/address";
@@ -21,26 +21,29 @@ interface OwnProps {
 interface StateProps {
     pendingTxList?: TransactionDoc[] | null;
     txList?: TransactionDoc[] | null;
+    hasNextPage?: boolean | null;
+    hasPreviousPage?: boolean | null;
+    lastEvaluatedKey?: string | null;
+    firstEvaluatedKey?: string | null;
     networkId: NetworkId;
-}
-
-interface State {
-    activePage: number;
 }
 
 interface DispatchProps {
     fetchPendingTxListIfNeed: (address: string) => void;
-    fetchTxListIfNeed: (address: string, page: number) => void;
+    fetchTxListIfNeed: (
+        address: string,
+        options?: {
+            lastEvaluatedKey?: string | null;
+            firstEvaluatedKey?: string | null;
+        }
+    ) => void;
 }
 
 type Props = WithTranslation & StateProps & OwnProps & DispatchProps;
 
-class PayTxHistory extends React.Component<Props, State> {
+class PayTxHistory extends React.Component<Props> {
     public constructor(props: Props) {
         super(props);
-        this.state = {
-            activePage: 1
-        };
     }
 
     public componentDidMount() {
@@ -91,53 +94,58 @@ class PayTxHistory extends React.Component<Props, State> {
                         timestamp={tx.timestamp!}
                     />
                 ))}
-                {(this.state.activePage > 1 || txList.length > 0) && (
+                {txList.length > 0 && (
                     <div className="pagination-container">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={10}
-                            totalItemsCount={
-                                (this.state.activePage - 1) * 10 +
-                                (txList.length + 1)
-                            }
-                            pageRangeDisplayed={5}
-                            onChange={this.handlePageChange}
-                            itemClass="page-item"
-                            linkClass="page-link"
-                            prevPageText={
-                                <FontAwesomeIcon
-                                    icon="angle-left"
-                                    className="navigation-icon"
-                                />
-                            }
-                            nextPageText={
-                                <FontAwesomeIcon
-                                    icon="angle-right"
-                                    className="navigation-icon"
-                                />
-                            }
-                            firstPageText={
-                                <FontAwesomeIcon
-                                    icon="angle-double-left"
-                                    className="navigation-icon"
-                                />
-                            }
-                            lastPageText={
-                                <FontAwesomeIcon
-                                    icon="angle-double-right"
-                                    className="navigation-icon"
-                                />
-                            }
-                        />
+                        <ul className="pagination">
+                            <li
+                                className={`page-item ${
+                                    !this.props.hasPreviousPage
+                                        ? "disabled"
+                                        : ""
+                                }`}
+                            >
+                                <Link
+                                    className="page-link"
+                                    to="#"
+                                    onClick={this.handlePreviousPage}
+                                >
+                                    <FontAwesomeIcon
+                                        icon="angle-left"
+                                        className="navigation-icon"
+                                    />
+                                </Link>
+                            </li>
+                            <li
+                                className={`page-item ${
+                                    !this.props.hasNextPage ? "disabled" : ""
+                                }`}
+                            >
+                                <Link
+                                    className="page-link"
+                                    to="#"
+                                    onClick={this.handleNextPage}
+                                >
+                                    <FontAwesomeIcon
+                                        icon="angle-right"
+                                        className="navigation-icon"
+                                    />
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
                 )}
             </div>
         );
     }
-    private handlePageChange = (pageNumber: number) => {
-        const { address, fetchTxListIfNeed } = this.props;
-        this.setState({ activePage: pageNumber });
-        fetchTxListIfNeed(address, pageNumber);
+
+    private handleNextPage = () => {
+        const { address, fetchTxListIfNeed, lastEvaluatedKey } = this.props;
+        fetchTxListIfNeed(address, { lastEvaluatedKey });
+    };
+
+    private handlePreviousPage = () => {
+        const { address, fetchTxListIfNeed, firstEvaluatedKey } = this.props;
+        fetchTxListIfNeed(address, { firstEvaluatedKey });
     };
 
     private init = async () => {
@@ -150,9 +158,8 @@ class PayTxHistory extends React.Component<Props, State> {
             fetchPendingTxListIfNeed,
             fetchTxListIfNeed
         } = this.props;
-        const { activePage } = this.state;
         fetchPendingTxListIfNeed(address);
-        fetchTxListIfNeed(address, activePage);
+        fetchTxListIfNeed(address);
     };
 }
 
@@ -164,6 +171,10 @@ const mapStateToProps = (state: ReducerConfigure, props: OwnProps) => {
     return {
         pendingTxList: pendingTxList && pendingTxList.data,
         txList: txList && txList.data,
+        hasNextPage: txList && txList.hasNextPage,
+        hasPreviousPage: txList && txList.hasPreviousPage,
+        lastEvaluatedKey: txList && txList.lastEvaluatedKey,
+        firstEvaluatedKey: txList && txList.firstEvaluatedKey,
         networkId
     };
 };
@@ -173,12 +184,18 @@ const mapDispatchToProps = (
     fetchPendingTxListIfNeed: (address: string) => {
         dispatch(chainActions.fetchPendingTxListIfNeed(address));
     },
-    fetchTxListIfNeed: (address: string, page: number) => {
+    fetchTxListIfNeed: (
+        address: string,
+        options?: {
+            lastEvaluatedKey?: string | null;
+            firstEvaluatedKey?: string | null;
+        }
+    ) => {
         dispatch(
             chainActions.fetchTxListIfNeed(address, {
-                page,
                 itemsPerPage: 10,
-                force: true
+                force: true,
+                ...options
             })
         );
     }

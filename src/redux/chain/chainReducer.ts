@@ -13,6 +13,10 @@ export interface ChainState {
     txList: {
         [address: string]: {
             data?: TransactionDoc[] | null;
+            hasNextPage?: boolean | null;
+            hasPreviousPage?: boolean | null;
+            lastEvaluatedKey?: string | null;
+            firstEvaluatedKey?: string | null;
             isFetching: boolean;
             updatedAt?: number | null;
         } | null;
@@ -27,6 +31,10 @@ export interface ChainState {
     txListById: {
         [id: string]: {
             data?: TransactionDoc[] | null;
+            hasNextPage?: boolean | null;
+            hasPreviousPage?: boolean | null;
+            lastEvaluatedKey?: string | null;
+            firstEvaluatedKey?: string | null;
             isFetching: boolean;
             updatedAt?: number | null;
         } | null;
@@ -109,6 +117,10 @@ export const chainReducer = (
             const address = action.data.address;
             const currentTxList = {
                 data: action.data.txList,
+                hasNextPage: action.data.hasNextPage,
+                hasPreviousPage: action.data.hasPreviousPage,
+                lastEvaluatedKey: action.data.lastEvaluatedKey,
+                firstEvaluatedKey: action.data.firstEvaluatedKey,
                 updatedAt: +new Date(),
                 isFetching: false
             };
@@ -159,6 +171,10 @@ export const chainReducer = (
             const id = getIdByAddressAssetType(address, assetType);
             const currentTxList = {
                 data: action.data.txList,
+                hasNextPage: action.data.hasNextPage,
+                hasPreviousPage: action.data.hasPreviousPage,
+                lastEvaluatedKey: action.data.lastEvaluatedKey,
+                firstEvaluatedKey: action.data.firstEvaluatedKey,
                 updatedAt: +new Date(),
                 isFetching: false
             };

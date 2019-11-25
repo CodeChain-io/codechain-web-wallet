@@ -55,6 +55,10 @@ export interface CacheTxListById {
         address: string;
         assetType: H160;
         txList: TransactionDoc[];
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+        lastEvaluatedKey?: string;
+        firstEvaluatedKey?: string;
     };
 }
 
@@ -71,6 +75,10 @@ export interface CacheTxList {
     data: {
         address: string;
         txList: TransactionDoc[];
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+        lastEvaluatedKey?: string;
+        firstEvaluatedKey?: string;
     };
 }
 
@@ -164,13 +172,18 @@ const fetchPendingTxListIfNeed = (address: string) => {
 
 const fetchTxListIfNeed = (
     address: string,
-    params?: { page?: number; itemsPerPage?: number; force: boolean }
+    params?: {
+        firstEvaluatedKey?: string | null;
+        lastEvaluatedKey?: string | null;
+        itemsPerPage?: number;
+        force: boolean;
+    }
 ) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const { page = 1, itemsPerPage = 10, force = false } = params || {};
+        const { itemsPerPage = 10, force = false } = params || {};
         const cachedTxList = getState().chainReducer.txList[address];
         if (!force && cachedTxList && cachedTxList.isFetching) {
             return;
@@ -192,17 +205,34 @@ const fetchTxListIfNeed = (
                 }
             });
             const networkId = getState().globalReducer.networkId;
-            const txList = await getTxsByAddress(
+            const {
+                transactions: txList,
+                hasNextPage,
+                hasPreviousPage,
+                lastEvaluatedKey,
+                firstEvaluatedKey
+            } = await getTxsByAddress(
                 address,
-                page,
-                itemsPerPage,
+                {
+                    itemsPerPage,
+                    lastEvaluatedKey: params
+                        ? params.lastEvaluatedKey || undefined
+                        : undefined,
+                    firstEvaluatedKey: params
+                        ? params.firstEvaluatedKey || undefined
+                        : undefined
+                },
                 networkId
             );
             dispatch({
                 type: ActionType.CacheTxList,
                 data: {
                     address,
-                    txList
+                    txList,
+                    hasNextPage,
+                    hasPreviousPage,
+                    lastEvaluatedKey,
+                    firstEvaluatedKey
                 }
             });
             // FIXME: Currently, React-chrome-redux saves data to the background script asynchronously.
@@ -341,13 +371,18 @@ const sendTransactionByGateway = (
 const fetchTxListByAssetTypeIfNeed = (
     address: string,
     assetType: H160,
-    params?: { page?: number; itemsPerPage?: number; force: boolean }
+    params?: {
+        firstEvaluatedKey?: string | null;
+        lastEvaluatedKey?: string | null;
+        itemsPerPage?: number;
+        force: boolean;
+    }
 ) => {
     return async (
         dispatch: ThunkDispatch<ReducerConfigure, void, Action>,
         getState: () => ReducerConfigure
     ) => {
-        const { page = 1, itemsPerPage = 10, force = false } = params || {};
+        const { itemsPerPage = 10, force = false } = params || {};
         const id = getIdByAddressAssetType(address, assetType);
         const cachedTxListById = getState().chainReducer.txListById[id];
         if (!force && cachedTxListById && cachedTxListById.isFetching) {
@@ -371,10 +406,23 @@ const fetchTxListByAssetTypeIfNeed = (
                 }
             });
             const networkId = getState().globalReducer.networkId;
-            const txList = await getTxsByAddress(
+            const {
+                transactions: txList,
+                hasNextPage,
+                hasPreviousPage,
+                lastEvaluatedKey,
+                firstEvaluatedKey
+            } = await getTxsByAddress(
                 address,
-                page,
-                itemsPerPage,
+                {
+                    itemsPerPage,
+                    lastEvaluatedKey: params
+                        ? params.lastEvaluatedKey || undefined
+                        : undefined,
+                    firstEvaluatedKey: params
+                        ? params.firstEvaluatedKey || undefined
+                        : undefined
+                },
                 networkId,
                 assetType
             );
@@ -383,7 +431,11 @@ const fetchTxListByAssetTypeIfNeed = (
                 data: {
                     address,
                     assetType,
-                    txList
+                    txList,
+                    hasNextPage,
+                    hasPreviousPage,
+                    lastEvaluatedKey,
+                    firstEvaluatedKey
                 }
             });
             dispatch(hideLoading() as any);
