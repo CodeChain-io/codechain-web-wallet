@@ -88,9 +88,7 @@ export async function getUTXOListByAssetType(
     const apiHost = getIndexerHost(networkId);
     // FIXME: Read all pages
     const response = await getRequest<{ data: UTXODoc[] }>(
-        `${apiHost}/api/utxo?assetType=${
-            assetType.value
-        }&address=${address}&itemsPerPage=100`
+        `${apiHost}/api/utxo?assetType=${assetType.value}&address=${address}&itemsPerPage=100`
     );
     return response.data;
 }
@@ -139,9 +137,7 @@ export async function getTxsByAddress(
     assetType?: H160
 ) {
     const apiHost = getIndexerHost(networkId);
-    let query = `${apiHost}/api/tx?address=${address}&itemsPerPage=${
-        pagination.itemsPerPage
-    }`;
+    let query = `${apiHost}/api/tx?address=${address}&itemsPerPage=${pagination.itemsPerPage}`;
     if (assetType) {
         query += `&assetType=${assetType.value}`;
     }

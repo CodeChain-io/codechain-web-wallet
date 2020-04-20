@@ -127,7 +127,7 @@ class AddressList extends React.Component<Props> {
                                             />
                                         </div>
                                         {platformAddresses.length > 0 &&
-                                            (networkId === "wc" && (
+                                            networkId === "wc" && (
                                                 <a
                                                     href="https://corgi.codechain.io/faucet"
                                                     target="_blank"
@@ -137,7 +137,7 @@ class AddressList extends React.Component<Props> {
                                                         <Trans i18nKey="main:ccc.faucet" />
                                                     </div>
                                                 </a>
-                                            ))}
+                                            )}
                                     </div>
                                 )}
                             </Col>

@@ -64,7 +64,4 @@ const mapDispatchToProps = (
         dispatch(globalActions.logout());
     }
 });
-export default connect(
-    undefined,
-    mapDispatchToProps
-)(WalletSaver);
+export default connect(undefined, mapDispatchToProps)(WalletSaver);
